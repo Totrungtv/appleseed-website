@@ -32,25 +32,42 @@
 </section></main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
+
 <script>
-const form=document.getElementById("loginForm"),msg=document.getElementById("msg");
-form.addEventListener("submit",async e=>{
- e.preventDefault(); msg.style.display="none";
- try{
-  const {data,error}=await supabaseClient.auth.signInWithPassword({
-   email:document.getElementById("email").value.trim(),
-   password:document.getElementById("password").value
-  });
-  if(error) throw error;
-  const {data:profile,error:pe}=await supabaseClient.from("profiles").select("role").eq("id",data.user.id).single();
-  if(pe) throw pe;
-  if(!["admin","staff"].includes(profile.role)){
-   await supabaseClient.auth.signOut();
-   throw new Error("Tài khoản không có quyền quản trị.");
+const form = document.getElementById("loginForm");
+const msg = document.getElementById("msg");
+
+form.addEventListener("submit", async e => {
+  e.preventDefault();
+  msg.style.display = "none";
+
+  try {
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email: document.getElementById("email").value.trim(),
+      password: document.getElementById("password").value
+    });
+
+    if (error) throw error;
+
+    const { data: profile, error: pe } =
+      await supabaseClient
+        .from("profiles")
+        .select("role")
+        .eq("id", data.user.id)
+        .single();
+
+    if (pe) throw pe;
+
+    if (!["admin", "staff"].includes(profile.role)) {
+      await supabaseClient.auth.signOut();
+      throw new Error("Tài khoản không có quyền quản trị.");
+    }
+
+    location.href = "admin.html";
+
+  } catch (err) {
+    msg.textContent = err.message || "Đăng nhập thất bại.";
+    msg.style.display = "block";
   }
-  location.href="admin.html";
- }catch(err){msg.textContent=err.message||"Đăng nhập thất bại.";msg.style.display="block";}
 });
 </script>
-</body>
-</html>
