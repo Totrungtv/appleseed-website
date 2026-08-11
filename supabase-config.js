@@ -3,7 +3,7 @@
 // NEVER put the service_role/secret key in a public website.
 
 const SUPABASE_URL = "https://nuismqcjyutqigydyfkg.supabase.co";
-const SUPABASE_ANON_KEY = "PASTE_YOUR_PUBLISHABLE_OR_ANON_KEY_HERE";
+const SUPABASE_ANON_KEY = "sb_publishable_Z3pTEseMEeoiGU9dYJ1NwQ_Ko7li9Sz";
 
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
