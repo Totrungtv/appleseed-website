@@ -89,6 +89,12 @@
             background: #fff3f2;
             color: #b42318;
             display: none;
+            line-height: 1.45;
+        }
+
+        .msg.ok {
+            background: #ecfdf3;
+            color: #067647;
         }
 
         .back {
@@ -102,269 +108,274 @@
 
 <body>
 
-    <header class="site-header">
-        <div class="nav">
+<header class="site-header">
+    <div class="nav">
+        <a class="brand" href="index.html">
+            <img src="logo.png" alt="Apple Seed" class="brand-logo">
+        </a>
+    </div>
+</header>
 
-            <a class="brand" href="index.html">
-                <img
-                    src="logo.png"
-                    alt="Apple Seed"
-                    class="brand-logo"
+<main class="login-wrap">
+    <section class="login-card">
+
+        <h1>AppleSeed Admin</h1>
+
+        <p>Đăng nhập để quản lý nội dung website.</p>
+
+        <form id="loginForm">
+
+            <div class="field">
+                <label for="email">Email</label>
+                <input
+                    id="email"
+                    type="email"
+                    autocomplete="email"
+                    required
                 >
-            </a>
+            </div>
 
-        </div>
-    </header>
-
-
-    <main class="login-wrap">
-
-        <section class="login-card">
-
-            <h1>AppleSeed Admin</h1>
-
-            <p>
-                Đăng nhập để quản lý nội dung website.
-            </p>
-
-
-            <form id="loginForm">
-
-                <div class="field">
-
-                    <label for="email">
-                        Email
-                    </label>
-
-                    <input
-                        id="email"
-                        type="email"
-                        autocomplete="email"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="field">
-
-                    <label for="password">
-                        Mật khẩu
-                    </label>
-
-                    <input
-                        id="password"
-                        type="password"
-                        autocomplete="current-password"
-                        required
-                    >
-
-                </div>
-
-
-                <button
-                    id="loginBtn"
-                    class="login-btn"
-                    type="submit"
+            <div class="field">
+                <label for="password">Mật khẩu</label>
+                <input
+                    id="password"
+                    type="password"
+                    autocomplete="current-password"
+                    required
                 >
-                    Đăng nhập
-                </button>
+            </div>
 
+            <button id="loginBtn" class="login-btn" type="submit">
+                Đăng nhập
+            </button>
 
-                <div
-                    id="msg"
-                    class="msg"
-                ></div>
+            <div id="msg" class="msg"></div>
 
-            </form>
+        </form>
 
+        <a class="back" href="index.html">← Về website</a>
 
-            <a
-                class="back"
-                href="index.html"
-            >
-                ← Về website
-            </a>
+    </section>
+</main>
 
-        </section>
+<!-- Supabase JS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    </main>
+<!-- AppleSeed config: tăng version để tránh GitHub Pages giữ file cũ -->
+<script src="supabase-config.js?v=2"></script>
 
+<script>
+(function () {
+    "use strict";
 
-    <!-- SUPABASE -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    const form = document.getElementById("loginForm");
+    const msg = document.getElementById("msg");
+    const loginBtn = document.getElementById("loginBtn");
 
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY_MS = 1200;
 
-    <!-- APPLESEED SUPABASE CONFIG -->
-    <script src="supabase-config.js"></script>
+    function showMessage(text, ok = false) {
+        msg.textContent = text;
+        msg.className = ok ? "msg ok" : "msg";
+        msg.style.display = "block";
+    }
 
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
 
-    <!-- LOGIN SCRIPT -->
-    <script>
+    function isFetchError(error) {
+        const text = String(
+            error?.message ||
+            error ||
+            ""
+        ).toLowerCase();
 
-        const form =
-            document.getElementById("loginForm");
-
-        const msg =
-            document.getElementById("msg");
-
-        const loginBtn =
-            document.getElementById("loginBtn");
-
-
-        form.addEventListener(
-            "submit",
-            async function (e) {
-
-                e.preventDefault();
-
-                msg.style.display = "none";
-
-                loginBtn.disabled = true;
-                loginBtn.textContent = "Đang đăng nhập...";
-
-
-                try {
-
-                    // Kiểm tra Supabase
-                    if (
-                        !window.supabaseClient
-                    ) {
-
-                        throw new Error(
-                            "Supabase chưa được tải. Kiểm tra supabase-config.js."
-                        );
-
-                    }
-
-
-                    const email =
-                        document
-                            .getElementById("email")
-                            .value
-                            .trim();
-
-
-                    const password =
-                        document
-                            .getElementById("password")
-                            .value;
-
-
-                    // Đăng nhập Supabase
-                    const loginResult =
-                        await window.supabaseClient
-                            .auth
-                            .signInWithPassword({
-
-                                email: email,
-
-                                password: password
-
-                            });
-
-
-                    if (loginResult.error) {
-
-                        throw loginResult.error;
-
-                    }
-
-
-                    const user =
-                        loginResult.data.user;
-
-
-                    if (!user) {
-
-                        throw new Error(
-                            "Không lấy được thông tin tài khoản."
-                        );
-
-                    }
-
-
-                    // Lấy quyền trong profiles
-                    const profileResult =
-                        await window.supabaseClient
-
-                            .from("profiles")
-
-                            .select("role")
-
-                            .eq("id", user.id)
-
-                            .single();
-
-
-                    if (profileResult.error) {
-
-                        throw profileResult.error;
-
-                    }
-
-
-                    const profile =
-                        profileResult.data;
-
-
-                    // Kiểm tra quyền
-                    if (
-                        profile.role !== "admin" &&
-                        profile.role !== "staff"
-                    ) {
-
-                        await window.supabaseClient
-                            .auth
-                            .signOut();
-
-
-                        throw new Error(
-                            "Tài khoản không có quyền quản trị."
-                        );
-
-                    }
-
-
-                    // Thành công
-                    window.location.href =
-                        "admin.html";
-
-                }
-
-                catch (err) {
-
-                    console.error(
-                        "APPLESEED LOGIN ERROR:",
-                        err
-                    );
-
-
-                    msg.textContent =
-                        err.message ||
-                        "Đăng nhập thất bại.";
-
-
-                    msg.style.display =
-                        "block";
-
-                }
-
-                finally {
-
-                    loginBtn.disabled =
-                        false;
-
-                    loginBtn.textContent =
-                        "Đăng nhập";
-
-                }
-
-            }
+        return (
+            text.includes("failed to fetch") ||
+            text.includes("networkerror") ||
+            text.includes("network error") ||
+            text.includes("err_name_not_resolved") ||
+            text.includes("fetch")
         );
+    }
 
-    </script>
+    async function checkSupabaseConnection() {
+        const url =
+            window.SUPABASE_URL +
+            "/auth/v1/health";
+
+        const response = await fetch(url, {
+            method: "GET",
+            cache: "no-store",
+            headers: {
+                "apikey": window.SUPABASE_ANON_KEY
+            }
+        });
+
+        // 200/401/403 đều chứng minh request đã tới Supabase.
+        // Không coi 401 của health endpoint là lỗi mạng.
+        if (
+            response.status === 200 ||
+            response.status === 401 ||
+            response.status === 403
+        ) {
+            return true;
+        }
+
+        throw new Error(
+            "Supabase trả HTTP " + response.status
+        );
+    }
+
+    async function loginWithRetry(email, password) {
+        let lastError = null;
+
+        for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+            try {
+                // Kiểm tra kết nối trước mỗi lần đăng nhập.
+                await checkSupabaseConnection();
+
+                const result =
+                    await window.supabaseClient.auth.signInWithPassword({
+                        email,
+                        password
+                    });
+
+                if (result.error) {
+                    throw result.error;
+                }
+
+                return result.data;
+
+            } catch (error) {
+                lastError = error;
+
+                console.error(
+                    "AppleSeed login attempt",
+                    attempt,
+                    error
+                );
+
+                if (!isFetchError(error) || attempt === MAX_RETRIES) {
+                    break;
+                }
+
+                showMessage(
+                    "Kết nối Supabase chập chờn. Đang thử lại " +
+                    attempt +
+                    "/" +
+                    MAX_RETRIES +
+                    "..."
+                );
+
+                await sleep(RETRY_DELAY_MS);
+            }
+        }
+
+        throw lastError;
+    }
+
+    form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        msg.style.display = "none";
+        loginBtn.disabled = true;
+        loginBtn.textContent = "Đang kiểm tra kết nối...";
+
+        const email =
+            document.getElementById("email").value.trim();
+
+        const password =
+            document.getElementById("password").value;
+
+        try {
+            if (!window.supabaseClient) {
+                throw new Error(
+                    "Supabase chưa được tải. Kiểm tra supabase-config.js."
+                );
+            }
+
+            if (!email || !password) {
+                throw new Error(
+                    "Vui lòng nhập email và mật khẩu."
+                );
+            }
+
+            loginBtn.textContent = "Đang đăng nhập...";
+
+            const loginData =
+                await loginWithRetry(email, password);
+
+            const user = loginData?.user;
+
+            if (!user) {
+                throw new Error(
+                    "Đăng nhập thành công nhưng không lấy được tài khoản."
+                );
+            }
+
+            // Chỉ kiểm tra profiles SAU khi Auth đã đăng nhập thành công.
+            const profileResult =
+                await window.supabaseClient
+                    .from("profiles")
+                    .select("role")
+                    .eq("id", user.id)
+                    .single();
+
+            if (profileResult.error) {
+                throw profileResult.error;
+            }
+
+            const role = profileResult.data?.role;
+
+            if (role !== "admin" && role !== "staff") {
+                await window.supabaseClient.auth.signOut();
+
+                throw new Error(
+                    "Tài khoản không có quyền quản trị."
+                );
+            }
+
+            showMessage(
+                "Đăng nhập thành công. Đang mở trang quản trị...",
+                true
+            );
+
+            window.location.replace("admin.html");
+
+        } catch (err) {
+            console.error("APPLESEED LOGIN ERROR:", err);
+
+            const raw = String(
+                err?.message || err || ""
+            );
+
+            let friendly = raw || "Đăng nhập thất bại.";
+
+            if (isFetchError(err)) {
+                friendly =
+                    "Không kết nối được tới Supabase. " +
+                    "Đã thử lại " +
+                    MAX_RETRIES +
+                    " lần. Kiểm tra mạng/DNS rồi thử lại.";
+            } else if (
+                raw.toLowerCase().includes("invalid login credentials")
+            ) {
+                friendly =
+                    "Email hoặc mật khẩu không đúng.";
+            }
+
+            showMessage(friendly);
+
+        } finally {
+            loginBtn.disabled = false;
+            loginBtn.textContent = "Đăng nhập";
+        }
+    });
+})();
+</script>
 
 </body>
-
 </html>
