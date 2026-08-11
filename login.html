@@ -152,84 +152,50 @@
 
 <script>
 
+<script>
 const form = document.getElementById("loginForm");
 const msg = document.getElementById("msg");
 
 form.addEventListener("submit", async (e) => {
-
   e.preventDefault();
-
   msg.style.display = "none";
 
   try {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
 
-const { data, error } =
-  await supabaseClient.auth.signInWithPassword({
-    email: email,
-    password: password
-  });
-
-    const email =
-      document.getElementById("email").value.trim();
-
-    const password =
-      document.getElementById("password").value;
-
-
-    const { data, error } =
+    const { data: loginData, error } =
       await supabaseClient.auth.signInWithPassword({
         email: email,
         password: password
       });
 
-
     if (error) {
       throw error;
     }
-
 
     const { data: profile, error: pe } =
       await supabaseClient
         .from("profiles")
         .select("role")
-        .eq("id", data.user.id)
+        .eq("id", loginData.user.id)
         .single();
-
 
     if (pe) {
       throw pe;
     }
 
-
     if (!["admin", "staff"].includes(profile.role)) {
-
       await supabaseClient.auth.signOut();
-
-      throw new Error(
-        "Tài khoản không có quyền quản trị."
-      );
-
+      throw new Error("Tài khoản không có quyền quản trị.");
     }
-
 
     window.location.href = "admin.html";
 
-  }
-
-  catch (err) {
-
+  } catch (err) {
     console.error(err);
-
-    msg.textContent =
-      err.message || "Đăng nhập thất bại.";
-
+    msg.textContent = err.message || "Đăng nhập thất bại.";
     msg.style.display = "block";
-
   }
-
 });
-
 </script>
-
-</body>
-</html>
