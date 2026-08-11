@@ -1,16 +1,13 @@
 // AppleSeed Supabase configuration
 
-const SUPABASE_URL =
+window.SUPABASE_URL =
     "https://nuismqcjyutqigydyfkg.supabase.co";
 
-const SUPABASE_ANON_KEY =
-    "sb_publishable_Z3pTEseMEeoiGU9dYJ1NwQ_Ko7li9Sz";
+window.SUPABASE_ANON_KEY =
+    "sb_publishable_Z3pTEseMEeoiGU9dYJ1NwO_Ko7li9Sz";
 
-const supabaseClient =
+window.supabaseClient =
     window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_ANON_KEY
+        window.SUPABASE_URL,
+        window.SUPABASE_ANON_KEY
     );
-
-// Cho login.html và các file khác sử dụng
-window.supabaseClient = supabaseClient;
