@@ -3,52 +3,188 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+
 <title>AppleSeed — Đăng nhập quản trị</title>
+
 <link rel="stylesheet" href="style.css">
+
 <style>
-.login-wrap{min-height:calc(100vh - 80px);display:grid;place-items:center;padding:40px 20px;background:#f5f7fb}
-.login-card{width:min(420px,100%);background:#fff;border:1px solid #e5e7eb;border-radius:18px;padding:30px;box-shadow:0 15px 40px rgba(23,32,51,.08)}
-.login-card h1{margin:0 0 8px;font-size:28px}.login-card p{color:#667085;margin:0 0 24px}
-.field{margin-bottom:16px}.field label{display:block;font-weight:700;margin-bottom:7px}
-.field input{width:100%;padding:12px 13px;border:1px solid #d9dee8;border-radius:9px;font-size:15px;outline:none}
-.login-btn{width:100%;border:0;cursor:pointer;background:#2563eb;color:#fff;padding:12px;border-radius:9px;font-weight:700;font-size:15px}
-.msg{margin-top:14px;padding:10px 12px;border-radius:8px;background:#fff3f2;color:#b42318;display:none}
-.back{display:inline-block;margin-top:18px;color:#2563eb;text-decoration:none}
+.login-wrap{
+  min-height:calc(100vh - 80px);
+  display:grid;
+  place-items:center;
+  padding:40px 20px;
+  background:#f5f7fb;
+}
+
+.login-card{
+  width:min(420px,100%);
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:18px;
+  padding:30px;
+  box-shadow:0 15px 40px rgba(23,32,51,.08);
+}
+
+.login-card h1{
+  margin:0 0 8px;
+  font-size:28px;
+}
+
+.login-card p{
+  color:#667085;
+  margin:0 0 24px;
+}
+
+.field{
+  margin-bottom:16px;
+}
+
+.field label{
+  display:block;
+  font-weight:700;
+  margin-bottom:7px;
+}
+
+.field input{
+  width:100%;
+  box-sizing:border-box;
+  padding:12px 13px;
+  border:1px solid #d9dee8;
+  border-radius:9px;
+  font-size:15px;
+  outline:none;
+}
+
+.login-btn{
+  width:100%;
+  border:0;
+  cursor:pointer;
+  background:#2563eb;
+  color:#fff;
+  padding:12px;
+  border-radius:9px;
+  font-weight:700;
+  font-size:15px;
+}
+
+.msg{
+  margin-top:14px;
+  padding:10px 12px;
+  border-radius:8px;
+  background:#fff3f2;
+  color:#b42318;
+  display:none;
+}
+
+.back{
+  display:inline-block;
+  margin-top:18px;
+  color:#2563eb;
+  text-decoration:none;
+}
 </style>
 </head>
+
 <body>
-<header class="site-header"><div class="nav">
-<a class="brand" href="index.html"><img src="logo.png" alt="Apple Seed" class="brand-logo"></a>
-</div></header>
-<main class="login-wrap"><section class="login-card">
-<h1>AppleSeed Admin</h1><p>Đăng nhập để quản lý nội dung website.</p>
+
+<header class="site-header">
+  <div class="nav">
+    <a class="brand" href="index.html">
+      <img src="logo.png" alt="Apple Seed" class="brand-logo">
+    </a>
+  </div>
+</header>
+
+<main class="login-wrap">
+
+<section class="login-card">
+
+<h1>AppleSeed Admin</h1>
+
+<p>Đăng nhập để quản lý nội dung website.</p>
+
 <form id="loginForm">
-<div class="field"><label>Email</label><input id="email" type="email" autocomplete="email" required></div>
-<div class="field"><label>Mật khẩu</label><input id="password" type="password" autocomplete="current-password" required></div>
-<button class="login-btn" type="submit">Đăng nhập</button>
+
+<div class="field">
+<label>Email</label>
+<input
+  id="email"
+  type="email"
+  autocomplete="email"
+  required
+>
+</div>
+
+<div class="field">
+<label>Mật khẩu</label>
+<input
+  id="password"
+  type="password"
+  autocomplete="current-password"
+  required
+>
+</div>
+
+<button class="login-btn" type="submit">
+Đăng nhập
+</button>
+
 <div id="msg" class="msg"></div>
+
 </form>
-<a class="back" href="index.html">← Về website</a>
-</section></main>
+
+<a class="back" href="index.html">
+← Về website
+</a>
+
+</section>
+
+</main>
+
+
+<!-- SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- CONFIG -->
 <script src="supabase-config.js"></script>
 
 
 <script>
+
 const form = document.getElementById("loginForm");
 const msg = document.getElementById("msg");
 
-form.addEventListener("submit", async e => {
+form.addEventListener("submit", async (e) => {
+
   e.preventDefault();
+
   msg.style.display = "none";
 
   try {
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
-      email: document.getElementById("email").value.trim(),
-      password: document.getElementById("password").value
-    });
 
-    if (error) throw error;
+    if (!window.supabaseClient) {
+      throw new Error("Supabase chưa được tải. Kiểm tra supabase-config.js.");
+    }
+
+    const email =
+      document.getElementById("email").value.trim();
+
+    const password =
+      document.getElementById("password").value;
+
+
+    const { data, error } =
+      await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+
+
+    if (error) {
+      throw error;
+    }
+
 
     const { data: profile, error: pe } =
       await supabaseClient
@@ -57,20 +193,40 @@ form.addEventListener("submit", async e => {
         .eq("id", data.user.id)
         .single();
 
-    if (pe) throw pe;
 
-    if (!["admin", "staff"].includes(profile.role)) {
-      await supabaseClient.auth.signOut();
-      throw new Error("Tài khoản không có quyền quản trị.");
+    if (pe) {
+      throw pe;
     }
 
-    location.href = "admin.html";
 
-  } catch (err) {
-    msg.textContent = err.message || "Đăng nhập thất bại.";
-    msg.style.display = "block";
+    if (!["admin", "staff"].includes(profile.role)) {
+
+      await supabaseClient.auth.signOut();
+
+      throw new Error(
+        "Tài khoản không có quyền quản trị."
+      );
+
+    }
+
+
+    window.location.href = "admin.html";
+
   }
+
+  catch (err) {
+
+    console.error(err);
+
+    msg.textContent =
+      err.message || "Đăng nhập thất bại.";
+
+    msg.style.display = "block";
+
+  }
+
 });
+
 </script>
 
 </body>
