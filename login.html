@@ -163,9 +163,11 @@ form.addEventListener("submit", async (e) => {
 
   try {
 
-    if (!window.supabaseClient) {
-      throw new Error("Supabase chưa được tải. Kiểm tra supabase-config.js.");
-    }
+const { data, error } =
+  await supabaseClient.auth.signInWithPassword({
+    email: email,
+    password: password
+  });
 
     const email =
       document.getElementById("email").value.trim();
