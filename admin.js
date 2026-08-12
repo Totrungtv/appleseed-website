@@ -149,17 +149,8 @@ async function uploadImage(file) {
     return publicData.publicUrl;
 }
     const {
-        data
-    } = supabaseClient.storage
-        .from("site-images")
-        .getPublicUrl(filePath);
-
-    if (!data || !data.publicUrl) {
-        throw new Error("Không lấy được URL ảnh.");
-    }
-
-    return data.publicUrl;
-}
+    data
+} = supabaseClient.storage
 
 if (imageFileEl) {
     imageFileEl.addEventListener("change", () => {
