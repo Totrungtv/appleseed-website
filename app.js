@@ -20,14 +20,6 @@ if(by.hero){
     img.style.display = "block";
   }
 }
-  if(h&&by.hero.title)h.textContent=by.hero.title;
-  if(p&&by.hero.content)p.textContent=by.hero.content;
-
-  if(img&&by.hero.image_url){
-    img.src=by.hero.image_url;
-    img.style.display="block";
-  }
-}
  if(by.about){
   const h=document.querySelector("#gioi-thieu h2"),p=document.querySelector("#gioi-thieu p");
   if(h&&by.about.title)h.textContent=by.about.title;
