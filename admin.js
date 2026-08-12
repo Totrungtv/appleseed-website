@@ -107,30 +107,25 @@ function selectSection(id) {
 }
 
 async function uploadImage(file) {
-    if (!file) return null;
+    if (!file) {
+        throw new Error("Chưa chọn ảnh.");
+    }
 
     if (!file.type.startsWith("image/")) {
         throw new Error("File được chọn không phải là ảnh.");
     }
 
-    const maxSize = 5 * 1024 * 1024;
-
-    if (file.size > maxSize) {
+    if (file.size > 5 * 1024 * 1024) {
         throw new Error("Ảnh quá lớn. Vui lòng chọn ảnh dưới 5MB.");
     }
 
     const ext = file.name.split(".").pop().toLowerCase();
-
-    const fileName =
-        `${Date.now()}-${crypto.randomUUID()}.${ext}`;
-
+    const fileName = `${Date.now()}-${crypto.randomUUID()}.${ext}`;
     const filePath = `website/${fileName}`;
 
     status("Đang upload ảnh...");
 
-    const {
-        error: uploadError
-    } = await supabaseClient.storage
+    const { error } = await supabaseClient.storage
         .from("site-images")
         .upload(filePath, file, {
             cacheControl: "3600",
@@ -138,10 +133,21 @@ async function uploadImage(file) {
             contentType: file.type
         });
 
-    if (uploadError) {
-        throw uploadError;
+    if (error) {
+        console.error("Storage upload error:", error);
+        throw error;
     }
 
+    const { data: publicData } = supabaseClient.storage
+        .from("site-images")
+        .getPublicUrl(filePath);
+
+    if (!publicData || !publicData.publicUrl) {
+        throw new Error("Không lấy được URL ảnh.");
+    }
+
+    return publicData.publicUrl;
+}
     const {
         data
     } = supabaseClient.storage
