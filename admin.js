@@ -138,10 +138,11 @@ async function uploadImage(file) {
         throw error;
     }
 
-    const imageUrl =
+   const imageUrl =
     `${supabaseClient.supabaseUrl}/storage/v1/render/image/public/site-images/${filePath}`;
 
 return imageUrl;
+}
 if (imageFileEl) {
     imageFileEl.addEventListener("change", () => {
         const file = imageFileEl.files[0];
