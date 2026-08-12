@@ -61,5 +61,75 @@
 </main>
 
 <footer>© 2026 AppleSeed</footer>
+ <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+
+<script>
+(async function () {
+    const { data, error } = await window.supabaseClient
+        .from("site_content")
+        .select("section,title,content,image_url");
+
+    if (error) {
+        console.error("AppleSeed CMS:", error);
+        return;
+    }
+
+    const content = {};
+    data.forEach(item => {
+        content[item.section] = item;
+    });
+
+    // HERO
+    if (content.hero) {
+        const hero = content.hero;
+
+        const heroTitle = document.querySelector(".hero h1");
+        const heroContent = document.querySelector(".hero p");
+
+        if (heroTitle && hero.title) {
+            heroTitle.textContent = hero.title;
+        }
+
+        if (heroContent && hero.content) {
+            heroContent.textContent = hero.content;
+        }
+    }
+
+    // GIỚI THIỆU
+    if (content.about) {
+        const about = content.about;
+
+        const aboutTitle = document.querySelector("#gioi-thieu h2");
+        const aboutContent = document.querySelector("#gioi-thieu p");
+
+        if (aboutTitle && about.title) {
+            aboutTitle.textContent = about.title;
+        }
+
+        if (aboutContent && about.content) {
+            aboutContent.textContent = about.content;
+        }
+    }
+
+    // LIÊN HỆ
+    if (content.contact) {
+        const contact = content.contact;
+
+        const contactTitle = document.querySelector("#lien-he h2");
+        const contactContent = document.querySelector("#lien-he p");
+
+        if (contactTitle && contact.title) {
+            contactTitle.textContent = contact.title;
+        }
+
+        if (contactContent && contact.content) {
+            contactContent.textContent = contact.content;
+        }
+    }
+
+    console.log("AppleSeed CMS: đã tải nội dung từ Supabase");
+})();
+</script> 
 </body>
 </html>
