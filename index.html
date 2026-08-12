@@ -25,7 +25,7 @@
 <main>
 <section class="hero">
   <div class="container">
-    <img id="heroImage" class="hero-image" alt="AppleSeed" src="https://nuismqcjyutqigdydfkg.supabase.co/storage/v1/object/public/site-images/website/1786518759503-81663034-aa50-4f2a-a516-b109b7cae5e6.png">
+    <img id="heroImage" class="hero-image" alt="AppleSeed" src="">
     <div class="eyebrow">APPLESEED • TRÀ VINH</div>
     <h1>Sửa iPhone chuyên nghiệp,<br>minh bạch và tận tâm.</h1>
     <p>Sửa iPhone, Face ID, main và linh kiện. Tư vấn tình trạng máy rõ ràng trước khi sửa.</p>
@@ -81,21 +81,27 @@
         content[item.section] = item;
     });
 
-    // HERO
-    if (content.hero) {
-        const hero = content.hero;
+   // HERO
+if (content.hero) {
+    const hero = content.hero;
 
-        const heroTitle = document.querySelector(".hero h1");
-        const heroContent = document.querySelector(".hero p");
+    const heroTitle = document.querySelector(".hero h1");
+    const heroContent = document.querySelector(".hero p");
+    const heroImage = document.getElementById("heroImage");
 
-        if (heroTitle && hero.title) {
-            heroTitle.textContent = hero.title;
-        }
-
-        if (heroContent && hero.content) {
-            heroContent.textContent = hero.content;
-        }
+    if (heroTitle && hero.title) {
+        heroTitle.textContent = hero.title;
     }
+
+    if (heroContent && hero.content) {
+        heroContent.textContent = hero.content;
+    }
+
+    if (heroImage && hero.image_url) {
+        heroImage.src = hero.image_url;
+        heroImage.style.display = "block";
+    }
+}
 
     // GIỚI THIỆU
     if (content.about) {
