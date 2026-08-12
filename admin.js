@@ -130,7 +130,7 @@ async function uploadImage(file) {
         .upload(filePath, file, {
             cacheControl: "3600",
             upsert: false,
-            contentType: file.type
+            contentType: "image/jpeg"
         });
 
     if (error) {
