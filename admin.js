@@ -138,16 +138,10 @@ async function uploadImage(file) {
         throw error;
     }
 
-    const { data: publicData } = supabaseClient.storage
-        .from("site-images")
-        .getPublicUrl(filePath);
+    const imageUrl =
+    `${supabaseClient.supabaseUrl}/storage/v1/render/image/public/site-images/${filePath}`;
 
-    if (!publicData || !publicData.publicUrl) {
-        throw new Error("Không lấy được URL ảnh.");
-    }
-
-    return publicData.publicUrl;
-}
+return imageUrl;
 if (imageFileEl) {
     imageFileEl.addEventListener("change", () => {
         const file = imageFileEl.files[0];
