@@ -148,10 +148,6 @@ async function uploadImage(file) {
 
     return publicData.publicUrl;
 }
-    const {
-    data
-} = supabaseClient.storage
-
 if (imageFileEl) {
     imageFileEl.addEventListener("change", () => {
         const file = imageFileEl.files[0];
