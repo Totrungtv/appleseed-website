@@ -98,8 +98,18 @@ if (content.hero) {
     }
 
     if (heroImage && hero.image_url) {
-        heroImage.src = hero.image_url;
+        console.log("AppleSeed HERO IMAGE URL:", hero.image_url);
+
+        heroImage.src = hero.image_url + "?v=" + Date.now();
         heroImage.style.display = "block";
+
+        heroImage.onload = function () {
+            console.log("✅ Ảnh HERO tải thành công");
+        };
+
+        heroImage.onerror = function () {
+            console.error("❌ Không tải được ảnh HERO:", heroImage.src);
+        };
     }
 }
 
