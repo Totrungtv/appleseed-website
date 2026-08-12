@@ -5,7 +5,11 @@ async function loadAppleSeedContent(){
  if(by.hero){
   const h=document.querySelector(".hero h1"),
         p=document.querySelector(".hero p"),
-        img=document.getElementById("heroImage");
+         img=document.getElementById("heroImage");
+  if (heroImage && hero.image_url) {
+  heroImage.src = hero.image_url;
+  heroImage.style.display = "block";
+}
 
   if(h&&by.hero.title)h.textContent=by.hero.title;
   if(p&&by.hero.content)p.textContent=by.hero.content;
