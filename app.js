@@ -3,10 +3,18 @@ async function loadAppleSeedContent(){
  if(error){console.warn("AppleSeed CMS:",error.message);return}
  const by=Object.fromEntries((data||[]).map(x=>[x.section,x]));
  if(by.hero){
-  const h=document.querySelector(".hero h1"),p=document.querySelector(".hero p");
+  const h=document.querySelector(".hero h1"),
+        p=document.querySelector(".hero p"),
+        img=document.getElementById("heroImage");
+
   if(h&&by.hero.title)h.textContent=by.hero.title;
   if(p&&by.hero.content)p.textContent=by.hero.content;
- }
+
+  if(img&&by.hero.image_url){
+    img.src=by.hero.image_url;
+    img.style.display="block";
+  }
+}
  if(by.about){
   const h=document.querySelector("#gioi-thieu h2"),p=document.querySelector("#gioi-thieu p");
   if(h&&by.about.title)h.textContent=by.about.title;
