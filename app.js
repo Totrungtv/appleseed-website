@@ -15,10 +15,31 @@ if(by.hero){
     p.textContent = by.hero.content;
   }
 
-  if(img && by.hero.image_url){
-    img.src = by.hero.image_url;
-    img.style.display = "block";
-  }
+if (img && by.hero.image_url) {
+  const imageUrl = by.hero.image_url;
+
+  img.style.display = "block";
+
+  img.onerror = () => {
+    console.log("Ảnh lỗi:", imageUrl);
+
+    // Đổi render URL → object public URL
+    const fallbackUrl = imageUrl.replace(
+      "/storage/v1/render/image/public/",
+      "/storage/v1/object/public/"
+    );
+
+    if (fallbackUrl !== imageUrl) {
+      img.src = fallbackUrl + "?v=" + Date.now();
+    }
+  };
+
+  img.onload = () => {
+    console.log("Ảnh hero đã tải OK");
+  };
+
+  img.src = imageUrl + "?v=" + Date.now();
+}
 }
  if(by.about){
   const h=document.querySelector("#gioi-thieu h2"),p=document.querySelector("#gioi-thieu p");
