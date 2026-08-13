@@ -3,26 +3,125 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>AppleSeed — Sửa iPhone Trà Vinh</title>
   <meta name="description" content="AppleSeed — sửa iPhone, Face ID, main và linh kiện tại Trà Vinh.">
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* =========================
+       SẢN PHẨM
+    ========================= */
+    .products-section {
+      background: #f8fafc;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 25px;
+    }
+
+    .product-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 14px rgba(0,0,0,.05);
+      transition: transform .2s, box-shadow .2s;
+    }
+
+    .product-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0,0,0,.08);
+    }
+
+    .product-image {
+      width: 100%;
+      height: 230px;
+      object-fit: cover;
+      display: block;
+      background: #f1f5f9;
+    }
+
+    .product-info {
+      padding: 18px;
+    }
+
+    .product-category {
+      font-size: 13px;
+      color: #2563eb;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .product-name {
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+
+    .product-description {
+      color: #667085;
+      margin: 0 0 12px;
+      line-height: 1.5;
+    }
+
+    .product-price {
+      font-size: 20px;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .product-empty {
+      color: #667085;
+      margin-top: 15px;
+    }
+
+    @media (max-width: 900px) {
+      .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .products-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .product-image {
+        height: 240px;
+      }
+    }
+  </style>
 </head>
+
 <body>
+
 <header class="site-header">
   <div class="nav">
+
     <a class="brand" href="index.html" aria-label="AppleSeed">
       <img src="logo.png" alt="Apple Seed" class="brand-logo">
     </a>
+
     <nav>
       <a href="#dich-vu">Dịch vụ</a>
+      <a href="#san-pham">Sản phẩm</a>
       <a href="#gioi-thieu">Giới thiệu</a>
       <a href="#lien-he">Liên hệ</a>
     </nav>
+
   </div>
 </header>
 
+
 <main>
+
+<!-- =========================
+     HERO
+========================= -->
 <section class="hero">
   <div class="container">
 
@@ -32,9 +131,13 @@
       alt="AppleSeed"
     >
 
-    <div class="eyebrow">APPLESEED • TRÀ VINH</div>
+    <div class="eyebrow">
+      APPLESEED • TRÀ VINH
+    </div>
 
-    <h1>Apple Seed Trà Vinh</h1>
+    <h1>
+      Apple Seed Trà Vinh
+    </h1>
 
     <p>
       Sửa iPhone, Face ID, main và linh kiện.
@@ -48,120 +151,429 @@
   </div>
 </section>
 
+
+<!-- =========================
+     DỊCH VỤ
+========================= -->
 <section id="dich-vu" class="section">
+
   <div class="container">
+
     <h2>Dịch vụ</h2>
+
     <div class="grid">
-      <article class="card"><h3>📱 Sửa iPhone</h3><p>Kiểm tra và sửa chữa các lỗi phần cứng, nguồn, sạc, màn hình và linh kiện.</p></article>
-      <article class="card"><h3>🔧 Sửa main</h3><p>Chẩn đoán lỗi mainboard và xử lý các lỗi phần cứng theo tình trạng thực tế.</p></article>
-      <article class="card"><h3>🔐 Face ID</h3><p>Kiểm tra, chẩn đoán và sửa chữa lỗi Face ID trên iPhone.</p></article>
-      <article class="card"><h3>🧩 Linh kiện</h3><p>Tư vấn và thay thế linh kiện phù hợp, minh bạch tình trạng trước khi làm.</p></article>
+
+      <article class="card">
+        <h3>📱 Sửa iPhone</h3>
+        <p>
+          Kiểm tra và sửa chữa các lỗi phần cứng,
+          nguồn, sạc, màn hình và linh kiện.
+        </p>
+      </article>
+
+      <article class="card">
+        <h3>🔧 Sửa main</h3>
+        <p>
+          Chẩn đoán lỗi mainboard và xử lý các lỗi
+          phần cứng theo tình trạng thực tế.
+        </p>
+      </article>
+
+      <article class="card">
+        <h3>🔐 Face ID</h3>
+        <p>
+          Kiểm tra, chẩn đoán và sửa chữa lỗi
+          Face ID trên iPhone.
+        </p>
+      </article>
+
+      <article class="card">
+        <h3>🧩 Linh kiện</h3>
+        <p>
+          Tư vấn và thay thế linh kiện phù hợp,
+          minh bạch tình trạng trước khi làm.
+        </p>
+      </article>
+
     </div>
+
   </div>
+
 </section>
 
+
+<!-- =========================
+     SẢN PHẨM
+========================= -->
+<section id="san-pham" class="section products-section">
+
+  <div class="container">
+
+    <h2>Sản phẩm</h2>
+
+    <p>
+      iPhone, linh kiện và sản phẩm đang được AppleSeed cung cấp.
+    </p>
+
+    <div id="productsGrid" class="products-grid">
+      <p class="product-empty">
+        Đang tải sản phẩm...
+      </p>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================
+     GIỚI THIỆU
+========================= -->
 <section id="gioi-thieu" class="section light">
+
   <div class="container">
+
     <h2>AppleSeed</h2>
-    <p>Tập trung vào sửa chữa iPhone và kỹ thuật phần cứng, ưu tiên chẩn đoán rõ nguyên nhân và báo tình trạng trước khi sửa.</p>
+
+    <p>
+      Tập trung vào sửa chữa iPhone và kỹ thuật phần cứng,
+      ưu tiên chẩn đoán rõ nguyên nhân và báo tình trạng
+      trước khi sửa.
+    </p>
+
   </div>
+
 </section>
 
+
+<!-- =========================
+     LIÊN HỆ
+========================= -->
 <section id="lien-he" class="section">
+
   <div class="container">
+
     <h2>Liên hệ</h2>
+
     <p>AppleSeed — Trà Vinh</p>
-    <p>Email: <a href="mailto:0898888269tv@gmail.com">0898888269tv@gmail.com</a></p>
+
+    <p>
+      Email:
+      <a href="mailto:0898888269tv@gmail.com">
+        0898888269tv@gmail.com
+      </a>
+    </p>
+
   </div>
+
 </section>
+
 </main>
 
-<footer>© 2026 AppleSeed</footer>
- <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<footer>
+  © 2026 AppleSeed
+</footer>
+
+
+<!-- SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
+
 
 <script>
 (async function () {
-    const { data, error } = await window.supabaseClient
-        .from("site_content")
-        .select("section,title,content,image_url");
 
-    if (error) {
-        console.error("AppleSeed CMS:", error);
-        return;
+  try {
+
+    /* =====================================
+       1. KIỂM TRA SUPABASE
+    ===================================== */
+
+    if (!window.supabaseClient) {
+      console.error("AppleSeed: Supabase client chưa được tạo.");
+      return;
     }
+
+
+    /* =====================================
+       2. LOAD NỘI DUNG WEBSITE
+    ===================================== */
+
+    const {
+      data: siteData,
+      error: siteError
+    } = await window.supabaseClient
+      .from("site_content")
+      .select("section,title,content,image_url");
+
+
+    if (siteError) {
+      console.error(
+        "AppleSeed CMS:",
+        siteError
+      );
+    }
+
 
     const content = {};
-    data.forEach(item => {
-        content[item.section] = item;
+
+    (siteData || []).forEach(item => {
+      content[item.section] = item;
     });
 
-   // HERO
-if (content.hero) {
-    const hero = content.hero;
 
-    const heroTitle = document.querySelector(".hero h1");
-    const heroContent = document.querySelector(".hero p");
-    const heroImage = document.getElementById("heroImage");
+    /* =====================================
+       HERO
+    ===================================== */
 
-    if (heroTitle && hero.title) {
+    if (content.hero) {
+
+      const hero = content.hero;
+
+      const heroTitle =
+        document.querySelector(".hero h1");
+
+      const heroContent =
+        document.querySelector(".hero p");
+
+      const heroImage =
+        document.getElementById("heroImage");
+
+
+      if (heroTitle && hero.title) {
         heroTitle.textContent = hero.title;
-    }
+      }
 
-    if (heroContent && hero.content) {
+
+      if (heroContent && hero.content) {
         heroContent.textContent = hero.content;
+      }
+
+
+      if (heroImage && hero.image_url) {
+
+        heroImage.src =
+          hero.image_url +
+          "?v=" +
+          Date.now();
+
+        heroImage.style.display =
+          "block";
+
+      }
+
     }
 
-    if (heroImage && hero.image_url) {
-        console.log("AppleSeed HERO IMAGE URL:", hero.image_url);
 
-        heroImage.src = hero.image_url + "?v=" + Date.now();
-        heroImage.style.display = "block";
+    /* =====================================
+       GIỚI THIỆU
+    ===================================== */
 
-        heroImage.onload = function () {
-            console.log("✅ Ảnh HERO tải thành công");
-        };
-
-        heroImage.onerror = function () {
-            console.error("❌ Không tải được ảnh HERO:", heroImage.src);
-        };
-    }
-}
-
-    // GIỚI THIỆU
     if (content.about) {
-        const about = content.about;
 
-        const aboutTitle = document.querySelector("#gioi-thieu h2");
-        const aboutContent = document.querySelector("#gioi-thieu p");
+      const about =
+        content.about;
 
-        if (aboutTitle && about.title) {
-            aboutTitle.textContent = about.title;
-        }
+      const aboutTitle =
+        document.querySelector(
+          "#gioi-thieu h2"
+        );
 
-        if (aboutContent && about.content) {
-            aboutContent.textContent = about.content;
-        }
+      const aboutContent =
+        document.querySelector(
+          "#gioi-thieu p"
+        );
+
+
+      if (aboutTitle && about.title) {
+        aboutTitle.textContent =
+          about.title;
+      }
+
+
+      if (aboutContent && about.content) {
+        aboutContent.textContent =
+          about.content;
+      }
+
     }
 
-    // LIÊN HỆ
+
+    /* =====================================
+       LIÊN HỆ
+    ===================================== */
+
     if (content.contact) {
-        const contact = content.contact;
 
-        const contactTitle = document.querySelector("#lien-he h2");
-        const contactContent = document.querySelector("#lien-he p");
+      const contact =
+        content.contact;
 
-        if (contactTitle && contact.title) {
-            contactTitle.textContent = contact.title;
-        }
+      const contactTitle =
+        document.querySelector(
+          "#lien-he h2"
+        );
 
-        if (contactContent && contact.content) {
-            contactContent.textContent = contact.content;
-        }
+      const contactContent =
+        document.querySelector(
+          "#lien-he p"
+        );
+
+
+      if (contactTitle && contact.title) {
+        contactTitle.textContent =
+          contact.title;
+      }
+
+
+      if (contactContent && contact.content) {
+        contactContent.textContent =
+          contact.content;
+      }
+
     }
 
-    console.log("AppleSeed CMS: đã tải nội dung từ Supabase");
+
+    /* =====================================
+       3. LOAD SẢN PHẨM
+    ===================================== */
+
+    const productsGrid =
+      document.getElementById(
+        "productsGrid"
+      );
+
+
+    const {
+      data: products,
+      error: productsError
+    } = await window.supabaseClient
+      .from("products")
+      .select(
+        "id,name,category,price,description,image_url,is_active"
+      )
+      .eq("is_active", true)
+      .order("id", {
+        ascending: false
+      });
+
+
+    if (productsError) {
+
+      console.error(
+        "AppleSeed Products:",
+        productsError
+      );
+
+      productsGrid.innerHTML = `
+        <p class="product-empty">
+          Chưa thể tải sản phẩm.
+        </p>
+      `;
+
+      return;
+    }
+
+
+    /* =====================================
+       4. KHÔNG CÓ SẢN PHẨM
+    ===================================== */
+
+    if (!products || products.length === 0) {
+
+      productsGrid.innerHTML = `
+        <p class="product-empty">
+          Hiện chưa có sản phẩm đang bán.
+        </p>
+      `;
+
+      return;
+    }
+
+
+    /* =====================================
+       5. HIỂN THỊ SẢN PHẨM
+    ===================================== */
+
+    productsGrid.innerHTML =
+      products.map(product => {
+
+        const price =
+          Number(product.price || 0)
+            .toLocaleString("vi-VN");
+
+        const image =
+          product.image_url ||
+          "favicon.png";
+
+        return `
+
+          <article class="product-card">
+
+            <img
+              class="product-image"
+              src="${image}"
+              alt="${product.name || "Sản phẩm AppleSeed"}"
+              loading="lazy"
+            >
+
+            <div class="product-info">
+
+              ${
+                product.category
+                  ? `
+                    <div class="product-category">
+                      ${product.category}
+                    </div>
+                  `
+                  : ""
+              }
+
+              <h3 class="product-name">
+                ${product.name || ""}
+              </h3>
+
+              ${
+                product.description
+                  ? `
+                    <p class="product-description">
+                      ${product.description}
+                    </p>
+                  `
+                  : ""
+              }
+
+              <div class="product-price">
+                ${price}đ
+              </div>
+
+            </div>
+
+          </article>
+
+        `;
+
+      }).join("");
+
+
+    console.log(
+      "AppleSeed: đã tải",
+      products.length,
+      "sản phẩm."
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "AppleSeed website error:",
+      error
+    );
+
+  }
+
 })();
-</script> 
+</script>
+
 </body>
 </html>
