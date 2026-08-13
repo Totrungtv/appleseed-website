@@ -197,9 +197,12 @@ async function uploadProductImage(file) {
         throw error;
     }
 
-    const imageUrl =
-        `${supabaseClient.supabaseUrl}` +
-        `/storage/v1/render/image/public/site-images/${filePath}`;
+   const { data: publicData } =
+    supabaseClient.storage
+        .from("site-images")
+        .getPublicUrl(filePath);
+
+const imageUrl = publicData.publicUrl;
 
     return {
         url: imageUrl,
