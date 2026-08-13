@@ -804,13 +804,19 @@ aiInput.addEventListener("keydown", e => {
     sendAI();
   }
 });
-aiSend.onclick = sendAI;
+aiInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    sendAI();
+  }
+});
+ aiSend.onclick = sendAI;
 
 aiInput.addEventListener("keydown", e => {
   if (e.key === "Enter") {
     sendAI();
   }
 });
+
 </script>
 </body>
 </html>
