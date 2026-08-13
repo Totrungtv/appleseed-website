@@ -790,21 +790,6 @@ async function sendAI() {
 
     console.error("AppleSeed AI:", error);
 
-    addMessage(
-      data.answer || "AI chưa có câu trả lời.",
-      "bot"
-    );
-
-  } catch (error) {
-    thinking.remove();
-
-    addMessage(
-      "Xin lỗi, AppleSeed AI đang gặp lỗi. Vui lòng thử lại.",
-      "bot"
-    );
-
-    console.error("AppleSeed AI:", error);
-
   } finally {
     aiInput.disabled = false;
     aiSend.disabled = false;
@@ -812,6 +797,13 @@ async function sendAI() {
   }
 }
 
+aiSend.onclick = sendAI;
+
+aiInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    sendAI();
+  }
+});
 aiSend.onclick = sendAI;
 
 aiInput.addEventListener("keydown", e => {
