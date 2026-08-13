@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>AppleSeed — Quản lý sản phẩm</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+body{
+    background:#f5f7fb;
+}
+
+.products-wrap{
+    max-width:1200px;
+    margin:auto;
+    padding:35px 22px 70px;
+}
+
+.products-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+}
+
+.products-top h1{
+    margin:0;
+    font-size:30px;
+}
+
+.products-top p{
+    margin:5px 0 0;
+    color:#667085;
+}
+
+.btn2{
+    border:1px solid #d9dee8;
+    background:#fff;
+    color:#172033;
+    padding:10px 15px;
+    border-radius:9px;
+    font-weight:700;
+    cursor:pointer;
+    text-decoration:none;
+}
+
+.btn-primary{
+    border:0;
+    background:#2563eb;
+    color:#fff;
+}
+
+.btn-danger{
+    border:0;
+    background:#dc2626;
+    color:#fff;
+}
+
+.products-layout{
+    display:grid;
+    grid-template-columns:360px 1fr;
+    gap:20px;
+}
+
+.panel{
+    background:#fff;
+    border:1px solid #e5e7eb;
+    border-radius:15px;
+    padding:20px;
+}
+
+.field{
+    margin-bottom:17px;
+}
+
+.field label{
+    display:block;
+    font-weight:700;
+    margin-bottom:7px;
+}
+
+.field input,
+.field textarea,
+.field select{
+    width:100%;
+    box-sizing:border-box;
+    padding:12px;
+    border:1px solid #d9dee8;
+    border-radius:9px;
+    font:inherit;
+}
+
+.field textarea{
+    min-height:130px;
+    resize:vertical;
+}
+
+.image-box{
+    border:2px dashed #d9dee8;
+    border-radius:12px;
+    padding:15px;
+    text-align:center;
+}
+
+.image-box img{
+    max-width:100%;
+    max-height:220px;
+    border-radius:10px;
+    object-fit:cover;
+    margin-top:10px;
+}
+
+.form-actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.products-list{
+    display:grid;
+    gap:12px;
+}
+
+.product-card{
+    display:grid;
+    grid-template-columns:90px 1fr auto;
+    gap:15px;
+    align-items:center;
+    padding:13px;
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+}
+
+.product-card img{
+    width:90px;
+    height:90px;
+    object-fit:cover;
+    border-radius:10px;
+    background:#f2f4f7;
+}
+
+.product-info h3{
+    margin:0 0 5px;
+}
+
+.product-info p{
+    margin:3px 0;
+    color:#667085;
+}
+
+.price{
+    font-weight:800;
+    color:#2563eb;
+}
+
+.badge{
+    display:inline-block;
+    padding:4px 8px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:700;
+}
+
+.badge-on{
+    background:#ecfdf3;
+    color:#067647;
+}
+
+.badge-off{
+    background:#fef3f2;
+    color:#b42318;
+}
+
+.card-actions{
+    display:flex;
+    gap:7px;
+    flex-wrap:wrap;
+    justify-content:flex-end;
+}
+
+.status{
+    margin-top:12px;
+    min-height:22px;
+    color:#067647;
+    font-weight:700;
+}
+
+.error{
+    color:#b42318;
+}
+
+@media(max-width:850px){
+    .products-layout{
+        grid-template-columns:1fr;
+    }
+
+    .products-top{
+        align-items:flex-start;
+        flex-direction:column;
+        gap:15px;
+    }
+}
+
+@media(max-width:600px){
+    .product-card{
+        grid-template-columns:70px 1fr;
+    }
+
+    .product-card img{
+        width:70px;
+        height:70px;
+    }
+
+    .card-actions{
+        grid-column:1 / -1;
+        justify-content:flex-start;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="site-header">
+<div class="nav">
+
+<a class="brand" href="index.html">
+    <img src="logo.png" alt="Apple Seed" class="brand-logo">
+</a>
+
+<div style="display:flex;gap:10px;">
+    <a class="btn2" href="admin.html">CMS</a>
+    <a class="btn2" href="index.html">Xem website</a>
+    <button id="logoutBtn" class="btn2">Đăng xuất</button>
+</div>
+
+</div>
+</header>
+
+<main class="products-wrap">
+
+<div class="products-top">
+
+<div>
+    <h1>Quản lý sản phẩm</h1>
+    <p id="userbar">Đang kiểm tra tài khoản...</p>
+</div>
+
+<button id="newBtn" class="btn2 btn-primary">
+    + Thêm sản phẩm
+</button>
+
+</div>
+
+
+<div class="products-layout">
+
+<!-- FORM -->
+
+<section class="panel">
+
+<h2 id="formTitle">Thêm sản phẩm</h2>
+
+<div class="field">
+<label>Tên sản phẩm / dịch vụ</label>
+<input id="name" type="text" placeholder="Ví dụ: iPhone 13 Pro Max">
+</div>
+
+<div class="field">
+<label>Danh mục</label>
+<select id="category">
+<option value="">Chọn danh mục</option>
+<option value="iPhone">iPhone</option>
+<option value="iPad">iPad</option>
+<option value="Phụ kiện">Phụ kiện</option>
+<option value="Sửa chữa">Sửa chữa</option>
+<option value="Dịch vụ">Dịch vụ</option>
+<option value="Khác">Khác</option>
+</select>
+</div>
+
+<div class="field">
+<label>Giá</label>
+<input id="price" type="number" min="0" placeholder="12990000">
+</div>
+
+<div class="field">
+<label>Mô tả</label>
+<textarea id="description"
+placeholder="Mô tả sản phẩm / dịch vụ..."></textarea>
+</div>
+
+<div class="field">
+
+<label>Ảnh sản phẩm</label>
+
+<div class="image-box">
+
+<input id="imageFile" type="file" accept="image/*">
+
+<div id="imagePreview"></div>
+
+</div>
+
+</div>
+
+<div class="field">
+
+<label>
+<input id="isActive" type="checkbox" checked>
+ Đang bán
+</label>
+
+</div>
+
+<div class="form-actions">
+
+<button id="saveBtn" class="btn2 btn-primary">
+Lưu sản phẩm
+</button>
+
+<button id="cancelBtn" class="btn2">
+Hủy
+</button>
+
+</div>
+
+<div id="status" class="status"></div>
+
+</section>
+
+
+<!-- DANH SÁCH -->
+
+<section class="panel">
+
+<h2>Danh sách sản phẩm</h2>
+
+<div id="productsList" class="products-list">
+Đang tải...
+</div>
+
+</section>
+
+</div>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="products-admin.js"></script>
+
+</body>
+</html>
