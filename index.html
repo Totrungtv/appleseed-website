@@ -574,6 +574,193 @@
 
 })();
 </script>
+<!-- APPLESEED AI CHAT -->
+<div id="ai-chat">
+  <button id="ai-toggle">🤖</button>
 
+  <div id="ai-box">
+    <div class="ai-header">
+      <strong>AppleSeed AI</strong>
+      <button id="ai-close">×</button>
+    </div>
+
+    <div id="ai-messages">
+      <div class="ai-message bot">
+        Xin chào 👋 Tôi là trợ lý AppleSeed.
+        Bạn cần tư vấn sửa iPhone gì?
+      </div>
+    </div>
+
+    <div class="ai-input">
+      <input
+        id="ai-input"
+        type="text"
+        placeholder="Nhập câu hỏi..."
+      >
+      <button id="ai-send">Gửi</button>
+    </div>
+  </div>
+</div>
+
+<style>
+#ai-toggle {
+  position: fixed;
+  right: 25px;
+  bottom: 25px;
+  width: 60px;
+  height: 60px;
+  border: 0;
+  border-radius: 50%;
+  background: #2563eb;
+  color: white;
+  font-size: 27px;
+  cursor: pointer;
+  box-shadow: 0 8px 25px rgba(0,0,0,.2);
+  z-index: 9999;
+}
+
+#ai-box {
+  position: fixed;
+  right: 25px;
+  bottom: 95px;
+  width: 360px;
+  height: 500px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.2);
+  overflow: hidden;
+  display: none;
+  flex-direction: column;
+  z-index: 9999;
+}
+
+.ai-header {
+  background: #2563eb;
+  color: white;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ai-header button {
+  background: none;
+  border: 0;
+  color: white;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+#ai-messages {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+  background: #f7f8fb;
+}
+
+.ai-message {
+  padding: 10px 13px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  max-width: 85%;
+  font-size: 14px;
+}
+
+.ai-message.bot {
+  background: white;
+  border: 1px solid #e5e7eb;
+}
+
+.ai-message.user {
+  background: #2563eb;
+  color: white;
+  margin-left: auto;
+}
+
+.ai-input {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid #eee;
+}
+
+#ai-input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+}
+
+#ai-send {
+  border: 0;
+  background: #2563eb;
+  color: white;
+  padding: 0 15px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  #ai-box {
+    right: 10px;
+    bottom: 85px;
+    width: calc(100% - 20px);
+    height: 70vh;
+  }
+
+  #ai-toggle {
+    right: 15px;
+    bottom: 15px;
+  }
+}
+</style>
+
+<script>
+const aiToggle = document.getElementById("ai-toggle");
+const aiBox = document.getElementById("ai-box");
+const aiClose = document.getElementById("ai-close");
+const aiInput = document.getElementById("ai-input");
+const aiSend = document.getElementById("ai-send");
+const aiMessages = document.getElementById("ai-messages");
+
+aiToggle.onclick = () => {
+  aiBox.style.display = "flex";
+};
+
+aiClose.onclick = () => {
+  aiBox.style.display = "none";
+};
+
+function addMessage(text, type) {
+  const div = document.createElement("div");
+  div.className = "ai-message " + type;
+  div.textContent = text;
+
+  aiMessages.appendChild(div);
+  aiMessages.scrollTop = aiMessages.scrollHeight;
+}
+
+async function sendAI() {
+  const text = aiInput.value.trim();
+
+  if (!text) return;
+
+  addMessage(text, "user");
+  aiInput.value = "";
+
+  addMessage("Đang suy nghĩ...", "bot");
+
+  // BƯỚC SAU SẼ KẾT NỐI AI THẬT Ở ĐÂY
+}
+
+aiSend.onclick = sendAI;
+
+aiInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    sendAI();
+  }
+});
+</script>
 </body>
 </html>
