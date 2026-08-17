@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://totrungtv.github.io/appleseed-website/sitemap.xml
+Sitemap: https://appleseedtravinh.com/sitemap.xml
