@@ -82,11 +82,11 @@ label{font-weight:700;font-size:14px}input,textarea,select{width:100%;box-sizing
         <div id="productEditor"></div>
       </div>
       <div class="editor-tools">
-        <button type="button" class="tool-btn" id="productInsertImageBtn">🖼️ Chèn ảnh</button>
-        <button type="button" class="tool-btn" id="productInsertIconBtn">😊 Chèn icon</button>
-        <button type="button" class="tool-btn" id="productInsertLinkBtn">🔗 Chèn link</button>
-        <button type="button" class="tool-btn" id="productViewHtmlBtn">&lt;/&gt; HTML</button>
-        <input id="productImageFileInput" type="file" accept="image/*" class="hidden">
+        <button type="button" class="tool-btn" id="productInsertImageBtn" onclick="productChooseImage()">🖼️ Chèn ảnh</button>
+        <button type="button" class="tool-btn" id="productInsertIconBtn" onclick="productToggleIcons(event)">😊 Chèn icon</button>
+        <button type="button" class="tool-btn" id="productInsertLinkBtn" onclick="productInsertLink()">🔗 Chèn link</button>
+        <button type="button" class="tool-btn" id="productViewHtmlBtn" onclick="productEditHtml()">&lt;/&gt; HTML</button>
+        <input id="productImageFileInput" type="file" onchange="productUploadImage(event)" accept="image/*" class="hidden">
       </div>
       <div id="productIconPicker" class="icon-pop hidden"></div>
       <div id="productUploadStatus" class="upload-status"></div>
@@ -119,12 +119,12 @@ label{font-weight:700;font-size:14px}input,textarea,select{width:100%;box-sizing
         <div id="pageEditor"></div>
       </div>
       <div class="editor-tools">
-        <button type="button" class="tool-btn" id="insertImageBtn">🖼️ Chèn ảnh</button>
-        <button type="button" class="tool-btn" id="insertIconBtn">😊 Chèn icon</button>
-        <button type="button" class="tool-btn" id="insertLinkBtn">🔗 Chèn link</button>
-        <button type="button" class="tool-btn" id="insertVideoBtn">🎬 Chèn video</button>
-        <button type="button" class="tool-btn" id="viewHtmlBtn">&lt;/&gt; Xem HTML</button>
-        <input id="imageFileInput" type="file" accept="image/*" class="hidden">
+        <button type="button" class="tool-btn" id="insertImageBtn" onclick="pageChooseImage()">🖼️ Chèn ảnh</button>
+        <button type="button" class="tool-btn" id="insertIconBtn" onclick="pageToggleIcons(event)">😊 Chèn icon</button>
+        <button type="button" class="tool-btn" id="insertLinkBtn" onclick="pageInsertLink()">🔗 Chèn link</button>
+        <button type="button" class="tool-btn" id="insertVideoBtn" onclick="pageInsertVideo()">🎬 Chèn video</button>
+        <button type="button" class="tool-btn" id="viewHtmlBtn" onclick="pageEditHtml()">&lt;/&gt; Xem HTML</button>
+        <input id="imageFileInput" type="file" onchange="pageUploadImage(event)" accept="image/*" class="hidden">
       </div>
       <div id="iconPicker" class="icon-pop hidden"></div>
       <div id="uploadStatus" class="upload-status"></div>
@@ -220,71 +220,6 @@ iconList.forEach(icon => {
   productIconPicker.appendChild(b);
 });
 
-$("productInsertIconBtn").addEventListener("click", function(e){
-  e.preventDefault();
-  e.stopPropagation();
-  const box=$("productIconPicker");
-  if(box) box.classList.toggle("hidden");
-});
-
-$("productInsertLinkBtn").addEventListener("click", function(e){
-  e.preventDefault();
-  const url=window.prompt("Nhập URL sản phẩm:");
-  if(!url) return;
-  const range=productQuill.getSelection(true) || {index:productQuill.getLength(),length:0};
-  if(range.length) productQuill.formatText(range.index,range.length,"link",url);
-  else productQuill.insertText(range.index,url,"link",url);
-  productQuill.focus();
-});
-
-$("productViewHtmlBtn").addEventListener("click", function(e){
-  e.preventDefault();
-  const edited=window.prompt("HTML mô tả sản phẩm:",getProductEditorHtml());
-  if(edited !== null) setProductEditorHtml(edited);
-});
-
-$("productInsertImageBtn").addEventListener("click", function(e){
-  e.preventDefault();
-  e.stopPropagation();
-  const input=$("productImageFileInput");
-  if(input){
-    input.value="";
-    if(typeof input.showPicker === "function") input.showPicker();
-    else input.click();
-  }
-});
-
-$("productImageFileInput").addEventListener("change", async function(){
-  const file=this.files && this.files[0];
-  if(!file) return;
-  const statusBox=$("productUploadStatus");
-  if(file.size > 8*1024*1024){
-    statusBox.textContent="Ảnh tối đa 8MB.";
-    this.value="";
-    return;
-  }
-  if(!sb || !sb.storage){
-    statusBox.textContent="Chưa kết nối Supabase Storage.";
-    return;
-  }
-  statusBox.textContent="Đang tải ảnh lên...";
-  try{
-    const safe=file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,"-");
-    const storagePath=`products/${Date.now()}-${Math.random().toString(36).slice(2,8)}-${safe}`;
-    const result=await sb.storage.from("site-images").upload(storagePath,file,{cacheControl:"3600",upsert:false});
-    if(result.error) throw result.error;
-    const publicUrl=sb.storage.from("site-images").getPublicUrl(storagePath).data.publicUrl;
-    const range=productQuill.getSelection(true) || {index:productQuill.getLength(),length:0};
-    productQuill.insertEmbed(range.index,"image",publicUrl,"user");
-    productQuill.setSelection(range.index+1,0);
-    productQuill.focus();
-    statusBox.textContent="✅ Đã chèn ảnh.";
-  }catch(err){
-    statusBox.textContent="❌ Upload lỗi: "+(err?.message || err);
-  }finally{
-    this.value="";
-  }
-});
 
 
 
@@ -295,69 +230,100 @@ function getEditorHtml(){
   return quill.root.innerHTML;
 }
 
-$("insertIconBtn").addEventListener("click", function(e){
-  e.preventDefault(); e.stopPropagation();
-  $("iconPicker").classList.toggle("hidden");
-});
-$("insertLinkBtn").addEventListener("click", function(e){
-  e.preventDefault();
-  const url=window.prompt("Nhập URL:");
-  if(!url) return;
-  const range=quill.getSelection(true) || {index:quill.getLength(),length:0};
-  if(range.length) quill.formatText(range.index,range.length,"link",url);
-  else quill.insertText(range.index,url,"link",url);
-  quill.focus();
-});
-$("insertVideoBtn").addEventListener("click", function(e){
-  e.preventDefault();
-  const url=window.prompt("Dán link video YouTube/Vimeo:");
-  if(!url) return;
-  const range=quill.getSelection(true) || {index:quill.getLength(),length:0};
-  quill.insertEmbed(range.index,"video",url,"user");
-  quill.setSelection(range.index+1,0);
-});
-$("viewHtmlBtn").addEventListener("click", function(e){
-  e.preventDefault();
-  const edited=window.prompt("HTML của nội dung trang:",getEditorHtml());
-  if(edited !== null) setEditorHtml(edited);
-});
-$("insertImageBtn").addEventListener("click", function(e){
-  e.preventDefault(); e.stopPropagation();
-  const input=$("imageFileInput");
-  if(input){
-    input.value="";
-    if(typeof input.showPicker === "function") input.showPicker();
-    else input.click();
-  }
-});
-$("imageFileInput").addEventListener("change", async function(){
-  const file=this.files && this.files[0];
+
+
+
+async function productUploadImage(event){
+  const file=event.target.files && event.target.files[0];
   if(!file) return;
-  const statusBox=$("uploadStatus");
-  if(file.size > 8*1024*1024){ statusBox.textContent="Ảnh tối đa 8MB."; this.value=""; return; }
-  if(!sb || !sb.storage){ statusBox.textContent="Chưa kết nối Supabase Storage."; return; }
+  const statusBox=$("productUploadStatus");
+  if(file.size>8*1024*1024){statusBox.textContent="Ảnh tối đa 8MB.";event.target.value="";return;}
+  if(!sb || !sb.storage){statusBox.textContent="Chưa kết nối Supabase Storage.";return;}
   statusBox.textContent="Đang tải ảnh lên...";
   try{
     const safe=file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,"-");
-    const storagePath=`pages/${Date.now()}-${Math.random().toString(36).slice(2,8)}-${safe}`;
-    const result=await sb.storage.from("site-images").upload(storagePath,file,{cacheControl:"3600",upsert:false});
-    if(result.error) throw result.error;
-    const publicUrl=sb.storage.from("site-images").getPublicUrl(storagePath).data.publicUrl;
-    const range=quill.getSelection(true) || {index:quill.getLength(),length:0};
-    quill.insertEmbed(range.index,"image",publicUrl,"user");
-    quill.setSelection(range.index+1,0);
-    quill.focus();
+    const path=`products/${Date.now()}-${Math.random().toString(36).slice(2,8)}-${safe}`;
+    const r=await sb.storage.from("site-images").upload(path,file,{cacheControl:"3600",upsert:false});
+    if(r.error) throw r.error;
+    const url=sb.storage.from("site-images").getPublicUrl(path).data.publicUrl;
+    const range=productQuill.getSelection(true)||{index:productQuill.getLength(),length:0};
+    productQuill.insertEmbed(range.index,"image",url,"user");
+    productQuill.setSelection(range.index+1,0);
     statusBox.textContent="✅ Đã chèn ảnh.";
-  }catch(err){
-    statusBox.textContent="❌ Upload lỗi: "+(err?.message || err);
-  }finally{
-    this.value="";
-  }
-});
-document.addEventListener("click", function(e){
-  if(!$("iconPicker").contains(e.target) && e.target!==$("insertIconBtn")) $("iconPicker").classList.add("hidden");
-  if(!$("productIconPicker").contains(e.target) && e.target!==$("productInsertIconBtn")) $("productIconPicker").classList.add("hidden");
-});
+  }catch(err){statusBox.textContent="❌ Upload lỗi: "+(err?.message||err);}
+  event.target.value="";
+}
+async function pageUploadImage(event){
+  const file=event.target.files && event.target.files[0];
+  if(!file) return;
+  const statusBox=$("uploadStatus");
+  if(file.size>8*1024*1024){statusBox.textContent="Ảnh tối đa 8MB.";event.target.value="";return;}
+  if(!sb || !sb.storage){statusBox.textContent="Chưa kết nối Supabase Storage.";return;}
+  statusBox.textContent="Đang tải ảnh lên...";
+  try{
+    const safe=file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,"-");
+    const path=`pages/${Date.now()}-${Math.random().toString(36).slice(2,8)}-${safe}`;
+    const r=await sb.storage.from("site-images").upload(path,file,{cacheControl:"3600",upsert:false});
+    if(r.error) throw r.error;
+    const url=sb.storage.from("site-images").getPublicUrl(path).data.publicUrl;
+    const range=quill.getSelection(true)||{index:quill.getLength(),length:0};
+    quill.insertEmbed(range.index,"image",url,"user");
+    quill.setSelection(range.index+1,0);
+    statusBox.textContent="✅ Đã chèn ảnh.";
+  }catch(err){statusBox.textContent="❌ Upload lỗi: "+(err?.message||err);}
+  event.target.value="";
+}
+
+function productToggleIcons(e){
+  if(e) e.preventDefault();
+  const box=$("productIconPicker");
+  if(box) box.classList.toggle("hidden");
+}
+function pageToggleIcons(e){
+  if(e) e.preventDefault();
+  const box=$("iconPicker");
+  if(box) box.classList.toggle("hidden");
+}
+function productChooseImage(){
+  const input=$("productImageFileInput");
+  if(input) input.click();
+}
+function pageChooseImage(){
+  const input=$("imageFileInput");
+  if(input) input.click();
+}
+function productInsertLink(){
+  const url=window.prompt("Nhập URL sản phẩm:");
+  if(!url) return;
+  const range=productQuill.getSelection(true)||{index:productQuill.getLength(),length:0};
+  if(range.length) productQuill.formatText(range.index,range.length,"link",url);
+  else productQuill.insertText(range.index,url,"link",url);
+  productQuill.focus();
+}
+function pageInsertLink(){
+  const url=window.prompt("Nhập URL:");
+  if(!url) return;
+  const range=quill.getSelection(true)||{index:quill.getLength(),length:0};
+  if(range.length) quill.formatText(range.index,range.length,"link",url);
+  else quill.insertText(range.index,url,"link",url);
+  quill.focus();
+}
+function productEditHtml(){
+  const edited=window.prompt("HTML mô tả sản phẩm:",getProductEditorHtml());
+  if(edited!==null) setProductEditorHtml(edited);
+}
+function pageEditHtml(){
+  const edited=window.prompt("HTML của nội dung trang:",getEditorHtml());
+  if(edited!==null) setEditorHtml(edited);
+}
+function pageInsertVideo(){
+  const url=window.prompt("Dán link video YouTube/Vimeo:");
+  if(!url) return;
+  const range=quill.getSelection(true)||{index:quill.getLength(),length:0};
+  quill.insertEmbed(range.index,"video",url,"user");
+  quill.setSelection(range.index+1,0);
+  quill.focus();
+}
 
 const show = (el, on=true) => el.classList.toggle("hidden", !on);
 
