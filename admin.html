@@ -72,7 +72,19 @@ label{font-weight:700;font-size:14px}input,textarea,select{width:100%;box-sizing
         <label>Giá (VNĐ)<input id="productPrice" type="number" min="0" value="0"></label>
         <label>Link ảnh<input id="productImage" placeholder="https://..."></label>
       </div>
-      <label>Mô tả<textarea id="productDescription"></textarea></label>
+      <label>Mô tả sản phẩm</label>
+      <div class="editor-wrap">
+        <div id="productEditor"></div>
+      </div>
+      <div class="editor-tools">
+        <button type="button" class="tool-btn" id="productInsertImageBtn">🖼️ Chèn ảnh</button>
+        <button type="button" class="tool-btn" id="productInsertIconBtn">😊 Chèn icon</button>
+        <button type="button" class="tool-btn" id="productInsertLinkBtn">🔗 Chèn link</button>
+        <button type="button" class="tool-btn" id="productViewHtmlBtn">&lt;/&gt; HTML</button>
+        <input id="productImageFileInput" type="file" accept="image/*" class="hidden">
+      </div>
+      <div id="productIconPicker" class="icon-pop hidden"></div>
+      <div id="productUploadStatus" class="upload-status"></div>
       <label>Trạng thái
         <select id="productActive"><option value="true">Đang bán</option><option value="false">Ẩn</option></select>
       </label>
@@ -148,6 +160,77 @@ const quill = new Quill("#pageEditor", {
   }
 });
 
+const productQuill = new Quill("#productEditor", {
+  theme: "snow",
+  placeholder: "Mô tả sản phẩm: tình trạng, thông số, bảo hành, phụ kiện...",
+  modules: {
+    toolbar: [
+      [{header:[2,3,false]}],
+      ["bold","italic","underline","strike"],
+      [{color:[]},{background:[]}],
+      [{list:"ordered"},{list:"bullet"}],
+      [{align:[]}],
+      ["link","image"],
+      ["clean"]
+    ]
+  }
+});
+
+function setProductEditorHtml(html=""){ productQuill.root.innerHTML = html || ""; }
+function getProductEditorHtml(){ return productQuill.root.innerHTML; }
+
+const productIconPicker = $("productIconPicker");
+iconList.forEach(icon => {
+  const b=document.createElement("button");
+  b.type="button"; b.textContent=icon; b.title="Chèn "+icon;
+  b.onclick=()=>{
+    const range=productQuill.getSelection(true) || {index:productQuill.getLength(),length:0};
+    productQuill.insertText(range.index, icon);
+    productQuill.setSelection(range.index+icon.length, 0);
+    productIconPicker.classList.add("hidden");
+  };
+  productIconPicker.appendChild(b);
+});
+
+$("productInsertIconBtn").onclick = e => {
+  e.stopPropagation();
+  productIconPicker.classList.toggle("hidden");
+};
+
+$("productInsertLinkBtn").onclick = ()=>{
+  const url=prompt("Nhập URL sản phẩm:");
+  if(!url) return;
+  const range=productQuill.getSelection(true) || {index:productQuill.getLength(),length:0};
+  if(range.length) productQuill.formatText(range.index,range.length,"link",url);
+  else productQuill.insertText(range.index,url,"link",url);
+};
+
+$("productViewHtmlBtn").onclick = ()=>{
+  const current=getProductEditorHtml();
+  const edited=prompt("HTML mô tả sản phẩm:", current);
+  if(edited !== null) setProductEditorHtml(edited);
+};
+
+$("productInsertImageBtn").onclick = ()=> $("productImageFileInput").click();
+
+$("productImageFileInput").onchange = async ()=>{
+  const file=$("productImageFileInput").files[0];
+  if(!file) return;
+  if(file.size > 8*1024*1024){ alert("Ảnh tối đa 8MB."); return; }
+  $("productUploadStatus").textContent="Đang tải ảnh lên...";
+  const safe=file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,"-");
+  const storagePath=`products/${Date.now()}-${Math.random().toString(36).slice(2,8)}-${safe}`;
+  const {error}=await sb.storage.from("site-images").upload(storagePath,file,{cacheControl:"3600",upsert:false});
+  if(error){ $("productUploadStatus").textContent="Upload lỗi: "+error.message; return; }
+  const {data}=sb.storage.from("site-images").getPublicUrl(storagePath);
+  const range=productQuill.getSelection(true) || {index:productQuill.getLength(),length:0};
+  productQuill.insertEmbed(range.index,"image",data.publicUrl,"user");
+  productQuill.setSelection(range.index+1,0);
+  $("productUploadStatus").textContent="Đã chèn ảnh.";
+  $("productImageFileInput").value="";
+};
+
+
 const iconList = [
 "😀","😃","😄","😁","😆","😅","😂","🤣","😊","😍","🥰","😘","😎","🤩","🤔",
 "👍","👎","👏","🙌","🙏","💪","🔥","⭐","✨","❤️","💯","🎉","🚀","📱","💻","🛠️",
@@ -181,6 +264,7 @@ $("insertIconBtn").onclick = (e) => {
 };
 document.addEventListener("click", e => {
   if(!iconPicker.contains(e.target) && e.target !== $("insertIconBtn")) iconPicker.classList.add("hidden");
+  if(!productIconPicker.contains(e.target) && e.target !== $("productInsertIconBtn")) productIconPicker.classList.add("hidden");
 });
 
 $("insertLinkBtn").onclick = ()=>{
@@ -271,17 +355,17 @@ async function loadProducts(){
       </div>
     </article>`).join("") || "<p>Chưa có sản phẩm.</p>";
 }
-$("addProductBtn").onclick=()=>{ $("productForm").reset(); $("productId").value=""; $("productActive").value="true"; show($("productForm")); };
+$("addProductBtn").onclick=()=>{ $("productForm").reset(); $("productId").value=""; $("productActive").value="true"; setProductEditorHtml(""); show($("productForm")); };
 $("cancelProduct").onclick=()=>show($("productForm"),false);
 window.editProduct=(p)=>{
   $("productId").value=p.id;$("productName").value=p.name||"";$("productCategory").value=p.category||"";
   $("productPrice").value=p.price||0;$("productImage").value=p.image_url||"";
-  $("productDescription").value=p.description||"";$("productActive").value=String(p.is_active);
+  setProductEditorHtml(p.description||"");$("productActive").value=String(p.is_active);
   show($("productForm"));
 };
 $("productForm").onsubmit=async e=>{
   e.preventDefault();
-  const payload={name:$("productName").value.trim(),category:$("productCategory").value.trim(),price:Number($("productPrice").value||0),image_url:$("productImage").value.trim(),description:$("productDescription").value.trim(),is_active:$("productActive").value==="true"};
+  const payload={name:$("productName").value.trim(),category:$("productCategory").value.trim(),price:Number($("productPrice").value||0),image_url:$("productImage").value.trim(),description:getProductEditorHtml(),is_active:$("productActive").value==="true"};
   let res;
   if($("productId").value) res=await sb.from("products").update(payload).eq("id",Number($("productId").value));
   else res=await sb.from("products").insert(payload);
