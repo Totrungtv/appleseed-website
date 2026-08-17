@@ -29,7 +29,7 @@ label{font-weight:700;font-size:14px}input,textarea,select{width:100%;box-sizing
 .hidden{display:none}.status{padding:11px 13px;border-radius:10px;margin-bottom:16px;background:#eff8ff;color:#175cd3}.status.error{background:#fef3f2;color:#b42318}
 .login{max-width:460px;margin:80px auto;padding:22px}.login h1{margin-top:0}
 .small{font-size:13px;color:var(--muted)}
-.icon-pop{position:absolute;z-index:9999;background:#fff;border:1px solid #d0d5dd;border-radius:12px;padding:10px;box-shadow:0 12px 30px rgba(0,0,0,.16);display:grid;grid-template-columns:repeat(8,36px);gap:4px;max-width:330px}.icon-pop.hidden{display:none}
+.icon-pop{position:absolute;z-index:9999;background:#fff;border:1px solid #d0d5dd;border-radius:12px;padding:10px;box-shadow:0 12px 30px rgba(0,0,0,.16);display:grid;grid-template-columns:repeat(8,36px);gap:4px;max-width:330px}.icon-pop.hidden{display:none !important;visibility:hidden !important}
 .icon-pop button{border:0;background:#fff;border-radius:7px;font-size:21px;padding:6px;cursor:pointer}
 .icon-pop button:hover{background:#f2f4f7}
 .upload-status{font-size:13px;color:#475467;margin-top:8px}
@@ -88,7 +88,7 @@ label{font-weight:700;font-size:14px}input,textarea,select{width:100%;box-sizing
         <button type="button" class="tool-btn" id="productViewHtmlBtn" onclick="productEditHtml()">&lt;/&gt; HTML</button>
         <input id="productImageFileInput" type="file" onchange="productUploadImage(event)" accept="image/*" class="hidden">
       </div>
-      <div id="productIconPicker" class="icon-pop hidden"></div>
+      <div id="productIconPicker" class="icon-pop hidden" hidden></div>
       <div id="productUploadStatus" class="upload-status"></div>
       <label>Trạng thái
         <select id="productActive"><option value="true">Đang bán</option><option value="false">Ẩn</option></select>
@@ -126,7 +126,7 @@ label{font-weight:700;font-size:14px}input,textarea,select{width:100%;box-sizing
         <button type="button" class="tool-btn" id="viewHtmlBtn" onclick="pageEditHtml()">&lt;/&gt; Xem HTML</button>
         <input id="imageFileInput" type="file" onchange="pageUploadImage(event)" accept="image/*" class="hidden">
       </div>
-      <div id="iconPicker" class="icon-pop hidden"></div>
+      <div id="iconPicker" class="icon-pop hidden" hidden></div>
       <div id="uploadStatus" class="upload-status"></div>
       <label>Trạng thái
         <select id="pageActive"><option value="true">Đang xuất bản</option><option value="false">Ẩn</option></select>
@@ -277,12 +277,18 @@ async function pageUploadImage(event){
 function productToggleIcons(e){
   if(e) e.preventDefault();
   const box=$("productIconPicker");
-  if(box) box.classList.toggle("hidden");
+  if(!box) return;
+  const willShow=box.hidden;
+  box.hidden=!willShow;
+  box.classList.toggle("hidden",!willShow);
 }
 function pageToggleIcons(e){
   if(e) e.preventDefault();
   const box=$("iconPicker");
-  if(box) box.classList.toggle("hidden");
+  if(!box) return;
+  const willShow=box.hidden;
+  box.hidden=!willShow;
+  box.classList.toggle("hidden",!willShow);
 }
 function productChooseImage(){
   const input=$("productImageFileInput");
