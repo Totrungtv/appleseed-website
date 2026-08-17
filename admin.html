@@ -160,38 +160,6 @@ const quill = new Quill("#pageEditor", {
   }
 });
 
-const productQuill = new Quill("#productEditor", {
-  theme: "snow",
-  placeholder: "Mô tả sản phẩm: tình trạng, thông số, bảo hành, phụ kiện...",
-  modules: {
-    toolbar: [
-      [{header:[2,3,false]}],
-      ["bold","italic","underline","strike"],
-      [{color:[]},{background:[]}],
-      [{list:"ordered"},{list:"bullet"}],
-      [{align:[]}],
-      ["link","image"],
-      ["clean"]
-    ]
-  }
-});
-
-function setProductEditorHtml(html=""){ productQuill.root.innerHTML = html || ""; }
-function getProductEditorHtml(){ return productQuill.root.innerHTML; }
-
-const productIconPicker = $("productIconPicker");
-iconList.forEach(icon => {
-  const b=document.createElement("button");
-  b.type="button"; b.textContent=icon; b.title="Chèn "+icon;
-  b.onclick=()=>{
-    const range=productQuill.getSelection(true) || {index:productQuill.getLength(),length:0};
-    productQuill.insertText(range.index, icon);
-    productQuill.setSelection(range.index+icon.length, 0);
-    productIconPicker.classList.add("hidden");
-  };
-  productIconPicker.appendChild(b);
-});
-
 $("productInsertIconBtn").onclick = e => {
   e.stopPropagation();
   productIconPicker.classList.toggle("hidden");
@@ -250,6 +218,40 @@ iconList.forEach(icon => {
   };
   iconPicker.appendChild(b);
 });
+
+
+const productQuill = new Quill("#productEditor", {
+  theme: "snow",
+  placeholder: "Mô tả sản phẩm: tình trạng, thông số, bảo hành, phụ kiện...",
+  modules: {
+    toolbar: [
+      [{header:[2,3,false]}],
+      ["bold","italic","underline","strike"],
+      [{color:[]},{background:[]}],
+      [{list:"ordered"},{list:"bullet"}],
+      [{align:[]}],
+      ["link","image"],
+      ["clean"]
+    ]
+  }
+});
+
+function setProductEditorHtml(html=""){ productQuill.root.innerHTML = html || ""; }
+function getProductEditorHtml(){ return productQuill.root.innerHTML; }
+
+const productIconPicker = $("productIconPicker");
+iconList.forEach(icon => {
+  const b=document.createElement("button");
+  b.type="button"; b.textContent=icon; b.title="Chèn "+icon;
+  b.onclick=()=>{
+    const range=productQuill.getSelection(true) || {index:productQuill.getLength(),length:0};
+    productQuill.insertText(range.index, icon);
+    productQuill.setSelection(range.index+icon.length, 0);
+    productIconPicker.classList.add("hidden");
+  };
+  productIconPicker.appendChild(b);
+});
+
 
 function setEditorHtml(html=""){
   quill.root.innerHTML = html || "";
@@ -332,9 +334,20 @@ async function checkSession(){
   if(session){ $("userEmail").textContent=session.user.email||""; show($("loginView"),false); show($("app"),true); await refreshAll(); }
 }
 $("loginBtn").onclick=async()=>{
-  const {error}=await sb.auth.signInWithPassword({email:$("loginEmail").value.trim(),password:$("loginPassword").value});
-  if(error){$("loginStatus").textContent=error.message; return;}
-  await checkSession();
+  const btn=$("loginBtn"), msg=$("loginStatus");
+  btn.disabled=true; btn.textContent="Đang đăng nhập..."; msg.textContent="";
+  try{
+    if(!sb) throw new Error("Không kết nối được Supabase. Kiểm tra supabase-config.js.");
+    const email=$("loginEmail").value.trim(), password=$("loginPassword").value;
+    if(!email || !password) throw new Error("Vui lòng nhập email và mật khẩu.");
+    const {error}=await sb.auth.signInWithPassword({email,password});
+    if(error) throw error;
+    await checkSession();
+  }catch(err){
+    msg.textContent="Lỗi đăng nhập: "+(err?.message || String(err));
+  }finally{
+    btn.disabled=false; btn.textContent="Đăng nhập";
+  }
 };
 $("logoutBtn").onclick=async()=>{await sb.auth.signOut();location.reload();};
 
