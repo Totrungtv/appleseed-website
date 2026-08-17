@@ -46,7 +46,7 @@
  document.getElementById("description").content=data.description||data.title;
  document.getElementById("canonical").href=location.href;
  document.getElementById("title").textContent=data.title;
- document.getElementById("body").textContent=data.content||"";
+ document.getElementById("body").innerHTML=data.content||"";
  state.remove();article.classList.remove("hidden");
 })();
 </script>
