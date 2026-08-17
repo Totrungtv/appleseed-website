@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Apple Seed Trà Vinh</title>
+<meta id="description" name="description" content="Apple Seed Trà Vinh">
+<meta name="robots" content="index, follow">
+<link id="canonical" rel="canonical" href="https://appleseedtravinh.com/page.html">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="stylesheet" href="style.css">
+<style>
+.dynamic-page{max-width:950px;margin:0 auto;padding:55px 18px 80px}
+.dynamic-page h1{font-size:42px;line-height:1.2;margin-bottom:15px}
+.dynamic-content{font-size:17px;line-height:1.8;color:#344054;white-space:pre-wrap}
+.dynamic-content p{margin:0 0 18px}
+.dynamic-back{display:inline-block;margin-top:28px}
+@media(max-width:700px){.dynamic-page h1{font-size:31px}}
+</style>
+</head>
+<body>
+<header class="site-header"><div class="nav">
+<a class="brand" href="index.html"><img src="logo.png" alt="Apple Seed Trà Vinh" class="brand-logo"></a>
+<nav><a href="index.html#dich-vu">Dịch vụ</a><a href="index.html#san-pham">Sản phẩm</a><a href="index.html#lien-he">Liên hệ</a></nav>
+</div></header>
+<main class="dynamic-page">
+<div id="state">Đang tải...</div>
+<article id="content" class="hidden">
+<h1 id="title"></h1>
+<div id="body" class="dynamic-content"></div>
+<a class="dynamic-back btn" href="index.html">← Về Apple Seed</a>
+</article>
+</main>
+<footer>© 2026 Apple Seed Trà Vinh</footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script>
+(async()=>{
+ const slug=new URLSearchParams(location.search).get("slug");
+ const state=document.getElementById("state"),article=document.getElementById("content");
+ if(!slug){state.textContent="Thiếu slug trang.";return;}
+ if(!window.supabaseClient){state.textContent="Không thể kết nối dữ liệu.";return;}
+ const {data,error}=await window.supabaseClient.from("pages").select("title,description,content,is_active").eq("slug",slug).eq("is_active",true).maybeSingle();
+ if(error||!data){state.textContent="Không tìm thấy trang.";return;}
+ document.title=data.title+" | Apple Seed";
+ document.getElementById("description").content=data.description||data.title;
+ document.getElementById("canonical").href=location.href;
+ document.getElementById("title").textContent=data.title;
+ document.getElementById("body").textContent=data.content||"";
+ state.remove();article.classList.remove("hidden");
+})();
+</script>
+</body>
+</html>

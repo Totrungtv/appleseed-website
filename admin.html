@@ -1,57 +1,220 @@
 <!doctype html>
 <html lang="vi">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AppleSeed — Quản trị</title><link rel="stylesheet" href="style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Apple Seed — Quản trị website</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="stylesheet" href="style.css">
 <style>
-body{background:#f5f7fb}.admin-wrap{max-width:1100px;margin:auto;padding:35px 22px 70px}
-.admin-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}.admin-top h1{margin:0;font-size:30px}
-.admin-top p{margin:4px 0 0;color:#667085}.actions{display:flex;gap:10px}
-.btn2{border:1px solid #d9dee8;background:#fff;color:#172033;padding:10px 15px;border-radius:9px;font-weight:700;cursor:pointer;text-decoration:none}
-.btn-primary{border:0;background:#2563eb;color:#fff}.editor-grid{display:grid;grid-template-columns:240px 1fr;gap:18px}
-.panel{background:#fff;border:1px solid #e5e7eb;border-radius:15px;padding:18px}
-.section-list button{width:100%;text-align:left;padding:11px 12px;border:0;background:transparent;border-radius:8px;cursor:pointer;margin-bottom:4px}
-.section-list button.active{background:#eef4ff;color:#1d4ed8;font-weight:700}
-.field{margin-bottom:18px}.field label{display:block;font-weight:700;margin-bottom:7px}
-.field input,.field textarea{width:100%;padding:12px;border:1px solid #d9dee8;border-radius:9px;font:inherit}
-.field textarea{min-height:180px;resize:vertical}.status{margin-top:12px;color:#067647;font-weight:700;min-height:22px}.error{color:#b42318}
-@media(max-width:700px){.editor-grid{grid-template-columns:1fr}.admin-top{align-items:flex-start;flex-direction:column}}
+:root{--blue:#2563eb;--bg:#f6f8fb;--line:#e5e7eb;--text:#111827;--muted:#667085}
+body{background:var(--bg);color:var(--text)}
+.admin-wrap{max-width:1180px;margin:0 auto;padding:30px 18px 70px}
+.admin-top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:25px}
+.admin-top h1{margin:0}.admin-actions{display:flex;gap:10px;flex-wrap:wrap}
+.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;margin-bottom:22px;box-shadow:0 5px 20px rgba(0,0,0,.04)}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:18px}
+.panel-head h2{margin:0}.plus{border:0;background:var(--blue);color:#fff;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.item{border:1px solid var(--line);border-radius:14px;padding:16px}
+.item h3{margin:0 0 8px}.item p{margin:5px 0;color:var(--muted);line-height:1.5}
+.item-actions{display:flex;gap:8px;margin-top:13px}
+.btn2{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 11px;cursor:pointer;font-weight:700}
+.danger{color:#b42318;border-color:#fecdca}.edit{color:#175cd3}
+.form{display:grid;gap:12px;background:#f8fafc;border:1px solid var(--line);padding:16px;border-radius:14px;margin-top:15px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{font-weight:700;font-size:14px}input,textarea,select{width:100%;box-sizing:border-box;padding:11px 12px;border:1px solid #d0d5dd;border-radius:9px;background:#fff;font:inherit}textarea{min-height:120px;resize:vertical}
+.hidden{display:none}.status{padding:11px 13px;border-radius:10px;margin-bottom:16px;background:#eff8ff;color:#175cd3}.status.error{background:#fef3f2;color:#b42318}
+.login{max-width:460px;margin:80px auto;padding:22px}.login h1{margin-top:0}
+.small{font-size:13px;color:var(--muted)}
+@media(max-width:750px){.grid,.form-row{grid-template-columns:1fr}.admin-top{align-items:flex-start;flex-direction:column}}
 </style>
 </head>
 <body>
-<header class="site-header"><div class="nav">
-<a class="brand" href="index.html"><img src="logo.png" alt="Apple Seed" class="brand-logo"></a>
-<div class="actions">
-    <a class="btn2" href="products.html">📦 Quản lý sản phẩm</a>
-    <a class="btn2" href="index.html">Xem website</a>
-    <button id="logoutBtn" class="btn2">Đăng xuất</button>
+<div id="loginView" class="panel login">
+  <h1>🔐 Apple Seed Admin</h1>
+  <p>Đăng nhập tài khoản Supabase của ông để quản lý website.</p>
+  <div class="form">
+    <label>Email<input id="loginEmail" type="email" autocomplete="username"></label>
+    <label>Mật khẩu<input id="loginPassword" type="password" autocomplete="current-password"></label>
+    <button class="plus" id="loginBtn">Đăng nhập</button>
+  </div>
+  <p id="loginStatus" class="small"></p>
+  <p><a href="index.html">← Về website</a></p>
 </div>
-</div></header>
-<main class="admin-wrap">
-<div class="admin-top"><div><h1>Quản trị AppleSeed</h1><p id="userbar">Đang kiểm tra tài khoản...</p></div></div>
-<div class="editor-grid">
-<aside class="panel"><strong>Nội dung website</strong><div id="sectionList" class="section-list" style="margin-top:12px"></div></aside>
-<section class="panel">
-<div class="field"><label>Tiêu đề</label><input id="title"></div>
-<div class="field"><label>Nội dung</label><textarea id="content"></textarea></div>
-<div class="field">
-    <label>Ảnh</label>
 
-    <input id="image_file" type="file" accept="image/*">
+<div id="app" class="admin-wrap hidden">
+  <div class="admin-top">
+    <div><h1>⚙️ Quản trị Apple Seed</h1><div class="small" id="userEmail"></div></div>
+    <div class="admin-actions">
+      <a class="btn2" href="index.html">← Website</a>
+      <button class="btn2" id="logoutBtn">Đăng xuất</button>
+    </div>
+  </div>
 
-    <div id="image_preview" style="margin-top:10px;"></div>
+  <div id="status" class="status hidden"></div>
 
-    <input
-        id="image_url"
-        type="url"
-        placeholder="Hoặc nhập URL ảnh..."
-        style="margin-top:10px;"
-    >
+  <section class="panel">
+    <div class="panel-head">
+      <div><h2>＋ Sản phẩm</h2><div class="small">Thêm, sửa, ẩn hoặc xóa sản phẩm đang hiển thị.</div></div>
+      <button class="plus" id="addProductBtn">＋ Thêm sản phẩm</button>
+    </div>
+
+    <form id="productForm" class="form hidden">
+      <input id="productId" type="hidden">
+      <div class="form-row">
+        <label>Tên sản phẩm<input id="productName" required></label>
+        <label>Danh mục<input id="productCategory" placeholder="iPhone / Linh kiện / Máy cũ"></label>
+      </div>
+      <div class="form-row">
+        <label>Giá (VNĐ)<input id="productPrice" type="number" min="0" value="0"></label>
+        <label>Link ảnh<input id="productImage" placeholder="https://..."></label>
+      </div>
+      <label>Mô tả<textarea id="productDescription"></textarea></label>
+      <label>Trạng thái
+        <select id="productActive"><option value="true">Đang bán</option><option value="false">Ẩn</option></select>
+      </label>
+      <div class="admin-actions">
+        <button class="plus" type="submit">Lưu sản phẩm</button>
+        <button class="btn2" type="button" id="cancelProduct">Hủy</button>
+      </div>
+    </form>
+    <div id="productsList" class="grid"></div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <div><h2>＋ Trang dịch vụ</h2><div class="small">Tạo trang mới mà không phải sửa code index.</div></div>
+      <button class="plus" id="addPageBtn">＋ Thêm trang</button>
+    </div>
+
+    <form id="pageForm" class="form hidden">
+      <input id="pageId" type="hidden">
+      <div class="form-row">
+        <label>Tiêu đề trang<input id="pageTitle" required placeholder="Ví dụ: Sửa Camera iPhone Trà Vinh"></label>
+        <label>Slug<input id="pageSlug" required placeholder="sua-camera-iphone-tra-vinh"></label>
+      </div>
+      <label>Mô tả ngắn<input id="pageDescription" placeholder="Mô tả hiển thị trên danh sách và SEO"></label>
+      <label>Nội dung trang<textarea id="pageContent" required placeholder="Nội dung trang dịch vụ..."></textarea></label>
+      <label>Trạng thái
+        <select id="pageActive"><option value="true">Đang xuất bản</option><option value="false">Ẩn</option></select>
+      </label>
+      <div class="admin-actions">
+        <button class="plus" type="submit">Lưu trang</button>
+        <button class="btn2" type="button" id="cancelPage">Hủy</button>
+      </div>
+    </form>
+    <div id="pagesList" class="grid"></div>
+  </section>
 </div>
-<button id="saveBtn" class="btn2 btn-primary">Lưu thay đổi</button>
-<div id="status" class="status"></div>
-</section>
-</div></main>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase-config.js"></script><script src="admin.js"></script>
-</body></html>
+<script src="supabase-config.js"></script>
+<script>
+let sb = window.supabaseClient;
+
+const $ = id => document.getElementById(id);
+const show = (el, on=true) => el.classList.toggle("hidden", !on);
+
+function status(msg, error=false){
+  const box=$("status"); box.textContent=msg; box.classList.toggle("hidden",false); box.classList.toggle("error",error);
+  setTimeout(()=>box.classList.add("hidden"),4500);
+}
+function esc(v=""){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));}
+
+async function checkSession(){
+  if(!sb){ $("loginStatus").textContent="Không tìm thấy supabase-config.js."; return; }
+  const {data:{session}}=await sb.auth.getSession();
+  if(session){ $("userEmail").textContent=session.user.email||""; show($("loginView"),false); show($("app"),true); await refreshAll(); }
+}
+$("loginBtn").onclick=async()=>{
+  const {error}=await sb.auth.signInWithPassword({email:$("loginEmail").value.trim(),password:$("loginPassword").value});
+  if(error){$("loginStatus").textContent=error.message; return;}
+  await checkSession();
+};
+$("logoutBtn").onclick=async()=>{await sb.auth.signOut();location.reload();};
+
+async function refreshAll(){await loadProducts();await loadPages();}
+
+async function loadProducts(){
+  const {data,error}=await sb.from("products").select("id,name,category,price,description,image_url,is_active").order("id",{ascending:false});
+  if(error){status("Không tải được products: "+error.message,true);return;}
+  $("productsList").innerHTML=(data||[]).map(p=>`
+    <article class="item">
+      <h3>${esc(p.name)}</h3>
+      <p>${esc(p.category||"")}</p>
+      <p><strong>${Number(p.price||0).toLocaleString("vi-VN")}đ</strong> · ${p.is_active?"Đang bán":"Đang ẩn"}</p>
+      <p>${esc(p.description||"")}</p>
+      <div class="item-actions">
+        <button class="btn2 edit" onclick='editProduct(${JSON.stringify(p).replace(/'/g,"&#39;")})'>Sửa</button>
+        <button class="btn2 danger" onclick="deleteProduct(${p.id})">Xóa</button>
+      </div>
+    </article>`).join("") || "<p>Chưa có sản phẩm.</p>";
+}
+$("addProductBtn").onclick=()=>{ $("productForm").reset(); $("productId").value=""; $("productActive").value="true"; show($("productForm")); };
+$("cancelProduct").onclick=()=>show($("productForm"),false);
+window.editProduct=(p)=>{
+  $("productId").value=p.id;$("productName").value=p.name||"";$("productCategory").value=p.category||"";
+  $("productPrice").value=p.price||0;$("productImage").value=p.image_url||"";
+  $("productDescription").value=p.description||"";$("productActive").value=String(p.is_active);
+  show($("productForm"));
+};
+$("productForm").onsubmit=async e=>{
+  e.preventDefault();
+  const payload={name:$("productName").value.trim(),category:$("productCategory").value.trim(),price:Number($("productPrice").value||0),image_url:$("productImage").value.trim(),description:$("productDescription").value.trim(),is_active:$("productActive").value==="true"};
+  let res;
+  if($("productId").value) res=await sb.from("products").update(payload).eq("id",Number($("productId").value));
+  else res=await sb.from("products").insert(payload);
+  if(res.error){status("Lưu sản phẩm lỗi: "+res.error.message,true);return;}
+  show($("productForm"),false);status("Đã lưu sản phẩm.");await loadProducts();
+};
+window.deleteProduct=async id=>{
+  if(!confirm("Xóa sản phẩm này?"))return;
+  const {error}=await sb.from("products").delete().eq("id",id);
+  if(error){status("Xóa sản phẩm lỗi: "+error.message,true);return;}
+  status("Đã xóa sản phẩm.");await loadProducts();
+};
+
+async function loadPages(){
+  const {data,error}=await sb.from("pages").select("id,title,slug,description,content,is_active").order("id",{ascending:false});
+  if(error){status("Chưa có bảng pages hoặc chưa cấp quyền: "+error.message,true);$("pagesList").innerHTML="<p>Hãy chạy file supabase-pages.sql trong Supabase SQL Editor.</p>";return;}
+  $("pagesList").innerHTML=(data||[]).map(p=>`
+    <article class="item">
+      <h3>${esc(p.title)}</h3><p>/page.html?slug=${encodeURIComponent(p.slug)}</p>
+      <p>${esc(p.description||"")}</p><p>${p.is_active?"Đang xuất bản":"Đang ẩn"}</p>
+      <div class="item-actions">
+        <button class="btn2 edit" onclick='editPage(${JSON.stringify(p).replace(/'/g,"&#39;")})'>Sửa</button>
+        <button class="btn2 danger" onclick="deletePage(${p.id})">Xóa</button>
+        <a class="btn2" href="page.html?slug=${encodeURIComponent(p.slug)}" target="_blank">Xem</a>
+      </div>
+    </article>`).join("") || "<p>Chưa có trang động.</p>";
+}
+$("addPageBtn").onclick=()=>{ $("pageForm").reset(); $("pageId").value=""; $("pageActive").value="true"; show($("pageForm")); };
+$("cancelPage").onclick=()=>show($("pageForm"),false);
+window.editPage=(p)=>{
+  $("pageId").value=p.id;$("pageTitle").value=p.title||"";$("pageSlug").value=p.slug||"";
+  $("pageDescription").value=p.description||"";$("pageContent").value=p.content||"";
+  $("pageActive").value=String(p.is_active);show($("pageForm"));
+};
+$("pageForm").onsubmit=async e=>{
+  e.preventDefault();
+  const slug=$("pageSlug").value.trim().toLowerCase().replace(/[^a-z0-9\-]+/g,"-").replace(/^-+|-+$/g,"");
+  const payload={title:$("pageTitle").value.trim(),slug,description:$("pageDescription").value.trim(),content:$("pageContent").value.trim(),is_active:$("pageActive").value==="true"};
+  let res;
+  if($("pageId").value) res=await sb.from("pages").update(payload).eq("id",Number($("pageId").value));
+  else res=await sb.from("pages").insert(payload);
+  if(res.error){status("Lưu trang lỗi: "+res.error.message,true);return;}
+  show($("pageForm"),false);status("Đã lưu trang.");await loadPages();
+};
+window.deletePage=async id=>{
+  if(!confirm("Xóa trang này khỏi website?"))return;
+  const {error}=await sb.from("pages").delete().eq("id",id);
+  if(error){status("Xóa trang lỗi: "+error.message,true);return;}
+  status("Đã xóa trang.");await loadPages();
+};
+
+checkSession();
+</script>
+</body>
+</html>
