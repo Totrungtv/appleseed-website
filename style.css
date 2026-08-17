@@ -164,7 +164,20 @@ footer {
   color: #687386;
   border-top: 1px solid #eee;
 }
+.map-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 25px;
+}
 
+.map-actions .btn {
+  display: inline-block;
+}
+
+.map-actions .btn-phone {
+  background: #172033;
+}
 /* ================= MAP ================= */
 
 .map-section {
