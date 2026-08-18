@@ -219,7 +219,7 @@ iconList.forEach(icon => {
     quill.setSelection(range.index+icon.length, 0);
     iconPicker.classList.add("hidden");
   };
-  iconPicker.appendChild(b);
+  if (iconPicker) iconPicker.appendChild(b);
 });
 
 
@@ -243,17 +243,29 @@ window.setProductEditorHtml=function setProductEditorHtml(html=""){ productQuill
 window.getProductEditorHtml=function getProductEditorHtml(){ return productQuill.root.innerHTML; }
 
 const productIconPicker = $("productIconPicker");
-iconList.forEach(icon => {
-  const b=document.createElement("button");
-  b.type="button"; b.textContent=icon; b.title="Chèn "+icon;
-  b.onclick=()=>{
-    const range=null || {index:productQuill.getLength(),length:0};
-    productQuill.insertText(range.index, icon);
-    productQuill.setSelection(range.index+icon.length, 0);
-    productIconPicker.classList.add("hidden");
-  };
-  productIconPicker.appendChild(b);
-});
+
+if (productIconPicker) {
+  iconList.forEach(icon => {
+    const b = document.createElement("button");
+
+    b.type = "button";
+    b.textContent = icon;
+    b.title = "Chèn " + icon;
+
+    b.onclick = () => {
+      const range = null || {
+        index: productQuill.getLength(),
+        length: 0
+      };
+
+      productQuill.insertText(range.index, icon);
+      productQuill.setSelection(range.index + icon.length, 0);
+      productIconPicker.classList.add("hidden");
+    };
+
+    productIconPicker.appendChild(b);
+  });
+}
 
 
 
