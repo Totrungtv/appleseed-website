@@ -494,7 +494,8 @@ function setupEditorToolbar(toolbar){
     });
   });
 
-  toolbar.querySelector(".native-image-input").addEventListener("change",async(e)=>{
+    const imageInput = toolbar.querySelector(".native-image-input");
+    if (imageInput) imageInput.addEventListener("change", async(e)=>{
     const file=e.target.files && e.target.files[0];
     if(!file) return;
     const status=toolbar.parentElement.querySelector(".native-upload-status");
