@@ -493,11 +493,8 @@ function setupEditorToolbar(toolbar){
       }
     });
   });
-if (imageInput) imageInput.addEventListener("change",async(e)=>{
+toolbar.querySelector(".native-image-input")?.addEventListener("change",async(e)=>{
   const file=e.target.files && e.target.files[0];
-  ...
-});
-}
     if(!file) return;
     const status=toolbar.parentElement.querySelector(".native-upload-status");
     if(file.size>8*1024*1024){status.textContent="Ảnh tối đa 8MB.";return;}
