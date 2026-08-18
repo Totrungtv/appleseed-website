@@ -45,6 +45,13 @@ label{font-weight:700;font-size:14px}input,textarea,select{width:100%;box-sizing
 .native-icon-picker[hidden]{display:none!important}
 .native-icon-picker button{border:0;background:#fff;border-radius:7px;font-size:21px;padding:6px;cursor:pointer}
 .native-upload-status{font-size:13px;color:#475467;margin:7px 0}
+
+.tool-button{border:1px solid #d0d5dd;background:#fff;border-radius:7px;padding:7px 10px;cursor:pointer;font-weight:700;display:inline-block}
+.tool-button:hover{background:#f2f4f7}
+.emoji-box{display:grid;grid-template-columns:repeat(8,36px);gap:4px;background:#fff;border:1px solid #d0d5dd;border-radius:12px;padding:10px;box-shadow:0 12px 30px rgba(0,0,0,.16);margin-top:5px;max-width:330px}
+.emoji-box[hidden]{display:none!important}
+.emoji-box button{border:0;background:#fff;border-radius:7px;font-size:21px;padding:6px;cursor:pointer}
+.emoji-box button:hover{background:#f2f4f7}
 </style>
 </head>
 <body>
@@ -90,24 +97,25 @@ label{font-weight:700;font-size:14px}input,textarea,select{width:100%;box-sizing
       <label>Mô tả sản phẩm</label>
       <div class="native-editor" id="productEditor" contenteditable="true" data-placeholder="Mô tả sản phẩm..."></div>
       <div class="native-toolbar" data-editor="productEditor">
-      <button type="button" data-cmd="bold">B</button>
-      <button type="button" data-cmd="italic"><i>I</i></button>
-      <button type="button" data-cmd="underline"><u>U</u></button>
-      <button type="button" data-cmd="formatBlock" data-value="h2">H2</button>
-      <button type="button" data-cmd="formatBlock" data-value="h3">H3</button>
-      <button type="button" data-cmd="insertUnorderedList">• List</button>
-      <button type="button" data-cmd="insertOrderedList">1. List</button>
-      <button type="button" data-cmd="justifyLeft">←</button>
-      <button type="button" data-cmd="justifyCenter">↔</button>
-      <button type="button" data-cmd="justifyRight">→</button>
-      <button type="button" data-action="image">🖼️ Ảnh</button>
-      <button type="button" data-action="icon">😊 Icon</button>
-      <button type="button" data-action="link">🔗 Link</button>
-      <button type="button" data-action="html">&lt;/&gt; HTML</button>
-      <input class="native-image-input" type="file" accept="image/*" hidden>
+      <button type="button" onclick="focusEd('productEditor');document.execCommand('bold')"><b>B</b></button>
+      <button type="button" onclick="focusEd('productEditor');document.execCommand('italic')"><i>I</i></button>
+      <button type="button" onclick="focusEd('productEditor');document.execCommand('underline')"><u>U</u></button>
+      <button type="button" onclick="formatEd('productEditor','h2')">H2</button>
+      <button type="button" onclick="formatEd('productEditor','h3')">H3</button>
+      <button type="button" onclick="focusEd('productEditor');document.execCommand('insertUnorderedList')">• List</button>
+      <button type="button" onclick="focusEd('productEditor');document.execCommand('insertOrderedList')">1. List</button>
+      <button type="button" onclick="focusEd('productEditor');document.execCommand('justifyLeft')">←</button>
+      <button type="button" onclick="focusEd('productEditor');document.execCommand('justifyCenter')">↔</button>
+      <button type="button" onclick="focusEd('productEditor');document.execCommand('justifyRight')">→</button>
+      <label class="tool-button">🖼️ Ảnh<input type="file" accept="image/*" hidden onchange="uploadInlineImage(this,'productEditor')"></label>
+      <button type="button" onclick="toggleEmoji('productEditor',this)">😊 Icon</button>
+      
+      <button type="button" onclick="insertLinkDirect('productEditor')">🔗 Link</button>
+      <button type="button" onclick="editHtmlDirect('productEditor')">&lt;/&gt; HTML</button>
+    
     </div>
-    <div class="native-icon-picker" hidden></div>
-    <div class="native-upload-status"></div>
+    <div class="emoji-box" hidden data-for="productEditor"></div>
+    <div class="native-upload-status" data-status="productEditor"></div>
       <label>Trạng thái
         <select id="productActive"><option value="true">Đang bán</option><option value="false">Ẩn</option></select>
       </label>
@@ -135,25 +143,25 @@ label{font-weight:700;font-size:14px}input,textarea,select{width:100%;box-sizing
       <label>Nội dung trang</label>
       <div class="native-editor" id="pageEditor" contenteditable="true" data-placeholder="Viết nội dung trang..."></div>
       <div class="native-toolbar" data-editor="pageEditor">
-      <button type="button" data-cmd="bold">B</button>
-      <button type="button" data-cmd="italic"><i>I</i></button>
-      <button type="button" data-cmd="underline"><u>U</u></button>
-      <button type="button" data-cmd="formatBlock" data-value="h2">H2</button>
-      <button type="button" data-cmd="formatBlock" data-value="h3">H3</button>
-      <button type="button" data-cmd="insertUnorderedList">• List</button>
-      <button type="button" data-cmd="insertOrderedList">1. List</button>
-      <button type="button" data-cmd="justifyLeft">←</button>
-      <button type="button" data-cmd="justifyCenter">↔</button>
-      <button type="button" data-cmd="justifyRight">→</button>
-      <button type="button" data-action="image">🖼️ Ảnh</button>
-      <button type="button" data-action="icon">😊 Icon</button>
-      <button type="button" data-action="link">🔗 Link</button>
-      <button type="button" data-action="video">🎬 Video</button>
-      <button type="button" data-action="html">&lt;/&gt; HTML</button>
-      <input class="native-image-input" type="file" accept="image/*" hidden>
+      <button type="button" onclick="focusEd('pageEditor');document.execCommand('bold')"><b>B</b></button>
+      <button type="button" onclick="focusEd('pageEditor');document.execCommand('italic')"><i>I</i></button>
+      <button type="button" onclick="focusEd('pageEditor');document.execCommand('underline')"><u>U</u></button>
+      <button type="button" onclick="formatEd('pageEditor','h2')">H2</button>
+      <button type="button" onclick="formatEd('pageEditor','h3')">H3</button>
+      <button type="button" onclick="focusEd('pageEditor');document.execCommand('insertUnorderedList')">• List</button>
+      <button type="button" onclick="focusEd('pageEditor');document.execCommand('insertOrderedList')">1. List</button>
+      <button type="button" onclick="focusEd('pageEditor');document.execCommand('justifyLeft')">←</button>
+      <button type="button" onclick="focusEd('pageEditor');document.execCommand('justifyCenter')">↔</button>
+      <button type="button" onclick="focusEd('pageEditor');document.execCommand('justifyRight')">→</button>
+      <label class="tool-button">🖼️ Ảnh<input type="file" accept="image/*" hidden onchange="uploadInlineImage(this,'pageEditor')"></label>
+      <button type="button" onclick="toggleEmoji('pageEditor',this)">😊 Icon</button>
+      
+      <button type="button" onclick="insertLinkDirect('pageEditor')">🔗 Link</button>
+      <button type="button" onclick="editHtmlDirect('pageEditor')">&lt;/&gt; HTML</button>
+    <button type="button" onclick="insertVideoDirect('pageEditor')">🎬 Video</button>
     </div>
-    <div class="native-icon-picker" hidden></div>
-    <div class="native-upload-status"></div>
+    <div class="emoji-box" hidden data-for="pageEditor"></div>
+    <div class="native-upload-status" data-status="pageEditor"></div>
       <label>Trạng thái
         <select id="pageActive"><option value="true">Đang xuất bản</option><option value="false">Ẩn</option></select>
       </label>
@@ -504,6 +512,68 @@ function setEditorHtml(html){ const e=editor("pageEditor"); if(e)e.innerHTML=htm
 function getEditorHtml(){ const e=editor("pageEditor"); return e?e.innerHTML:""; }
 function setProductEditorHtml(html){ const e=editor("productEditor"); if(e)e.innerHTML=html||""; }
 function getProductEditorHtml(){ const e=editor("productEditor"); return e?e.innerHTML:""; }
+
+
+window.focusEd=function(id){
+  var e=document.getElementById(id);
+  if(e){e.focus();window._activeEditor=e;}
+};
+window.formatEd=function(id,tag){
+  window.focusEd(id);
+  document.execCommand("formatBlock",false,tag);
+};
+window.insertLinkDirect=function(id){
+  window.focusEd(id);
+  var u=prompt("Nhập URL:");
+  if(u) document.execCommand("createLink",false,u);
+};
+window.editHtmlDirect=function(id){
+  var e=document.getElementById(id);
+  if(!e)return;
+  var v=prompt("HTML nội dung:",e.innerHTML);
+  if(v!==null)e.innerHTML=v;
+};
+window.insertVideoDirect=function(id){
+  window.focusEd(id);
+  var u=prompt("Dán link YouTube/Vimeo:");
+  if(u) document.execCommand("insertHTML",false,'<p><a href="'+escapeAttr(u)+'" target="_blank" rel="noopener">🎬 Xem video</a></p>');
+};
+window.toggleEmoji=function(id,button){
+  var box=document.querySelector('.emoji-box[data-for="'+id+'"]');
+  if(!box)return;
+  if(!box.dataset.ready){
+    var icons=["😀","😂","😊","😍","😎","👍","👏","🙏","💪","🔥","⭐","✨","❤️","💯","🎉","🚀","📱","💻","🛠️","🔧","🔋","🔌","📷","💡","📍","☎️","✅","❌","⚠️","❗","❓","➡️","⬅️","➕","➖"];
+    icons.forEach(function(icon){
+      var b=document.createElement("button");
+      b.type="button";b.textContent=icon;
+      b.onclick=function(){window.focusEd(id);document.execCommand("insertText",false,icon);box.hidden=true;};
+      box.appendChild(b);
+    });
+    box.dataset.ready="1";
+  }
+  box.hidden=!box.hidden;
+};
+window.uploadInlineImage=async function(input,id){
+  var file=input.files&&input.files[0];
+  if(!file)return;
+  var status=document.querySelector('.native-upload-status[data-status="'+id+'"]');
+  if(file.size>8*1024*1024){status.textContent="Ảnh tối đa 8MB.";return;}
+  status.textContent="Đang tải ảnh...";
+  try{
+    var sb=window.supabaseClient;
+    if(!sb)throw new Error("Không có kết nối Supabase.");
+    var safe=file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,"-");
+    var path=(id==="productEditor"?"products":"pages")+"/"+Date.now()+"-"+safe;
+    var r=await sb.storage.from("site-images").upload(path,file,{cacheControl:"3600",upsert:false});
+    if(r.error)throw r.error;
+    var url=sb.storage.from("site-images").getPublicUrl(path).data.publicUrl;
+    window.focusEd(id);
+    document.execCommand("insertHTML",false,'<img src="'+escapeAttr(url)+'" alt="" style="max-width:100%;height:auto">');
+    status.textContent="✅ Đã chèn ảnh.";
+  }catch(err){status.textContent="❌ "+(err&&err.message?err.message:err);}
+  input.value="";
+};
+window.escapeAttr=function(s){return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");};
 
 async function checkSession(){
   if(!sb){ $("loginStatus").textContent="Không tìm thấy supabase-config.js."; return; }
