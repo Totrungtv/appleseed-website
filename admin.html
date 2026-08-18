@@ -7,7 +7,6 @@
 <meta name="robots" content="noindex,nofollow">
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="stylesheet" href="style.css">
-<link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
 <style>
 :root{--blue:#2563eb;--bg:#f6f8fb;--line:#e5e7eb;--text:#111827;--muted:#667085}
 body{background:var(--bg);color:var(--text)}
@@ -35,6 +34,17 @@ label{font-weight:700;font-size:14px}input,textarea,select{width:100%;box-sizing
 .upload-status{font-size:13px;color:#475467;margin-top:8px}
 
 @media(max-width:750px){.grid,.form-row{grid-template-columns:1fr}.admin-top{align-items:flex-start;flex-direction:column}}
+
+.native-editor{min-height:300px;padding:16px;border:1px solid #d0d5dd;border-radius:10px;background:#fff;outline:none;line-height:1.7;font-size:16px}
+.native-editor:empty:before{content:attr(data-placeholder);color:#98a2b3}
+.native-editor img{max-width:100%;height:auto;border-radius:8px}
+.native-toolbar{display:flex;flex-wrap:wrap;gap:5px;padding:9px;background:#f8fafc;border:1px solid #d0d5dd;border-top:0;border-radius:0 0 10px 10px}
+.native-toolbar button{border:1px solid #d0d5dd;background:#fff;border-radius:7px;padding:7px 10px;cursor:pointer;font-weight:700}
+.native-toolbar button:hover{background:#f2f4f7}
+.native-icon-picker{position:absolute;z-index:1000;display:grid;grid-template-columns:repeat(8,36px);gap:4px;background:#fff;border:1px solid #d0d5dd;border-radius:12px;padding:10px;box-shadow:0 12px 30px rgba(0,0,0,.16)}
+.native-icon-picker[hidden]{display:none!important}
+.native-icon-picker button{border:0;background:#fff;border-radius:7px;font-size:21px;padding:6px;cursor:pointer}
+.native-upload-status{font-size:13px;color:#475467;margin:7px 0}
 </style>
 </head>
 <body>
@@ -78,18 +88,26 @@ label{font-weight:700;font-size:14px}input,textarea,select{width:100%;box-sizing
         <label>Link ảnh<input id="productImage" placeholder="https://..."></label>
       </div>
       <label>Mô tả sản phẩm</label>
-      <div class="editor-wrap">
-        <div id="productEditor"></div>
-      </div>
-      <div class="editor-tools">
-        <button type="button" class="tool-btn" id="productInsertImageBtn" onclick="productChooseImage(event)">🖼️ Chèn ảnh</button>
-        <button type="button" class="tool-btn" id="productInsertIconBtn" onclick="productToggleIcons(event)">😊 Chèn icon</button>
-        <button type="button" class="tool-btn" id="productInsertLinkBtn" onclick="productInsertLink(event)">🔗 Chèn link</button>
-        <button type="button" class="tool-btn" id="productViewHtmlBtn" onclick="productEditHtml(event)">&lt;/&gt; HTML</button>
-        <input id="productImageFileInput" type="file" onchange="productUploadImage(event)" accept="image/*" class="hidden">
-      </div>
-      <div id="productIconPicker" class="icon-pop hidden" hidden></div>
-      <div id="productUploadStatus" class="upload-status"></div>
+      <div class="native-editor" id="productEditor" contenteditable="true" data-placeholder="Mô tả sản phẩm..."></div>
+      <div class="native-toolbar" data-editor="productEditor">
+      <button type="button" data-cmd="bold">B</button>
+      <button type="button" data-cmd="italic"><i>I</i></button>
+      <button type="button" data-cmd="underline"><u>U</u></button>
+      <button type="button" data-cmd="formatBlock" data-value="h2">H2</button>
+      <button type="button" data-cmd="formatBlock" data-value="h3">H3</button>
+      <button type="button" data-cmd="insertUnorderedList">• List</button>
+      <button type="button" data-cmd="insertOrderedList">1. List</button>
+      <button type="button" data-cmd="justifyLeft">←</button>
+      <button type="button" data-cmd="justifyCenter">↔</button>
+      <button type="button" data-cmd="justifyRight">→</button>
+      <button type="button" data-action="image">🖼️ Ảnh</button>
+      <button type="button" data-action="icon">😊 Icon</button>
+      <button type="button" data-action="link">🔗 Link</button>
+      <button type="button" data-action="html">&lt;/&gt; HTML</button>
+      <input class="native-image-input" type="file" accept="image/*" hidden>
+    </div>
+    <div class="native-icon-picker" hidden></div>
+    <div class="native-upload-status"></div>
       <label>Trạng thái
         <select id="productActive"><option value="true">Đang bán</option><option value="false">Ẩn</option></select>
       </label>
@@ -115,19 +133,27 @@ label{font-weight:700;font-size:14px}input,textarea,select{width:100%;box-sizing
       </div>
       <label>Mô tả ngắn<input id="pageDescription" placeholder="Mô tả hiển thị trên danh sách và SEO"></label>
       <label>Nội dung trang</label>
-      <div class="editor-wrap">
-        <div id="pageEditor"></div>
-      </div>
-      <div class="editor-tools">
-        <button type="button" class="tool-btn" id="insertImageBtn" onclick="pageChooseImage(event)">🖼️ Chèn ảnh</button>
-        <button type="button" class="tool-btn" id="insertIconBtn" onclick="pageToggleIcons(event)">😊 Chèn icon</button>
-        <button type="button" class="tool-btn" id="insertLinkBtn" onclick="pageInsertLink(event)">🔗 Chèn link</button>
-        <button type="button" class="tool-btn" id="insertVideoBtn" onclick="pageInsertVideo(event)">🎬 Chèn video</button>
-        <button type="button" class="tool-btn" id="viewHtmlBtn" onclick="pageEditHtml(event)">&lt;/&gt; Xem HTML</button>
-        <input id="imageFileInput" type="file" onchange="pageUploadImage(event)" accept="image/*" class="hidden">
-      </div>
-      <div id="iconPicker" class="icon-pop hidden" hidden></div>
-      <div id="uploadStatus" class="upload-status"></div>
+      <div class="native-editor" id="pageEditor" contenteditable="true" data-placeholder="Viết nội dung trang..."></div>
+      <div class="native-toolbar" data-editor="pageEditor">
+      <button type="button" data-cmd="bold">B</button>
+      <button type="button" data-cmd="italic"><i>I</i></button>
+      <button type="button" data-cmd="underline"><u>U</u></button>
+      <button type="button" data-cmd="formatBlock" data-value="h2">H2</button>
+      <button type="button" data-cmd="formatBlock" data-value="h3">H3</button>
+      <button type="button" data-cmd="insertUnorderedList">• List</button>
+      <button type="button" data-cmd="insertOrderedList">1. List</button>
+      <button type="button" data-cmd="justifyLeft">←</button>
+      <button type="button" data-cmd="justifyCenter">↔</button>
+      <button type="button" data-cmd="justifyRight">→</button>
+      <button type="button" data-action="image">🖼️ Ảnh</button>
+      <button type="button" data-action="icon">😊 Icon</button>
+      <button type="button" data-action="link">🔗 Link</button>
+      <button type="button" data-action="video">🎬 Video</button>
+      <button type="button" data-action="html">&lt;/&gt; HTML</button>
+      <input class="native-image-input" type="file" accept="image/*" hidden>
+    </div>
+    <div class="native-icon-picker" hidden></div>
+    <div class="native-upload-status"></div>
       <label>Trạng thái
         <select id="pageActive"><option value="true">Đang xuất bản</option><option value="false">Ẩn</option></select>
       </label>
@@ -141,7 +167,6 @@ label{font-weight:700;font-size:14px}input,textarea,select{width:100%;box-sizing
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
 <script src="supabase-config.js"></script>
 <script>
 let sb = window.supabaseClient;
@@ -179,7 +204,7 @@ iconList.forEach(icon => {
   const b=document.createElement("button");
   b.type="button"; b.textContent=icon; b.title="Chèn "+icon;
   b.onclick=()=>{
-    const range=quill.getSelection(true) || {index:quill.getLength(),length:0};
+    const range=null || {index:quill.getLength(),length:0};
     quill.insertText(range.index, icon);
     quill.setSelection(range.index+icon.length, 0);
     iconPicker.classList.add("hidden");
@@ -212,7 +237,7 @@ iconList.forEach(icon => {
   const b=document.createElement("button");
   b.type="button"; b.textContent=icon; b.title="Chèn "+icon;
   b.onclick=()=>{
-    const range=productQuill.getSelection(true) || {index:productQuill.getLength(),length:0};
+    const range=null || {index:productQuill.getLength(),length:0};
     productQuill.insertText(range.index, icon);
     productQuill.setSelection(range.index+icon.length, 0);
     productIconPicker.classList.add("hidden");
@@ -246,7 +271,7 @@ async function productUploadImage(event){
     const r=await sb.storage.from("site-images").upload(path,file,{cacheControl:"3600",upsert:false});
     if(r.error) throw r.error;
     const url=sb.storage.from("site-images").getPublicUrl(path).data.publicUrl;
-    const range=productQuill.getSelection(true)||{index:productQuill.getLength(),length:0};
+    const range=null||{index:productQuill.getLength(),length:0};
     productQuill.insertEmbed(range.index,"image",url,"user");
     productQuill.setSelection(range.index+1,0);
     statusBox.textContent="✅ Đã chèn ảnh.";
@@ -266,7 +291,7 @@ async function pageUploadImage(event){
     const r=await sb.storage.from("site-images").upload(path,file,{cacheControl:"3600",upsert:false});
     if(r.error) throw r.error;
     const url=sb.storage.from("site-images").getPublicUrl(path).data.publicUrl;
-    const range=quill.getSelection(true)||{index:quill.getLength(),length:0};
+    const range=null||{index:quill.getLength(),length:0};
     quill.insertEmbed(range.index,"image",url,"user");
     quill.setSelection(range.index+1,0);
     statusBox.textContent="✅ Đã chèn ảnh.";
@@ -301,7 +326,7 @@ function pageChooseImage(){
 function productInsertLink(){
   const url=window.prompt("Nhập URL sản phẩm:");
   if(!url) return;
-  const range=productQuill.getSelection(true)||{index:productQuill.getLength(),length:0};
+  const range=null||{index:productQuill.getLength(),length:0};
   if(range.length) productQuill.formatText(range.index,range.length,"link",url);
   else productQuill.insertText(range.index,url,"link",url);
   productQuill.focus();
@@ -309,7 +334,7 @@ function productInsertLink(){
 function pageInsertLink(){
   const url=window.prompt("Nhập URL:");
   if(!url) return;
-  const range=quill.getSelection(true)||{index:quill.getLength(),length:0};
+  const range=null||{index:quill.getLength(),length:0};
   if(range.length) quill.formatText(range.index,range.length,"link",url);
   else quill.insertText(range.index,url,"link",url);
   quill.focus();
@@ -325,7 +350,7 @@ function pageEditHtml(){
 function pageInsertVideo(){
   const url=window.prompt("Dán link video YouTube/Vimeo:");
   if(!url) return;
-  const range=quill.getSelection(true)||{index:quill.getLength(),length:0};
+  const range=null||{index:quill.getLength(),length:0};
   quill.insertEmbed(range.index,"video",url,"user");
   quill.setSelection(range.index+1,0);
   quill.focus();
@@ -338,6 +363,147 @@ function status(msg, error=false){
   setTimeout(()=>box.classList.add("hidden"),4500);
 }
 function esc(v=""){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));}
+
+
+const ICONS = ["😀","😃","😄","😁","😂","🤣","😊","😍","🥰","😘","😎","🤩","👍","👏","🙏","💪","🔥","⭐","✨","❤️","💯","🎉","🚀","📱","💻","🛠️","🔧","🔩","⚙️","🔋","🔌","📷","🎧","🎤","💡","📍","☎️","📞","✉️","🌐","🛒","🏷️","✅","❌","⚠️","❗","❓","➡️","⬅️","➕","➖"];
+
+let activeEditor = null;
+let savedRange = null;
+
+function editor(id){ return document.getElementById(id); }
+
+function focusEditor(id){
+  const el=editor(id);
+  if(!el) return;
+  el.focus();
+  activeEditor=el;
+}
+
+function saveSelection(el){
+  const sel=window.getSelection();
+  if(sel && sel.rangeCount){
+    const r=sel.getRangeAt(0);
+    if(el.contains(r.commonAncestorContainer)) savedRange=r.cloneRange();
+  }
+}
+
+function restoreSelection(el){
+  el.focus();
+  if(savedRange){
+    const sel=window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(savedRange);
+  }
+}
+
+function insertHtml(el, html){
+  restoreSelection(el);
+  document.execCommand("insertHTML", false, html);
+  saveSelection(el);
+}
+
+function buildIconPicker(toolbar){
+  let box=toolbar.parentElement.querySelector(".native-icon-picker");
+  if(!box || box.dataset.ready==="1") return box;
+  box.dataset.ready="1";
+  ICONS.forEach(icon=>{
+    const b=document.createElement("button");
+    b.type="button"; b.textContent=icon;
+    b.onclick=()=>{ insertHtml(toolbar._editor, icon); box.hidden=true; };
+    box.appendChild(b);
+  });
+  return box;
+}
+
+function setupEditorToolbar(toolbar){
+  const id=toolbar.dataset.editor;
+  const el=editor(id);
+  toolbar._editor=el;
+  const picker=buildIconPicker(toolbar);
+
+  el.addEventListener("keyup",()=>saveSelection(el));
+  el.addEventListener("mouseup",()=>saveSelection(el));
+  el.addEventListener("input",()=>saveSelection(el));
+
+  toolbar.querySelectorAll("button").forEach(btn=>{
+    btn.addEventListener("mousedown",e=>e.preventDefault());
+    btn.addEventListener("click",async()=>{
+      focusEditor(id);
+      saveSelection(el);
+      const cmd=btn.dataset.cmd;
+      const action=btn.dataset.action;
+
+      if(cmd){
+        document.execCommand(cmd,false,btn.dataset.value||null);
+        saveSelection(el);
+        return;
+      }
+
+      if(action==="icon"){
+        picker.hidden=!picker.hidden;
+        return;
+      }
+
+      if(action==="link"){
+        const url=prompt("Nhập URL:");
+        if(url) document.execCommand("createLink",false,url);
+        saveSelection(el);
+        return;
+      }
+
+      if(action==="html"){
+        const value=prompt("HTML nội dung:",el.innerHTML);
+        if(value!==null) el.innerHTML=value;
+        return;
+      }
+
+      if(action==="video"){
+        const url=prompt("Dán link YouTube/Vimeo:");
+        if(!url) return;
+        insertHtml(el, `<p><a href="${escapeAttr(url)}" target="_blank" rel="noopener">🎬 Xem video</a></p>`);
+        return;
+      }
+
+      if(action==="image"){
+        const input=toolbar.querySelector(".native-image-input");
+        input.value="";
+        input.click();
+      }
+    });
+  });
+
+  toolbar.querySelector(".native-image-input").addEventListener("change",async(e)=>{
+    const file=e.target.files && e.target.files[0];
+    if(!file) return;
+    const status=toolbar.parentElement.querySelector(".native-upload-status");
+    if(file.size>8*1024*1024){status.textContent="Ảnh tối đa 8MB.";return;}
+    const sbNow=window.supabaseClient;
+    if(!sbNow){status.textContent="Chưa kết nối Supabase.";return;}
+    status.textContent="Đang tải ảnh...";
+    try{
+      const folder=id==="productEditor"?"products":"pages";
+      const safe=file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,"-");
+      const path=`${folder}/${Date.now()}-${safe}`;
+      const r=await sbNow.storage.from("site-images").upload(path,file,{cacheControl:"3600",upsert:false});
+      if(r.error) throw r.error;
+      const url=sbNow.storage.from("site-images").getPublicUrl(path).data.publicUrl;
+      insertHtml(el, `<img src="${escapeAttr(url)}" alt="" style="max-width:100%;height:auto">`);
+      status.textContent="✅ Đã chèn ảnh.";
+    }catch(err){ status.textContent="❌ "+(err.message||err); }
+    e.target.value="";
+  });
+}
+
+function escapeAttr(s){
+  return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+document.querySelectorAll(".native-toolbar").forEach(setupEditorToolbar);
+
+function setEditorHtml(html){ const e=editor("pageEditor"); if(e)e.innerHTML=html||""; }
+function getEditorHtml(){ const e=editor("pageEditor"); return e?e.innerHTML:""; }
+function setProductEditorHtml(html){ const e=editor("productEditor"); if(e)e.innerHTML=html||""; }
+function getProductEditorHtml(){ const e=editor("productEditor"); return e?e.innerHTML:""; }
 
 async function checkSession(){
   if(!sb){ $("loginStatus").textContent="Không tìm thấy supabase-config.js."; return; }
@@ -478,7 +644,7 @@ checkSession();
     var u=window.prompt("Nhập URL sản phẩm:");
     if(!u)return;
     if(window.productQuill){
-      var r=window.productQuill.getSelection(true)||{index:window.productQuill.getLength(),length:0};
+      var r=window.null||{index:window.productQuill.getLength(),length:0};
       if(r.length)window.productQuill.formatText(r.index,r.length,"link",u);
       else window.productQuill.insertText(r.index,u,"link",u);
     }
@@ -488,7 +654,7 @@ checkSession();
     var u=window.prompt("Nhập URL:");
     if(!u)return;
     if(window.quill){
-      var r=window.quill.getSelection(true)||{index:window.quill.getLength(),length:0};
+      var r=window.null||{index:window.quill.getLength(),length:0};
       if(r.length)window.quill.formatText(r.index,r.length,"link",u);
       else window.quill.insertText(r.index,u,"link",u);
     }
@@ -510,7 +676,7 @@ checkSession();
     var u=window.prompt("Dán link YouTube/Vimeo:");
     if(!u)return;
     if(window.quill){
-      var r=window.quill.getSelection(true)||{index:window.quill.getLength(),length:0};
+      var r=window.null||{index:window.quill.getLength(),length:0};
       window.quill.insertEmbed(r.index,"video",u,"user");
     }
   };
