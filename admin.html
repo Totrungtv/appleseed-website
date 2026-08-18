@@ -515,7 +515,6 @@ if (imageInput) imageInput.addEventListener("change",async(e)=>{
       const url=sbNow.storage.from("site-images").getPublicUrl(path).data.publicUrl;
       insertHtml(el, `<img src="${escapeAttr(url)}" alt="" style="max-width:100%;height:auto">`);
       status.textContent="✅ Đã chèn ảnh.";
-    }catch(err){ status.textContent="❌ "+(err.message||err); }
     e.target.value="";
   });
 }
