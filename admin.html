@@ -217,7 +217,7 @@ iconList.forEach(icon => {
     const range=null || {index:quill.getLength(),length:0};
     quill.insertText(range.index, icon);
     quill.setSelection(range.index+icon.length, 0);
-    iconPicker.classList.add("hidden");
+    if (iconPicker) iconPicker.classList.add("hidden");
   };
   if (iconPicker) iconPicker.appendChild(b);
 });
