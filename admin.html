@@ -494,7 +494,7 @@ function setupEditorToolbar(toolbar){
     });
   });
 
-    const imageInput = toolbar.querySelector(".native-image-input");
+    toolbar.querySelector(".native-image-input")?.addEventListener("change",async(e)=>{
     if (imageInput) imageInput.addEventListener("change", async(e)=>{
     const file=e.target.files && e.target.files[0];
     if(!file) return;
