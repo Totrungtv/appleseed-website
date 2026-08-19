@@ -149,7 +149,24 @@ function openCustomerForm(x={}){openModal(x.id?"Sửa khách hàng":"Thêm khác
 async function loadInventory(){let r=await sb.from("inventory_items").select("*").order("id",{ascending:false});if(r.error){$("inventoryList").innerHTML="<div class='notice'>Chưa có bảng inventory_items. Hãy chạy <b>supabase-shop.sql</b>.</div>";return}let d=r.data||[];$("inventoryList").innerHTML=`<div class="table-wrap"><table><tr><th>ID</th><th>Linh kiện</th><th>Mã</th><th>Tồn</th><th>Giá nhập</th><th>Giá bán</th><th></th></tr>${d.map(x=>`<tr><td>#${x.id}</td><td>${esc(x.name)}</td><td>${esc(x.sku||"")}</td><td>${x.quantity}</td><td>${money(x.cost_price)}</td><td>${money(x.sale_price)}</td><td><button class="btn" onclick='editStock(${JSON.stringify(x).replace(/'/g,"&#39;")})'>Sửa</button></td></tr>`).join("")}</table></div>`}
 $("newStock").onclick=()=>openStockForm();window.editStock=x=>openStockForm(x);
 function openStockForm(x={}){openModal(x.id?"Sửa linh kiện":"Nhập linh kiện",`<form id="stockForm" class="formgrid"><label>Tên linh kiện<input id="iName" value="${esc(x.name||"")}" required></label><label>Mã SKU<input id="iSku" value="${esc(x.sku||"")}"></label><label>Số lượng<input id="iQty" type="number" value="${x.quantity||0}"></label><label>Giá nhập<input id="iCost" type="number" value="${x.cost_price||0}"></label><label>Giá bán<input id="iSale" type="number" value="${x.sale_price||0}"></label><label>Ghi chú<input id="iNote" value="${esc(x.note||"")}"></label><div class="full right"><button class="btn primary">💾 Lưu</button></div></form>`);$("stockForm").onsubmit=async e=>{e.preventDefault();let p={name:$("iName").value.trim(),sku:$("iSku").value.trim(),quantity:Number($("iQty").value||0),cost_price:Number($("iCost").value||0),sale_price:Number($("iSale").value||0),note:$("iNote").value.trim()};let z=await(x.id?sb.from("inventory_items").update(p).eq("id",x.id):sb.from("inventory_items").insert(p));if(z.error){alert(z.error.message);return}closeModal();loadInventory();loadDashboard()}}
-async function loadFinance(){
+async function deleteTransaction(id){
+  if(!confirm("Xóa giao dịch này?")) return;
+
+  const r = await sb
+    .from("store_transactions")
+    .delete()
+    .eq("id", id);
+
+  if(r.error){
+    alert("Không xóa được: " + r.error.message);
+    return;
+  }
+
+  loadFinance();
+  loadDashboard();
+  loadRevenue();
+}
+  async function loadFinance(){
   let r=await sb.from("store_transactions")
     .select("*")
     .order("created_at",{ascending:false})
