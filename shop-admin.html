@@ -39,6 +39,8 @@ h1,h2,h3,p{margin-top:0}.top h1{margin-bottom:5px}.muted{color:#667085;font-size
 <button class="tab" data-tab="customers">👤 Khách hàng</button>
 <button class="tab" data-tab="inventory">📦 Kho</button>
 <button class="tab" data-tab="finance">💰 Thu chi</button>
+<button class="tab" data-tab="revenue">📈 Doanh thu</button>
+<button class="tab" data-tab="warranty">🛡️ Bảo hành</button>
 </div>
 
 <section id="dashboard" class="view">
@@ -49,6 +51,8 @@ h1,h2,h3,p{margin-top:0}.top h1{margin-bottom:5px}.muted{color:#667085;font-size
 <div class="card"><div class="muted">Tồn kho</div><div class="num" id="sStock">0</div></div>
 <div class="card"><div class="muted">Thu hôm nay</div><div class="num" id="sIncome">0đ</div></div>
 <div class="card"><div class="muted">Chi hôm nay</div><div class="num" id="sExpense">0đ</div></div>
+<div class="card"><div class="muted">Doanh thu tháng</div><div class="num" id="sRevenue">0đ</div></div>
+<div class="card"><div class="muted">Lợi nhuận tháng</div><div class="num" id="sProfit">0đ</div></div>
 </div></div>
 <div class="panel"><h2>🔧 Máy đang xử lý</h2><div id="dashRepairs"></div></div>
 </section>
@@ -60,6 +64,8 @@ h1,h2,h3,p{margin-top:0}.top h1{margin-bottom:5px}.muted{color:#667085;font-size
 <section id="inventory" class="view hidden"><div class="panel"><div class="top"><div><h2>📦 Kho linh kiện</h2><div class="muted">Theo dõi tồn kho và giá nhập.</div></div><button class="btn primary" id="newStock">＋ Nhập linh kiện</button></div><div id="inventoryList"></div></div></section>
 
 <section id="finance" class="view hidden"><div class="panel"><div class="top"><div><h2>💰 Thu chi</h2><div class="muted">Ghi nhận tiền sửa chữa, bán hàng và chi phí.</div></div><button class="btn primary" id="newMoney">＋ Ghi giao dịch</button></div><div id="financeList"></div></div></section>
+<section id="revenue" class="view hidden"><div class="panel"><div class="top"><div><h2>📈 Doanh thu</h2><div class="muted">Theo dõi doanh thu, chi phí và lợi nhuận theo thời gian.</div></div></div><div class="cards"><div class="card"><div class="muted">Doanh thu hôm nay</div><div class="num" id="revToday">0đ</div></div><div class="card"><div class="muted">Doanh thu tháng</div><div class="num" id="revMonth">0đ</div></div><div class="card"><div class="muted">Chi tháng</div><div class="num" id="expMonth">0đ</div></div><div class="card"><div class="muted">Lợi nhuận tháng</div><div class="num" id="profitMonth">0đ</div></div></div><br><div id="revenueList"></div></div></section>
+<section id="warranty" class="view hidden"><div class="panel"><div class="top"><div><h2>🛡️ Bảo hành</h2><div class="muted">Quản lý phiếu bảo hành, thời hạn và lịch sử xử lý.</div></div><button class="btn primary" id="newWarranty">＋ Tạo phiếu bảo hành</button></div><div id="warrantyList"></div></div></section>
 </div>
 
 <div id="modal" class="modal hidden"><div class="modalbox"><div class="top"><h2 id="modalTitle"></h2><button class="btn" onclick="closeModal()">✕</button></div><div id="modalBody"></div></div></div>
@@ -80,9 +86,9 @@ async function auth(){
 }
 $("loginBtn").onclick=async()=>{let r=await sb.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(r.error){$("loginMsg").textContent=r.error.message;return}auth()};
 $("logout").onclick=async()=>{await sb.auth.signOut();location.reload()};
-document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".view").forEach(x=>x.classList.add("hidden"));$(b.dataset.tab).classList.remove("hidden");if(b.dataset.tab==="repairs")loadRepairs();if(b.dataset.tab==="customers")loadCustomers();if(b.dataset.tab==="inventory")loadInventory();if(b.dataset.tab==="finance")loadFinance()});
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".view").forEach(x=>x.classList.add("hidden"));$(b.dataset.tab).classList.remove("hidden");if(b.dataset.tab==="repairs")loadRepairs();if(b.dataset.tab==="customers")loadCustomers();if(b.dataset.tab==="inventory")loadInventory();if(b.dataset.tab==="finance")loadFinance();if(b.dataset.tab==="revenue")loadRevenue();if(b.dataset.tab==="warranty")loadWarranty()});
 
-async function loadAll(){loadDashboard();loadRepairs();loadCustomers();loadInventory();loadFinance()}
+async function loadAll(){loadDashboard();loadRepairs();loadCustomers();loadInventory();loadFinance();loadRevenue();loadWarranty()}
 async function loadDashboard(){
  let [r,c,i,f]=await Promise.all([
   sb.from("repair_orders").select("id,status,device_model,customer_id,estimated_total").order("created_at",{ascending:false}).limit(100),
@@ -91,11 +97,13 @@ async function loadDashboard(){
   sb.from("store_transactions").select("type,amount,created_at")
  ]);
  let repairs=r.data||[], inv=i.data||[], tx=f.data||[], today=new Date().toISOString().slice(0,10);
+ let ym=today.slice(0,7);let monthIncome=tx.filter(x=>x.type==="income"&&String(x.created_at).slice(0,7)===ym).reduce((a,x)=>a+Number(x.amount||0),0);let monthExpense=tx.filter(x=>x.type==="expense"&&String(x.created_at).slice(0,7)===ym).reduce((a,x)=>a+Number(x.amount||0),0);
  $("sRepair").textContent=repairs.filter(x=>["pending","repairing"].includes(x.status)).length;
  $("sDone").textContent=repairs.filter(x=>x.status==="done").length;
  $("sCustomer").textContent=c.count||0;$("sStock").textContent=inv.reduce((a,x)=>a+Number(x.quantity||0),0);
  $("sIncome").textContent=money(tx.filter(x=>x.type==="income"&&String(x.created_at).slice(0,10)===today).reduce((a,x)=>a+Number(x.amount||0),0));
  $("sExpense").textContent=money(tx.filter(x=>x.type==="expense"&&String(x.created_at).slice(0,10)===today).reduce((a,x)=>a+Number(x.amount||0),0));
+ $("sRevenue").textContent=money(monthIncome);$("sProfit").textContent=money(monthIncome-monthExpense);
  $("dashRepairs").innerHTML=repairs.filter(x=>["pending","repairing"].includes(x.status)).slice(0,8).map(x=>`<div style="padding:11px 0;border-bottom:1px solid #eee"><b>#${x.id}</b> · ${esc(x.device_model)} · ${statusBadge(x.status)} · ${money(x.estimated_total)}</div>`).join("")||"<p class='muted'>Không có máy đang xử lý.</p>";
 }
 async function loadRepairs(){
@@ -126,6 +134,38 @@ function openStockForm(x={}){openModal(x.id?"Sửa linh kiện":"Nhập linh ki�
 async function loadFinance(){let r=await sb.from("store_transactions").select("*").order("created_at",{ascending:false}).limit(150);if(r.error){$("financeList").innerHTML="<div class='notice'>Chưa có bảng store_transactions. Hãy chạy <b>supabase-shop.sql</b>.</div>";return}let d=r.data||[];$("financeList").innerHTML=`<div class="table-wrap"><table><tr><th>Ngày</th><th>Loại</th><th>Nội dung</th><th>Số tiền</th><th>Phương thức</th></tr>${d.map(x=>`<tr><td>${new Date(x.created_at).toLocaleString("vi-VN")}</td><td>${x.type==="income"?'<span class="success">THU</span>':'<span class="danger">CHI</span>'}</td><td>${esc(x.description||"")}</td><td>${money(x.amount)}</td><td>${esc(x.payment_method||"")}</td></tr>`).join("")}</table></div>`}
 $("newMoney").onclick=()=>openMoneyForm();
 function openMoneyForm(){openModal("Ghi giao dịch",`<form id="moneyForm" class="formgrid"><label>Loại<select id="mType"><option value="income">Thu</option><option value="expense">Chi</option></select></label><label>Số tiền<input id="mAmount" type="number" required></label><label>Nội dung<input id="mDesc" required></label><label>Phương thức<select id="mMethod"><option>Tiền mặt</option><option>Chuyển khoản</option><option>Ví điện tử</option></select></label><div class="full right"><button class="btn primary">💾 Lưu giao dịch</button></div></form>`);$("moneyForm").onsubmit=async e=>{e.preventDefault();let z=await sb.from("store_transactions").insert({type:$("mType").value,amount:Number($("mAmount").value),description:$("mDesc").value.trim(),payment_method:$("mMethod").value});if(z.error){alert(z.error.message);return}closeModal();loadFinance();loadDashboard()}}
+
+async function loadRevenue(){
+ let r=await sb.from("store_transactions").select("type,amount,description,payment_method,created_at").order("created_at",{ascending:false}).limit(500);
+ if(r.error){$("revenueList").innerHTML="<div class='notice'>Chưa có bảng store_transactions. Hãy chạy <b>supabase-shop.sql</b>.</div>";return}
+ let d=r.data||[],today=new Date().toISOString().slice(0,10),ym=today.slice(0,7);
+ let ti=d.filter(x=>x.type==="income"&&String(x.created_at).slice(0,10)===today).reduce((a,x)=>a+Number(x.amount||0),0);
+ let mi=d.filter(x=>x.type==="income"&&String(x.created_at).slice(0,7)===ym).reduce((a,x)=>a+Number(x.amount||0),0);
+ let me=d.filter(x=>x.type==="expense"&&String(x.created_at).slice(0,7)===ym).reduce((a,x)=>a+Number(x.amount||0),0);
+ $("revToday").textContent=money(ti);$("revMonth").textContent=money(mi);$("expMonth").textContent=money(me);$("profitMonth").textContent=money(mi-me);
+ let by={};d.filter(x=>String(x.created_at).slice(0,7)===ym).forEach(x=>{let day=String(x.created_at).slice(0,10);if(!by[day])by[day]={income:0,expense:0};by[day][x.type]+=Number(x.amount||0)});
+ let rows=Object.entries(by).sort((a,b)=>b[0].localeCompare(a[0])).map(([day,x])=>`<tr><td>${new Date(day+"T00:00:00").toLocaleDateString("vi-VN")}</td><td class="success">${money(x.income)}</td><td class="danger">${money(x.expense)}</td><td>${money(x.income-x.expense)}</td></tr>`).join("");
+ $("revenueList").innerHTML=`<div class="table-wrap"><table><tr><th>Ngày</th><th>Doanh thu</th><th>Chi phí</th><th>Lợi nhuận</th></tr>${rows||'<tr><td colspan="4">Chưa có dữ liệu tháng này.</td></tr>'}</table></div>`;
+}
+async function loadWarranty(){
+ let r=await sb.from("warranty_orders").select("*,customers(name,phone)").order("created_at",{ascending:false}).limit(200);
+ if(r.error){$("warrantyList").innerHTML="<div class='notice'>Chưa có bảng warranty_orders. Hãy chạy file <b>supabase-shop.sql</b> trong Supabase.</div>";return}
+ let d=r.data||[];let now=new Date();
+ $("warrantyList").innerHTML=`<div class="table-wrap"><table><tr><th>Mã BH</th><th>Khách</th><th>Thiết bị</th><th>Nội dung</th><th>Bắt đầu</th><th>Hết hạn</th><th>Trạng thái</th><th></th></tr>${d.map(x=>{let end=new Date(x.end_date+"T23:59:59"),st=end<now?'Hết hạn':x.status==='closed'?'Đã đóng':'Còn hạn';let cls=st==='Còn hạn'?'done':st==='Hết hạn'?'failed':'pending';return `<tr><td><b>${esc(x.warranty_code||('#BH'+x.id))}</b></td><td>${esc(x.customers?.name||'')}<br>${esc(x.customers?.phone||'')}</td><td>${esc(x.device_model||'')}</td><td>${esc(x.coverage||'')}</td><td>${esc(x.start_date||'')}</td><td>${esc(x.end_date||'')}</td><td><span class="badge ${cls}">${st}</span></td><td><button class="btn" onclick='editWarranty(${JSON.stringify(x).replace(/'/g,"&#39;")})'>Sửa</button></td></tr>`}).join('')}</table></div>`;
+}
+$("newWarranty").onclick=()=>openWarrantyForm();window.editWarranty=x=>openWarrantyForm(x);
+function openWarrantyForm(x={}){
+ let today=x.start_date||new Date().toISOString().slice(0,10),end=x.end_date||new Date(Date.now()+30*86400000).toISOString().slice(0,10);
+ openModal(x.id?"Sửa phiếu bảo hành #"+x.id:"Tạo phiếu bảo hành",`<form id="warrantyForm" class="formgrid">
+ <label>Khách hàng ID<input id="wCustomer" type="number" value="${x.customer_id||''}" required></label><label>Phiếu sửa ID<input id="wRepair" type="number" value="${x.repair_order_id||''}"></label>
+ <label>Model máy<input id="wModel" value="${esc(x.device_model||'')}" required></label><label>Mã bảo hành<input id="wCode" value="${esc(x.warranty_code||'')}" placeholder="BH-2026-0001"></label>
+ <label>Ngày bắt đầu<input id="wStart" type="date" value="${today}" required></label><label>Ngày hết hạn<input id="wEnd" type="date" value="${end}" required></label>
+ <label class="full">Nội dung bảo hành<textarea id="wCoverage">${esc(x.coverage||'')}</textarea></label>
+ <label>Trạng thái<select id="wStatus"><option value="active">Đang bảo hành</option><option value="closed">Đã đóng</option></select></label>
+ <label class="full">Ghi chú<textarea id="wNote">${esc(x.note||'')}</textarea></label><div class="full right"><button class="btn primary">💾 Lưu phiếu</button></div></form>`);
+ if(x.status)$('wStatus').value=x.status;
+ $("warrantyForm").onsubmit=async e=>{e.preventDefault();let p={customer_id:Number($("wCustomer").value),repair_order_id:Number($("wRepair").value||0)||null,device_model:$("wModel").value.trim(),warranty_code:$("wCode").value.trim(),start_date:$("wStart").value,end_date:$("wEnd").value,coverage:$("wCoverage").value.trim(),status:$("wStatus").value,note:$("wNote").value.trim()};let z=await(x.id?sb.from("warranty_orders").update(p).eq("id",x.id):sb.from("warranty_orders").insert(p));if(z.error){alert(z.error.message);return}closeModal();loadWarranty();loadDashboard()}
+}
 auth();
 </script>
 </body>
