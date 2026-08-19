@@ -2,172 +2,131 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Apple Seed — Quản lý cửa hàng</title>
 <meta name="robots" content="noindex,nofollow">
-<link rel="icon" type="image/png" href="favicon.png">
-<link rel="stylesheet" href="style.css">
+<link rel="icon" href="favicon.png">
 <style>
-:root{--blue:#2563eb;--bg:#f6f8fb;--line:#e5e7eb;--text:#111827;--muted:#667085;--green:#067647}
-body{background:var(--bg);color:var(--text)}
-.wrap{max-width:1180px;margin:0 auto;padding:30px 18px 70px}
-.top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:24px}
-.top h1{margin:0}.actions{display:flex;gap:10px;flex-wrap:wrap}
-.btn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:9px 12px;cursor:pointer;font-weight:700;text-decoration:none;color:inherit}
-.primary{border:0;background:var(--blue);color:#fff;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer}
-.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;margin-bottom:22px;box-shadow:0 5px 20px rgba(0,0,0,.04)}
-.panel h2{margin:0 0 6px}.muted{color:var(--muted);font-size:13px}
-.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-.card{border:1px solid var(--line);border-radius:14px;padding:18px}
-.card .num{font-size:28px;font-weight:900;margin-top:8px}
-.form{display:grid;gap:12px;background:#f8fafc;border:1px solid var(--line);padding:16px;border-radius:14px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-label{font-weight:700;font-size:14px}input,textarea,select{width:100%;box-sizing:border-box;padding:11px 12px;border:1px solid #d0d5dd;border-radius:9px;background:#fff;font:inherit}textarea{min-height:110px;resize:vertical}
-.msg{padding:11px 13px;border-radius:10px;background:#ecfdf3;color:var(--green);margin-bottom:16px}
-.hidden{display:none!important}
-@media(max-width:850px){.cards{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:600px){.cards,.row{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:#f5f7fb;color:#111827}
+.wrap{max-width:1280px;margin:auto;padding:24px}.top{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:22px}
+h1,h2,h3,p{margin-top:0}.top h1{margin-bottom:5px}.muted{color:#667085;font-size:14px}
+.actions,.tabs{display:flex;gap:9px;flex-wrap:wrap}.btn,.tab{border:1px solid #d0d5dd;background:#fff;border-radius:10px;padding:10px 13px;font-weight:700;cursor:pointer;text-decoration:none;color:#111827}.tab.active,.primary{background:#2563eb;color:#fff;border-color:#2563eb}
+.panel{background:#fff;border:1px solid #e4e7ec;border-radius:18px;padding:20px;margin-bottom:18px;box-shadow:0 5px 20px rgba(16,24,40,.04)}
+.cards{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}.card{border:1px solid #e4e7ec;border-radius:14px;padding:16px}.num{font-size:27px;font-weight:900;margin-top:7px}
+.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:850px}th,td{text-align:left;padding:12px;border-bottom:1px solid #eaecf0;font-size:14px}th{background:#f8fafc}
+.badge{display:inline-block;padding:5px 8px;border-radius:999px;font-size:12px;font-weight:800}.pending{background:#fff7ed;color:#c2410c}.repair{background:#eff6ff;color:#1d4ed8}.done{background:#ecfdf3;color:#047857}.delivered{background:#f0fdf4;color:#166534}.failed{background:#fef2f2;color:#b91c1c}
+.formgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.formgrid .full{grid-column:1/-1}label{font-weight:700;font-size:13px;display:block}input,select,textarea{width:100%;margin-top:6px;border:1px solid #d0d5dd;border-radius:9px;padding:10px 11px;font:inherit;background:#fff}textarea{min-height:85px;resize:vertical}
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.45);display:flex;align-items:center;justify-content:center;padding:18px;z-index:5}.modalbox{background:#fff;border-radius:18px;width:min(850px,100%);max-height:90vh;overflow:auto;padding:22px}.hidden{display:none!important}.right{text-align:right}.danger{color:#b42318}.success{color:#067647}.notice{padding:11px 13px;border-radius:10px;background:#eff8ff;color:#175cd3;margin-bottom:14px}
+@media(max-width:1050px){.cards{grid-template-columns:repeat(3,1fr)}}@media(max-width:700px){.wrap{padding:14px}.top{align-items:flex-start;flex-direction:column}.cards,.formgrid{grid-template-columns:1fr}.formgrid .full{grid-column:auto}}
 </style>
 </head>
 <body>
-<div id="loginView" class="panel" style="max-width:460px;margin:80px auto">
-  <h1>🔐 Apple Seed Admin</h1>
-  <p>Đăng nhập để mở trang quản lý cửa hàng.</p>
-  <div class="form">
-    <label>Email<input id="email" type="email" autocomplete="username"></label>
-    <label>Mật khẩu<input id="password" type="password" autocomplete="current-password"></label>
-    <button class="primary" id="loginBtn">Đăng nhập</button>
-    <div id="loginMsg" class="muted"></div>
-  </div>
+<div id="login" class="panel" style="max-width:460px;margin:90px auto">
+<h1>🔐 Apple Seed</h1><p>Đăng nhập để quản lý cửa hàng.</p>
+<div class="formgrid"><label>Email<input id="email" type="email"></label><label>Mật khẩu<input id="password" type="password"></label></div>
+<br><button class="btn primary" id="loginBtn">Đăng nhập</button><p id="loginMsg" class="muted"></p>
 </div>
 
 <div id="app" class="wrap hidden">
-  <div class="top">
-    <div>
-      <h1>🏪 Quản lý cửa hàng Apple Seed</h1>
-      <div class="muted" id="userEmail"></div>
-    </div>
-    <div class="actions">
-      <a class="btn" href="admin.html">← Quản trị</a>
-      <a class="btn" href="index.html">Website</a>
-      <button class="btn" id="logoutBtn">Đăng xuất</button>
-    </div>
-  </div>
-
-  <div id="msg" class="msg hidden"></div>
-
-  <section class="panel">
-    <h2>📊 Tổng quan cửa hàng</h2>
-    <p class="muted">Số liệu lấy trực tiếp từ các bảng sản phẩm và trang dịch vụ hiện có.</p>
-    <div class="cards">
-      <div class="card"><div class="muted">Sản phẩm</div><div class="num" id="productCount">—</div></div>
-      <div class="card"><div class="muted">Đang bán</div><div class="num" id="activeProductCount">—</div></div>
-      <div class="card"><div class="muted">Trang dịch vụ</div><div class="num" id="pageCount">—</div></div>
-      <div class="card"><div class="muted">Đang xuất bản</div><div class="num" id="activePageCount">—</div></div>
-    </div>
-  </section>
-
-  <section class="panel">
-    <h2>🏪 Thông tin cửa hàng</h2>
-    <p class="muted">Phần này lưu trên trình duyệt hiện tại trước; khi mình làm database cửa hàng, dữ liệu sẽ chuyển sang Supabase.</p>
-    <form id="storeForm" class="form">
-      <div class="row">
-        <label>Tên cửa hàng<input id="storeName"></label>
-        <label>Số điện thoại<input id="storePhone"></label>
-      </div>
-      <label>Địa chỉ<input id="storeAddress"></label>
-      <div class="row">
-        <label>Giờ mở cửa<input id="storeHours"></label>
-        <label>Facebook<input id="storeFacebook"></label>
-      </div>
-      <label>Google Maps<input id="storeMaps"></label>
-      <label>Giới thiệu<textarea id="storeDescription"></textarea></label>
-      <div><button class="primary" type="submit">💾 Lưu thông tin cửa hàng</button></div>
-    </form>
-  </section>
-
-  <section class="panel">
-    <h2>⚡ Thao tác nhanh</h2>
-    <div class="actions" style="margin-top:14px">
-      <a class="btn" href="admin.html#productsSection">📦 Quản lý sản phẩm</a>
-      <a class="btn" href="admin.html#pagesSection">🛠️ Quản lý trang dịch vụ</a>
-      <a class="btn" href="index.html">👁️ Xem website</a>
-    </div>
-  </section>
+<div class="top">
+<div><h1>🏪 Quản lý cửa hàng Apple Seed</h1><div class="muted" id="user"></div></div>
+<div class="actions"><a class="btn" href="admin.html">⚙️ Quản trị</a><a class="btn" href="index.html">🌐 Website</a><button class="btn" id="logout">Đăng xuất</button></div>
 </div>
+
+<div class="tabs">
+<button class="tab active" data-tab="dashboard">📊 Tổng quan</button>
+<button class="tab" data-tab="repairs">🔧 Sửa chữa</button>
+<button class="tab" data-tab="customers">👤 Khách hàng</button>
+<button class="tab" data-tab="inventory">📦 Kho</button>
+<button class="tab" data-tab="finance">💰 Thu chi</button>
+</div>
+
+<section id="dashboard" class="view">
+<div class="panel"><h2>Tổng quan hôm nay</h2><div class="cards">
+<div class="card"><div class="muted">Đang sửa</div><div class="num" id="sRepair">0</div></div>
+<div class="card"><div class="muted">Đã xong</div><div class="num" id="sDone">0</div></div>
+<div class="card"><div class="muted">Khách hàng</div><div class="num" id="sCustomer">0</div></div>
+<div class="card"><div class="muted">Tồn kho</div><div class="num" id="sStock">0</div></div>
+<div class="card"><div class="muted">Thu hôm nay</div><div class="num" id="sIncome">0đ</div></div>
+<div class="card"><div class="muted">Chi hôm nay</div><div class="num" id="sExpense">0đ</div></div>
+</div></div>
+<div class="panel"><h2>🔧 Máy đang xử lý</h2><div id="dashRepairs"></div></div>
+</section>
+
+<section id="repairs" class="view hidden"><div class="panel"><div class="top"><div><h2>🔧 Phiếu sửa chữa</h2><div class="muted">Quản lý toàn bộ máy nhận sửa.</div></div><button class="btn primary" id="newRepair">＋ Tạo phiếu</button></div><div id="repairsList"></div></div></section>
+
+<section id="customers" class="view hidden"><div class="panel"><div class="top"><div><h2>👤 Khách hàng</h2><div class="muted">Danh sách khách và lịch sử sửa.</div></div><button class="btn primary" id="newCustomer">＋ Thêm khách</button></div><div id="customersList"></div></div></section>
+
+<section id="inventory" class="view hidden"><div class="panel"><div class="top"><div><h2>📦 Kho linh kiện</h2><div class="muted">Theo dõi tồn kho và giá nhập.</div></div><button class="btn primary" id="newStock">＋ Nhập linh kiện</button></div><div id="inventoryList"></div></div></section>
+
+<section id="finance" class="view hidden"><div class="panel"><div class="top"><div><h2>💰 Thu chi</h2><div class="muted">Ghi nhận tiền sửa chữa, bán hàng và chi phí.</div></div><button class="btn primary" id="newMoney">＋ Ghi giao dịch</button></div><div id="financeList"></div></div></section>
+</div>
+
+<div id="modal" class="modal hidden"><div class="modalbox"><div class="top"><h2 id="modalTitle"></h2><button class="btn" onclick="closeModal()">✕</button></div><div id="modalBody"></div></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
 <script>
-const sb=window.supabaseClient;
-const $=id=>document.getElementById(id);
-const STORE_KEY="appleseed_store_profile_v1";
+const sb=window.supabaseClient,$=id=>document.getElementById(id);let session=null;
+const money=n=>Number(n||0).toLocaleString("vi-VN")+"đ";
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+function statusBadge(s){let m={pending:["Chờ kiểm tra","pending"],repairing:["Đang sửa","repair"],done:["Đã sửa xong","done"],delivered:["Đã giao","delivered"],failed:["Không sửa được","failed"]};let x=m[s]||m.pending;return `<span class="badge ${x[1]}">${x[0]}</span>`}
+function openModal(title,body){$("modalTitle").textContent=title;$("modalBody").innerHTML=body;$("modal").classList.remove("hidden")}
+function closeModal(){$("modal").classList.add("hidden")}
+window.closeModal=closeModal;
+async function auth(){
+ if(!sb){$("loginMsg").textContent="Thiếu supabase-config.js";return}
+ let r=await sb.auth.getSession(); if(r.data.session){session=r.data.session;$("login").classList.add("hidden");$("app").classList.remove("hidden");$("user").textContent=session.user.email||"";loadAll()}
+}
+$("loginBtn").onclick=async()=>{let r=await sb.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(r.error){$("loginMsg").textContent=r.error.message;return}auth()};
+$("logout").onclick=async()=>{await sb.auth.signOut();location.reload()};
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".view").forEach(x=>x.classList.add("hidden"));$(b.dataset.tab).classList.remove("hidden");if(b.dataset.tab==="repairs")loadRepairs();if(b.dataset.tab==="customers")loadCustomers();if(b.dataset.tab==="inventory")loadInventory();if(b.dataset.tab==="finance")loadFinance()});
 
-function showApp(session){
-  $("userEmail").textContent=session?.user?.email||"";
-  $("loginView").classList.add("hidden");
-  $("app").classList.remove("hidden");
+async function loadAll(){loadDashboard();loadRepairs();loadCustomers();loadInventory();loadFinance()}
+async function loadDashboard(){
+ let [r,c,i,f]=await Promise.all([
+  sb.from("repair_orders").select("id,status,device_model,customer_id,estimated_total").order("created_at",{ascending:false}).limit(100),
+  sb.from("customers").select("id",{count:"exact",head:true}),
+  sb.from("inventory_items").select("quantity"),
+  sb.from("store_transactions").select("type,amount,created_at")
+ ]);
+ let repairs=r.data||[], inv=i.data||[], tx=f.data||[], today=new Date().toISOString().slice(0,10);
+ $("sRepair").textContent=repairs.filter(x=>["pending","repairing"].includes(x.status)).length;
+ $("sDone").textContent=repairs.filter(x=>x.status==="done").length;
+ $("sCustomer").textContent=c.count||0;$("sStock").textContent=inv.reduce((a,x)=>a+Number(x.quantity||0),0);
+ $("sIncome").textContent=money(tx.filter(x=>x.type==="income"&&String(x.created_at).slice(0,10)===today).reduce((a,x)=>a+Number(x.amount||0),0));
+ $("sExpense").textContent=money(tx.filter(x=>x.type==="expense"&&String(x.created_at).slice(0,10)===today).reduce((a,x)=>a+Number(x.amount||0),0));
+ $("dashRepairs").innerHTML=repairs.filter(x=>["pending","repairing"].includes(x.status)).slice(0,8).map(x=>`<div style="padding:11px 0;border-bottom:1px solid #eee"><b>#${x.id}</b> · ${esc(x.device_model)} · ${statusBadge(x.status)} · ${money(x.estimated_total)}</div>`).join("")||"<p class='muted'>Không có máy đang xử lý.</p>";
 }
-function msg(text){
-  $("msg").textContent=text;
-  $("msg").classList.remove("hidden");
-  setTimeout(()=>$("msg").classList.add("hidden"),3500);
+async function loadRepairs(){
+ let r=await sb.from("repair_orders").select("*,customers(name,phone)").order("created_at",{ascending:false}).limit(100);
+ if(r.error){$("repairsList").innerHTML="<div class='notice'>Chưa có bảng repair_orders. Hãy chạy file <b>supabase-shop.sql</b> trong Supabase.</div>";return}
+ let d=r.data||[];$("repairsList").innerHTML=`<div class="table-wrap"><table><tr><th>Mã</th><th>Khách</th><th>Máy</th><th>Lỗi</th><th>Trạng thái</th><th>Dự kiến</th><th>Ngày</th><th></th></tr>${d.map(x=>`<tr><td>#${x.id}</td><td>${esc(x.customers?.name||"")}<br>${esc(x.customers?.phone||"")}</td><td>${esc(x.device_model)}<br><small>${esc(x.imei||"")}</small></td><td>${esc(x.customer_issue||"")}</td><td>${statusBadge(x.status)}</td><td>${money(x.estimated_total)}</td><td>${new Date(x.created_at).toLocaleDateString("vi-VN")}</td><td><button class="btn" onclick='editRepair(${JSON.stringify(x).replace(/'/g,"&#39;")})'>Sửa</button></td></tr>`).join("")}</table></div>`}
+window.editRepair=x=>openRepairForm(x);
+$("newRepair").onclick=()=>openRepairForm();
+function openRepairForm(x={}){
+ openModal(x.id?"Sửa phiếu #"+x.id:"Tạo phiếu sửa chữa",`<form id="repairForm" class="formgrid">
+ <label class="full">Khách hàng ID<input id="rCustomer" type="number" value="${x.customer_id||""}" required></label>
+ <label>Model máy<input id="rModel" value="${esc(x.device_model||"")}" required></label><label>IMEI/Serial<input id="rImei" value="${esc(x.imei||"")}"></label>
+ <label class="full">Lỗi khách báo<textarea id="rIssue">${esc(x.customer_issue||"")}</textarea></label>
+ <label>Tình trạng máy<textarea id="rCondition">${esc(x.device_condition||"")}</textarea></label><label>Kỹ thuật viên<input id="rTech" value="${esc(x.technician||"")}"></label>
+ <label>Dự kiến (VNĐ)<input id="rEstimate" type="number" value="${x.estimated_total||0}"></label><label>Khách đã trả<input id="rPaid" type="number" value="${x.paid_amount||0}"></label>
+ <label>Trạng thái<select id="rStatus"><option value="pending">Chờ kiểm tra</option><option value="repairing">Đang sửa</option><option value="done">Đã sửa xong</option><option value="delivered">Đã giao</option><option value="failed">Không sửa được</option></select></label>
+ <label class="full">Ghi chú<textarea id="rNote">${esc(x.note||"")}</textarea></label><div class="full right"><button class="btn primary">💾 Lưu phiếu</button></div></form>`);
+ if(x.status)$("rStatus").value=x.status;
+ $("repairForm").onsubmit=async e=>{e.preventDefault();let p={customer_id:Number($("rCustomer").value),device_model:$("rModel").value.trim(),imei:$("rImei").value.trim(),customer_issue:$("rIssue").value.trim(),device_condition:$("rCondition").value.trim(),technician:$("rTech").value.trim(),estimated_total:Number($("rEstimate").value||0),paid_amount:Number($("rPaid").value||0),status:$("rStatus").value,note:$("rNote").value.trim()};let q=x.id?sb.from("repair_orders").update(p).eq("id",x.id):sb.from("repair_orders").insert(p);let z=await q;if(z.error){alert(z.error.message);return}closeModal();loadRepairs();loadDashboard()}
 }
-function loadLocalStore(){
-  const d=JSON.parse(localStorage.getItem(STORE_KEY)||"{}");
-  $("storeName").value=d.name||"Apple Seed Trà Vinh";
-  $("storePhone").value=d.phone||"0898 888 269";
-  $("storeAddress").value=d.address||"292 Phạm Ngũ Lão, Khóm 2, Trà Vinh, Vĩnh Long";
-  $("storeHours").value=d.hours||"08:30 – 20:00";
-  $("storeFacebook").value=d.facebook||"https://www.facebook.com/appleseedvn";
-  $("storeMaps").value=d.maps||"https://maps.app.goo.gl/QEWg9owQidGW5ZyG7";
-  $("storeDescription").value=d.description||"Trung tâm sửa chữa iPhone Apple Seed tại Trà Vinh.";
-}
-$("storeForm").onsubmit=e=>{
-  e.preventDefault();
-  localStorage.setItem(STORE_KEY,JSON.stringify({
-    name:$("storeName").value.trim(),
-    phone:$("storePhone").value.trim(),
-    address:$("storeAddress").value.trim(),
-    hours:$("storeHours").value.trim(),
-    facebook:$("storeFacebook").value.trim(),
-    maps:$("storeMaps").value.trim(),
-    description:$("storeDescription").value.trim()
-  }));
-  msg("Đã lưu thông tin cửa hàng trên trình duyệt này.");
-};
-async function loadStats(){
-  const p=await sb.from("products").select("id,is_active");
-  if(!p.error){
-    $("productCount").textContent=(p.data||[]).length;
-    $("activeProductCount").textContent=(p.data||[]).filter(x=>x.is_active).length;
-  }else{
-    $("productCount").textContent="0";$("activeProductCount").textContent="0";
-  }
-  const pg=await sb.from("pages").select("id,is_active");
-  if(!pg.error){
-    $("pageCount").textContent=(pg.data||[]).length;
-    $("activePageCount").textContent=(pg.data||[]).filter(x=>x.is_active).length;
-  }else{
-    $("pageCount").textContent="0";$("activePageCount").textContent="0";
-  }
-}
-$("loginBtn").onclick=async()=>{
-  if(!sb){$("loginMsg").textContent="Không tìm thấy supabase-config.js.";return;}
-  const {data,error}=await sb.auth.signInWithPassword({
-    email:$("email").value.trim(),
-    password:$("password").value
-  });
-  if(error){$("loginMsg").textContent=error.message;return;}
-  showApp(data.session);loadLocalStore();loadStats();
-};
-$("logoutBtn").onclick=async()=>{await sb.auth.signOut();location.reload();};
-
-(async()=>{
-  if(!sb){$("loginMsg").textContent="Không tìm thấy Supabase.";return;}
-  const {data:{session}}=await sb.auth.getSession();
-  if(session){showApp(session);loadLocalStore();loadStats();}
-})();
+async function loadCustomers(){let r=await sb.from("customers").select("*").order("id",{ascending:false});if(r.error){$("customersList").innerHTML="<div class='notice'>Chưa có bảng customers. Hãy chạy <b>supabase-shop.sql</b>.</div>";return}let d=r.data||[];$("customersList").innerHTML=`<div class="table-wrap"><table><tr><th>ID</th><th>Khách hàng</th><th>Điện thoại</th><th>Địa chỉ</th><th>Ghi chú</th><th></th></tr>${d.map(x=>`<tr><td>#${x.id}</td><td>${esc(x.name)}</td><td>${esc(x.phone)}</td><td>${esc(x.address||"")}</td><td>${esc(x.note||"")}</td><td><button class="btn" onclick='editCustomer(${JSON.stringify(x).replace(/'/g,"&#39;")})'>Sửa</button></td></tr>`).join("")}</table></div>`}
+$("newCustomer").onclick=()=>openCustomerForm();
+window.editCustomer=x=>openCustomerForm(x);
+function openCustomerForm(x={}){openModal(x.id?"Sửa khách hàng":"Thêm khách hàng",`<form id="customerForm" class="formgrid"><label>Tên khách<input id="cName" value="${esc(x.name||"")}" required></label><label>Điện thoại<input id="cPhone" value="${esc(x.phone||"")}" required></label><label>Địa chỉ<input id="cAddress" value="${esc(x.address||"")}"></label><label>Ghi chú<input id="cNote" value="${esc(x.note||"")}"></label><div class="full right"><button class="btn primary">💾 Lưu</button></div></form>`);$("customerForm").onsubmit=async e=>{e.preventDefault();let p={name:$("cName").value.trim(),phone:$("cPhone").value.trim(),address:$("cAddress").value.trim(),note:$("cNote").value.trim()};let z=await(x.id?sb.from("customers").update(p).eq("id",x.id):sb.from("customers").insert(p));if(z.error){alert(z.error.message);return}closeModal();loadCustomers();loadDashboard()}}
+async function loadInventory(){let r=await sb.from("inventory_items").select("*").order("id",{ascending:false});if(r.error){$("inventoryList").innerHTML="<div class='notice'>Chưa có bảng inventory_items. Hãy chạy <b>supabase-shop.sql</b>.</div>";return}let d=r.data||[];$("inventoryList").innerHTML=`<div class="table-wrap"><table><tr><th>ID</th><th>Linh kiện</th><th>Mã</th><th>Tồn</th><th>Giá nhập</th><th>Giá bán</th><th></th></tr>${d.map(x=>`<tr><td>#${x.id}</td><td>${esc(x.name)}</td><td>${esc(x.sku||"")}</td><td>${x.quantity}</td><td>${money(x.cost_price)}</td><td>${money(x.sale_price)}</td><td><button class="btn" onclick='editStock(${JSON.stringify(x).replace(/'/g,"&#39;")})'>Sửa</button></td></tr>`).join("")}</table></div>`}
+$("newStock").onclick=()=>openStockForm();window.editStock=x=>openStockForm(x);
+function openStockForm(x={}){openModal(x.id?"Sửa linh kiện":"Nhập linh kiện",`<form id="stockForm" class="formgrid"><label>Tên linh kiện<input id="iName" value="${esc(x.name||"")}" required></label><label>Mã SKU<input id="iSku" value="${esc(x.sku||"")}"></label><label>Số lượng<input id="iQty" type="number" value="${x.quantity||0}"></label><label>Giá nhập<input id="iCost" type="number" value="${x.cost_price||0}"></label><label>Giá bán<input id="iSale" type="number" value="${x.sale_price||0}"></label><label>Ghi chú<input id="iNote" value="${esc(x.note||"")}"></label><div class="full right"><button class="btn primary">💾 Lưu</button></div></form>`);$("stockForm").onsubmit=async e=>{e.preventDefault();let p={name:$("iName").value.trim(),sku:$("iSku").value.trim(),quantity:Number($("iQty").value||0),cost_price:Number($("iCost").value||0),sale_price:Number($("iSale").value||0),note:$("iNote").value.trim()};let z=await(x.id?sb.from("inventory_items").update(p).eq("id",x.id):sb.from("inventory_items").insert(p));if(z.error){alert(z.error.message);return}closeModal();loadInventory();loadDashboard()}}
+async function loadFinance(){let r=await sb.from("store_transactions").select("*").order("created_at",{ascending:false}).limit(150);if(r.error){$("financeList").innerHTML="<div class='notice'>Chưa có bảng store_transactions. Hãy chạy <b>supabase-shop.sql</b>.</div>";return}let d=r.data||[];$("financeList").innerHTML=`<div class="table-wrap"><table><tr><th>Ngày</th><th>Loại</th><th>Nội dung</th><th>Số tiền</th><th>Phương thức</th></tr>${d.map(x=>`<tr><td>${new Date(x.created_at).toLocaleString("vi-VN")}</td><td>${x.type==="income"?'<span class="success">THU</span>':'<span class="danger">CHI</span>'}</td><td>${esc(x.description||"")}</td><td>${money(x.amount)}</td><td>${esc(x.payment_method||"")}</td></tr>`).join("")}</table></div>`}
+$("newMoney").onclick=()=>openMoneyForm();
+function openMoneyForm(){openModal("Ghi giao dịch",`<form id="moneyForm" class="formgrid"><label>Loại<select id="mType"><option value="income">Thu</option><option value="expense">Chi</option></select></label><label>Số tiền<input id="mAmount" type="number" required></label><label>Nội dung<input id="mDesc" required></label><label>Phương thức<select id="mMethod"><option>Tiền mặt</option><option>Chuyển khoản</option><option>Ví điện tử</option></select></label><div class="full right"><button class="btn primary">💾 Lưu giao dịch</button></div></form>`);$("moneyForm").onsubmit=async e=>{e.preventDefault();let z=await sb.from("store_transactions").insert({type:$("mType").value,amount:Number($("mAmount").value),description:$("mDesc").value.trim(),payment_method:$("mMethod").value});if(z.error){alert(z.error.message);return}closeModal();loadFinance();loadDashboard()}}
+auth();
 </script>
 </body>
 </html>
