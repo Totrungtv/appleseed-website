@@ -20,7 +20,7 @@ body{background:var(--bg);color:var(--text)}
 .item{border:1px solid var(--line);border-radius:14px;padding:16px}
 .item h3{margin:0 0 8px}.item p{margin:5px 0;color:var(--muted);line-height:1.5}
 .item-actions{display:flex;gap:8px;margin-top:13px}
-.btn2{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 11px;cursor:pointer;font-weight:700;text-decoration:none;color:inherit;display:inline-block}
+.btn2{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 11px;cursor:pointer;font-weight:700}
 .danger{color:#b42318;border-color:#fecdca}.edit{color:#175cd3}
 .form{display:grid;gap:12px;background:#f8fafc;border:1px solid var(--line);padding:16px;border-radius:14px;margin-top:15px}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -28,9 +28,26 @@ label{font-weight:700;font-size:14px}input,textarea,select{width:100%;box-sizing
 .hidden{display:none}.status{padding:11px 13px;border-radius:10px;margin-bottom:16px;background:#eff8ff;color:#175cd3}.status.error{background:#fef3f2;color:#b42318}
 .login{max-width:460px;margin:80px auto;padding:22px}.login h1{margin-top:0}
 .small{font-size:13px;color:var(--muted)}
-.admin-shop-link{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
+.icon-pop{position:absolute;z-index:9999;background:#fff;border:1px solid #d0d5dd;border-radius:12px;padding:10px;box-shadow:0 12px 30px rgba(0,0,0,.16);display:grid;grid-template-columns:repeat(8,36px);gap:4px;max-width:330px}.icon-pop.hidden{display:none !important;visibility:hidden !important}
+.icon-pop button{border:0;background:#fff;border-radius:7px;font-size:21px;padding:6px;cursor:pointer}
+.icon-pop button:hover{background:#f2f4f7}
+.upload-status{font-size:13px;color:#475467;margin-top:8px}
+
 @media(max-width:750px){.grid,.form-row{grid-template-columns:1fr}.admin-top{align-items:flex-start;flex-direction:column}}
-</style>
+
+.native-editor{min-height:300px;padding:16px;border:1px solid #d0d5dd;border-radius:10px;background:#fff;outline:none;line-height:1.7;font-size:16px}
+.native-editor:empty:before{content:attr(data-placeholder);color:#98a2b3}
+.native-editor img{max-width:100%;height:auto;border-radius:8px}
+.native-toolbar{display:flex;flex-wrap:wrap;gap:5px;padding:9px;background:#f8fafc;border:1px solid #d0d5dd;border-top:0;border-radius:0 0 10px 10px}
+.native-toolbar button{border:1px solid #d0d5dd;background:#fff;border-radius:7px;padding:7px 10px;cursor:pointer;font-weight:700}
+.native-toolbar button:hover{background:#f2f4f7}
+.native-icon-picker{position:absolute;z-index:1000;display:grid;grid-template-columns:repeat(8,36px);gap:4px;background:#fff;border:1px solid #d0d5dd;border-radius:12px;padding:10px;box-shadow:0 12px 30px rgba(0,0,0,.16)}
+.native-icon-picker[hidden]{display:none!important}
+.native-icon-picker button{border:0;background:#fff;border-radius:7px;font-size:21px;padding:6px;cursor:pointer}
+.native-upload-status{font-size:13px;color:#475467;margin:7px 0}
+
+.editor-shell{border:1px solid #d0d5dd;border-radius:12px;background:#fff;overflow:hidden;position:relative}.editor-topbar{display:flex;justify-content:space-between;padding:9px 12px;background:#f8fafc;border-bottom:1px solid #e4e7ec;font-size:13px}.editor-count{color:#667085}.editor-shell .native-editor{border:0;border-radius:0;min-height:320px;padding:18px;line-height:1.75;font-size:16px;outline:none;overflow:auto}.editor-shell .native-editor:empty:before{content:attr(data-placeholder);color:#98a2b3}.editor-shell .native-editor img{max-width:100%;height:auto;border-radius:10px}.editor-shell .native-editor table{width:100%;border-collapse:collapse;margin:14px 0}.editor-shell .native-editor td,.editor-shell .native-editor th{border:1px solid #d0d5dd;padding:9px;min-width:70px}.editor-shell .native-editor blockquote{border-left:4px solid #2563eb;margin:14px 0;padding:10px 15px;background:#eff6ff}.editor-shell .native-editor pre{background:#111827;color:#fff;padding:14px;border-radius:10px;overflow:auto}.editor-shell .native-editor hr{border:0;border-top:1px solid #d0d5dd;margin:20px 0}.native-toolbar{display:flex;flex-wrap:wrap;gap:5px;padding:9px;background:#f8fafc;border-top:1px solid #e4e7ec}.native-toolbar button,.native-toolbar select{border:1px solid #d0d5dd;background:#fff;border-radius:7px;padding:7px 9px;cursor:pointer;font-weight:700;color:#344054}.native-toolbar button:hover,.native-toolbar select:hover{background:#f2f4f7}.native-toolbar select{max-width:130px}.color-tool{display:flex;align-items:center;gap:3px;border:1px solid #d0d5dd;background:#fff;border-radius:7px;padding:4px 7px;font-weight:800}.color-tool input{width:24px;height:24px;margin:0;padding:0;border:0}.native-icon-picker{position:absolute;left:10px;bottom:58px;z-index:1000;display:grid;grid-template-columns:repeat(10,34px);gap:3px;background:#fff;border:1px solid #d0d5dd;border-radius:12px;padding:8px;box-shadow:0 12px 30px rgba(0,0,0,.16);max-width:390px}.native-icon-picker[hidden]{display:none!important}.native-icon-picker button{border:0;background:#fff;border-radius:7px;font-size:20px;padding:5px;cursor:pointer}.native-upload-status{font-size:12px;color:#475467;padding:6px 10px}.editor-source{width:100%;min-height:320px;border:0;padding:18px;font:13px/1.6 Consolas,monospace;background:#111827;color:#f8fafc;resize:vertical}.editor-video{position:relative;aspect-ratio:16/9;margin:14px 0}.editor-video iframe{width:100%;height:100%;border:0;border-radius:10px}.editor-fullscreen{position:fixed!important;inset:10px!important;z-index:99999!important;box-shadow:0 20px 60px rgba(0,0,0,.3)}.editor-fullscreen .native-editor{min-height:calc(100vh - 150px)}.editor-preview-modal{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:100000;display:flex;align-items:center;justify-content:center;padding:20px}.editor-preview-box{background:#fff;border-radius:16px;width:min(900px,100%);max-height:90vh;overflow:auto}.editor-preview-head{position:sticky;top:0;display:flex;justify-content:space-between;padding:13px 16px;background:#fff;border-bottom:1px solid #e4e7ec}.editor-preview-content{padding:28px;line-height:1.8}.editor-preview-content img{max-width:100%;height:auto;border-radius:10px}.editor-preview-content table{width:100%;border-collapse:collapse}.editor-preview-content td,.editor-preview-content th{border:1px solid #d0d5dd;padding:9px}
+<style>.image-main-row{display:flex;gap:8px;align-items:center}.image-main-row input:first-child{flex:1}.main-image-preview img{margin-top:8px;max-width:180px;max-height:120px;object-fit:cover;border-radius:10px;border:1px solid #e4e7ec}.main-image-preview{min-height:4px}</style>
 </head>
 <body>
 <div id="loginView" class="panel login">
@@ -49,7 +66,6 @@ label{font-weight:700;font-size:14px}input,textarea,select{width:100%;box-sizing
   <div class="admin-top">
     <div><h1>⚙️ Quản trị Apple Seed</h1><div class="small" id="userEmail"></div></div>
     <div class="admin-actions">
-      <a class="btn2 admin-shop-link" href="shop-admin.html">🏪 Quản lý cửa hàng</a>
       <a class="btn2" href="index.html">← Website</a>
       <button class="btn2" id="logoutBtn">Đăng xuất</button>
     </div>
@@ -57,9 +73,9 @@ label{font-weight:700;font-size:14px}input,textarea,select{width:100%;box-sizing
 
   <div id="status" class="status hidden"></div>
 
-  <section class="panel" id="productsSection">
+  <section class="panel">
     <div class="panel-head">
-      <div><h2>＋ Sản phẩm</h2><div class="small">Thêm, sửa, ẩn hoặc xóa sản phẩm đang hiển thị.</div></div>
+      <div><h2>＋ Sản phẩm</h2><div class="small">Soạn thảo PRO: định dạng đẹp, ảnh, icon, bảng, liên kết, video và xem trước.</div></div>
       <button class="plus" id="addProductBtn">＋ Thêm sản phẩm</button>
     </div>
 
@@ -71,9 +87,24 @@ label{font-weight:700;font-size:14px}input,textarea,select{width:100%;box-sizing
       </div>
       <div class="form-row">
         <label>Giá (VNĐ)<input id="productPrice" type="number" min="0" value="0"></label>
-        <label>Link ảnh<input id="productImage" placeholder="https://..."></label>
+        <label>Ảnh chính sản phẩm<div class="image-main-row"><input id="productImage" placeholder="https://..."><button class="btn2" type="button" id="productMainImageBtn">📤 Tải ảnh</button><input id="productMainImageFile" type="file" accept="image/*" hidden></div><div id="productMainImagePreview" class="main-image-preview"></div></label>
       </div>
-      <label>Mô tả<textarea id="productDescription"></textarea></label>
+      <label>Mô tả sản phẩm</label>
+      <div class="editor-shell" data-editor-shell="productEditor">
+<div class="editor-topbar"><strong>Soạn thảo sản phẩm PRO</strong><span class="editor-count">0 từ</span></div>
+<div class="native-editor" id="productEditor" contenteditable="true" data-placeholder="Viết nội dung..."></div>
+<div class="native-toolbar" data-editor="productEditor">
+<button type="button" data-cmd="undo" title="Hoàn tác">↶</button><button type="button" data-cmd="redo" title="Làm lại">↷</button>
+<select data-action="block" title="Kiểu chữ"><option value="p">Đoạn văn</option><option value="h1">H1</option><option value="h2">H2</option><option value="h3">H3</option><option value="h4">H4</option></select>
+<button type="button" data-cmd="bold"><b>B</b></button><button type="button" data-cmd="italic"><i>I</i></button><button type="button" data-cmd="underline"><u>U</u></button><button type="button" data-cmd="strikeThrough"><s>S</s></button>
+<button type="button" data-cmd="superscript">x²</button><button type="button" data-cmd="subscript">x₂</button>
+<label class="color-tool">A <input type="color" data-action="foreColor" value="#111827"></label><label class="color-tool">▰ <input type="color" data-action="hiliteColor" value="#fff59d"></label>
+<button type="button" data-cmd="justifyLeft">≡</button><button type="button" data-cmd="justifyCenter">≣</button><button type="button" data-cmd="justifyRight">≡</button><button type="button" data-cmd="justifyFull">☰</button>
+<button type="button" data-cmd="insertUnorderedList">• List</button><button type="button" data-cmd="insertOrderedList">1. List</button><button type="button" data-cmd="outdent">⇤</button><button type="button" data-cmd="indent">⇥</button>
+<button type="button" data-cmd="formatBlock" data-value="blockquote">❝</button><button type="button" data-cmd="formatBlock" data-value="pre">&lt;/&gt;</button>
+<button type="button" data-action="link">🔗</button><button type="button" data-action="imageUpload">📤 Ảnh</button><button type="button" data-action="imageUrl">🖼️ URL</button><button type="button" data-action="video">🎬</button><button type="button" data-action="table">▦ Bảng</button><button type="button" data-action="hr">―</button><button type="button" data-action="icon">😊</button><button type="button" data-cmd="removeFormat">Tx</button><button type="button" data-action="source">&lt;/&gt;</button><button type="button" data-action="preview">👁️</button><button type="button" data-action="fullscreen">⛶</button>
+<input class="native-image-input" type="file" accept="image/*" hidden></div>
+<textarea class="editor-source" hidden spellcheck="false"></textarea><div class="native-icon-picker" hidden></div><div class="native-upload-status"></div></div>
       <label>Trạng thái
         <select id="productActive"><option value="true">Đang bán</option><option value="false">Ẩn</option></select>
       </label>
@@ -85,9 +116,9 @@ label{font-weight:700;font-size:14px}input,textarea,select{width:100%;box-sizing
     <div id="productsList" class="grid"></div>
   </section>
 
-  <section class="panel" id="pagesSection">
+  <section class="panel">
     <div class="panel-head">
-      <div><h2>＋ Trang dịch vụ</h2><div class="small">Tạo trang mới mà không phải sửa code index.</div></div>
+      <div><h2>＋ Trang dịch vụ</h2><div class="small">Soạn thảo PRO: ảnh, icon, màu, bảng, video, HTML, xem trước và toàn màn hình.</div></div>
       <button class="plus" id="addPageBtn">＋ Thêm trang</button>
     </div>
 
@@ -98,7 +129,22 @@ label{font-weight:700;font-size:14px}input,textarea,select{width:100%;box-sizing
         <label>Slug<input id="pageSlug" required placeholder="sua-camera-iphone-tra-vinh"></label>
       </div>
       <label>Mô tả ngắn<input id="pageDescription" placeholder="Mô tả hiển thị trên danh sách và SEO"></label>
-      <label>Nội dung trang<textarea id="pageContent" required placeholder="Nội dung trang dịch vụ..."></textarea></label>
+      <label>Nội dung trang</label>
+      <div class="editor-shell" data-editor-shell="pageEditor">
+<div class="editor-topbar"><strong>Soạn thảo trang PRO</strong><span class="editor-count">0 từ</span></div>
+<div class="native-editor" id="pageEditor" contenteditable="true" data-placeholder="Viết nội dung..."></div>
+<div class="native-toolbar" data-editor="pageEditor">
+<button type="button" data-cmd="undo" title="Hoàn tác">↶</button><button type="button" data-cmd="redo" title="Làm lại">↷</button>
+<select data-action="block" title="Kiểu chữ"><option value="p">Đoạn văn</option><option value="h1">H1</option><option value="h2">H2</option><option value="h3">H3</option><option value="h4">H4</option></select>
+<button type="button" data-cmd="bold"><b>B</b></button><button type="button" data-cmd="italic"><i>I</i></button><button type="button" data-cmd="underline"><u>U</u></button><button type="button" data-cmd="strikeThrough"><s>S</s></button>
+<button type="button" data-cmd="superscript">x²</button><button type="button" data-cmd="subscript">x₂</button>
+<label class="color-tool">A <input type="color" data-action="foreColor" value="#111827"></label><label class="color-tool">▰ <input type="color" data-action="hiliteColor" value="#fff59d"></label>
+<button type="button" data-cmd="justifyLeft">≡</button><button type="button" data-cmd="justifyCenter">≣</button><button type="button" data-cmd="justifyRight">≡</button><button type="button" data-cmd="justifyFull">☰</button>
+<button type="button" data-cmd="insertUnorderedList">• List</button><button type="button" data-cmd="insertOrderedList">1. List</button><button type="button" data-cmd="outdent">⇤</button><button type="button" data-cmd="indent">⇥</button>
+<button type="button" data-cmd="formatBlock" data-value="blockquote">❝</button><button type="button" data-cmd="formatBlock" data-value="pre">&lt;/&gt;</button>
+<button type="button" data-action="link">🔗</button><button type="button" data-action="imageUpload">📤 Ảnh</button><button type="button" data-action="imageUrl">🖼️ URL</button><button type="button" data-action="video">🎬</button><button type="button" data-action="table">▦ Bảng</button><button type="button" data-action="hr">―</button><button type="button" data-action="icon">😊</button><button type="button" data-cmd="removeFormat">Tx</button><button type="button" data-action="source">&lt;/&gt;</button><button type="button" data-action="preview">👁️</button><button type="button" data-action="fullscreen">⛶</button>
+<input class="native-image-input" type="file" accept="image/*" hidden></div>
+<textarea class="editor-source" hidden spellcheck="false"></textarea><div class="native-icon-picker" hidden></div><div class="native-upload-status"></div></div>
       <label>Trạng thái
         <select id="pageActive"><option value="true">Đang xuất bản</option><option value="false">Ẩn</option></select>
       </label>
@@ -117,6 +163,26 @@ label{font-weight:700;font-size:14px}input,textarea,select{width:100%;box-sizing
 let sb = window.supabaseClient;
 
 const $ = id => document.getElementById(id);
+
+
+const ICONS=["😀","😃","😄","😁","😂","🤣","😊","😍","🥰","😘","😎","🤩","👍","👏","🙏","💪","🔥","⭐","✨","❤️","💯","🎉","🚀","📱","💻","🛠️","🔧","🔩","⚙️","🔋","🔌","📷","🎧","🎤","💡","📍","☎️","📞","✉️","🌐","🛒","🏷️","✅","❌","⚠️","❗","❓","ℹ️","➡️","⬅️","⬆️","⬇️","➕","➖","🔴","🟢","🔵"];
+const editorEl=id=>document.getElementById(id); const ranges=new WeakMap();
+function escAttr(s){return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function saveSel(el){const s=getSelection();if(s&&s.rangeCount&&el.contains(s.anchorNode))ranges.set(el,s.getRangeAt(0).cloneRange());}
+function restoreSel(el){el.focus();const r=ranges.get(el);if(r){const s=getSelection();s.removeAllRanges();s.addRange(r);}}
+function insertHTML(el,html){restoreSel(el);document.execCommand('insertHTML',false,html);saveSel(el);updateMeta(el);}
+function updateMeta(el){if(!el)return;const c=el.closest('.editor-shell')?.querySelector('.editor-count');if(c)c.textContent=((el.innerText||'').trim().split(/\s+/).filter(Boolean).length)+' từ';}
+function sanitizeUrl(u){try{const x=new URL(u,location.href);return ['http:','https:','mailto:','tel:'].includes(x.protocol)?x.href:'';}catch{return '';}}
+function yt(u){try{const x=new URL(u);let id=x.hostname.includes('youtu.be')?x.pathname.slice(1):x.searchParams.get('v');if(!id&&x.pathname.includes('/shorts/'))id=x.pathname.split('/').pop();return id?`https://www.youtube.com/embed/${encodeURIComponent(id)}`:'';}catch{return '';}}
+function sourceMode(shell,on){const e=shell.querySelector('.native-editor'),s=shell.querySelector('.editor-source');if(on){s.value=e.innerHTML;s.hidden=false;e.hidden=true;shell.classList.add('source-mode')}else{e.innerHTML=s.value;s.hidden=true;e.hidden=false;shell.classList.remove('source-mode');updateMeta(e)}}
+function preview(el){const m=document.createElement('div');m.className='editor-preview-modal';m.innerHTML=`<div class="editor-preview-box"><div class="editor-preview-head"><b>👁️ Xem trước</b><button class="btn2" type="button">✕ Đóng</button></div><div class="editor-preview-content">${el.innerHTML||'<p>Chưa có nội dung.</p>'}</div></div>`;document.body.appendChild(m);m.querySelector('button').onclick=()=>m.remove();m.onclick=e=>{if(e.target===m)m.remove()}}
+function picker(shell){const p=shell.querySelector('.native-icon-picker');if(p.dataset.ready)return;p.dataset.ready='1';ICONS.forEach(ic=>{const b=document.createElement('button');b.type='button';b.textContent=ic;b.onmousedown=e=>e.preventDefault();b.onclick=()=>{insertHTML(shell.querySelector('.native-editor'),ic);p.hidden=true};p.appendChild(b)})}
+async function uploadImg(shell,file){const e=shell.querySelector('.native-editor'),msg=shell.querySelector('.native-upload-status');if(!file)return;if(!file.type.startsWith('image/')){msg.textContent='❌ File phải là ảnh.';return}if(file.size>8*1024*1024){msg.textContent='❌ Ảnh tối đa 8MB.';return}if(!sb?.storage){msg.textContent='❌ Chưa kết nối Storage.';return}msg.textContent='⏳ Đang tải ảnh...';try{const folder=e.id==='productEditor'?'products':'pages',safe=file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,'-'),path=`${folder}/${Date.now()}-${Math.random().toString(36).slice(2,8)}-${safe}`;const r=await sb.storage.from('site-images').upload(path,file,{cacheControl:'3600',upsert:false});if(r.error)throw r.error;const url=sb.storage.from('site-images').getPublicUrl(path).data.publicUrl;insertHTML(e,`<p><img src="${escAttr(url)}" alt="" style="max-width:100%;height:auto"></p>`);msg.textContent='✅ Đã chèn ảnh.'}catch(err){msg.textContent='❌ '+(err?.message||err)}}
+function setupEditor(shell){const e=shell.querySelector('.native-editor'),p=shell.querySelector('.native-icon-picker'),file=shell.querySelector('.native-image-input');picker(shell);['input','keyup','mouseup','focus'].forEach(ev=>e.addEventListener(ev,()=>{saveSel(e);updateMeta(e);if(ev==='input')localStorage.setItem('appleSeedDraft:'+e.id,e.innerHTML)}));shell.querySelectorAll('button,select,input').forEach(c=>{c.addEventListener('mousedown',ev=>{if(c.tagName==='BUTTON'||c.tagName==='SELECT'||c.dataset.action)ev.preventDefault()});c.addEventListener('click',async()=>{saveSel(e);const cmd=c.dataset.cmd,a=c.dataset.action;if(cmd){restoreSel(e);document.execCommand(cmd,false,c.dataset.value||null);saveSel(e);updateMeta(e);return}if(a==='block'){restoreSel(e);document.execCommand('formatBlock',false,c.value);saveSel(e);return}if(a==='foreColor'||a==='hiliteColor'){restoreSel(e);document.execCommand(a==='foreColor'?'foreColor':'hiliteColor',false,c.value);saveSel(e);return}if(a==='icon'){p.hidden=!p.hidden;return}if(a==='link'){const u=sanitizeUrl(prompt('Nhập URL liên kết:')||'');if(!u)return;restoreSel(e);const s=getSelection();if(s&&s.toString())document.execCommand('createLink',false,u);else insertHTML(e,`<a href="${escAttr(u)}" target="_blank" rel="noopener">${escAttr(u)}</a>`);return}if(a==='imageUpload'){file.click();return}if(a==='imageUrl'){const u=sanitizeUrl(prompt('Nhập URL ảnh:')||'');if(u)insertHTML(e,`<p><img src="${escAttr(u)}" alt="" style="max-width:100%;height:auto"></p>`);return}if(a==='video'){const u=sanitizeUrl(prompt('Dán link YouTube:')||''),id=yt(u);if(!id){alert('Chỉ hỗ trợ link YouTube hợp lệ.');return}insertHTML(e,`<div class="editor-video"><iframe src="${escAttr(id)}" loading="lazy" allowfullscreen></iframe></div>`);return}if(a==='table'){const r=Math.max(1,Math.min(10,Number(prompt('Số hàng:',3)||3))),cols=Math.max(1,Math.min(8,Number(prompt('Số cột:',3)||3)));let h='<table><tbody>';for(let i=0;i<r;i++){h+='<tr>';for(let j=0;j<cols;j++)h+=`<td>${i===0?'Nội dung':''}</td>`;h+='</tr>'}h+='</tbody></table><p></p>';insertHTML(e,h);return}if(a==='hr'){insertHTML(e,'<hr>');return}if(a==='source'){sourceMode(shell,!shell.classList.contains('source-mode'));return}if(a==='preview'){preview(e);return}if(a==='fullscreen'){shell.classList.toggle('editor-fullscreen');return}})});file.addEventListener('change',ev=>{const f=ev.target.files?.[0];if(f)uploadImg(shell,f);ev.target.value=''}) ;updateMeta(e)}
+document.querySelectorAll('.editor-shell').forEach(setupEditor);
+function setEditorHtml(h=''){const e=editorEl('pageEditor');if(e)e.innerHTML=h||'';updateMeta(e)} function getEditorHtml(){const e=editorEl('pageEditor');return e?e.innerHTML:''} function setProductEditorHtml(h=''){const e=editorEl('productEditor');if(e)e.innerHTML=h||'';updateMeta(e)} function getProductEditorHtml(){const e=editorEl('productEditor');return e?e.innerHTML:''}
+function restoreDraftIfAny(id){const v=localStorage.getItem('appleSeedDraft:'+id);if(v&&confirm('Khôi phục bản nháp chưa lưu?')){if(id==='productEditor')setProductEditorHtml(v);else setEditorHtml(v)}} function clearDraft(id){localStorage.removeItem('appleSeedDraft:'+id)}
+
 const show = (el, on=true) => el.classList.toggle("hidden", !on);
 
 function status(msg, error=false){
@@ -125,15 +191,29 @@ function status(msg, error=false){
 }
 function esc(v=""){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));}
 
+
+function previewMainImage(url){const box=$("productMainImagePreview");if(!box)return;box.innerHTML=url?`<img src="${esc(url)}" alt="Ảnh sản phẩm">`:"";}
+async function uploadMainProductImage(file){if(!file)return;if(!file.type.startsWith("image/")){status("File phải là ảnh.",true);return}if(file.size>8*1024*1024){status("Ảnh chính tối đa 8MB.",true);return}if(!sb?.storage){status("Chưa kết nối Supabase Storage.",true);return}status("Đang tải ảnh chính...");try{const safe=file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,"-"),path=`products-main/${Date.now()}-${Math.random().toString(36).slice(2,8)}-${safe}`;const r=await sb.storage.from("site-images").upload(path,file,{cacheControl:"3600",upsert:false});if(r.error)throw r.error;const url=sb.storage.from("site-images").getPublicUrl(path).data.publicUrl;$("productImage").value=url;previewMainImage(url);status("Đã tải ảnh chính.");}catch(err){status("Upload ảnh lỗi: "+(err?.message||err),true)}}
 async function checkSession(){
   if(!sb){ $("loginStatus").textContent="Không tìm thấy supabase-config.js."; return; }
   const {data:{session}}=await sb.auth.getSession();
   if(session){ $("userEmail").textContent=session.user.email||""; show($("loginView"),false); show($("app"),true); await refreshAll(); }
 }
 $("loginBtn").onclick=async()=>{
-  const {error}=await sb.auth.signInWithPassword({email:$("loginEmail").value.trim(),password:$("loginPassword").value});
-  if(error){$("loginStatus").textContent=error.message; return;}
-  await checkSession();
+  const btn=$("loginBtn"), msg=$("loginStatus");
+  btn.disabled=true; btn.textContent="Đang đăng nhập..."; msg.textContent="";
+  try{
+    if(!sb) throw new Error("Không kết nối được Supabase. Kiểm tra supabase-config.js.");
+    const email=$("loginEmail").value.trim(), password=$("loginPassword").value;
+    if(!email || !password) throw new Error("Vui lòng nhập email và mật khẩu.");
+    const {error}=await sb.auth.signInWithPassword({email,password});
+    if(error) throw error;
+    await checkSession();
+  }catch(err){
+    msg.textContent="Lỗi đăng nhập: "+(err?.message || String(err));
+  }finally{
+    btn.disabled=false; btn.textContent="Đăng nhập";
+  }
 };
 $("logoutBtn").onclick=async()=>{await sb.auth.signOut();location.reload();};
 
@@ -154,22 +234,22 @@ async function loadProducts(){
       </div>
     </article>`).join("") || "<p>Chưa có sản phẩm.</p>";
 }
-$("addProductBtn").onclick=()=>{ $("productForm").reset(); $("productId").value=""; $("productActive").value="true"; show($("productForm")); };
-$("cancelProduct").onclick=()=>show($("productForm"),false);
+$("addProductBtn").onclick=()=>{ $("productForm").reset(); $("productId").value=""; $("productActive").value="true"; setProductEditorHtml(""); show($("productForm")); restoreDraftIfAny("productEditor"); previewMainImage(""); };
+$("cancelProduct").onclick=()=>show($("productForm"),false);$("productMainImageBtn").onclick=()=>$("productMainImageFile").click();$("productMainImageFile").onchange=e=>{uploadMainProductImage(e.target.files?.[0]);e.target.value=""};$("productImage").oninput=()=>previewMainImage($("productImage").value.trim());
 window.editProduct=(p)=>{
   $("productId").value=p.id;$("productName").value=p.name||"";$("productCategory").value=p.category||"";
-  $("productPrice").value=p.price||0;$("productImage").value=p.image_url||"";
-  $("productDescription").value=p.description||"";$("productActive").value=String(p.is_active);
+  $("productPrice").value=p.price||0;$("productImage").value=p.image_url||"";previewMainImage(p.image_url||"");
+  setProductEditorHtml(p.description||"");$("productActive").value=String(p.is_active);
   show($("productForm"));
 };
 $("productForm").onsubmit=async e=>{
   e.preventDefault();
-  const payload={name:$("productName").value.trim(),category:$("productCategory").value.trim(),price:Number($("productPrice").value||0),image_url:$("productImage").value.trim(),description:$("productDescription").value.trim(),is_active:$("productActive").value==="true"};
+  const payload={name:$("productName").value.trim(),category:$("productCategory").value.trim(),price:Number($("productPrice").value||0),image_url:$("productImage").value.trim(),description:getProductEditorHtml(),is_active:$("productActive").value==="true"};
   let res;
   if($("productId").value) res=await sb.from("products").update(payload).eq("id",Number($("productId").value));
   else res=await sb.from("products").insert(payload);
   if(res.error){status("Lưu sản phẩm lỗi: "+res.error.message,true);return;}
-  show($("productForm"),false);status("Đã lưu sản phẩm.");await loadProducts();
+  clearDraft("productEditor");show($("productForm"),false);status("Đã lưu sản phẩm.");await loadProducts();
 };
 window.deleteProduct=async id=>{
   if(!confirm("Xóa sản phẩm này?"))return;
@@ -192,22 +272,22 @@ async function loadPages(){
       </div>
     </article>`).join("") || "<p>Chưa có trang động.</p>";
 }
-$("addPageBtn").onclick=()=>{ $("pageForm").reset(); $("pageId").value=""; $("pageActive").value="true"; show($("pageForm")); };
+$("addPageBtn").onclick=()=>{ $("pageForm").reset(); $("pageId").value=""; $("pageActive").value="true"; setEditorHtml(""); show($("pageForm")); restoreDraftIfAny("pageEditor"); };
 $("cancelPage").onclick=()=>show($("pageForm"),false);
 window.editPage=(p)=>{
   $("pageId").value=p.id;$("pageTitle").value=p.title||"";$("pageSlug").value=p.slug||"";
-  $("pageDescription").value=p.description||"";$("pageContent").value=p.content||"";
+  $("pageDescription").value=p.description||"";setEditorHtml(p.content||"");
   $("pageActive").value=String(p.is_active);show($("pageForm"));
 };
 $("pageForm").onsubmit=async e=>{
   e.preventDefault();
   const slug=$("pageSlug").value.trim().toLowerCase().replace(/[^a-z0-9\-]+/g,"-").replace(/^-+|-+$/g,"");
-  const payload={title:$("pageTitle").value.trim(),slug,description:$("pageDescription").value.trim(),content:$("pageContent").value.trim(),is_active:$("pageActive").value==="true"};
+  const payload={title:$("pageTitle").value.trim(),slug,description:$("pageDescription").value.trim(),content:getEditorHtml(),is_active:$("pageActive").value==="true"};
   let res;
   if($("pageId").value) res=await sb.from("pages").update(payload).eq("id",Number($("pageId").value));
   else res=await sb.from("pages").insert(payload);
   if(res.error){status("Lưu trang lỗi: "+res.error.message,true);return;}
-  show($("pageForm"),false);status("Đã lưu trang.");await loadPages();
+  clearDraft("pageEditor");show($("pageForm"),false);status("Đã lưu trang.");await loadPages();
 };
 window.deletePage=async id=>{
   if(!confirm("Xóa trang này khỏi website?"))return;
@@ -218,5 +298,8 @@ window.deletePage=async id=>{
 
 checkSession();
 </script>
+
+
+
 </body>
 </html>

@@ -12,7 +12,7 @@
 <style>
 .dynamic-page{max-width:950px;margin:0 auto;padding:55px 18px 80px}
 .dynamic-page h1{font-size:42px;line-height:1.2;margin-bottom:15px}
-.dynamic-content{font-size:17px;line-height:1.8;color:#344054;white-space:pre-wrap}
+.dynamic-content{font-size:17px;line-height:1.8;color:#344054}.dynamic-content img{max-width:100%;height:auto;border-radius:12px}.dynamic-content table{width:100%;border-collapse:collapse;margin:18px 0}.dynamic-content td,.dynamic-content th{border:1px solid #d0d5dd;padding:10px}.dynamic-content blockquote{border-left:4px solid #2563eb;background:#eff6ff;padding:10px 16px;margin:18px 0}.dynamic-content pre{background:#111827;color:#fff;padding:14px;border-radius:10px;overflow:auto}.dynamic-video{position:relative;aspect-ratio:16/9;margin:18px 0}.dynamic-video iframe{width:100%;height:100%;border:0;border-radius:12px}
 .dynamic-content p{margin:0 0 18px}
 .dynamic-back{display:inline-block;margin-top:28px}
 @media(max-width:700px){.dynamic-page h1{font-size:31px}}
@@ -46,7 +46,16 @@
  document.getElementById("description").content=data.description||data.title;
  document.getElementById("canonical").href=location.href;
  document.getElementById("title").textContent=data.title;
- document.getElementById("body").innerHTML=data.content||"";
+ const body=document.getElementById("body");
+ function safeRichHtml(html){
+   const tpl=document.createElement("template"); tpl.innerHTML=html||"";
+   tpl.content.querySelectorAll("script,object,embed,form,style").forEach(x=>x.remove());
+   tpl.content.querySelectorAll("*").forEach(el=>{
+     [...el.attributes].forEach(a=>{if(a.name.toLowerCase().startsWith("on") || (a.name.toLowerCase()==="href" && /^javascript:/i.test(a.value)) || (a.name.toLowerCase()==="src" && /^javascript:/i.test(a.value))) el.removeAttribute(a.name);});
+   });
+   return tpl.innerHTML;
+ }
+ body.innerHTML=safeRichHtml(data.content||"");
  state.remove();article.classList.remove("hidden");
 })();
 </script>

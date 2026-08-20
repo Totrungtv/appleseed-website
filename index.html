@@ -84,11 +84,7 @@
       font-size: 20px;
     }
 
-    .product-description {
-      color: #667085;
-      margin: 0 0 12px;
-      line-height: 1.5;
-    }
+    .product-description {color:#667085;margin:0 0 12px;line-height:1.5}.product-description img{max-width:100%;height:auto;border-radius:10px}.product-description table{width:100%;border-collapse:collapse}.product-description td,.product-description th{border:1px solid #d0d5dd;padding:7px}.product-description blockquote{border-left:4px solid #2563eb;padding:8px 12px;background:#eff6ff;margin:10px 0}
 
     .product-price {
       font-size: 20px;
@@ -686,6 +682,19 @@
     }
 
 
+    function safeRichHtml(html) {
+      const tpl = document.createElement("template");
+      tpl.innerHTML = html || "";
+      tpl.content.querySelectorAll("script,object,embed,form,style").forEach(x => x.remove());
+      tpl.content.querySelectorAll("*").forEach(el => {
+        [...el.attributes].forEach(a => {
+          const n=a.name.toLowerCase(), v=a.value || "";
+          if(n.startsWith("on") || (n==="href" && /^javascript:/i.test(v)) || (n==="src" && /^javascript:/i.test(v))) el.removeAttribute(a.name);
+        });
+      });
+      return tpl.innerHTML;
+    }
+
     /* =====================================
        5. HIỂN THỊ SẢN PHẨM
     ===================================== */
@@ -731,9 +740,9 @@
               ${
                 product.description
                   ? `
-                    <p class="product-description">
-                      ${product.description}
-                    </p>
+                    <div class="product-description">
+                      ${safeRichHtml(product.description)}
+                    </div>
                   `
                   : ""
               }
