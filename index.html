@@ -144,6 +144,103 @@
   .hero .btn { grid-column: 1; }
 }
 </style>
+
+<style id="appleseed-final-home-layout">
+/* APPLESEED — BỐ CỤC TRANG CHỦ GỌN: LOGO + MENU + ẢNH CỬA HÀNG BÊN TRÁI */
+.site-header .nav {
+  width: min(1180px, calc(100% - 40px)) !important;
+  margin: 0 auto !important;
+  min-height: 76px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 30px !important;
+}
+.site-header .brand {
+  display: inline-flex !important;
+  align-items: center !important;
+  flex: 0 0 auto !important;
+}
+.site-header .brand-logo {
+  width: 82px !important;
+  height: 82px !important;
+  max-width: 82px !important;
+  object-fit: contain !important;
+  display: block !important;
+}
+.site-header nav {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 30px !important;
+  flex-wrap: wrap !important;
+}
+.site-header nav a {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  white-space: nowrap !important;
+}
+.nav-icon {
+  font-size: 18px !important;
+  line-height: 1 !important;
+}
+
+.hero {
+  padding: 58px 0 70px !important;
+}
+.hero > .container {
+  width: min(1180px, calc(100% - 40px)) !important;
+  max-width: 1180px !important;
+  margin: 0 auto !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.08fr) minmax(330px, .92fr) !important;
+  grid-template-rows: auto auto auto auto !important;
+  align-items: center !important;
+  column-gap: 52px !important;
+  row-gap: 12px !important;
+}
+.hero-image {
+  grid-column: 1 !important;
+  grid-row: 1 / 5 !important;
+  width: 100% !important;
+  height: 430px !important;
+  max-height: 430px !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  border-radius: 24px !important;
+  display: block !important;
+  box-shadow: 0 16px 40px rgba(15,23,42,.12) !important;
+}
+.hero .eyebrow,
+.hero h1,
+.hero p,
+.hero .btn {
+  grid-column: 2 !important;
+}
+.hero .eyebrow { margin: 0 !important; }
+.hero h1 { margin: 0 !important; }
+.hero p { margin: 0 !important; line-height: 1.7 !important; }
+.hero .btn { justify-self: start !important; }
+
+@media (max-width: 800px) {
+  .site-header .nav { width: min(100% - 24px, 1180px) !important; }
+  .site-header .brand-logo { width: 62px !important; height: 62px !important; }
+  .site-header nav { gap: 12px 18px !important; }
+  .hero { padding: 35px 0 50px !important; }
+  .hero > .container {
+    width: min(100% - 24px, 1180px) !important;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto !important;
+    gap: 22px !important;
+  }
+  .hero-image, .hero .eyebrow, .hero h1, .hero p, .hero .btn {
+    grid-column: 1 !important;
+    grid-row: auto !important;
+  }
+  .hero-image { height: 300px !important; max-height: 300px !important; }
+}
+</style>
 </head>
 
 <body>
@@ -156,10 +253,10 @@
     </a>
 
     <nav>
-      <a href="#dich-vu">Dịch vụ</a>
-      <a href="#san-pham">Sản phẩm</a>
-      <a href="#gioi-thieu">Giới thiệu</a>
-      <a href="#lien-he">Liên hệ</a>
+      <a href="#dich-vu"><span class="nav-icon">🛠️</span> Dịch vụ</a>
+      <a href="#san-pham"><span class="nav-icon">🛒</span> Sản phẩm</a>
+      <a href="#gioi-thieu"><span class="nav-icon">ℹ️</span> Giới thiệu</a>
+      <a href="#lien-he"><span class="nav-icon">📞</span> Liên hệ</a>
     </nav>
 
   </div>
