@@ -245,6 +245,59 @@
 }
 
 </style>
+<style>
+
+/* AppleSeed header brand: giữ logo + tên + dòng mô tả */
+.site-header .nav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:30px;
+}
+.site-header .brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-decoration:none;
+  color:inherit;
+  flex-shrink:0;
+}
+.site-header .brand-logo{
+  width:52px;
+  height:52px;
+  object-fit:contain;
+  display:block !important;
+}
+.site-header .brand-text{
+  display:flex;
+  flex-direction:column;
+  line-height:1.1;
+  white-space:nowrap;
+}
+.site-header .brand-text strong{
+  font-size:20px;
+  font-weight:800;
+}
+.site-header .brand-text small{
+  margin-top:5px;
+  font-size:9px;
+  letter-spacing:.7px;
+  font-weight:700;
+  color:#667085;
+}
+@media (max-width:800px){
+  .site-header .nav{
+    gap:12px;
+  }
+  .site-header .brand-text small{
+    font-size:8px;
+  }
+  .site-header nav{
+    gap:10px;
+  }
+}
+
+</style>
 </head>
 
 <body>
@@ -252,8 +305,12 @@
 <header class="site-header">
   <div class="nav">
 
-    <a class="brand" href="index.html" aria-label="AppleSeed">
+    <a class="brand" href="index.html" aria-label="Apple Seed - Trung tâm sửa chữa iPhone">
       <img src="logo.png" alt="Apple Seed" class="brand-logo">
+      <span class="brand-text">
+        <strong>Apple Seed</strong>
+        <small>TRUNG TÂM SỬA CHỮA IPHONE</small>
+      </span>
     </a>
 
     <nav>
