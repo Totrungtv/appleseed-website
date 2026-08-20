@@ -298,6 +298,99 @@
 }
 
 </style>
+<style>
+
+/* ===== AppleSeed visual restoration: header + hero + section icons ===== */
+.site-header .nav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:30px;
+}
+.site-header .brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-decoration:none;
+  color:inherit;
+  flex-shrink:0;
+}
+.site-header .brand-logo{
+  width:52px;
+  height:52px;
+  object-fit:contain;
+  display:block !important;
+}
+.site-header .brand-text{
+  display:flex;
+  flex-direction:column;
+  line-height:1.1;
+  white-space:nowrap;
+}
+.site-header .brand-text strong{font-size:20px;font-weight:800;}
+.site-header .brand-text small{
+  margin-top:5px;
+  font-size:9px;
+  letter-spacing:.7px;
+  font-weight:700;
+  color:#667085;
+}
+.site-header nav{
+  display:flex;
+  align-items:center;
+  gap:18px;
+}
+.site-header nav a{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+}
+.nav-icon{font-size:15px;line-height:1;}
+
+.hero .hero-layout{
+  display:grid;
+  grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);
+  align-items:center;
+  gap:34px;
+}
+.hero .hero-visual{min-width:0;}
+.hero .hero-photo-label{
+  margin:0 0 10px;
+  text-align:left;
+  font-size:14px;
+  font-weight:800;
+  letter-spacing:.7px;
+}
+.hero .hero-layout .hero-image{
+  width:100%;
+  height:390px;
+  object-fit:cover;
+  border-radius:18px;
+  display:block !important;
+}
+.hero .hero-copy{min-width:0;}
+.hero .hero-copy h1{margin-top:0;}
+.service-icon{
+  display:inline-flex;
+  width:32px;
+  height:32px;
+  align-items:center;
+  justify-content:center;
+  margin-right:6px;
+  border-radius:9px;
+  font-size:20px;
+  vertical-align:middle;
+}
+@media (max-width:800px){
+  .site-header .nav{gap:12px;}
+  .site-header .brand-text small{font-size:8px;}
+  .site-header nav{gap:10px;flex-wrap:wrap;}
+  .hero .hero-layout{grid-template-columns:1fr;gap:22px;}
+  .hero .hero-photo-label{text-align:center;}
+  .hero .hero-layout .hero-image{height:auto;aspect-ratio:4/3;}
+}
+
+</style>
 </head>
 
 <body>
@@ -314,11 +407,11 @@
     </a>
 
     <nav>
-      <a href="#dich-vu">Dịch vụ</a>
-      <a href="#san-pham">Sản phẩm</a>
-      <a href="#gioi-thieu">Giới thiệu</a>
-      <a href="#lien-he">Liên hệ</a>
-      <a class="admin-link" href="admin.html" title="Quản trị website">＋ Quản trị</a>
+      <a href="#dich-vu"><span class="nav-icon" aria-hidden="true">🔧</span> Dịch vụ</a>
+      <a href="#san-pham"><span class="nav-icon" aria-hidden="true">📱</span> Sản phẩm</a>
+      <a href="#gioi-thieu"><span class="nav-icon" aria-hidden="true">🍎</span> Giới thiệu</a>
+      <a href="#lien-he"><span class="nav-icon" aria-hidden="true">📞</span> Liên hệ</a>
+      <a class="admin-link" href="admin.html" title="Quản trị website"><span class="nav-icon" aria-hidden="true">⚙️</span> Quản trị</a>
     </nav>
 
   </div>
@@ -334,31 +427,25 @@
   <div class="container">
     <div class="hero-layout">
 
-      <img
-        id="heroImage"
-        class="hero-image"
-        alt="Apple Seed Trà Vinh - trung tâm sửa iPhone"
-      >
+      <div class="hero-visual">
+        <div class="hero-photo-label">TRUNG TÂM SỬA CHỮA IPHONE</div>
+        <img
+          id="heroImage"
+          class="hero-image"
+          alt="Apple Seed Trà Vinh - trung tâm sửa chữa iPhone"
+        >
+      </div>
 
       <div class="hero-copy">
-        <div class="eyebrow">
-          APPLESEED • TRÀ VINH
-        </div>
-
-        <h1>
-          Sửa iPhone Trà Vinh – Apple Seed
-        </h1>
-
+        <div class="eyebrow">APPLESEED • TRÀ VINH</div>
+        <h1>Sửa iPhone Trà Vinh – Apple Seed</h1>
         <p>
           Apple Seed chuyên <strong>sửa iPhone Trà Vinh</strong>, sửa điện thoại Trà Vinh,
           sửa main iPhone, Face ID, màn hình, pin, camera và linh kiện iPhone.
           Trung tâm sửa chữa iPhone tại Trà Vinh kiểm tra máy rõ ràng,
           báo giá trước khi sửa và bảo hành sau sửa chữa.
         </p>
-
-        <a class="btn" href="#lien-he">
-          Liên hệ AppleSeed
-        </a>
+        <a class="btn" href="#lien-he">Liên hệ AppleSeed</a>
       </div>
 
     </div>
@@ -410,7 +497,7 @@
     <div class="grid">
 
       <article class="card">
-        <h3>📱 Sửa iPhone</h3>
+        <h3><span class="service-icon" aria-hidden="true">📱</span> Sửa iPhone</h3>
         <p>
           Kiểm tra và sửa chữa các lỗi phần cứng,
           nguồn, sạc, màn hình và linh kiện.
@@ -418,7 +505,7 @@
       </article>
 
       <article class="card">
-        <h3>🔧 Sửa main</h3>
+        <h3><span class="service-icon" aria-hidden="true">🔧</span> Sửa main</h3>
         <p>
           Chẩn đoán lỗi mainboard và xử lý các lỗi
           phần cứng theo tình trạng thực tế.
@@ -426,7 +513,7 @@
       </article>
 
       <article class="card">
-        <h3>🔐 Face ID</h3>
+        <h3><span class="service-icon" aria-hidden="true">🔐</span> Face ID</h3>
         <p>
           Kiểm tra, chẩn đoán và sửa chữa lỗi
           Face ID trên iPhone.
@@ -434,7 +521,7 @@
       </article>
 
       <article class="card">
-        <h3>🧩 Linh kiện</h3>
+        <h3><span class="service-icon" aria-hidden="true">🧩</span> Linh kiện</h3>
         <p>
           Tư vấn và thay thế linh kiện phù hợp,
           minh bạch tình trạng trước khi làm.
