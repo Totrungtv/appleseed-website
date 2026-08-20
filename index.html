@@ -769,15 +769,15 @@
 <style>
 #ai-toggle {
   position: fixed;
-  right: 25px;
-  bottom: 25px;
-  width: 60px;
-  height: 60px;
+  right: 20px;
+  bottom: 20px;
+  width: 52px;
+  height: 52px;
   border: 0;
   border-radius: 50%;
   background: #2563eb;
   color: white;
-  font-size: 27px;
+  font-size: 23px;
   cursor: pointer;
   box-shadow: 0 8px 25px rgba(0,0,0,.2);
   z-index: 9999;
@@ -785,10 +785,10 @@
 
 #ai-box {
   position: fixed;
-  right: 25px;
-  bottom: 95px;
-  width: 360px;
-  height: 500px;
+  right: 20px;
+  bottom: 82px;
+  width: 300px;
+  height: 390px;
   background: white;
   border-radius: 16px;
   box-shadow: 0 10px 40px rgba(0,0,0,.2);
@@ -801,7 +801,7 @@
 .ai-header {
   background: #2563eb;
   color: white;
-  padding: 16px;
+  padding: 12px 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -811,23 +811,23 @@
   background: none;
   border: 0;
   color: white;
-  font-size: 25px;
+  font-size: 22px;
   cursor: pointer;
 }
 
 #ai-messages {
   flex: 1;
-  padding: 15px;
+  padding: 8px;
   overflow-y: auto;
   background: #f7f8fb;
 }
 
 .ai-message {
-  padding: 10px 13px;
+  padding: 8px 10px;
   border-radius: 12px;
   margin-bottom: 10px;
   max-width: 85%;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .ai-message.bot {
@@ -844,13 +844,13 @@
 .ai-input {
   display: flex;
   gap: 8px;
-  padding: 12px;
+  padding: 9px;
   border-top: 1px solid #eee;
 }
 
 #ai-input {
   flex: 1;
-  padding: 10px;
+  padding: 8px;
   border: 1px solid #ddd;
   border-radius: 8px;
   outline: none;
@@ -860,22 +860,22 @@
   border: 0;
   background: #2563eb;
   color: white;
-  padding: 0 15px;
+  padding: 0 12px;
   border-radius: 8px;
   cursor: pointer;
 }
 
 @media (max-width: 600px) {
   #ai-box {
-    right: 10px;
+    right: 8px;
     bottom: 85px;
-    width: calc(100% - 20px);
-    height: 70vh;
+    width: calc(100% - 16px);
+    height: min(70vh, 390px);
   }
 
   #ai-toggle {
-    right: 15px;
-    bottom: 15px;
+    right: 12px;
+    bottom: 12px;
   }
 }
 </style>
