@@ -178,7 +178,7 @@ function answer(q){
   const s=raw.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/đ/g,"d");
   if(!raw) return "Bạn nhập câu hỏi giúp tôi nhé.";
 
-  const model=raw.match(/(?:iphone|ip)\s*(5s|6s?\s*(?:plus)?|7\s*(?:plus)?|8\s*(?:plus)?|x(?:r|s|s max)?|11(?:\s*pro(?:\s*max)?)?|12(?:\s*mini|\s*pro(?:\s*max)?)?|13(?:\s*mini|\s*pro(?:\s*max)?)?|14(?:\s*plus|\s*pro(?:\s*max)?)?|15(?:\s*plus|\s*pro(?:\s*max)?)?|16(?:\s*plus|\s*pro(?:\s*max)?)?))/i);
+  const model=raw.match(/(?:iphone|ip)\s*(5s|6s|7|8|x|xr|xs|11|12|13|14|15|16)(?:\s*(pro|max|plus|mini))?/i);
 
   if(s.includes("dia chi")||s.includes("o dau")||s.includes("map")||s.includes("google"))
     return 'Apple Seed ở 292 Phạm Ngũ Lão, Trà Vinh. Bạn có thể bấm "Mở Google Maps" ở phần Liên hệ.';
