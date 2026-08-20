@@ -218,7 +218,7 @@
       <img src="logo.png" alt="Apple Seed" class="brand-logo">
     </a>
 
-    <nav>
+    <nav id="siteNav">
       <a href="#dich-vu">Dịch vụ</a>
       <a href="#san-pham">Sản phẩm</a>
       <a href="#gioi-thieu">Giới thiệu</a>
@@ -492,6 +492,25 @@
       return;
     }
 
+
+    /* =====================================
+       MENU ĐẦU TRANG - LOAD TỪ SUPABASE
+    ===================================== */
+    const { data: navData, error: navError } = await window.supabaseClient
+      .from("site_nav_items")
+      .select("label,icon,url,is_active,sort_order")
+      .eq("is_active", true)
+      .order("sort_order", { ascending: true });
+
+    if (!navError && Array.isArray(navData) && navData.length) {
+      const nav = document.getElementById("siteNav");
+      nav.innerHTML = navData.map(item => {
+        const a = document.createElement("a");
+        a.href = item.url || "#";
+        a.textContent = `${item.icon ? item.icon + " " : ""}${item.label || ""}`;
+        return a.outerHTML;
+      }).join("") + '<a class="admin-link" href="admin.html" title="Quản trị website">＋ Quản trị</a>';
+    }
 
     /* =====================================
        2. LOAD NỘI DUNG WEBSITE

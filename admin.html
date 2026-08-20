@@ -117,6 +117,30 @@ label{font-weight:700;font-size:14px}input,textarea,select{width:100%;box-sizing
     <div id="productsList" class="grid"></div>
   </section>
 
+  <section class="panel" id="navManagerSection">
+    <div class="panel-head">
+      <div><h2>🧭 Menu đầu trang</h2><div class="small">Thêm, đổi tên, đổi icon, sắp xếp hoặc xóa các mục Dịch vụ / Sản phẩm / Giới thiệu / Liên hệ trên thanh đầu trang.</div></div>
+      <button class="plus" id="addNavBtn">＋ Thêm mục menu</button>
+    </div>
+    <form id="navForm" class="form hidden">
+      <input id="navId" type="hidden">
+      <div class="form-row">
+        <label>Tên hiển thị<input id="navLabel" required placeholder="Ví dụ: iPad"></label>
+        <label>Icon<input id="navIcon" maxlength="8" placeholder="📱"></label>
+      </div>
+      <div class="form-row">
+        <label>Liên kết<input id="navUrl" required placeholder="page.html?slug=ipad hoặc #san-pham"></label>
+        <label>Thứ tự<input id="navSort" type="number" value="50"></label>
+      </div>
+      <label>Trạng thái<select id="navActive"><option value="true">Hiện trên website</option><option value="false">Ẩn</option></select></label>
+      <div class="admin-actions">
+        <button class="plus" type="submit">Lưu mục menu</button>
+        <button class="btn2" type="button" id="cancelNav">Hủy</button>
+      </div>
+    </form>
+    <div id="navList" class="grid"></div>
+  </section>
+
   <section class="panel">
     <div class="panel-head">
       <div><h2>＋ Trang dịch vụ</h2><div class="small">Soạn thảo PRO: ảnh, icon, màu, bảng, video, HTML, xem trước và toàn màn hình.</div></div>
@@ -218,7 +242,7 @@ $("loginBtn").onclick=async()=>{
 };
 $("logoutBtn").onclick=async()=>{await sb.auth.signOut();location.reload();};
 
-async function refreshAll(){await loadProducts();await loadPages();}
+async function refreshAll(){await loadProducts();await loadPages();await loadNavItems();}
 
 async function loadProducts(){
   const {data,error}=await sb.from("products").select("id,name,category,price,description,image_url,is_active").order("id",{ascending:false});
@@ -257,6 +281,41 @@ window.deleteProduct=async id=>{
   const {error}=await sb.from("products").delete().eq("id",id);
   if(error){status("Xóa sản phẩm lỗi: "+error.message,true);return;}
   status("Đã xóa sản phẩm.");await loadProducts();
+};
+
+async function loadNavItems(){
+  const {data,error}=await sb.from("site_nav_items").select("id,label,icon,url,sort_order,is_active,is_system").order("sort_order",{ascending:true}).order("id",{ascending:true});
+  if(error){
+    $("navList").innerHTML="<p>Hãy chạy file <b>apple-seed-site-nav.sql</b> trong Supabase SQL Editor.</p>";
+    return;
+  }
+  $("navList").innerHTML=(data||[]).map(n=>`
+    <article class="item">
+      <h3>${esc((n.icon||"")+" "+n.label)}</h3>
+      <p>${esc(n.url||"")} · Thứ tự ${Number(n.sort_order)||0} · ${n.is_active?"Đang hiện":"Đang ẩn"}</p>
+      <div class="item-actions">
+        <button class="btn2 edit" onclick='editNavItem(${JSON.stringify(n).replace(/'/g,"&#39;")})'>Sửa</button>
+        <button class="btn2 danger" onclick="deleteNavItem(${n.id})">Xóa</button>
+      </div>
+    </article>`).join("") || "<p>Chưa có mục menu.</p>";
+}
+$("addNavBtn").onclick=()=>{ $("navForm").reset(); $("navId").value=""; $("navIcon").value="🔗"; $("navSort").value="50"; $("navActive").value="true"; show($("navForm")); };
+$("cancelNav").onclick=()=>show($("navForm"),false);
+window.editNavItem=n=>{
+  $("navId").value=n.id; $("navLabel").value=n.label||""; $("navIcon").value=n.icon||""; $("navUrl").value=n.url||""; $("navSort").value=n.sort_order||0; $("navActive").value=String(n.is_active); show($("navForm"));
+};
+$("navForm").onsubmit=async e=>{
+  e.preventDefault();
+  const payload={label:$("navLabel").value.trim(),icon:$("navIcon").value.trim(),url:$("navUrl").value.trim(),sort_order:Number($("navSort").value)||0,is_active:$("navActive").value==="true"};
+  let res=$("navId").value ? await sb.from("site_nav_items").update(payload).eq("id",Number($("navId").value)) : await sb.from("site_nav_items").insert(payload);
+  if(res.error){status("Lưu menu lỗi: "+res.error.message,true);return;}
+  show($("navForm"),false); status("Đã lưu menu đầu trang."); await loadNavItems();
+};
+window.deleteNavItem=async id=>{
+  if(!confirm("Xóa mục này khỏi menu đầu trang?"))return;
+  const {error}=await sb.from("site_nav_items").delete().eq("id",id);
+  if(error){status("Xóa menu lỗi: "+error.message,true);return;}
+  status("Đã xóa mục menu."); await loadNavItems();
 };
 
 async function loadPages(){
