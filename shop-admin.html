@@ -136,17 +136,32 @@ window.deleteRepair=async id=>{
   closeModal(); loadRepairs(); loadDashboard(); loadWarranty(); loadFinance(); loadRevenue();
 };
 $("newRepair").onclick=()=>openRepairForm();
-function openRepairForm(x={}){
+async function openRepairForm(x={}){
  openModal(x.id?"Sửa phiếu #"+x.id:"Tạo phiếu sửa chữa",`<form id="repairForm" class="formgrid">
- <label class="full">Khách hàng ID<input id="rCustomer" type="number" value="${x.customer_id||""}" required></label>
+ <label class="full">Khách hàng<select id="rCustomer" required><option value="">Đang tải khách hàng...</option></select></label>
  <label>Model máy<input id="rModel" value="${esc(x.device_model||"")}" required></label><label>IMEI/Serial<input id="rImei" value="${esc(x.imei||"")}"></label>
  <label class="full">Lỗi khách báo<textarea id="rIssue">${esc(x.customer_issue||"")}</textarea></label>
  <label>Tình trạng máy<textarea id="rCondition">${esc(x.device_condition||"")}</textarea></label><label>Kỹ thuật viên<input id="rTech" value="${esc(x.technician||"")}"></label>
  <label>Dự kiến (VNĐ)<input id="rEstimate" type="number" value="${x.estimated_total||0}"></label><label>Khách đã trả<input id="rPaid" type="number" value="${x.paid_amount||0}"></label>
  <label>Trạng thái<select id="rStatus"><option value="pending">Chờ kiểm tra</option><option value="repairing">Đang sửa</option><option value="done">Đã sửa xong</option><option value="delivered">Đã giao</option><option value="failed">Không sửa được</option></select></label>
  <label class="full">Ghi chú<textarea id="rNote">${esc(x.note||"")}</textarea></label><div class="full right"><button class="btn primary">💾 Lưu phiếu</button></div></form>`);
+ let cr=await sb.from("customers").select("id,name,phone").order("id",{ascending:false});
+ if(cr.error){$("rCustomer").innerHTML="<option value=\"\">Không tải được khách hàng</option>";alert("Không tải được danh sách khách hàng: "+cr.error.message);return}
+ $("rCustomer").innerHTML='<option value="">-- Chọn khách hàng --</option>'+(cr.data||[]).map(c=>`<option value="${c.id}">#${c.id} · ${esc(c.name)} · ${esc(c.phone)}</option>`).join("");
+ if(x.customer_id) $("rCustomer").value=String(x.customer_id);
  if(x.status)$("rStatus").value=x.status;
- $("repairForm").onsubmit=async e=>{e.preventDefault();let p={customer_id:Number($("rCustomer").value),device_model:$("rModel").value.trim(),imei:$("rImei").value.trim(),customer_issue:$("rIssue").value.trim(),device_condition:$("rCondition").value.trim(),technician:$("rTech").value.trim(),estimated_total:Number($("rEstimate").value||0),paid_amount:Number($("rPaid").value||0),status:$("rStatus").value,note:$("rNote").value.trim()};let q=x.id?sb.from("repair_orders").update(p).eq("id",x.id):sb.from("repair_orders").insert(p);let z=await q;if(z.error){alert(z.error.message);return}closeModal();loadRepairs();loadDashboard()}
+ $("repairForm").onsubmit=async e=>{
+   e.preventDefault();
+   let p={customer_id:Number($("rCustomer").value),device_model:$("rModel").value.trim(),imei:$("rImei").value.trim(),customer_issue:$("rIssue").value.trim(),device_condition:$("rCondition").value.trim(),technician:$("rTech").value.trim(),estimated_total:Number($("rEstimate").value||0),paid_amount:Number($("rPaid").value||0),status:$("rStatus").value,note:$("rNote").value.trim()};
+   let q=x.id?sb.from("repair_orders").update(p).eq("id",x.id):sb.from("repair_orders").insert(p);
+   let z=await q;
+   if(z.error){
+     if(z.error.code==="23503") alert("Khách hàng không tồn tại. Hãy chọn khách hàng có trong danh sách.");
+     else alert("Không lưu được phiếu: "+z.error.message);
+     return;
+   }
+   closeModal();loadRepairs();loadDashboard();
+ }
 }
 async function loadCustomers(){let r=await sb.from("customers").select("*").order("id",{ascending:false});if(r.error){$("customersList").innerHTML="<div class='notice'>Chưa có bảng customers. Hãy chạy <b>supabase-shop.sql</b>.</div>";return}let d=r.data||[];$("customersList").innerHTML=`<div class="table-wrap"><table><tr><th>ID</th><th>Khách hàng</th><th>Điện thoại</th><th>Địa chỉ</th><th>Ghi chú</th><th></th></tr>${d.map(x=>`<tr><td>#${x.id}</td><td>${esc(x.name)}</td><td>${esc(x.phone)}</td><td>${esc(x.address||"")}</td><td>${esc(x.note||"")}</td><td><button class="btn" onclick='editCustomer(${JSON.stringify(x).replace(/'/g,"&#39;")})'>Sửa</button> <button class="btn danger" onclick="deleteCustomer(${x.id})">🗑️ Xóa</button></td></tr>`).join("")}</table></div>`}
 window.deleteCustomer=async id=>{
