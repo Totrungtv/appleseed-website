@@ -74,6 +74,58 @@ label{font-weight:700;font-size:14px}input,textarea,select{width:100%;box-sizing
 
   <div id="status" class="status hidden"></div>
 
+
+<section class="panel">
+  <div class="panel-head"><div><h2>🏠 Trang chủ</h2><div class="small">Chỉnh toàn bộ nội dung trang chủ ngay trong Admin: thêm, sửa, ẩn/hiện, đổi ảnh, icon, bố cục và thứ tự. Không cần mở index.html.</div></div><button class="plus" id="addHomeSectionBtn">＋ Thêm khối</button></div>
+  <div id="homeSectionForm" class="form hidden">
+    <input id="homeSectionId" type="hidden">
+    <div class="form-row"><label>Khóa khối<input id="homeSectionKey" required placeholder="hero / dich-vu / gioi-thieu"></label><label>Loại khối<select id="homeSectionType"><option value="hero">Hero</option><option value="content">Nội dung</option><option value="services">Dịch vụ</option><option value="products">Sản phẩm</option><option value="pages">Trang dịch vụ</option><option value="contact">Liên hệ</option><option value="map">Bản đồ</option><option value="custom">Tùy chỉnh</option></select></label></div>
+    <div class="form-row"><label>Eyebrow / nhãn nhỏ<input id="homeEyebrow"></label><label>Tiêu đề<input id="homeTitle" required></label></div>
+    <label>Mô tả ngắn<input id="homeSubtitle"></label>
+    <div class="form-row"><label>Icon / emoji<input id="homeIcon" placeholder="📱"></label><label>Ảnh khối<div class="image-main-row"><input id="homeImageUrl" placeholder="https://..."><button class="btn2" type="button" id="homeImageBtn">📤 Tải ảnh</button><input id="homeImageFile" type="file" accept="image/*" hidden></div><div id="homeImagePreview" class="main-image-preview"></div></label></div>
+    <label>Nội dung</label>
+    <div class="editor-shell" data-editor-shell="homeEditor">
+      <div class="editor-topbar"><strong>Soạn thảo khối trang chủ PRO</strong><span class="editor-count">0 từ</span></div>
+      <div class="native-editor" id="homeEditor" contenteditable="true" data-placeholder="Soạn nội dung khối này..."></div>
+      <div class="native-toolbar" data-editor="homeEditor">
+        <button type="button" data-cmd="undo">↶</button><button type="button" data-cmd="redo">↷</button>
+        <select data-action="block"><option value="p">Đoạn văn</option><option value="h1">H1</option><option value="h2">H2</option><option value="h3">H3</option><option value="h4">H4</option></select>
+        <button type="button" data-cmd="bold"><b>B</b></button><button type="button" data-cmd="italic"><i>I</i></button><button type="button" data-cmd="underline"><u>U</u></button><button type="button" data-cmd="strikeThrough"><s>S</s></button>
+        <label class="color-tool">A <input type="color" data-action="foreColor" value="#111827"></label><label class="color-tool">▰ <input type="color" data-action="hiliteColor" value="#fff59d"></label>
+        <button type="button" data-cmd="justifyLeft">≡</button><button type="button" data-cmd="justifyCenter">≣</button><button type="button" data-cmd="justifyRight">≡</button><button type="button" data-cmd="justifyFull">☰</button>
+        <button type="button" data-cmd="insertUnorderedList">• List</button><button type="button" data-cmd="insertOrderedList">1. List</button><button type="button" data-cmd="outdent">⇤</button><button type="button" data-cmd="indent">⇥</button>
+        <button type="button" data-cmd="formatBlock" data-value="blockquote">❝</button><button type="button" data-cmd="formatBlock" data-value="pre">&lt;/&gt;</button>
+        <button type="button" data-action="link">🔗</button><button type="button" data-action="imageUpload">📤 Ảnh</button><button type="button" data-action="imageUrl">🖼️ URL</button><button type="button" data-action="video">🎬</button><button type="button" data-action="table">▦ Bảng</button><button type="button" data-action="hr">―</button><button type="button" data-action="icon">😊</button><button type="button" data-cmd="removeFormat">Tx</button><button type="button" data-action="source">&lt;/&gt;</button><button type="button" data-action="preview">👁️</button><button type="button" data-action="fullscreen">⛶</button>
+        <input class="native-image-input" type="file" accept="image/*" hidden>
+      </div><textarea class="editor-source" hidden spellcheck="false"></textarea><div class="native-icon-picker" hidden></div><div class="native-upload-status"></div>
+    </div>
+    <div class="form-row"><label>Nút bấm<input id="homeButtonText" placeholder="Liên hệ Apple Seed"></label><label>Link nút<input id="homeButtonUrl" placeholder="#lien-he"></label></div>
+    <div class="form-row"><label>Màu nền<input id="homeBg" type="text" placeholder="#ffffff"></label><label>Màu chữ<input id="homeText" type="text" placeholder="#111827"></label></div>
+    <div class="form-row"><label>Màu nhấn<input id="homeAccent" type="text" placeholder="#2563eb"></label><label>Số cột<input id="homeColumns" type="number" min="1" max="4" value="2"></label></div>
+    <div class="form-row"><label>Thứ tự<input id="homeSort" type="number" value="10"></label><label>Trạng thái<select id="homeActive"><option value="true">Hiện trên website</option><option value="false">Ẩn</option></select></label></div>
+    <div class="admin-actions"><button class="plus" type="button" id="saveHomeSection">💾 Lưu khối</button><button class="btn2" type="button" id="cancelHomeSection">Hủy</button></div>
+  </div>
+  <div id="homeSectionsList" class="grid"></div>
+</section>
+
+<section class="panel">
+  <div class="panel-head"><div><h2>🎨 Giao diện & Theme</h2><div class="small">Đổi màu, kích thước, bo góc, font, logo, ảnh đại diện và khoảng cách toàn website mà không sửa CSS.</div></div></div>
+  <form id="themeForm" class="form">
+    <div class="form-row"><label>Tên website<input id="themeSiteName"></label><label>Font<select id="themeFont"><option value="system">System</option><option value="Inter">Inter</option><option value="Arial">Arial</option><option value="Georgia">Georgia</option><option value="Roboto">Roboto</option></select></label></div>
+    <div class="form-row"><label>Màu chính<input id="themePrimary" type="color"></label><label>Màu phụ<input id="themeSecondary" type="color"></label></div>
+    <div class="form-row"><label>Nền trang<input id="themeBg" type="color"></label><label>Nền khối<input id="themeSurface" type="color"></label></div>
+    <div class="form-row"><label>Màu chữ<input id="themeText" type="color"></label><label>Màu chữ phụ<input id="themeMuted" type="color"></label></div>
+    <div class="form-row"><label>Bo góc (px)<input id="themeRadius" type="number" min="0" max="40"></label><label>Chiều rộng website (px)<input id="themeWidth" type="number" min="900" max="1600"></label></div>
+    <div class="form-row"><label>Khoảng cách section (px)<input id="themeSpacing" type="number" min="20" max="160"></label><label>Chiều cao Hero (px)<input id="themeHeroHeight" type="number" min="200" max="900"></label></div>
+    <div class="form-row"><label>Kiểu icon<select id="themeIcon"><option value="emoji">Emoji</option><option value="circle">Trong vòng tròn</option><option value="minimal">Tối giản</option></select></label><label>Ảnh mặc định<select id="themeImageFit"><option value="cover">Cover</option><option value="contain">Contain</option><option value="fill">Fill</option></select></label></div>
+    <div class="form-row"><label>Kiểu nút<select id="themeButton"><option value="rounded">Bo tròn</option><option value="square">Vuông</option><option value="pill">Pill</option></select></label><label>Kiểu card<select id="themeCard"><option value="soft">Mềm</option><option value="border">Viền</option><option value="flat">Phẳng</option></select></label></div>
+    <div class="form-row"><label>Logo URL<input id="themeLogo"></label><label>Favicon URL<input id="themeFavicon"></label></div>
+    <label>SEO Title<input id="themeMetaTitle"></label><label>SEO Description<input id="themeMetaDescription"></label><label>Ảnh chia sẻ Facebook/Google<input id="themeOgImage"></label>
+    <label>CSS tùy chỉnh nâng cao<textarea id="themeCustomCss" style="min-height:150px;font-family:Consolas,monospace"></textarea></label>
+    <div class="admin-actions"><button class="plus" type="submit">💾 Lưu giao diện</button><button class="btn2" type="button" id="resetTheme">Khôi phục giao diện mặc định</button></div>
+  </form>
+</section>
+
   <section class="panel">
     <div class="panel-head">
       <div><h2>＋ Sản phẩm</h2><div class="small">Soạn thảo PRO: định dạng đẹp, ảnh, icon, bảng, liên kết, video và xem trước.</div></div>
@@ -242,7 +294,42 @@ $("loginBtn").onclick=async()=>{
 };
 $("logoutBtn").onclick=async()=>{await sb.auth.signOut();location.reload();};
 
-async function refreshAll(){await loadProducts();await loadPages();await loadNavItems();}
+async function refreshAll(){await loadProducts();await loadPages();await loadNavItems();await loadHomeSections();await loadTheme()}
+
+function homeEditorHtml(){const e=editorEl('homeEditor');return e?e.innerHTML:''}
+function setHomeEditorHtml(h=''){const e=editorEl('homeEditor');if(e)e.innerHTML=h||'';updateMeta(e)}
+function previewHomeImage(url){const b=$('homeImagePreview');if(b)b.innerHTML=url?`<img src="${esc(url)}" alt="Ảnh khối">`:''}
+function colorOr(v,fb){return /^#[0-9a-f]{6}$/i.test(v||'')?v:fb}
+async function optimizeHomeImage(file){
+  if(!file)return null;
+  if(!file.type.startsWith('image/')) throw new Error('File phải là ảnh.');
+  if(file.size>12*1024*1024) throw new Error('Ảnh tối đa 12MB.');
+  const img=await new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=reject;i.src=URL.createObjectURL(file)});
+  const max=1800, scale=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
+  const c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.naturalWidth*scale));c.height=Math.max(1,Math.round(img.naturalHeight*scale));
+  c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(img.src);
+  return await new Promise(r=>c.toBlob(r,'image/webp',.84));
+}
+async function uploadHomeImage(file){
+  if(!file)return;
+  try{status('Đang tự tối ưu ảnh...');const blob=await optimizeHomeImage(file);const path=`home/${Date.now()}-${Math.random().toString(36).slice(2,8)}.webp`;const r=await sb.storage.from('site-images').upload(path,blob,{contentType:'image/webp',cacheControl:'31536000',upsert:false});if(r.error)throw r.error;const url=sb.storage.from('site-images').getPublicUrl(path).data.publicUrl;$('homeImageUrl').value=url;previewHomeImage(url);status('Đã tối ưu và tải ảnh lên.');}catch(e){status('Upload ảnh lỗi: '+(e?.message||e),true)}
+}
+async function loadHomeSections(){
+  const {data,error}=await sb.from('site_home_sections').select('*').order('sort_order',{ascending:true}).order('id',{ascending:true});
+  if(error){$('homeSectionsList').innerHTML=`<div class="notice"><b>Lỗi Home CMS:</b> ${esc(error.message||String(error))}<br>Chạy query <b>APPLE_SEED_HOME_CMS</b>.</div>`;return}
+  $('homeSectionsList').innerHTML=(data||[]).map(s=>`<article class="item"><h3>${esc((s.icon||'')+' '+(s.title||s.section_key))}</h3><p>${esc(s.section_key)} · ${esc(s.section_type)} · Thứ tự ${s.sort_order} · ${s.is_active?'Đang hiện':'Đang ẩn'}</p><p>${esc(s.subtitle||'')}</p><div class="item-actions"><button class="btn2 edit" onclick='editHomeSection(${JSON.stringify(s).replace(/'/g,'&#39;')})'>Sửa toàn bộ</button><button class="btn2 danger" onclick="deleteHomeSection(${s.id})">Xóa</button></div></article>`).join('')||'<p>Chưa có khối trang chủ.</p>';
+}
+function resetHomeForm(){['homeSectionId','homeSectionKey','homeEyebrow','homeTitle','homeSubtitle','homeIcon','homeImageUrl','homeButtonText','homeButtonUrl','homeBg','homeText','homeAccent'].forEach(id=>$(id).value='');$('homeSectionType').value='custom';$('homeColumns').value=2;$('homeSort').value=10;$('homeActive').value='true';setHomeEditorHtml('');previewHomeImage('')}
+$('addHomeSectionBtn').onclick=()=>{resetHomeForm();show($('homeSectionForm'))};
+$('cancelHomeSection').onclick=()=>show($('homeSectionForm'),false);
+$('homeImageBtn').onclick=()=>$('homeImageFile').click();$('homeImageFile').onchange=e=>{uploadHomeImage(e.target.files?.[0]);e.target.value=''};$('homeImageUrl').oninput=()=>previewHomeImage($('homeImageUrl').value.trim());
+window.editHomeSection=s=>{$('homeSectionId').value=s.id;$('homeSectionKey').value=s.section_key||'';$('homeSectionType').value=s.section_type||'custom';$('homeEyebrow').value=s.eyebrow||'';$('homeTitle').value=s.title||'';$('homeSubtitle').value=s.subtitle||'';$('homeIcon').value=s.icon||'';$('homeImageUrl').value=s.image_url||'';previewHomeImage(s.image_url||'');setHomeEditorHtml(s.content_html||'');$('homeButtonText').value=s.button_text||'';$('homeButtonUrl').value=s.button_url||'';$('homeBg').value=s.bg_color||'';$('homeText').value=s.text_color||'';$('homeAccent').value=s.accent_color||'';$('homeColumns').value=s.columns||2;$('homeSort').value=s.sort_order||10;$('homeActive').value=String(s.is_active);show($('homeSectionForm'))};
+$('saveHomeSection').onclick=async()=>{const key=$('homeSectionKey').value.trim().toLowerCase().replace(/[^a-z0-9_-]+/g,'-');if(!key||!$('homeTitle').value.trim()){status('Cần nhập khóa khối và tiêu đề.',true);return}const payload={section_key:key,section_type:$('homeSectionType').value,eyebrow:$('homeEyebrow').value.trim(),title:$('homeTitle').value.trim(),subtitle:$('homeSubtitle').value.trim(),content_html:homeEditorHtml(),icon:$('homeIcon').value.trim(),image_url:$('homeImageUrl').value.trim(),image_alt:$('homeTitle').value.trim(),button_text:$('homeButtonText').value.trim(),button_url:$('homeButtonUrl').value.trim(),bg_color:$('homeBg').value.trim(),text_color:$('homeText').value.trim(),accent_color:$('homeAccent').value.trim(),columns:Number($('homeColumns').value)||2,sort_order:Number($('homeSort').value)||0,is_active:$('homeActive').value==='true'};let r=$('homeSectionId').value?await sb.from('site_home_sections').update(payload).eq('id',Number($('homeSectionId').value)):await sb.from('site_home_sections').insert(payload);if(r.error){status('Lưu trang chủ lỗi: '+r.error.message,true);return}show($('homeSectionForm'),false);status('Đã lưu khối trang chủ.');await loadHomeSections()};
+window.deleteHomeSection=async id=>{if(!confirm('Xóa khối này khỏi trang chủ?'))return;const r=await sb.from('site_home_sections').delete().eq('id',id);if(r.error){status('Xóa khối lỗi: '+r.error.message,true);return}status('Đã xóa khối.');loadHomeSections()};
+async function loadTheme(){const {data,error}=await sb.from('site_theme_settings').select('*').eq('id',1).maybeSingle();if(error||!data){status('Theme CMS lỗi: '+(error?.message||'chưa có dữ liệu'),true);return}const m={'themeSiteName':'site_name','themeFont':'font_family','themePrimary':'primary_color','themeSecondary':'secondary_color','themeBg':'page_bg','themeSurface':'surface_color','themeText':'text_color','themeMuted':'muted_color','themeRadius':'radius_px','themeWidth':'container_width','themeSpacing':'section_spacing','themeHeroHeight':'hero_height','themeIcon':'icon_style','themeImageFit':'image_default_fit','themeButton':'button_style','themeCard':'card_style','themeLogo':'logo_url','themeFavicon':'favicon_url','themeMetaTitle':'meta_title','themeMetaDescription':'meta_description','themeOgImage':'og_image','themeCustomCss':'custom_css'};Object.entries(m).forEach(([id,k])=>$(id).value=data[k]??'')}
+$('themeForm').onsubmit=async e=>{e.preventDefault();const payload={site_name:$('themeSiteName').value.trim(),font_family:$('themeFont').value,primary_color:colorOr($('themePrimary').value,'#2563eb'),secondary_color:colorOr($('themeSecondary').value,'#0f172a'),page_bg:colorOr($('themeBg').value,'#f6f8fb'),surface_color:colorOr($('themeSurface').value,'#ffffff'),text_color:colorOr($('themeText').value,'#111827'),muted_color:colorOr($('themeMuted').value,'#667085'),radius_px:Number($('themeRadius').value)||16,container_width:Number($('themeWidth').value)||1180,section_spacing:Number($('themeSpacing').value)||64,hero_height:Number($('themeHeroHeight').value)||420,button_style:$('themeButton').value,card_style:$('themeCard').value,icon_style:$('themeIcon').value,image_default_fit:$('themeImageFit').value,logo_url:$('themeLogo').value.trim(),favicon_url:$('themeFavicon').value.trim(),meta_title:$('themeMetaTitle').value.trim(),meta_description:$('themeMetaDescription').value.trim(),og_image:$('themeOgImage').value.trim(),custom_css:$('themeCustomCss').value};const r=await sb.from('site_theme_settings').update(payload).eq('id',1);if(r.error){status('Lưu theme lỗi: '+r.error.message,true);return}status('Đã lưu giao diện. F5 website để xem.');};
+$('resetTheme').onclick=async()=>{if(!confirm('Khôi phục giao diện mặc định?'))return;const d={site_name:'Apple Seed',primary_color:'#2563eb',secondary_color:'#0f172a',page_bg:'#f6f8fb',surface_color:'#ffffff',text_color:'#111827',muted_color:'#667085',radius_px:16,container_width:1180,section_spacing:64,hero_height:420,font_family:'system',button_style:'rounded',card_style:'soft',icon_style:'emoji',image_default_fit:'cover',logo_url:'',favicon_url:'',meta_title:'',meta_description:'',og_image:'',custom_css:''};const r=await sb.from('site_theme_settings').update(d).eq('id',1);if(r.error){status('Khôi phục theme lỗi: '+r.error.message,true);return}await loadTheme();status('Đã khôi phục theme mặc định.');};
+
 
 async function loadProducts(){
   const {data,error}=await sb.from("products").select("id,name,category,price,description,image_url,is_active").order("id",{ascending:false});
