@@ -17,8 +17,8 @@ h1,h2,h3,p{margin-top:0}.top h1{margin-bottom:5px}.muted{color:#667085;font-size
 .badge{display:inline-block;padding:5px 8px;border-radius:999px;font-size:12px;font-weight:800}.pending{background:#fff7ed;color:#c2410c}.repair{background:#eff6ff;color:#1d4ed8}.done{background:#ecfdf3;color:#047857}.delivered{background:#f0fdf4;color:#166534}.failed{background:#fef2f2;color:#b91c1c}
 .formgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.formgrid .full{grid-column:1/-1}label{font-weight:700;font-size:13px;display:block}input,select,textarea{width:100%;margin-top:6px;border:1px solid #d0d5dd;border-radius:9px;padding:10px 11px;font:inherit;background:#fff}textarea{min-height:85px;resize:vertical}
 .modal{position:fixed;inset:0;background:rgba(15,23,42,.45);display:flex;align-items:center;justify-content:center;padding:18px;z-index:5}.modalbox{background:#fff;border-radius:18px;width:min(850px,100%);max-height:90vh;overflow:auto;padding:22px}.hidden{display:none!important}.right{text-align:right}.danger{color:#b42318}.btn.danger{border-color:#fecdca;color:#b42318}.success{color:#067647}.notice{padding:11px 13px;border-radius:10px;background:#eff8ff;color:#175cd3;margin-bottom:14px}
-.split{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.parts-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.parts-grid .listbox{min-width:0}.listbox{border:1px solid #e4e7ec;border-radius:14px;overflow:hidden}.listbox h3{padding:14px 16px;margin:0;background:#f8fafc;border-bottom:1px solid #e4e7ec}.listitem{padding:14px 16px;border-bottom:1px solid #eaecf0}.listitem:last-child{border-bottom:0}.small{font-size:12px}.search{max-width:320px}
-@media(max-width:1050px){.parts-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:800px){.split{grid-template-columns:1fr}.parts-grid{grid-template-columns:1fr}}
+.split{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.parts-pages{display:flex;gap:9px;flex-wrap:wrap;margin:0 0 16px}.part-page{border:1px solid #d0d5dd;background:#fff;border-radius:10px;padding:10px 13px;font-weight:800;cursor:pointer;color:#111827}.part-page.active{background:#2563eb;color:#fff;border-color:#2563eb}.part-page.manage{border-style:dashed}.parts-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.parts-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}.parts-grid .listbox{min-width:0}.listbox{border:1px solid #e4e7ec;border-radius:14px;overflow:hidden}.listbox h3{padding:14px 16px;margin:0;background:#f8fafc;border-bottom:1px solid #e4e7ec}.listitem{padding:14px 16px;border-bottom:1px solid #eaecf0}.listitem:last-child{border-bottom:0}.small{font-size:12px}.search{max-width:320px}
+@media(max-width:800px){.split{grid-template-columns:1fr}}
 @media(max-width:1050px){.cards{grid-template-columns:repeat(3,1fr)}}@media(max-width:700px){.wrap{padding:14px}.top{align-items:flex-start;flex-direction:column}.cards,.formgrid{grid-template-columns:1fr}.formgrid .full{grid-column:auto}}
 </style>
 </head>
@@ -80,7 +80,11 @@ h1,h2,h3,p{margin-top:0}.top h1{margin-bottom:5px}.muted{color:#667085;font-size
 
 <section id="parts" class="view hidden">
 <div class="panel">
-  <div class="top"><div><h2>🧩 Linh kiện</h2><div class="muted">Theo dõi linh kiện đang có và những linh kiện cần bổ sung.</div></div><button class="btn primary" id="newPart">＋ Thêm linh kiện</button></div>
+  <div class="parts-toolbar">
+    <div><h2>🧩 Linh kiện</h2><div class="muted">Mỗi nhóm là một trang riêng. Có thể tạo thêm trang quản lý khi cửa hàng phát triển.</div></div>
+    <div class="actions"><button class="btn" id="managePartPages">⚙️ Quản lý trang</button><button class="btn primary" id="newPart">＋ Thêm linh kiện</button></div>
+  </div>
+  <div id="partsPages" class="parts-pages"></div>
   <div id="partsList"></div>
 </div>
 </section>
@@ -330,58 +334,199 @@ function openPanForm(x={}){
  $("panForm").onsubmit=async e=>{e.preventDefault();let q={platform:$("pPlatform").value,model:$("pModel").value.trim(),title:$("pTitle").value.trim(),symptoms:$("pSymptoms").value.trim(),area:$("pArea").value.trim(),result:$("pResult").value.trim(),fix:$("pFix").value.trim(),note:$("pNote").value.trim()};let z=await(x.id?sb.from("pan_cases").update(q).eq("id",x.id):sb.from("pan_cases").insert(q));if(z.error){alert(z.error.message);return}closeModal();loadPans()}
 }
 
-async function loadParts(){
-  let r=await sb.from("shop_parts").select("*").order("created_at",{ascending:false}).limit(500);
-  if(r.error){$("partsList").innerHTML="<div class='notice'>Chưa có bảng <b>shop_parts</b>. Hãy chạy lại file <b>supabase-shop.sql</b> trong Supabase.</div>";return}
-  let d=r.data||[];
-  const categories=["Màn hình","Pin","Mặt kính / lưng","Camera","Cổng sạc","Loa / Mic","Face ID","Linh kiện khác"];
-  const normalizeCategory=x=>{
-    let c=String(x.category||"").trim();
-    if(!c) return "Linh kiện khác";
-    let map={
-      "Mặt kính":"Mặt kính / lưng","Lưng":"Mặt kính / lưng",
-      "Mặt kính lưng":"Mặt kính / lưng","Mặt kính / lưng":"Mặt kính / lưng",
-      "Màn":"Màn hình","Screen":"Màn hình",
-      "Pin":"Pin","Battery":"Pin",
-      "Camera":"Camera","Cam":"Camera",
-      "Cổng sạc":"Cổng sạc","Sạc":"Cổng sạc",
-      "Loa":"Loa / Mic","Mic":"Loa / Mic","Loa / Mic":"Loa / Mic",
-      "FaceID":"Face ID","Face Id":"Face ID","Face ID":"Face ID"
-    };
-    return map[c]|| (categories.includes(c)?c:"Linh kiện khác");
-  };
-  const render=arr=>arr.length?arr.map(x=>`<div class="listitem"><div style="margin-bottom:8px"><b>${esc(x.name)}</b>${x.sku?' · <span class="muted">'+esc(x.sku)+'</span>':''}</div><div class="small muted">${x.quantity||0} cái · Giá nhập ${money(x.cost_price)}${x.note?' · '+esc(x.note):''}</div><div class="actions" style="margin-top:10px"><button class="btn" onclick='editPart(${JSON.stringify(x).replace(/'/g,"&#39;")})'>Sửa</button><button class="btn danger" onclick="deletePart(${x.id})">🗑️ Xóa</button></div></div>`).join(""):"<div class='listitem muted'>Chưa có dữ liệu.</div>";
-  const groups={}; categories.forEach(c=>groups[c]=[]);
-  d.forEach(x=>groups[normalizeCategory(x)].push(x));
-  $("partsList").innerHTML=`<div class="parts-grid">${categories.map(c=>`<div class="listbox"><h3>${c}</h3>${render(groups[c])}</div>`).join("")}</div>`;
+const DEFAULT_PART_PAGES=[
+  {name:"Màn hình",icon:"📱",sort_order:10},
+  {name:"Pin",icon:"🔋",sort_order:20},
+  {name:"Mặt kính / lưng",icon:"🖼️",sort_order:30},
+  {name:"Camera",icon:"📷",sort_order:40},
+  {name:"Cổng sạc",icon:"🔌",sort_order:50},
+  {name:"Loa / Mic",icon:"🔊",sort_order:60},
+  {name:"Face ID",icon:"🔐",sort_order:70},
+  {name:"Linh kiện khác",icon:"🧩",sort_order:80}
+];
+let partPages=[];
+let activePartPage="Màn hình";
+let partPagesReady=false;
+
+function normalizePartPages(rows){
+  return (rows||[]).map(x=>({id:x.id,name:x.name,icon:x.icon||"🧩",sort_order:x.sort_order||0,active:x.active!==false}))
+    .filter(x=>x.active)
+    .sort((a,b)=>Number(a.sort_order)-Number(b.sort_order)||String(a.name).localeCompare(String(b.name),'vi'));
 }
-$("newPart").onclick=()=>openPartForm();window.editPart=x=>openPartForm(x);
+function localPartPages(){
+  try{
+    let x=JSON.parse(localStorage.getItem("appleSeedPartPages")||"null");
+    if(Array.isArray(x)&&x.length)return x;
+  }catch(e){}
+  return DEFAULT_PART_PAGES.map((x,i)=>({...x,id:"local-"+(i+1),active:true}));
+}
+async function loadPartPages(){
+  let r=await sb.from("shop_part_categories").select("*").eq("active",true).order("sort_order",{ascending:true}).order("name",{ascending:true});
+  if(r.error){
+    partPages=localPartPages();
+    partPagesReady=false;
+    return r.error;
+  }
+  if(!(r.data||[]).length){
+    partPages=DEFAULT_PART_PAGES.map((x,i)=>({...x,id:null,active:true}));
+    // Seed default pages in DB the first time.
+    for(let i=0;i<partPages.length;i++){
+      let z=await sb.from("shop_part_categories").insert({
+        name:partPages[i].name,
+        icon:partPages[i].icon,
+        sort_order:partPages[i].sort_order,
+        active:true
+      }).select().single();
+      if(!z.error&&z.data)partPages[i]=z.data;
+    }
+  }else{
+    partPages=normalizePartPages(r.data);
+  }
+  partPagesReady=true;
+  return null;
+}
+function renderPartPages(){
+  let el=$("partsPages");
+  if(!el)return;
+  el.innerHTML=partPages.map(p=>`<button class="part-page ${p.name===activePartPage?"active":""}" onclick="selectPartPage('${esc(p.name).replace(/'/g,"&#039;")}')">${esc(p.icon||"🧩")} ${esc(p.name)}</button>`).join("")
+    + `<button class="part-page manage" onclick="openPartPageManager()">⚙️ Quản lý trang</button>`;
+}
+window.selectPartPage=async name=>{
+  activePartPage=name;
+  renderPartPages();
+  await loadParts();
+};
+async function loadParts(){
+  let pageErr=await loadPartPages();
+  if(pageErr){
+    // Local fallback lets the existing inventory remain usable.
+    if(!$("partsList").innerHTML) $("partsList").innerHTML="<div class='notice'>Chưa có bảng <b>shop_part_categories</b>. Đang dùng danh sách trang tạm trên máy này. Muốn đồng bộ trang giữa các máy, chạy file <b>apple-seed-shop-part-pages.sql</b> trong Supabase.</div>";
+  }
+  if(!partPages.some(x=>x.name===activePartPage)) activePartPage=partPages[0]?.name||"Màn hình";
+  renderPartPages();
+
+  let r=await sb.from("shop_parts").select("*").eq("category",activePartPage).order("created_at",{ascending:false}).limit(500);
+  if(r.error){
+    $("partsList").innerHTML="<div class='notice'>Chưa có bảng <b>shop_parts</b>. Hãy chạy lại file <b>supabase-shop.sql</b> trong Supabase.</div>";
+    return;
+  }
+  let d=r.data||[];
+  const render=arr=>arr.length?arr.map(x=>`<div class="listitem">
+    <div style="margin-bottom:8px"><b>${esc(x.name)}</b>${x.sku?' · <span class="muted">'+esc(x.sku)+'</span>':''}</div>
+    <div class="small muted">${x.quantity||0} cái · Giá nhập ${money(x.cost_price)}${x.note?' · '+esc(x.note):''}</div>
+    <div class="actions" style="margin-top:10px"><button class="btn" onclick='editPart(${JSON.stringify(x).replace(/'/g,"&#39;")})'>Sửa</button><button class="btn danger" onclick="deletePart(${x.id})">🗑️ Xóa</button></div>
+  </div>`).join(""):"<div class='listitem muted'>Chưa có dữ liệu trong trang này.</div>";
+  $("partsList").innerHTML=`<div class="listbox"><h3>${esc((partPages.find(p=>p.name===activePartPage)||{}).icon||"🧩")} ${esc(activePartPage)}</h3>${render(d)}</div>`;
+}
+$("newPart").onclick=()=>openPartForm();
+$("managePartPages").onclick=()=>openPartPageManager();
+window.editPart=x=>openPartForm(x);
 window.deletePart=async id=>{
   if(!confirm("XÓA linh kiện #"+id+"?")) return;
   let r=await sb.from("shop_parts").delete().eq("id",id);
   if(r.error){alert("Không xóa được: "+r.error.message);return}
   closeModal(); loadParts(); loadDashboard();
 };
+async function openPartPageManager(){
+  await loadPartPages();
+  let rows=partPages.map((p,i)=>`<div class="listitem" style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+    <div><b>${esc(p.icon||"🧩")} ${esc(p.name)}</b><div class="small muted">Trang ${i+1}</div></div>
+    <div class="actions">
+      <button class="btn" onclick='renamePartPage(${JSON.stringify(p).replace(/'/g,"&#39;")})'>✏️ Đổi tên</button>
+      ${partPages.length>1?`<button class="btn danger" onclick="deletePartPage('${String(p.id||"").replace(/'/g,"&#039;")}','${esc(p.name).replace(/'/g,"&#039;")}')">🗑️ Xóa trang</button>`:""}
+    </div>
+  </div>`).join("");
+  openModal("⚙️ Quản lý trang linh kiện",`
+    <div class="notice">Tạo trang mới để sau này quản lý thêm <b>Phụ kiện, Loa, iPad, MacBook, Máy cũ...</b> mà không phải sửa lại giao diện.</div>
+    <div class="actions" style="margin-bottom:14px"><button class="btn primary" onclick="openNewPartPageForm()">＋ Tạo trang mới</button></div>
+    <div class="listbox">${rows||"<div class='listitem muted'>Chưa có trang.</div>"}</div>
+  `);
+}
+window.openPartPageManager=openPartPageManager;
+window.openNewPartPageForm=()=>{
+  openModal("＋ Tạo trang linh kiện mới",`<form id="newPartPageForm" class="formgrid">
+    <label>Tên trang<input id="ppName" placeholder="Ví dụ: Phụ kiện" required></label>
+    <label>Biểu tượng<input id="ppIcon" value="🧩" maxlength="4"></label>
+    <div class="full right"><button class="btn primary">💾 Tạo trang</button></div>
+  </form>`);
+  $("newPartPageForm").onsubmit=async e=>{
+    e.preventDefault();
+    let name=$("ppName").value.trim(), icon=$("ppIcon").value.trim()||"🧩";
+    if(!name){alert("Nhập tên trang.");return}
+    if(partPages.some(p=>p.name.toLowerCase()===name.toLowerCase())){alert("Trang này đã tồn tại.");return}
+    let sort=Math.max(0,...partPages.map(p=>Number(p.sort_order)||0))+10;
+    let r=await sb.from("shop_part_categories").insert({name,icon,sort_order:sort,active:true}).select().single();
+    if(r.error){
+      // Local fallback if the category table has not been created yet.
+      partPages.push({id:"local-"+Date.now(),name,icon,sort_order:sort,active:true});
+      localStorage.setItem("appleSeedPartPages",JSON.stringify(partPages));
+      activePartPage=name;
+      closeModal(); loadParts();
+      alert("Đã tạo trang trên trình duyệt này. Muốn đồng bộ trang giữa các thiết bị, chạy apple-seed-shop-part-pages.sql trong Supabase.");
+      return;
+    }
+    activePartPage=name;
+    closeModal(); loadParts();
+  };
+};
+window.renamePartPage=async p=>{
+  openModal("✏️ Đổi tên trang",`<form id="renamePartPageForm">
+    <label>Tên mới<input id="renamePageName" value="${esc(p.name)}" required></label><br>
+    <label>Biểu tượng<input id="renamePageIcon" value="${esc(p.icon||"🧩")}" maxlength="4"></label>
+    <div class="right" style="margin-top:12px"><button class="btn primary">💾 Lưu</button></div>
+  </form>`);
+  $("renamePartPageForm").onsubmit=async e=>{
+    e.preventDefault();
+    let newName=$("renamePageName").value.trim(), newIcon=$("renamePageIcon").value.trim()||"🧩";
+    if(!newName)return;
+    if(partPages.some(x=>x.id!==p.id&&x.name.toLowerCase()===newName.toLowerCase())){alert("Tên trang đã tồn tại.");return}
+    // Rename the category of existing parts first.
+    let up=await sb.from("shop_parts").update({category:newName}).eq("category",p.name);
+    if(up.error){alert("Không đổi tên được linh kiện: "+up.error.message);return}
+    let r=await sb.from("shop_part_categories").update({name:newName,icon:newIcon}).eq("id",p.id);
+    if(r.error){
+      let i=partPages.findIndex(x=>x.id===p.id); if(i>=0)partPages[i]={...partPages[i],name:newName,icon:newIcon};
+      localStorage.setItem("appleSeedPartPages",JSON.stringify(partPages));
+    }
+    activePartPage=newName;
+    closeModal(); loadParts();
+  };
+};
+window.deletePartPage=async(id,name)=>{
+  if(!confirm(`Xóa trang "${name}"?\\n\\nLinh kiện trong trang sẽ được chuyển sang "Linh kiện khác".`))return;
+  let fallback=partPages.find(p=>p.name==="Linh kiện khác");
+  if(!fallback){alert("Không tìm thấy trang Linh kiện khác để chuyển dữ liệu.");return}
+  let up=await sb.from("shop_parts").update({category:fallback.name}).eq("category",name);
+  if(up.error){alert("Không chuyển được linh kiện: "+up.error.message);return}
+  if(id && !String(id).startsWith("local-")){
+    let r=await sb.from("shop_part_categories").delete().eq("id",id);
+    if(r.error){alert("Không xóa được trang: "+r.error.message);return}
+  }else{
+    partPages=partPages.filter(p=>p.name!==name);
+    localStorage.setItem("appleSeedPartPages",JSON.stringify(partPages));
+  }
+  activePartPage=fallback.name;
+  closeModal(); loadParts();
+};
 function openPartForm(x={}){
+  let opts=partPages.map(p=>`<option value="${esc(p.name)}">${esc(p.icon||"🧩")} ${esc(p.name)}</option>`).join("");
   openModal(x.id?"Sửa linh kiện":"Thêm linh kiện",`<form id="partForm" class="formgrid">
   <label>Tên linh kiện<input id="ptName" value="${esc(x.name||"")}" required></label>
   <label>Mã / SKU<input id="ptSku" value="${esc(x.sku||"")}"></label>
-  <label>Nhóm linh kiện<select id="ptCategory">
-    <option>Màn hình</option><option>Pin</option><option>Mặt kính / lưng</option><option>Camera</option>
-    <option>Cổng sạc</option><option>Loa / Mic</option><option>Face ID</option><option>Linh kiện khác</option>
-  </select></label>
+  <label>Nhóm / Trang<select id="ptCategory">${opts}</select></label>
   <label>Phân loại kho<select id="ptStatus"><option value="in_stock">Tồn kho</option><option value="need">Cần nhập</option></select></label>
   <label>Số lượng<input id="ptQty" type="number" min="0" value="${x.quantity||0}"></label>
   <label>Giá nhập<input id="ptCost" type="number" min="0" value="${x.cost_price||0}"></label>
   <label class="full">Ghi chú<input id="ptNote" value="${esc(x.note||"")}"></label>
   <div class="full right"><button class="btn primary">💾 Lưu linh kiện</button></div></form>`);
-  $("ptCategory").value=x.category||"Linh kiện khác";
+  $("ptCategory").value=x.category||activePartPage;
   if(x.status)$("ptStatus").value=x.status;
   $("partForm").onsubmit=async e=>{
     e.preventDefault();
     let q={name:$("ptName").value.trim(),sku:$("ptSku").value.trim(),category:$("ptCategory").value,status:$("ptStatus").value,quantity:Number($("ptQty").value||0),cost_price:Number($("ptCost").value||0),note:$("ptNote").value.trim()};
     let z=await(x.id?sb.from("shop_parts").update(q).eq("id",x.id):sb.from("shop_parts").insert(q));
     if(z.error){alert(z.error.message);return}
+    activePartPage=q.category;
     closeModal();loadParts();loadDashboard();
   }
 }
