@@ -6,6 +6,8 @@
 let products = [];
 let editingId = null;
 let selectedImageFile = null;
+let selectedImageFiles = [];
+let productGallery = [];
 
 const listEl = document.getElementById("productsList");
 const nameEl = document.getElementById("name");
@@ -83,6 +85,8 @@ function resetForm() {
 
     editingId = null;
     selectedImageFile = null;
+    selectedImageFiles = [];
+    productGallery = [];
 
     formTitleEl.textContent = "Thêm sản phẩm";
 
@@ -104,64 +108,105 @@ function resetForm() {
 
 
 // ==========================================
-// PREVIEW ẢNH
+// PREVIEW / GALLERY ẢNH
 // ==========================================
 
-function showImagePreview(url) {
+function ensureGalleryStyles(){
+    if(document.getElementById("productGalleryAdminStyle")) return;
+    const style=document.createElement("style");
+    style.id="productGalleryAdminStyle";
+    style.textContent=`
+      #imagePreview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px}
+      .gallery-item{position:relative;border:1px solid #e5e7eb;border-radius:10px;padding:5px;background:#fff}
+      .gallery-item img{width:100%;height:110px;object-fit:cover;border-radius:7px;margin:0}
+      .gallery-badge{position:absolute;left:8px;top:8px;background:#2563eb;color:#fff;border-radius:999px;padding:3px 7px;font-size:11px;font-weight:700}
+      .gallery-remove{position:absolute;right:6px;top:6px;width:28px;height:28px;border:0;border-radius:50%;background:#fff;color:#dc2626;font-size:18px;cursor:pointer;box-shadow:0 1px 5px rgba(0,0,0,.15)}
+      .gallery-primary{display:block;width:100%;margin-top:5px;border:0;background:#f2f4f7;border-radius:7px;padding:5px;font-size:11px;font-weight:700;cursor:pointer}
+      .gallery-primary.active{background:#dbeafe;color:#1d4ed8}
+      @media(max-width:600px){#imagePreview{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    `;
+    document.head.appendChild(style);
+}
+function showImagePreview(url){
+    imagePreviewEl.innerHTML="";
+    if(!url)return;
+    const img=document.createElement("img");
+    img.src=url; img.alt="Ảnh sản phẩm"; imagePreviewEl.appendChild(img);
+}
+function renderGallery(){
+    ensureGalleryStyles();
+    imagePreviewEl.innerHTML="";
+    productGallery.forEach((item,index)=>{
+        const box=document.createElement("div"); box.className="gallery-item";
+        const img=document.createElement("img"); img.src=item.url; img.alt=`${nameEl.value.trim()||"Sản phẩm"} - ảnh ${index+1}`; box.appendChild(img);
+        if(item.isPrimary){const badge=document.createElement("span");badge.className="gallery-badge";badge.textContent="Ảnh chính";box.appendChild(badge);}
+        const remove=document.createElement("button");remove.type="button";remove.className="gallery-remove";remove.title="Xóa ảnh";remove.textContent="×";remove.onclick=()=>removeGalleryItem(index);box.appendChild(remove);
+        const primary=document.createElement("button");primary.type="button";primary.className="gallery-primary"+(item.isPrimary?" active":"");primary.textContent=item.isPrimary?"⭐ Ảnh chính":"Đặt làm ảnh chính";primary.onclick=()=>setLocalPrimary(index);box.appendChild(primary);
+        imagePreviewEl.appendChild(box);
+    });
+}
+function setLocalPrimary(index){
+    productGallery=productGallery.map((x,i)=>({...x,isPrimary:i===index}));
+    renderGallery();
+}
+async function loadProductGallery(productId){
+    if(!productId)return [];
+    const {data,error}=await supabaseClient.from("product_images")
+        .select("id,product_id,image_url,image_path,sort_order,is_primary,created_at")
+        .eq("product_id",productId).order("sort_order",{ascending:true}).order("id",{ascending:true});
+    if(error){console.warn("Không tải được gallery:",error);return [];}
+    return (data||[]).map(x=>({id:x.id,productId:x.product_id,url:x.image_url,path:x.image_path||"",sortOrder:Number(x.sort_order||0),isPrimary:!!x.is_primary,pending:false}));
+}
+async function removeGalleryItem(index){
+    const item=productGallery[index]; if(!item)return;
+    if(!confirm("Xóa ảnh này?"))return;
 
-    imagePreviewEl.innerHTML = "";
+    if(item.pending){
+        productGallery.splice(index,1);
+        selectedImageFiles=selectedImageFiles.filter(f=>f!==item.file);
+        if(!selectedImageFiles.length)imageFileEl.value="";
+        renderGallery(); return;
+    }
+    if(!item.id)return;
+    status("Đang xóa ảnh...");
 
-    if (!url) return;
+    const {error}=await supabaseClient.from("product_images").delete().eq("id",item.id);
+    if(error){status("Xóa ảnh lỗi: "+error.message,true);return;}
+    if(item.path)await deleteStorageImage(item.path);
 
-    const img = document.createElement("img");
-
-    img.src = url;
-    img.alt = "Ảnh sản phẩm";
-
-    imagePreviewEl.appendChild(img);
+    const remaining=productGallery.filter((_,i)=>i!==index);
+    if(item.isPrimary&&editingId){
+        if(remaining.length){
+            const next=remaining[0];
+            await supabaseClient.from("product_images").update({is_primary:false}).eq("product_id",editingId);
+            await supabaseClient.from("product_images").update({is_primary:true}).eq("id",next.id);
+            await supabaseClient.from("products").update({image_url:next.url,image_path:next.path||null}).eq("id",editingId);
+        }else{
+            await supabaseClient.from("products").update({image_url:null,image_path:null}).eq("id",editingId);
+        }
+    }
+    productGallery=remaining;
+    if(productGallery.length&&!productGallery.some(x=>x.isPrimary))productGallery[0].isPrimary=true;
+    renderGallery(); status("✓ Đã xóa ảnh.");
 }
 
-
 // ==========================================
-// CHỌN ẢNH
+// CHỌN NHIỀU ẢNH
 // ==========================================
 
-imageFileEl.addEventListener("change", () => {
-
-    const file = imageFileEl.files[0];
-
-    if (!file) {
-        selectedImageFile = null;
-        return;
-    }
-
-    if (!file.type.startsWith("image/")) {
-
-        status("File được chọn không phải ảnh.", true);
-
-        imageFileEl.value = "";
-        selectedImageFile = null;
-
-        return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-
-        status("Ảnh quá lớn. Tối đa 5MB.", true);
-
-        imageFileEl.value = "";
-        selectedImageFile = null;
-
-        return;
-    }
-
-    selectedImageFile = file;
-
-    const localUrl = URL.createObjectURL(file);
-
-    showImagePreview(localUrl);
+imageFileEl.multiple=true;
+imageFileEl.addEventListener("change",()=>{
+    const files=Array.from(imageFileEl.files||[]);
+    if(!files.length)return;
+    if(files.some(f=>!f.type.startsWith("image/"))){status("Có file được chọn không phải ảnh.",true);imageFileEl.value="";return;}
+    if(files.some(f=>f.size>5*1024*1024)){status("Mỗi ảnh tối đa 5MB.",true);imageFileEl.value="";return;}
+    selectedImageFiles=files; selectedImageFile=files[0]||null;
+    const newItems=files.map(file=>({id:null,productId:editingId,url:URL.createObjectURL(file),path:"",sortOrder:999999,isPrimary:false,pending:true,file}));
+    if(!productGallery.some(x=>x.isPrimary)&&newItems.length)newItems[0].isPrimary=true;
+    productGallery=[...productGallery.filter(x=>!x.pending),...newItems];
+    renderGallery();
+    status(`Đã chọn ${files.length} ảnh. Bấm "Lưu sản phẩm" để upload.`);
 });
-
 
 // ==========================================
 // UPLOAD ẢNH
@@ -470,9 +515,16 @@ function editProduct(id) {
         product.is_active !== false;
 
     imageFileEl.value = "";
+    selectedImageFiles = [];
+    productGallery = await loadProductGallery(product.id);
 
-    showImagePreview(product.image_url);
-
+    if(!productGallery.length && product.image_url){
+        productGallery=[{
+            id:null,productId:product.id,url:product.image_url,
+            path:product.image_path||"",sortOrder:0,isPrimary:true,pending:false
+        }];
+    }
+    renderGallery();
     status("");
 
     window.scrollTo({
@@ -485,219 +537,100 @@ function editProduct(id) {
 // ==========================================
 // THÊM / CẬP NHẬT
 // ==========================================
+// THÊM / CẬP NHẬT
+// ==========================================
 
-saveBtn.addEventListener("click", async () => {
+saveBtn.addEventListener("click",async()=>{
+    try{
+        const name=nameEl.value.trim();
+        const category=categoryEl.value.trim();
+        const description=descriptionEl.value.trim();
+        const price=Number(priceEl.value||0);
+        const isActive=isActiveEl.checked;
 
-    try {
+        if(!name){status("Vui lòng nhập tên sản phẩm.",true);nameEl.focus();return;}
 
-        const name =
-            nameEl.value.trim();
+        const wasEditing=!!editingId;
+        saveBtn.disabled=true; status("Đang lưu...");
+        let productId=editingId;
 
-        const category =
-            categoryEl.value.trim();
-
-        const description =
-            descriptionEl.value.trim();
-
-        const price =
-            Number(priceEl.value || 0);
-
-        const isActive =
-            isActiveEl.checked;
-
-
-        if (!name) {
-
-            status(
-                "Vui lòng nhập tên sản phẩm.",
-                true
-            );
-
-            nameEl.focus();
-
-            return;
+        if(!productId){
+            const {data,error}=await supabaseClient.from("products").insert({
+                name,category:category||null,price,description:description||null,
+                image_url:null,image_path:null,is_active:isActive
+            }).select("id").single();
+            if(error)throw error;
+            productId=data.id;
+        }else{
+            const oldProduct=products.find(p=>p.id===productId);
+            if(!oldProduct)throw new Error("Không tìm thấy sản phẩm.");
+            const {error}=await supabaseClient.from("products").update({
+                name,category:category||null,price,description:description||null,is_active:isActive
+            }).eq("id",productId);
+            if(error)throw error;
         }
 
+        const pendingItems=productGallery.filter(x=>x.pending);
+        const uploadedItems=[];
+        for(const item of pendingItems){
+            const uploaded=await uploadProductImage(item.file);
+            uploadedItems.push({url:uploaded.url,path:uploaded.path,isPrimary:!!item.isPrimary});
+        }
 
-        saveBtn.disabled = true;
-
-        status("Đang lưu...");
-
-
-        // ==================================
-        // THÊM SẢN PHẨM
-        // ==================================
-
-        if (!editingId) {
-
-            let imageUrl = null;
-            let imagePath = null;
-
-
-            if (selectedImageFile) {
-
-                const uploaded =
-                    await uploadProductImage(
-                        selectedImageFile
-                    );
-
-                imageUrl =
-                    uploaded.url;
-
-                imagePath =
-                    uploaded.path;
-            }
-
-
-            const { error } =
-                await supabaseClient
-                    .from("products")
-                    .insert({
-                        name,
-                        category:
-                            category || null,
-                        price,
-                        description:
-                            description || null,
-                        image_url:
-                            imageUrl,
-                        image_path:
-                            imagePath,
-                        is_active:
-                            isActive
-                    });
-
-
-            if (error) {
-
-                // Nếu DB lỗi thì xóa ảnh vừa upload
-                if (imagePath) {
-                    await deleteStorageImage(
-                        imagePath
-                    );
-                }
-
+        if(uploadedItems.length){
+            const current=await loadProductGallery(productId);
+            let nextOrder=current.reduce((m,x)=>Math.max(m,Number(x.sortOrder||0)),-1)+1;
+            const rows=uploadedItems.map((x,i)=>({
+                product_id:productId,image_url:x.url,image_path:x.path,
+                sort_order:nextOrder+i,is_primary:false
+            }));
+            const {error}=await supabaseClient.from("product_images").insert(rows);
+            if(error){
+                for(const x of uploadedItems)await deleteStorageImage(x.path);
                 throw error;
             }
 
+            const after=await loadProductGallery(productId);
+            let primary=after.find(x=>x.isPrimary);
+            const primaryIndex=pendingItems.findIndex(x=>x.isPrimary);
+            if(primaryIndex>=0){
+                const wanted=uploadedItems[primaryIndex];
+                primary=after.find(x=>x.url===wanted.url)||primary;
+            }
+            if(!primary)primary=after[0];
 
-            status(
-                "✓ Đã thêm sản phẩm."
-            );
+            if(primary){
+                await supabaseClient.from("product_images").update({is_primary:false}).eq("product_id",productId);
+                const pr=await supabaseClient.from("product_images").update({is_primary:true}).eq("id",primary.id);
+                if(pr.error)throw pr.error;
+                const up=await supabaseClient.from("products").update({
+                    image_url:primary.url,image_path:primary.path||null
+                }).eq("id",productId);
+                if(up.error)throw up.error;
+            }
+        }else{
+            const galleryRows=await loadProductGallery(productId);
+            if(galleryRows.length){
+                const chosen=productGallery.find(x=>x.isPrimary&&!x.pending);
+                const primary=(chosen&&galleryRows.find(x=>x.id===chosen.id))||galleryRows.find(x=>x.isPrimary)||galleryRows[0];
+
+                await supabaseClient.from("product_images").update({is_primary:false}).eq("product_id",productId);
+                await supabaseClient.from("product_images").update({is_primary:true}).eq("id",primary.id);
+                const up=await supabaseClient.from("products").update({
+                    image_url:primary.url,image_path:primary.path||null
+                }).eq("id",productId);
+                if(up.error)throw up.error;
+            }
         }
-
-
-        // ==================================
-        // CẬP NHẬT SẢN PHẨM
-        // ==================================
-
-        else {
-
-            const oldProduct =
-                products.find(
-                    p => p.id === editingId
-                );
-
-            if (!oldProduct) {
-                throw new Error(
-                    "Không tìm thấy sản phẩm."
-                );
-            }
-
-
-            let imageUrl =
-                oldProduct.image_url || null;
-
-            let imagePath =
-                oldProduct.image_path || null;
-
-
-            // Có chọn ảnh mới
-            if (selectedImageFile) {
-
-                const uploaded =
-                    await uploadProductImage(
-                        selectedImageFile
-                    );
-
-
-                imageUrl =
-                    uploaded.url;
-
-                imagePath =
-                    uploaded.path;
-
-
-                // Xóa ảnh cũ
-                if (oldProduct.image_path) {
-
-                    await deleteStorageImage(
-                        oldProduct.image_path
-                    );
-                }
-            }
-
-
-            const { error } =
-                await supabaseClient
-                    .from("products")
-                    .update({
-                        name,
-                        category:
-                            category || null,
-                        price,
-                        description:
-                            description || null,
-                        image_url:
-                            imageUrl,
-                        image_path:
-                            imagePath,
-                        is_active:
-                            isActive
-                    })
-                    .eq("id", editingId);
-
-
-            if (error) {
-
-                // Nếu update lỗi,
-                // xóa ảnh mới vừa upload
-                if (
-                    selectedImageFile &&
-                    imagePath !== oldProduct.image_path
-                ) {
-                    await deleteStorageImage(
-                        imagePath
-                    );
-                }
-
-                throw error;
-            }
-
-
-            status(
-                "✓ Đã cập nhật sản phẩm."
-            );
-        }
-
 
         resetForm();
-
+        status(wasEditing?"✓ Đã cập nhật sản phẩm + nhiều ảnh.":"✓ Đã thêm sản phẩm + nhiều ảnh.");
         await loadProducts();
-
-    } catch (error) {
-
+    }catch(error){
         console.error(error);
-
-        status(
-            error.message ||
-            "Lưu sản phẩm thất bại.",
-            true
-        );
-
-    } finally {
-
-        saveBtn.disabled = false;
+        status(error.message||"Lưu sản phẩm thất bại.",true);
+    }finally{
+        saveBtn.disabled=false;
     }
 });
 
@@ -790,14 +723,26 @@ async function deleteProduct(product) {
         }
 
 
-        // Xóa ảnh khỏi Storage
-        if (product.image_path) {
+        // Xóa toàn bộ gallery của sản phẩm
+        const { data: galleryRows } = await supabaseClient
+            .from("product_images")
+            .select("id,image_path")
+            .eq("product_id", product.id);
 
-            await deleteStorageImage(
-                product.image_path
-            );
+        if (galleryRows?.length) {
+            await supabaseClient
+                .from("product_images")
+                .delete()
+                .eq("product_id", product.id);
+
+            for (const row of galleryRows) {
+                if (row.image_path) await deleteStorageImage(row.image_path);
+            }
         }
 
+        if (product.image_path) {
+            await deleteStorageImage(product.image_path);
+        }
 
         // Nếu đang sửa sản phẩm này
         if (editingId === product.id) {
@@ -832,7 +777,10 @@ async function deleteProduct(product) {
 
 newBtn.addEventListener(
     "click",
-    resetForm
+    () => {
+        resetForm();
+        renderGallery();
+    }
 );
 
 
