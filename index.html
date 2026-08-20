@@ -174,21 +174,76 @@ btn.onclick=()=>{box.classList.toggle("open");if(box.classList.contains("open"))
 close.onclick=()=>box.classList.remove("open");
 
 function answer(q){
- q=q.toLowerCase();
- if(q.includes("địa chỉ")||q.includes("ở đâu")||q.includes("map")||q.includes("google"))
-   return 'Apple Seed ở 292 Phạm Ngũ Lão, Trà Vinh. Bạn có thể bấm "Mở Google Maps" ở phần Liên hệ.';
- if(q.includes("face id")) return "Apple Seed nhận kiểm tra và sửa Face ID iPhone.";
- if(q.includes("main")||q.includes("mất nguồn")||q.includes("không nguồn")) return "Apple Seed nhận kiểm tra main iPhone, đo đạc và xác định lỗi trước khi sửa.";
- if(q.includes("pin")||q.includes("màn")||q.includes("camera")) return "Bạn cho tôi biết model iPhone và lỗi cụ thể, tôi sẽ hướng dẫn thông tin cần kiểm tra.";
- if(q.includes("giá")) return "Giá sửa phụ thuộc model và tình trạng máy. Bạn gửi model iPhone + lỗi để được tư vấn.";
- return "Bạn cho tôi biết model iPhone và tình trạng máy nhé. Ví dụ: iPhone 13 Pro Max mất nguồn, Face ID lỗi, hoặc đơ cảm ứng.";
+  const raw=q.trim();
+  const s=raw.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/đ/g,"d");
+  if(!raw) return "Bạn nhập câu hỏi giúp tôi nhé.";
+
+  const model=raw.match(/(?:iphone|ip)\s*(5s|6s?\s*(?:plus)?|7\s*(?:plus)?|8\s*(?:plus)?|x(?:r|s|s max)?|11(?:\s*pro(?:\s*max)?)?|12(?:\s*mini|\s*pro(?:\s*max)?)?|13(?:\s*mini|\s*pro(?:\s*max)?)?|14(?:\s*plus|\s*pro(?:\s*max)?)?|15(?:\s*plus|\s*pro(?:\s*max)?)?|16(?:\s*plus|\s*pro(?:\s*max)?)?))/i);
+
+  if(s.includes("dia chi")||s.includes("o dau")||s.includes("map")||s.includes("google"))
+    return 'Apple Seed ở 292 Phạm Ngũ Lão, Trà Vinh. Bạn có thể bấm "Mở Google Maps" ở phần Liên hệ.';
+
+  if(s.includes("so dien thoai")||s.includes("sdt")||s.includes("lien he")||s.includes("goi"))
+    return "Bạn có thể liên hệ Apple Seed qua số 0898888269.";
+
+  if(s.includes("face id")||s.includes("faceid"))
+    return (model?model[0]+": ":"")+"Apple Seed nhận kiểm tra và sửa Face ID. Cần kiểm tra cụm Face ID, cáp và phần main trước khi báo phương án sửa.";
+
+  if(s.includes("mat nguon")||s.includes("khong nguon")||s.includes("khong len nguon")||s.includes("chet nguon"))
+    return (model?model[0]+": ":"")+"Máy mất nguồn nên kiểm tra dòng tiêu thụ trước, sau đó đo các đường nguồn và xác định khu vực chạm/lỗi. Bạn cho tôi biết máy hiện dòng bao nhiêu mA khi cấp nguồn.";
+
+  if(s.includes("main")||s.includes("ic")||s.includes("cham"))
+    return (model?model[0]+": ":"")+"Apple Seed nhận kiểm tra main iPhone. Bạn gửi model máy và hiện tượng cụ thể (mất nguồn, chạm, nóng IC, mất áp, mất sóng...) để khoanh vùng.";
+
+  if(s.includes("cam ung")||s.includes("liet cam ung")||s.includes("do cam ung")||s.includes("man hinh"))
+    return (model?model[0]+": ":"")+"Nếu lỗi cảm ứng/màn hình, trước tiên cần xác định lỗi nằm ở màn, socket hay main. Bạn cho biết cảm ứng liệt toàn bộ hay liệt một vùng.";
+
+  if(s.includes("pin")||s.includes("hao pin")||s.includes("sac"))
+    return (model?model[0]+": ":"")+"Bạn cho tôi biết tình trạng pin, phần trăm Battery Health và hiện tượng khi sạc (không nhận, sạc chậm, nóng máy...) để tư vấn chính xác hơn.";
+
+  if(s.includes("camera")||s.includes("may anh"))
+    return (model?model[0]+": ":"")+"Apple Seed nhận kiểm tra camera iPhone. Bạn cho biết camera trước hay sau, lỗi rung, đen màn hình, không lấy nét hay báo lỗi.";
+
+  if(s.includes("mat song")||s.includes("wifi")||s.includes("bluetooth"))
+    return (model?model[0]+": ":"")+"Lỗi sóng/Wi-Fi/Bluetooth cần kiểm tra phần mềm trước rồi mới khoanh vùng modem, nguồn hoặc đường tín hiệu trên main.";
+
+  if(s.includes("gia")||s.includes("bao nhieu tien")||s.includes("bao gia"))
+    return "Giá sửa phụ thuộc model và tình trạng thực tế. Bạn gửi model iPhone + lỗi cụ thể, tôi sẽ hướng dẫn thông tin cần kiểm tra trước khi báo giá.";
+
+  if(s.includes("iphone")||s.includes("ipad")||s.includes("sua")||s.includes("loi"))
+    return (model?"Tôi đã nhận "+model[0]+". ":"")+"Bạn mô tả thêm tình trạng máy nhé: mất nguồn, Face ID, cảm ứng, pin, camera, mất sóng hay lỗi main? Tôi sẽ hướng dẫn bước kiểm tra phù hợp.";
+
+  if(/^[0-9\s+().-]+$/.test(raw))
+    return "Tôi chưa xác định được câu hỏi từ dãy số này. Nếu bạn đang hỏi về máy, hãy nhập ví dụ: “iPhone 13 Pro Max mất nguồn” hoặc “iPhone 12 lỗi Face ID”.";
+
+  return "Tôi chưa hiểu rõ câu hỏi. Bạn thử ghi model + lỗi, ví dụ: “iPhone 13 Pro Max mất nguồn”, “iPhone 12 đơ cảm ứng” hoặc “Apple Seed ở đâu?”";
 }
 form.onsubmit=e=>{
- e.preventDefault();let q=input.value.trim();if(!q)return;
+ e.preventDefault();
+ const q=input.value.trim();
+ if(!q)return;
+
  body.insertAdjacentHTML("beforeend",'<div class="msg user"></div>');
  body.lastElementChild.textContent=q;
- setTimeout(()=>{body.insertAdjacentHTML("beforeend",'<div class="msg bot"></div>');body.lastElementChild.textContent=answer(q);body.scrollTop=body.scrollHeight},180);
- input.value="";body.scrollTop=body.scrollHeight;
+
+ const thinking=document.createElement("div");
+ thinking.className="msg bot";
+ thinking.textContent="Đang kiểm tra thông tin…";
+ body.appendChild(thinking);
+ body.scrollTop=body.scrollHeight;
+
+ input.value="";
+ input.disabled=true;
+ const sendBtn=form.querySelector("button");
+ sendBtn.disabled=true;
+
+ setTimeout(()=>{
+   thinking.textContent=answer(q);
+   input.disabled=false;
+   sendBtn.disabled=false;
+   input.focus();
+   body.scrollTop=body.scrollHeight;
+ },220);
 };
 </script>
 </body>
