@@ -724,7 +724,7 @@ const aiInput = document.getElementById("ai-input");
 const aiSend = document.getElementById("ai-send");
 const aiMessages = document.getElementById("ai-messages");
 
-aiToggle.onclick = () => { aiBox.style.display = "flex"; aiInput.focus(); };
+aiToggle.onclick = () => { aiBox.style.display = "flex"; };
 aiClose.onclick = () => { aiBox.style.display = "none"; };
 
 function addMessage(text, type) {
@@ -741,10 +741,6 @@ async function sendAI() {
 
   addMessage(text, "user");
   aiInput.value = "";
-  aiInput.disabled = true;
-  aiSend.disabled = true;
-  const oldText = aiSend.textContent;
-  aiSend.textContent = "...";
 
   const thinking = document.createElement("div");
   thinking.className = "ai-message bot";
@@ -752,30 +748,33 @@ async function sendAI() {
   aiMessages.appendChild(thinking);
   aiMessages.scrollTop = aiMessages.scrollHeight;
 
+  aiInput.disabled = true;
+  aiSend.disabled = true;
+  const oldText = aiSend.textContent;
+  aiSend.textContent = "...";
+
   try {
-    const response = await fetch(
-      "https://nuismqcjvutuqigydyfgk.supabase.co/functions/v1/appleseed-ai",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text })
-      }
-    );
-
-    const raw = await response.text();
-    let data = {};
-    try { data = raw ? JSON.parse(raw) : {}; } catch (_) {}
-
-    if (!response.ok) {
-      throw new Error(data.error || data.message || `HTTP ${response.status}`);
+    if (!window.supabaseClient) {
+      throw new Error("Supabase chưa được kết nối.");
     }
 
+    const result = await window.supabaseClient.functions.invoke("appleseed-ai", {
+      body: { message: text }
+    });
+
     thinking.remove();
-    addMessage(data.answer || "AI chưa có câu trả lời.", "bot");
+
+    if (result.error) {
+      console.error("AppleSeed AI error:", result.error);
+      addMessage("AppleSeed AI lỗi: " + (result.error.message || "Không thể kết nối."), "bot");
+      return;
+    }
+
+    addMessage(result.data?.answer || "AI chưa có câu trả lời.", "bot");
   } catch (error) {
     thinking.remove();
-    console.error("AppleSeed AI error:", error);
-    addMessage("AppleSeed AI chưa kết nối được. Lỗi: " + (error.message || error), "bot");
+    console.error("AppleSeed AI:", error);
+    addMessage("AppleSeed AI chưa kết nối được. Lỗi: " + (error?.message || "Failed to fetch"), "bot");
   } finally {
     aiInput.disabled = false;
     aiSend.disabled = false;
