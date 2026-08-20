@@ -286,7 +286,13 @@ window.deleteProduct=async id=>{
 async function loadNavItems(){
   const {data,error}=await sb.from("site_nav_items").select("id,label,icon,url,sort_order,is_active,is_system").order("sort_order",{ascending:true}).order("id",{ascending:true});
   if(error){
-    $("navList").innerHTML="<p>Hãy chạy file <b>apple-seed-site-nav.sql</b> trong Supabase SQL Editor.</p>";
+    console.error("AppleSeed Menu đầu trang:", error);
+    $("navList").innerHTML=`<div class="notice">
+      <b>Không đọc được bảng site_nav_items.</b><br>
+      Lỗi Supabase: <code>${esc(error.message||String(error))}</code><br><br>
+      Nếu ông đã chạy SQL rồi, lỗi nằm ở quyền/RLS hoặc Supabase chưa nhận bảng — không cần chạy lại mù.
+    </div>`;
+    status("Menu đầu trang lỗi: "+(error.message||String(error)),true);
     return;
   }
   $("navList").innerHTML=(data||[]).map(n=>`
