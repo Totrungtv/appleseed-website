@@ -103,56 +103,7 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
 </nav>
 </header>
 
-<main>
-<section class="hero" id="gioi-thieu">
-<div class="hero-inner">
-<div><img class="shop-photo" src="shop.jpg" alt="Cửa hàng Apple Seed Trà Vinh - trung tâm sửa chữa iPhone"></div>
-<div>
-<div class="eyebrow">APPLESEED • TRÀ VINH</div>
-<h1>Apple Seed Trà Vinh</h1>
-<p class="lead">Sửa iPhone, Face ID, main và linh kiện. Tư vấn tình trạng máy rõ ràng trước khi sửa.</p>
-<a class="cta" href="tel:0898888269">☎ Liên hệ AppleSeed</a>
-<div class="trust">
-<div class="trust-item"><div class="trust-icon">✓</div><div><b>Uy tín</b>10 năm kinh nghiệm</div></div>
-<div class="trust-item"><div class="trust-icon">♧</div><div><b>Chính hãng</b>Linh kiện chất lượng</div></div>
-<div class="trust-item"><div class="trust-icon">◷</div><div><b>Lấy liền</b>Tiết kiệm thời gian</div></div>
-</div>
-</div>
-</div>
-</section>
-
-<section class="services" id="dich-vu">
-<div class="section-kicker">DỊCH VỤ CỦA CHÚNG TÔI</div>
-<h2>Dịch vụ sửa chữa iPhone chuyên nghiệp</h2>
-<div class="service-grid">
-<article class="service-card"><div class="service-icon">📱</div><div><h3>Sửa iPhone</h3><p>Sửa phần cứng, phần mềm uy tín, bảo hành dài hạn.</p></div></article>
-<article class="service-card"><div class="service-icon">▦</div><div><h3>Sửa main</h3><p>Chuyên xử lý main iPhone, khắc phục lỗi không nguồn, mất áp, mất sóng...</p></div></article>
-<article class="service-card"><div class="service-icon">⌾</div><div><h3>Face ID</h3><p>Sửa Face ID, thay linh kiện chính hãng, nhận xử lý nhanh.</p></div></article>
-<article class="service-card"><div class="service-icon">✚</div><div><h3>Linh kiện</h3><p>Cung cấp linh kiện iPhone chính hãng, chất lượng cao, giá tốt.</p></div></article>
-</div>
-</section>
-
-<section class="contact" id="lien-he">
-<div class="contact-inner">
-<div class="contact-card">
-<div class="section-kicker">LIÊN HỆ APPLESEED</div>
-<h2>Apple Seed Trà Vinh</h2>
-<p>Trung tâm sửa chữa iPhone, Face ID, main và linh kiện. Liên hệ để được tư vấn tình trạng máy.</p>
-<div class="contact-list">
-<a href="tel:0898888269">☎ 0898888269</a>
-<div>📍 292 Phạm Ngũ Lão, Trà Vinh</div>
-<a href="https://maps.app.goo.gl/QEWg9owQidGW5ZyG7" target="_blank" rel="noopener">🗺 Mở Google Maps</a>
-</div>
-</div>
-<div class="map-card">
-<div class="map-title">📍 Vị trí Apple Seed Trà Vinh</div>
-<iframe title="Google Maps Apple Seed Trà Vinh"
-src="https://www.google.com/maps?q=AppleSeed%20292%20Ph%E1%BA%A1m%20Ng%C5%A9%20L%C3%A3o%20Tr%C3%A0%20Vinh&output=embed"
-loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-</div>
-</div>
-</section>
-</main>
+<main id="homeRenderer"><div class="hero" style="padding:70px 24px"><div style="max-width:1240px;margin:auto">Đang tải Apple Seed...</div></div></main>
 
 <button class="chat-btn" id="chatBtn" aria-label="Mở trợ lý Apple Seed">🤖</button>
 <div class="chat-box" id="chatBox" aria-label="Trợ lý Apple Seed">
@@ -166,6 +117,23 @@ loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
 </form>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script>
+(function(){
+  const sb=window.supabaseClient;
+  const root=document.getElementById('homeRenderer');
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  const safeHtml=h=>{const t=document.createElement('template');t.innerHTML=h||'';t.content.querySelectorAll('script,object,embed,form,style,link,meta').forEach(x=>x.remove());t.content.querySelectorAll('*').forEach(el=>[...el.attributes].forEach(a=>{const n=a.name.toLowerCase(),v=a.value||'';if(n.startsWith('on')||((n==='href'||n==='src')&&/^\s*javascript:/i.test(v)))el.removeAttribute(a.name)}));return t.innerHTML};
+  const cssVars=t=>{const r=document.documentElement;r.style.setProperty('--blue',t.primary_color||'#1769ff');r.style.setProperty('--ink',t.text_color||'#17233d');r.style.setProperty('--muted',t.muted_color||'#61708a');r.style.setProperty('--bg',t.page_bg||'#f1f4ff');};
+  function staticFallback(){root.innerHTML=`<section class="hero" id="gioi-thieu"><div class="hero-inner"><div><img class="shop-photo" src="shop.jpg" alt="Cửa hàng Apple Seed Trà Vinh - trung tâm sửa chữa iPhone"></div><div><div class="eyebrow">APPLESEED • TRÀ VINH</div><h1>Apple Seed Trà Vinh</h1><p class="lead">Sửa iPhone, Face ID, main và linh kiện. Tư vấn tình trạng máy rõ ràng trước khi sửa.</p><a class="cta" href="tel:0898888269">☎ Liên hệ AppleSeed</a></div></div></section><section class="services" id="dich-vu"><div class="section-kicker">DỊCH VỤ CỦA CHÚNG TÔI</div><h2>Dịch vụ sửa chữa iPhone chuyên nghiệp</h2><div class="service-grid"><article class="service-card"><div class="service-icon">📱</div><div><h3>Sửa iPhone</h3><p>Sửa phần cứng, phần mềm uy tín, bảo hành dài hạn.</p></div></article><article class="service-card"><div class="service-icon">▦</div><div><h3>Sửa main</h3><p>Chuyên xử lý main iPhone, khắc phục lỗi không nguồn, mất áp, mất sóng...</p></div></article><article class="service-card"><div class="service-icon">⌾</div><div><h3>Face ID</h3><p>Sửa Face ID, thay linh kiện chính hãng, nhận xử lý nhanh.</p></div></article><article class="service-card"><div class="service-icon">✚</div><div><h3>Linh kiện</h3><p>Cung cấp linh kiện iPhone chính hãng, chất lượng cao, giá tốt.</p></div></article></div></section>${contactHtml()}`;}
+  function contactHtml(){return `<section class="contact" id="lien-he"><div class="contact-inner"><div class="contact-card"><div class="section-kicker">LIÊN HỆ APPLESEED</div><h2>Apple Seed Trà Vinh</h2><p>Trung tâm sửa chữa iPhone, Face ID, main và linh kiện. Liên hệ để được tư vấn tình trạng máy.</p><div class="contact-list"><a href="tel:0898888269">☎ 0898888269</a><div>📍 292 Phạm Ngũ Lão, Trà Vinh</div><a href="https://maps.app.goo.gl/QEWg9owQidGW5ZyG7" target="_blank" rel="noopener">🗺 Mở Google Maps</a></div></div><div class="map-card"><div class="map-title">📍 Vị trí Apple Seed Trà Vinh</div><iframe title="Google Maps Apple Seed Trà Vinh" src="https://www.google.com/maps?q=AppleSeed%20292%20Ph%E1%BA%A1m%20Ng%C5%A9%20L%C3%A3o%20Tr%C3%A0%20Vinh&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div></div></section>`;}
+  async function productsHtml(){const r=await sb.from('products').select('id,name,category,price,description,image_url,is_active,stock').eq('is_active',true).order('id',{ascending:false});if(r.error||!r.data?.length)return '';return `<section class="services" id="san-pham"><div class="section-kicker">SẢN PHẨM</div><h2>Sản phẩm Apple Seed</h2><div class="service-grid">${r.data.map(p=>`<article class="service-card"><div class="service-icon">🛍️</div><div><h3>${esc(p.name)}</h3><p>${esc(p.category||'')} ${Number(p.price||0)?'· '+Number(p.price).toLocaleString('vi-VN')+'đ':''}</p></div></article>`).join('')}</div></section>`}
+  function renderSection(s){const id=esc(s.section_key||'');const bg=s.bg_color||'';const color=s.text_color||'';const accent=s.accent_color||'';const style=`${bg?`background:${esc(bg)};`:''}${color?`color:${esc(color)};`:''}${accent?`--blue:${esc(accent)};`:''}`;const content=s.content_html?safeHtml(s.content_html):'';const image=s.image_url?`<img class="shop-photo" src="${esc(s.image_url)}" alt="${esc(s.image_alt||s.title||'Apple Seed')}">`:'';const button=s.button_text?`<a class="cta" href="${esc(s.button_url||'#')}">${esc(s.button_text)}</a>`:'';if(s.section_type==='hero')return `<section class="hero" id="${id}" style="${style}"><div class="hero-inner"><div>${image}</div><div>${s.eyebrow?`<div class="eyebrow">${esc(s.eyebrow)}</div>`:''}<h1>${esc(s.title||'')}</h1>${s.subtitle?`<p class="lead">${esc(s.subtitle)}</p>`:''}${content?`<div class="lead">${content}</div>`:''}${button}</div></div></section>`;if(s.section_type==='services')return `<section class="services" id="${id}" style="${style}"><div class="section-kicker">${esc(s.eyebrow||'DỊCH VỤ')}</div><h2>${esc(s.title||'')}</h2><div class="service-grid">${content?`<div style="grid-column:1/-1;text-align:left">${content}</div>`:''}</div></section>`;if(s.section_type==='map')return `<section class="contact" id="${id}" style="${style}"><div class="contact-inner"><div class="contact-card"><div class="section-kicker">${esc(s.eyebrow||'LIÊN HỆ')}</div><h2>${esc(s.title||'Apple Seed Trà Vinh')}</h2><div>${content}</div></div><div class="map-card"><div class="map-title">${esc(s.subtitle||'📍 Vị trí Apple Seed Trà Vinh')}</div><iframe title="Google Maps Apple Seed Trà Vinh" src="https://www.google.com/maps?q=AppleSeed%20292%20Ph%E1%BA%A1m%20Ng%C5%A9%20L%C3%A3o%20Tr%C3%A0%20Vinh&output=embed" loading="lazy"></iframe></div></div></section>`;return `<section class="services" id="${id}" style="${style}"><div class="section-kicker">${esc(s.eyebrow||'')}</div><h2>${esc(s.title||'')}</h2>${s.subtitle?`<p class="lead" style="margin:0 auto 20px">${esc(s.subtitle)}</p>`:''}<div style="max-width:1160px;margin:auto;text-align:left">${content}</div>${button?`<div style="margin-top:20px">${button}</div>`:''}</section>`;}
+  async function load(){if(!sb){staticFallback();return}try{const [t,n,s]=await Promise.all([sb.from('site_theme_settings').select('*').eq('id',1).maybeSingle(),sb.from('site_nav_items').select('label,icon,url,is_active,sort_order').eq('is_active',true).order('sort_order',{ascending:true}),sb.from('site_home_sections').select('*').eq('is_active',true).order('sort_order',{ascending:true}).order('id',{ascending:true})]);if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){const st=document.createElement('style');st.textContent=t.data.custom_css;document.head.appendChild(st)}if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){document.querySelector('.menu').innerHTML=n.data.map(x=>`<a href="${esc(x.url||'#')}"><span class="mi">${esc(x.icon||'')}</span><span>${esc(x.label)}</span></a>`).join('')}if(s.error||!s.data?.length){staticFallback();return}let html='';for(const sec of s.data){if(sec.section_type==='products')html+=await productsHtml();else if(sec.section_type==='contact')html+=contactHtml();else html+=renderSection(sec)}root.innerHTML=html+(s.data.some(x=>x.section_type==='map'||x.section_type==='contact')?'':contactHtml());}catch(e){console.error('AppleSeed CMS:',e);staticFallback()}}
+  load();
+})();
+</script>
 <script>
 const btn=document.getElementById("chatBtn"),box=document.getElementById("chatBox");
 const close=document.getElementById("chatClose"),body=document.getElementById("chatBody");
