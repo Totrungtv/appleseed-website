@@ -23,6 +23,16 @@
 body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--ink);background:#fff}
 a{text-decoration:none;color:inherit}button,input{font:inherit}
 .site-header{height:86px;background:#fff;border-bottom:1px solid #edf0f5}
+.site-header{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  z-index:5000;
+}
+body{
+  padding-top:86px;
+}
 .nav{max-width:1240px;height:86px;margin:auto;padding:0 28px;display:flex;align-items:center;justify-content:space-between;gap:30px}
 .brand{display:flex;align-items:center;gap:13px;min-width:330px}
 .brand img{width:66px;height:66px;object-fit:contain}
