@@ -166,9 +166,21 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
     if(!path||!sb)return '';
     let p=String(path).trim();
     if(/^https?:\/\//i.test(p))return p;
+
+    // image_url đôi khi chỉ lưu tên/path file thay vì URL đầy đủ.
     p=p.replace(/^\/+/,'');
+    p=p.replace(/^storage\/v1\/(?:object|render\/image)\/public\//,'');
     if(p.startsWith(PRODUCT_BUCKET+'/'))p=p.slice(PRODUCT_BUCKET.length+1);
+
     return sb.storage.from(PRODUCT_BUCKET).getPublicUrl(p).data.publicUrl||'';
+  }
+
+  function normalizeImageValue(value){
+    if(!value)return '';
+    const v=String(value).trim();
+    if(!v)return '';
+    if(/^https?:\/\//i.test(v))return v;
+    return storagePublic(v);
   }
   async function storageSigned(path){
     if(!path||!sb)return '';
@@ -185,8 +197,8 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
     const list=[];
     const add=async x=>{
       if(!x)return;
-      let url=x.image_url||storagePublic(x.image_path);
-      if(url && !list.some(i=>i.url===url)){list.push({url,path:x.image_path||''});return}
+      let url=normalizeImageValue(x.image_url)||storagePublic(x.image_path);
+      if(url && !list.some(i=>i.url===url)){list.push({url,path:x.image_path||x.image_url||''});return}
       if(x.image_path){
         const signed=await storageSigned(x.image_path);
         if(signed && !list.some(i=>i.url===signed))list.push({url:signed,path:x.image_path});
@@ -236,7 +248,7 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
           return `<article class="product-home-card" data-product-index="${i}" tabindex="0" role="button" aria-label="Xem chi tiết ${esc(p.name)}">
             <div class="product-home-photo">
               ${first
-                ? `<img src="${esc(first)}" alt="${esc(p.name)}" loading="lazy">`
+                ? `<img src="${esc(first)}" alt="${esc(p.name)}" loading="lazy" data-product-img-index="${i}">`
                 : '🛍️'}
             </div>
             <div>
@@ -289,13 +301,85 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
   }
 
   function bindProductCards(){
-    document.querySelectorAll('[data-product-index]').forEach(card=>{
-      const open=()=>openProductHome(card.dataset.productIndex);
-      card.addEventListener('click',open);
-      card.addEventListener('keydown',e=>{
-        if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}
-      });
+    // Dùng event delegation để chắc chắn card vẫn bấm được dù CMS render lại DOM.
+    if(window.__appleSeedProductClickBound)return;
+    window.__appleSeedProductClickBound=true;
+
+    document.addEventListener('click',e=>{
+      const card=e.target.closest?.('[data-product-index]');
+      if(card){
+        e.preventDefault();
+        e.stopPropagation();
+        openProductHome(card.dataset.productIndex);
+        return;
+      }
+
+      const nav=e.target.closest?.('.menu a');
+      if(nav){
+        const label=(nav.textContent||'').trim().toLowerCase();
+        let href=nav.getAttribute('href')||'';
+
+        // CMS có thể lưu URL là "dich-vu", "gioi-thieu"... thay vì "#dich-vu".
+        const map=[
+          ['dịch vụ','#dich-vu'],['dich vu','#dich-vu'],
+          ['sản phẩm','#san-pham'],['san pham','products.html'],
+          ['giới thiệu','#gioi-thieu'],['gioi thieu','#gioi-thieu'],
+          ['liên hệ','#lien-he'],['lien he','#lien-he']
+        ];
+
+        if(label.includes('sản phẩm')||label.includes('san pham')){
+          const productSection=document.getElementById('san-pham');
+          if(productSection){
+            e.preventDefault();
+            productSection.scrollIntoView({behavior:'smooth',block:'start'});
+            return;
+          }
+          return;
+        }
+
+        const item=map.find(x=>label.includes(x[0]));
+        if(item && item[1].startsWith('#')){
+          const target=document.querySelector(item[1]);
+          if(target){
+            e.preventDefault();
+            target.scrollIntoView({behavior:'smooth',block:'start'});
+            return;
+          }
+        }
+
+        // Nếu href là một anchor nhưng anchor chưa tồn tại, thử bỏ dấu # / chuẩn hóa.
+        if(href.startsWith('#')){
+          const target=document.querySelector(href);
+          if(target){
+            e.preventDefault();
+            target.scrollIntoView({behavior:'smooth',block:'start'});
+          }
+        }
+      }
     });
+
+    document.addEventListener('keydown',e=>{
+      if((e.key==='Enter'||e.key===' ') && e.target.closest?.('[data-product-index]')){
+        e.preventDefault();
+        openProductHome(e.target.closest('[data-product-index]').dataset.productIndex);
+      }
+    });
+
+    // Fallback ảnh: nếu public URL lỗi thì lấy signed URL.
+    document.addEventListener('error',async e=>{
+      const img=e.target;
+      if(!(img instanceof HTMLImageElement))return;
+      if(!img.matches('[data-product-img-index]') || img.dataset.signedTried==='1')return;
+
+      const index=Number(img.dataset.productImgIndex);
+      const item=window.appleSeedProducts?.[index];
+      const path=item?.images?.[0]?.path;
+      if(!path)return;
+
+      img.dataset.signedTried='1';
+      const signed=await storageSigned(path);
+      if(signed)img.src=signed;
+    },true);
   }
 
   document.getElementById('productModalClose').onclick=()=>{
@@ -311,7 +395,7 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
   });
 
   function renderSection(s){const id=esc(s.section_key||'');const bg=s.bg_color||'';const color=s.text_color||'';const accent=s.accent_color||'';const style=`${bg?`background:${esc(bg)};`:''}${color?`color:${esc(color)};`:''}${accent?`--blue:${esc(accent)};`:''}`;const content=s.content_html?safeHtml(s.content_html):'';const image=s.image_url?`<img class="shop-photo" src="${esc(s.image_url)}" alt="${esc(s.image_alt||s.title||'Apple Seed')}">`:'';const button=s.button_text?`<a class="cta" href="${esc(s.button_url||'#')}">${esc(s.button_text)}</a>`:'';if(s.section_type==='hero')return `<section class="hero" id="${id}" style="${style}"><div class="hero-inner"><div>${image}</div><div>${s.eyebrow?`<div class="eyebrow">${esc(s.eyebrow)}</div>`:''}<h1>${esc(s.title||'')}</h1>${s.subtitle?`<p class="lead">${esc(s.subtitle)}</p>`:''}${content?`<div class="lead">${content}</div>`:''}${button}</div></div></section>`;if(s.section_type==='services')return `<section class="services" id="${id}" style="${style}"><div class="section-kicker">${esc(s.eyebrow||'DỊCH VỤ')}</div><h2>${esc(s.title||'')}</h2><div class="service-grid">${content?`<div style="grid-column:1/-1;text-align:left">${content}</div>`:''}</div></section>`;if(s.section_type==='map')return `<section class="contact" id="${id}" style="${style}"><div class="contact-inner"><div class="contact-card"><div class="section-kicker">${esc(s.eyebrow||'LIÊN HỆ')}</div><h2>${esc(s.title||'Apple Seed Trà Vinh')}</h2><div>${content}</div></div><div class="map-card"><div class="map-title">${esc(s.subtitle||'📍 Vị trí Apple Seed Trà Vinh')}</div><iframe title="Google Maps Apple Seed Trà Vinh" src="https://www.google.com/maps?q=AppleSeed%20292%20Ph%E1%BA%A1m%20Ng%C5%A9%20L%C3%A3o%20Tr%C3%A0%20Vinh&output=embed" loading="lazy"></iframe></div></div></section>`;return `<section class="services" id="${id}" style="${style}"><div class="section-kicker">${esc(s.eyebrow||'')}</div><h2>${esc(s.title||'')}</h2>${s.subtitle?`<p class="lead" style="margin:0 auto 20px">${esc(s.subtitle)}</p>`:''}<div style="max-width:1160px;margin:auto;text-align:left">${content}</div>${button?`<div style="margin-top:20px">${button}</div>`:''}</section>`;}
-  async function load(){if(!sb){staticFallback();return}try{const [t,n,s]=await Promise.all([sb.from('site_theme_settings').select('*').eq('id',1).maybeSingle(),sb.from('site_nav_items').select('label,icon,url,is_active,sort_order').eq('is_active',true).order('sort_order',{ascending:true}),sb.from('site_home_sections').select('*').eq('is_active',true).order('sort_order',{ascending:true}).order('id',{ascending:true})]);if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){const st=document.createElement('style');st.textContent=t.data.custom_css;document.head.appendChild(st)}if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){document.querySelector('.menu').innerHTML=n.data.map(x=>`<a href="${esc(x.url||'#')}"><span class="mi">${esc(x.icon||'')}</span><span>${esc(x.label)}</span></a>`).join('')}if(s.error||!s.data?.length){staticFallback();return}let html='';let contactRendered=false;for(const sec of s.data){if(sec.section_type==='products'){html+=await productsHtml();continue}if(sec.section_type==='map'||sec.section_type==='contact'){if(contactRendered)continue;contactRendered=true;html+=sec.section_type==='contact'?contactHtml():renderSection(sec);continue}html+=renderSection(sec)}root.innerHTML=html+(contactRendered?'':contactHtml());bindProductCards();}catch(e){console.error('AppleSeed CMS:',e);staticFallback()}}
+  async function load(){if(!sb){staticFallback();bindProductCards();return}try{const [t,n,s]=await Promise.all([sb.from('site_theme_settings').select('*').eq('id',1).maybeSingle(),sb.from('site_nav_items').select('label,icon,url,is_active,sort_order').eq('is_active',true).order('sort_order',{ascending:true}),sb.from('site_home_sections').select('*').eq('is_active',true).order('sort_order',{ascending:true}).order('id',{ascending:true})]);if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){const st=document.createElement('style');st.textContent=t.data.custom_css;document.head.appendChild(st)}if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){document.querySelector('.menu').innerHTML=n.data.map(x=>`<a href="${esc(x.url||'#')}"><span class="mi">${esc(x.icon||'')}</span><span>${esc(x.label)}</span></a>`).join('')}if(s.error||!s.data?.length){staticFallback();bindProductCards();return}let html='';let contactRendered=false;for(const sec of s.data){if(sec.section_type==='products'){html+=await productsHtml();continue}if(sec.section_type==='map'||sec.section_type==='contact'){if(contactRendered)continue;contactRendered=true;html+=sec.section_type==='contact'?contactHtml():renderSection(sec);continue}html+=renderSection(sec)}root.innerHTML=html+(contactRendered?'':contactHtml());bindProductCards();}catch(e){console.error('AppleSeed CMS:',e);staticFallback();bindProductCards()}}
   load();
 })();
 </script>
