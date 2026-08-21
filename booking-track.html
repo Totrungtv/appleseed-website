@@ -56,7 +56,81 @@ async function loadDashboard(){
 }
 window.selectBooking=async id=>{selected=bookings.find(b=>b.id===id)||null;renderList();await renderDetail()};
 async function renderDetail(){if(!selected){$('emptyDetail').classList.remove('hidden');$('detail').classList.add('hidden');return}$('emptyDetail').classList.add('hidden');$('detail').classList.remove('hidden');const b=selected,st=statusMap[b.status]||['Đang xử lý','new'];$('detailName').textContent=b.customer_name||'Khách hàng';$('detailCode').textContent=b.booking_code||'—';$('detailStatus').textContent=st[0];$('detailStatus').className='status '+st[1];$('detailDevice').textContent=b.device_model||'—';$('detailService').textContent=b.service_name||'—';$('detailDate').textContent=fmtDate(b.preferred_date||b.appointment_date);$('detailTime').textContent=b.preferred_time||b.appointment_time||'Không yêu cầu';$('detailIssue').textContent=b.customer_issue||'—';$('detailNote').textContent=b.note||'—';$('chatBookingCode').textContent=b.booking_code||('AS-'+String(b.id).padStart(6,'0'));await loadMessages()}
-async function loadMessages(){if(!selected)return;const r=await sb.rpc('member_booking_messages_chat_v1',{p_booking_id:selected.id});if(r.error||!r.data?.ok){$('messages').innerHTML='<div class="error">'+esc(r.error?.message||r.data?.message||'Không tải được trao đổi.')+'</div>';return}const list=r.data.messages||[];$('messages').innerHTML=list.length?list.map(m=>`<div class="msg ${m.sender_type==='customer'?'customer':'admin'}">${esc(m.message).replace(/\n/g,'<br>')}<small>${m.sender_type==='customer'?'Bạn':'Apple Seed'} · ${new Date(m.created_at).toLocaleString('vi-VN')}</small></div>`).join(''):'<div class="empty">Chưa có trao đổi. Bạn có thể gửi tin nhắn đầu tiên.</div>';$('messages').scrollTop=$('messages').scrollHeight}
+async function loadMessages(){
+  if(!selected)return;
+
+  const r=await sb.rpc(
+    'member_booking_messages_chat_v1',
+    {p_booking_id:selected.id}
+  );
+
+  if(r.error||!r.data?.ok){
+    $('messages').innerHTML=
+      '<div class="error">'+
+      esc(r.error?.message||r.data?.message||'Không tải được trao đổi.')+
+      '</div>';
+    return;
+  }
+
+  const list=r.data.messages||[];
+
+  $('messages').innerHTML=list.length
+    ? list.map(m=>`
+      <div class="msg ${m.sender_type==='customer'?'customer':'admin'}">
+        ${esc(m.message).replace(/\n/g,'<br>')}
+        <small>
+          ${m.sender_type==='customer'?'Bạn':'Apple Seed'}
+          · ${new Date(m.created_at).toLocaleString('vi-VN')}
+        </small>
+      </div>
+    `).join('')
+    : '<div class="empty">Chưa có trao đổi. Bạn có thể gửi tin nhắn đầu tiên.</div>';
+
+  $('messages').scrollTop=$('messages').scrollHeight;
+}
+
+let chatAutoSyncTimer=null;
+let chatLastSignature='';
+
+function startChatAutoSync(){
+  if(chatAutoSyncTimer) clearInterval(chatAutoSyncTimer);
+
+  chatAutoSyncTimer=setInterval(async()=>{
+    if(!selected)return;
+
+    const r=await sb.rpc(
+      'member_booking_messages_chat_v1',
+      {p_booking_id:selected.id}
+    );
+
+    if(r.error||!r.data?.ok)return;
+
+    const list=r.data.messages||[];
+
+    const signature=list.map(m=>
+      `${m.id}|${m.created_at}|${m.message}|${m.sender_type}`
+    ).join('||');
+
+    if(signature===chatLastSignature)return;
+
+    chatLastSignature=signature;
+
+    $('messages').innerHTML=list.length
+      ? list.map(m=>`
+        <div class="msg ${m.sender_type==='customer'?'customer':'admin'}">
+          ${esc(m.message).replace(/\n/g,'<br>')}
+          <small>
+            ${m.sender_type==='customer'?'Bạn':'Apple Seed'}
+            · ${new Date(m.created_at).toLocaleString('vi-VN')}
+          </small>
+        </div>
+      `).join('')
+      : '<div class="empty">Chưa có trao đổi.</div>';
+
+    $('messages').scrollTop=$('messages').scrollHeight;
+
+  },1000);
+}
 $('messageForm').onsubmit=async e=>{e.preventDefault();if(!selected)return;const text=$('message').value.trim();if(!text)return;const btn=e.submitter;btn.disabled=true;btn.textContent='Đang gửi...';const r=await sb.rpc('member_send_message_chat_v1',{p_booking_id:selected.id,p_message:text});if(r.error||!r.data?.ok){$('messageStatus').innerHTML='<div class="error">'+esc(r.error?.message||r.data?.message||'Không gửi được tin nhắn.')+'</div>'}else{$('message').value='';$('messageStatus').innerHTML='<div class="success">✅ Đã gửi tin nhắn cho Apple Seed.</div>';await loadMessages();setTimeout(()=>$('messageStatus').innerHTML='',2500)}btn.disabled=false;btn.textContent='Gửi tin nhắn'};
 $('logout').onclick=memberLogout;
 $('loginForm').onsubmit=async e=>{e.preventDefault();clearAuthError();const b=e.submitter;b.disabled=true;b.textContent='Đang đăng nhập...';try{await memberSignIn($('loginEmail').value,$('loginPassword').value);$('authBox').classList.add('hidden');$('appBox').classList.remove('hidden');await loadDashboard()}catch(x){showAuthError(x.message||'Đăng nhập không thành công.')}b.disabled=false;b.textContent='🔐 Đăng nhập'};
