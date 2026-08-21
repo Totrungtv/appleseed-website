@@ -348,13 +348,42 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
   async function storageSigned(path){
     if(!path||!sb)return '';
     let p=String(path).trim();
-    if(/^https?:\/\//i.test(p))return p;
-    p=p.replace(/^\/+/,'');
+    if(!p)return '';
+
+    // Database có thể lưu nguyên Supabase Storage URL.
+    // Tách bucket/path để vẫn tạo signed URL khi public URL lỗi.
+    if(/^https?:\/\//i.test(p)){
+      try{
+        const u=new URL(p);
+        const m=u.pathname.match(/\/storage\/v1\/object\/(?:public|sign|authenticated)\/([^/]+)\/(.+)$/i);
+        if(!m)return '';
+        const bucket=decodeURIComponent(m[1]);
+        p=decodeURIComponent(m[2]);
+        if(bucket!==PRODUCT_BUCKET)return '';
+      }catch(e){return ''}
+    }
+
+    p=p.replace(/^\/+/, '');
     if(p.startsWith(PRODUCT_BUCKET+'/'))p=p.slice(PRODUCT_BUCKET.length+1);
     try{
       const r=await sb.storage.from(PRODUCT_BUCKET).createSignedUrl(p,3600);
       return r?.data?.signedUrl||'';
     }catch(e){return ''}
+  }
+
+  async function loadProductImage(img,path){
+    if(!img||!path)return;
+    if(img.dataset.imageRetry==='1')return;
+
+    img.dataset.imageRetry='1';
+    const signed=await storageSigned(path);
+    if(signed && signed!==img.src){
+      img.src=signed;
+      return;
+    }
+
+    img.style.display='none';
+    if(img.parentElement)img.parentElement.textContent='🛍️';
   }
   async function productImages(p,gallery){
     const list=[];
@@ -411,7 +440,7 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
           return `<article class="product-home-card" data-product-index="${i}" tabindex="0" role="button" aria-label="Xem chi tiết ${esc(p.name)}">
             <div class="product-home-photo">
               ${first
-                ? `<img src="${esc(first)}" alt="${esc(p.name)}" loading="lazy" data-product-img-index="${i}" onerror="this.style.display='none';this.parentElement.textContent='🛍️';">`
+                ? `<img src="${esc(first)}" alt="${esc(p.name)}" loading="lazy" data-product-img-index="${i}">`
                 : '🛍️'}
             </div>
             <div>
@@ -669,20 +698,18 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
       }
     });
 
-    // Fallback ảnh: nếu public URL lỗi thì lấy signed URL.
+    // Fallback ảnh: public URL lỗi -> signed URL.
     document.addEventListener('error',async e=>{
       const img=e.target;
       if(!(img instanceof HTMLImageElement))return;
-      if(!img.matches('[data-product-img-index]') || img.dataset.signedTried==='1')return;
+      if(!img.matches('[data-product-img-index]'))return;
 
       const index=Number(img.dataset.productImgIndex);
       const item=window.appleSeedProducts?.[index];
       const path=item?.images?.[0]?.path;
       if(!path)return;
 
-      img.dataset.signedTried='1';
-      const signed=await storageSigned(path);
-      if(signed)img.src=signed;
+      await loadProductImage(img,path);
     },true);
   }
 
