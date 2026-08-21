@@ -405,43 +405,6 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
         return;
       }
 
-      const nav=e.target.closest?.('.menu a');
-      if(nav){
-        e.preventDefault();
-        e.stopPropagation();
-
-        const label=(nav.textContent||'').normalize('NFD')
-          .replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
-
-        let targetId='';
-        if(label.includes('dich vu')) targetId='dich-vu';
-        else if(label.includes('san pham')) targetId='san-pham';
-        else if(label.includes('gioi thieu')) targetId='gioi-thieu';
-        else if(label.includes('lien he')) targetId='lien-he';
-
-        if(targetId==='san-pham'){
-          const target=document.getElementById('san-pham');
-          if(target){
-            target.scrollIntoView({behavior:'smooth',block:'start'});
-            history.replaceState(null,'','#san-pham');
-          }else{
-            location.href='products.html';
-          }
-          return;
-        }
-
-        if(targetId){
-          const target=document.getElementById(targetId);
-          if(target){
-            target.scrollIntoView({behavior:'smooth',block:'start'});
-            history.replaceState(null,'','#'+targetId);
-            return;
-          }
-
-          // CMS may not have supplied the section; at least give visible feedback.
-          console.warn('Apple Seed: không tìm thấy section #'+targetId);
-        }
-      }
     });
 
     document.addEventListener('keydown',e=>{
@@ -481,12 +444,14 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
   });
 
   function renderSection(s){
-    let rawId=s.section_key||'';
-    if(!rawId){
-      if(s.section_type==='services')rawId='dich-vu';
-      else if(s.section_type==='hero')rawId='gioi-thieu';
-      else if(s.section_type==='map'||s.section_type==='contact')rawId='lien-he';
-    }
+    // ID điều hướng phải cố định theo loại section.
+    // section_key trong Admin có thể là tên tùy ý, không được để nó
+    // làm mất các điểm neo mà menu #dich-vu/#gioi-thieu/#lien-he đang dùng.
+    let rawId='';
+    if(s.section_type==='services') rawId='dich-vu';
+    else if(s.section_type==='hero') rawId='gioi-thieu';
+    else if(s.section_type==='map'||s.section_type==='contact') rawId='lien-he';
+    else rawId=s.section_key||'';
     const id=esc(rawId);const bg=s.bg_color||'';const color=s.text_color||'';const accent=s.accent_color||'';const style=`${bg?`background:${esc(bg)};`:''}${color?`color:${esc(color)};`:''}${accent?`--blue:${esc(accent)};`:''}`;const content=s.content_html?safeHtml(s.content_html):'';const image=s.image_url?`<img class="shop-photo" src="${esc(s.image_url)}" alt="${esc(s.image_alt||s.title||'Apple Seed')}">`:'';const button=s.button_text?`<a class="cta" href="${esc(s.button_url||'#')}">${esc(s.button_text)}</a>`:'';if(s.section_type==='hero')return `<section class="hero" id="${id}" style="${style}"><div class="hero-inner"><div>${image}</div><div>${s.eyebrow?`<div class="eyebrow">${esc(s.eyebrow)}</div>`:''}<h1>${esc(s.title||'')}</h1>${s.subtitle?`<p class="lead">${esc(s.subtitle)}</p>`:''}${content?`<div class="lead">${content}</div>`:''}${button}</div></div></section>`;if(s.section_type==='services')return `<section class="services" id="${id}" style="${style}"><div class="section-kicker">${esc(s.eyebrow||'DỊCH VỤ')}</div><h2>${esc(s.title||'')}</h2><div class="service-grid">${content?`<div style="grid-column:1/-1;text-align:left">${content}</div>`:''}</div></section>`;if(s.section_type==='map')return `<section class="contact" id="${id}" style="${style}"><div class="contact-inner"><div class="contact-card"><div class="section-kicker">${esc(s.eyebrow||'LIÊN HỆ')}</div><h2>${esc(s.title||'Apple Seed Trà Vinh')}</h2><div>${content}</div></div><div class="map-card"><div class="map-title">${esc(s.subtitle||'📍 Vị trí Apple Seed Trà Vinh')}</div><iframe title="Google Maps Apple Seed Trà Vinh" src="https://www.google.com/maps?q=AppleSeed%20292%20Ph%E1%BA%A1m%20Ng%C5%A9%20L%C3%A3o%20Tr%C3%A0%20Vinh&output=embed" loading="lazy"></iframe></div></div></section>`;return `<section class="services" id="${id}" style="${style}"><div class="section-kicker">${esc(s.eyebrow||'')}</div><h2>${esc(s.title||'')}</h2>${s.subtitle?`<p class="lead" style="margin:0 auto 20px">${esc(s.subtitle)}</p>`:''}<div style="max-width:1160px;margin:auto;text-align:left">${content}</div>${button?`<div style="margin-top:20px">${button}</div>`:''}</section>`;}
   function fixNavigation(){
     document.querySelectorAll('.menu a').forEach(a=>{
@@ -501,22 +466,52 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
 
       if(!target)return;
 
-      // Gán href thật để click/chuột phải/mở tab mới đều đi đúng nơi.
+      // Luôn dùng điểm neo nội bộ, bỏ URL cũ do Admin lưu.
       a.setAttribute('href',target);
 
+      // Xóa handler cũ nếu CMS/render chạy lại.
+      a.onclick=null;
       a.onclick=e=>{
         e.preventDefault();
         e.stopPropagation();
+
         const el=document.querySelector(target);
-        if(el){
-          el.scrollIntoView({behavior:'smooth',block:'start'});
-          history.replaceState(null,'',target);
+        if(!el){
+          console.warn('Apple Seed: chưa có section '+target);
+          return false;
         }
+
+        const header=document.querySelector('.site-header');
+        const offset=(header?.offsetHeight||86)+8;
+        const y=el.getBoundingClientRect().top+window.pageYOffset-offset;
+
+        window.scrollTo({top:Math.max(0,y),behavior:'smooth'});
+        history.replaceState(null,'',target);
+        return false;
       };
     });
   }
 
-  async function load(){if(!sb){staticFallback();bindProductCards();fixNavigation();return}try{const [t,n,s]=await Promise.all([sb.from('site_theme_settings').select('*').eq('id',1).maybeSingle(),sb.from('site_nav_items').select('label,icon,url,is_active,sort_order').eq('is_active',true).order('sort_order',{ascending:true}),sb.from('site_home_sections').select('*').eq('is_active',true).order('sort_order',{ascending:true}).order('id',{ascending:true})]);if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){const st=document.createElement('style');st.textContent=t.data.custom_css;document.head.appendChild(st)}if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){document.querySelector('.menu').innerHTML=n.data.map(x=>`<a href="${esc(x.url||'#')}"><span class="mi">${esc(x.icon||'')}</span><span>${esc(x.label)}</span></a>`).join('')};fixNavigation();if(s.error||!s.data?.length){staticFallback();bindProductCards();fixNavigation();return}let html='';let contactRendered=false;for(const sec of s.data){if(sec.section_type==='products'){html+=await productsHtml();continue}if(sec.section_type==='map'||sec.section_type==='contact'){if(contactRendered)continue;contactRendered=true;html+=sec.section_type==='contact'?contactHtml():renderSection(sec);continue}html+=renderSection(sec)}root.innerHTML=html+(contactRendered?'':contactHtml());bindProductCards();fixNavigation();}catch(e){console.error('AppleSeed CMS:',e);staticFallback();bindProductCards();fixNavigation()}}
+  async function load(){if(!sb){staticFallback();bindProductCards();fixNavigation();return}try{const [t,n,s]=await Promise.all([sb.from('site_theme_settings').select('*').eq('id',1).maybeSingle(),sb.from('site_nav_items').select('label,icon,url,is_active,sort_order').eq('is_active',true).order('sort_order',{ascending:true}),sb.from('site_home_sections').select('*').eq('is_active',true).order('sort_order',{ascending:true}).order('id',{ascending:true})]);if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){const st=document.createElement('style');st.textContent=t.data.custom_css;document.head.appendChild(st)}if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){document.querySelector('.menu').innerHTML=n.data.map(x=>`<a href="${esc(x.url||'#')}"><span class="mi">${esc(x.icon||'')}</span><span>${esc(x.label)}</span></a>`).join('')};fixNavigation();if(s.error||!s.data?.length){staticFallback();bindProductCards();fixNavigation();return}let html='';let contactRendered=false;for(const sec of s.data){if(sec.section_type==='products'){html+=await productsHtml();continue}if(sec.section_type==='map'||sec.section_type==='contact'){if(contactRendered)continue;contactRendered=true;html+=sec.section_type==='contact'?contactHtml():renderSection(sec);continue}html+=renderSection(sec)}root.innerHTML=html+(contactRendered?'':contactHtml());
+      fixNavigation();
+      bindProductCards();
+
+      // Nếu mở trực tiếp index.html#dich-vu/#san-pham/... thì chờ DOM ổn định rồi cuộn.
+      requestAnimationFrame(()=>{
+        const hash=location.hash;
+        if(hash && ['#dich-vu','#san-pham','#gioi-thieu','#lien-he'].includes(hash)){
+          setTimeout(()=>{
+            const el=document.querySelector(hash);
+            if(el){
+              const header=document.querySelector('.site-header');
+              const offset=(header?.offsetHeight||86)+8;
+              const y=el.getBoundingClientRect().top+window.pageYOffset-offset;
+              window.scrollTo({top:Math.max(0,y),behavior:'smooth'});
+            }
+          },50);
+        }
+      });
+    }catch(e){console.error('AppleSeed CMS:',e);staticFallback();fixNavigation();bindProductCards()}}
   load();
 })();
 </script>
