@@ -51,7 +51,6 @@ form?.addEventListener('submit', async e => {
     preferred_time: $('time')?.value || null,
     note: $('note')?.value.trim() || null,
     status: 'pending',
-    member_id: session.user.id
   };
 
   if (
