@@ -453,34 +453,45 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
     else if(s.section_type==='map'||s.section_type==='contact') rawId='lien-he';
     else rawId=s.section_key||'';
     const id=esc(rawId);const bg=s.bg_color||'';const color=s.text_color||'';const accent=s.accent_color||'';const style=`${bg?`background:${esc(bg)};`:''}${color?`color:${esc(color)};`:''}${accent?`--blue:${esc(accent)};`:''}`;const content=s.content_html?safeHtml(s.content_html):'';const image=s.image_url?`<img class="shop-photo" src="${esc(s.image_url)}" alt="${esc(s.image_alt||s.title||'Apple Seed')}">`:'';const button=s.button_text?`<a class="cta" href="${esc(s.button_url||'#')}">${esc(s.button_text)}</a>`:'';if(s.section_type==='hero')return `<section class="hero" id="${id}" style="${style}"><div class="hero-inner"><div>${image}</div><div>${s.eyebrow?`<div class="eyebrow">${esc(s.eyebrow)}</div>`:''}<h1>${esc(s.title||'')}</h1>${s.subtitle?`<p class="lead">${esc(s.subtitle)}</p>`:''}${content?`<div class="lead">${content}</div>`:''}${button}</div></div></section>`;if(s.section_type==='services')return `<section class="services" id="${id}" style="${style}"><div class="section-kicker">${esc(s.eyebrow||'DỊCH VỤ')}</div><h2>${esc(s.title||'')}</h2><div class="service-grid">${content?`<div style="grid-column:1/-1;text-align:left">${content}</div>`:''}</div></section>`;if(s.section_type==='map')return `<section class="contact" id="${id}" style="${style}"><div class="contact-inner"><div class="contact-card"><div class="section-kicker">${esc(s.eyebrow||'LIÊN HỆ')}</div><h2>${esc(s.title||'Apple Seed Trà Vinh')}</h2><div>${content}</div></div><div class="map-card"><div class="map-title">${esc(s.subtitle||'📍 Vị trí Apple Seed Trà Vinh')}</div><iframe title="Google Maps Apple Seed Trà Vinh" src="https://www.google.com/maps?q=AppleSeed%20292%20Ph%E1%BA%A1m%20Ng%C5%A9%20L%C3%A3o%20Tr%C3%A0%20Vinh&output=embed" loading="lazy"></iframe></div></div></section>`;return `<section class="services" id="${id}" style="${style}"><div class="section-kicker">${esc(s.eyebrow||'')}</div><h2>${esc(s.title||'')}</h2>${s.subtitle?`<p class="lead" style="margin:0 auto 20px">${esc(s.subtitle)}</p>`:''}<div style="max-width:1160px;margin:auto;text-align:left">${content}</div>${button?`<div style="margin-top:20px">${button}</div>`:''}</section>`;}
-  function fixNavigation(){
-    document.querySelectorAll('.menu a').forEach(a=>{
-      const label=(a.textContent||'').normalize('NFD')
-        .replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+ function fixNavigation(){
+  document.querySelectorAll('.menu a').forEach(a=>{
+    const text=(a.textContent||'')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g,'')
+      .toLowerCase()
+      .trim();
 
-      let target='';
-      if(label.includes('dich vu')) target='#dich-vu';
-      else if(label.includes('san pham')) target='#san-pham';
-      else if(label.includes('gioi thieu')) target='#gioi-thieu';
-      else if(label.includes('lien he')) target='#lien-he';
+    let id='';
 
-      if(!target)return;
+    if(text.includes('dich vu')) id='dich-vu';
+    if(text.includes('san pham')) id='san-pham';
+    if(text.includes('gioi thieu')) id='gioi-thieu';
+    if(text.includes('lien he')) id='lien-he';
 
-      // Luôn dùng điểm neo nội bộ, bỏ URL cũ do Admin lưu.
-      a.setAttribute('href',target);
+    if(!id) return;
 
-      // Xóa handler cũ nếu CMS/render chạy lại.
-      a.onclick=null;
-      a.onclick=e=>{
-        e.preventDefault();
-        e.stopPropagation();
+    a.href='#'+id;
 
-        const el=document.querySelector(target);
-        if(!el){
-          console.warn('Apple Seed: chưa có section '+target);
-          return false;
-        }
+    a.onclick=function(e){
+      e.preventDefault();
 
+      const el=document.getElementById(id);
+
+      if(!el){
+        console.log('KHONG TIM THAY:',id);
+        return;
+      }
+
+      // Đưa thẳng tới đúng vị trí
+      el.scrollIntoView({
+        behavior:'smooth',
+        block:'start'
+      });
+
+      history.pushState(null,'','#'+id);
+    };
+  });
+}
         const header=document.querySelector('.site-header');
         const offset=(header?.offsetHeight||86)+8;
         const y=el.getBoundingClientRect().top+window.pageYOffset-offset;
