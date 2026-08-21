@@ -150,64 +150,61 @@ form?.addEventListener('submit', async e => {
 
   try {
 
-    const r = await sb
-      .from('repair_bookings')
-      .insert(payload)
-      .select('booking_code')
-      .single();
+  const r = await sb
+    .from('repair_bookings')
+    .insert(payload);
 
-    if(r.error){
-      console.error('BOOKING ERROR:', r.error);
-
-      if(err){
-        err.textContent =
-          'Chưa gửi được lịch hẹn: ' + r.error.message;
-      }
-
-      if(btn){
-        btn.disabled = false;
-        btn.textContent = '📅 Gửi lịch hẹn';
-      }
-
-      return;
-    }
-
-    /* =========================
-       GỬI THÀNH CÔNG
-       ========================= */
-
-    const bookingCode =
-      r.data?.booking_code || payload.booking_code;
-
-    showSuccess(bookingCode);
-
-    /* Xóa dữ liệu form sau khi đã lưu thành công */
-    form.reset();
-
-    if(btn){
-      btn.disabled = false;
-      btn.textContent = '✓ Đã gửi lịch hẹn';
-    }
-
-    /* Sau 3 giây đổi nút về trạng thái bình thường */
-    setTimeout(() => {
-      if(btn){
-        btn.textContent = '📅 Gửi lịch hẹn';
-      }
-    }, 3000);
-
-  } catch(error){
-
-    console.error('BOOKING EXCEPTION:', error);
+  if(r.error){
+    console.error('BOOKING ERROR:', r.error);
 
     if(err){
       err.textContent =
-        'Có lỗi kết nối. Vui lòng thử lại hoặc gọi 0898888269.';
+        'Chưa gửi được lịch hẹn: ' + r.error.message;
+      err.style.display = 'block';
     }
 
     if(btn){
       btn.disabled = false;
       btn.textContent = '📅 Gửi lịch hẹn';
     }
+
+    return;
   }
+
+   // =========================
+  // GỬI THÀNH CÔNG
+  // =========================
+
+  const bookingCode = payload.booking_code;
+
+  showSuccess(bookingCode);
+
+  form.reset();
+
+  if(btn){
+    btn.disabled = false;
+    btn.textContent = '✓ Đã gửi lịch hẹn';
+  }
+
+  setTimeout(() => {
+    if(btn){
+      btn.textContent = '📅 Gửi lịch hẹn';
+    }
+  }, 3000);
+
+} catch(error){
+
+  console.error('BOOKING EXCEPTION:', error);
+
+  if(err){
+    err.textContent =
+      'Có lỗi kết nối. Vui lòng thử lại hoặc gọi 0898888269.';
+    err.style.display = 'block';
+  }
+
+  if(btn){
+    btn.disabled = false;
+    btn.textContent = '📅 Gửi lịch hẹn';
+  }
+}
 });
