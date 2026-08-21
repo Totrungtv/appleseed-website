@@ -381,9 +381,27 @@ function renderProductGallery(items=[]){
   box.innerHTML=(items||[]).map(x=>`<div class="product-gallery-card"><img src="${esc(x.image_url)}" class="${x.is_primary?'gallery-primary':''}" alt="Ảnh sản phẩm"><button type="button" class="btn2" onclick="setGalleryPrimary(${x.id},${x.product_id})">⭐ ${x.is_primary?'Ảnh chính':'Đặt làm ảnh chính'}</button><button type="button" class="btn2 danger" onclick="deleteGalleryImage(${x.id},${x.product_id},${JSON.stringify(x.image_path||'')})">✕ Xóa ảnh</button></div>`).join("") || '<div class="small">Chưa có ảnh phụ.</div>';
 }
 let pendingGalleryFiles=[];
-$("productGalleryFiles").onchange=e=>{pendingGalleryFiles=[...(e.target.files||[])].filter(f=>f.type.startsWith('image/')&&f.size<=8*1024*1024);renderPendingGallery();e.target.value=''};
+$("productGalleryFiles").onchange=e=>{
+  const incoming=[...(e.target.files||[])].filter(f=>f.type.startsWith('image/')&&f.size<=8*1024*1024);
+  const bad=[...(e.target.files||[])].filter(f=>!f.type.startsWith('image/')||f.size>8*1024*1024);
+  const key=f=>`${f.name}|${f.size}|${f.lastModified}`;
+  const seen=new Set(pendingGalleryFiles.map(key));
+  for(const f of incoming){if(!seen.has(key(f))){pendingGalleryFiles.push(f);seen.add(key(f));}}
+  if(bad.length)status(`Bỏ qua ${bad.length} file không hợp lệ hoặc lớn hơn 8MB.`,true);
+  renderPendingGallery();
+  e.target.value='';
+};
 $("clearProductGallery").onclick=()=>{pendingGalleryFiles=[];renderPendingGallery()};
-function renderPendingGallery(){const box=$("productGalleryPreview");if(!box)return;const pending=pendingGalleryFiles.map((f,i)=>`<div class="product-gallery-card"><img src="${URL.createObjectURL(f)}" alt="Ảnh chờ"><button type="button" class="btn2 danger" onclick="pendingGalleryFiles.splice(${i},1);renderPendingGallery()">✕ Bỏ ảnh</button></div>`).join(''); if(!pending && !$('productId').value)box.innerHTML='<div class="small">Chưa có ảnh phụ.</div>'; else if(pending)box.insertAdjacentHTML('beforeend',pending);}
+function renderPendingGallery(){
+  const box=$("productGalleryPreview");if(!box)return;
+  box.querySelectorAll('.pending-gallery-card').forEach(el=>el.remove());
+  if(!pendingGalleryFiles.length){
+    if(!$('productId').value && !box.querySelector('.product-gallery-card')) box.innerHTML='<div class="small">Chưa có ảnh phụ.</div>';
+    return;
+  }
+  const html=pendingGalleryFiles.map((f,i)=>`<div class="product-gallery-card pending-gallery-card"><img src="${URL.createObjectURL(f)}" alt="Ảnh chờ"><button type="button" class="btn2 danger" onclick="pendingGalleryFiles.splice(${i},1);renderPendingGallery()">✕ Bỏ ảnh</button></div>`).join('');
+  box.insertAdjacentHTML('beforeend',html);
+}
 async function uploadGalleryFile(file){const safe=file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,'-'),path=`products-gallery/${Date.now()}-${Math.random().toString(36).slice(2,8)}-${safe}`;const r=await sb.storage.from('site-images').upload(path,file,{cacheControl:'31536000',upsert:false,contentType:file.type});if(r.error)throw r.error;return {path,url:sb.storage.from('site-images').getPublicUrl(path).data.publicUrl}}
 window.setGalleryPrimary=async(id,productId)=>{const g=await loadProductGallery(productId);const target=g.find(x=>x.id===id);if(!target)return;const old=g.filter(x=>x.id!==id&&x.is_primary);if(old.length)await sb.from('product_images').update({is_primary:false}).in('id',old.map(x=>x.id));const r=await sb.from('product_images').update({is_primary:true}).eq('id',id);if(r.error){status('Không đặt được ảnh chính: '+r.error.message,true);return}const oldMain=$("productImage").value;const oldPath=$("productImagePath").value;const up=await sb.from('products').update({image_url:target.image_url,image_path:target.image_path||null}).eq('id',productId);if(up.error){status('Đổi ảnh chính lỗi: '+up.error.message,true);return}$("productImage").value=target.image_url;$("productImagePath").value=target.image_path||'';previewMainImage(target.image_url);renderProductGallery(await loadProductGallery(productId));status('⭐ Đã đặt ảnh làm ảnh chính.')};
 window.deleteGalleryImage=async(id,productId,path)=>{if(!confirm('Xóa ảnh này?'))return;const r=await sb.from('product_images').delete().eq('id',id);if(r.error){status('Xóa ảnh lỗi: '+r.error.message,true);return}if(path)await sb.storage.from('site-images').remove([path]);renderProductGallery(await loadProductGallery(productId));status('Đã xóa ảnh.')};
@@ -399,7 +417,7 @@ $("productMainImageBtn").onclick=()=>$("productMainImageFile").click();
 $("productMainImageClear").onclick=async()=>{const path=$("productImagePath").value.trim();if(path&&confirm("Xóa ảnh chính khỏi Storage?"))await sb.storage.from("site-images").remove([path]);$("productImage").value="";$("productImagePath").value="";previewMainImage("");status("Đã xóa ảnh chính.")};
 $("productMainImageFile").onchange=e=>{uploadMainProductImage(e.target.files?.[0]);e.target.value=''};
 $("productImage").oninput=()=>previewMainImage($("productImage").value.trim());
-window.editProduct=async p=>{$("productId").value=p.id;$("productName").value=p.name||'';$("productCategory").value=p.category||'';$("productSku").value=p.sku||'';$("productStock").value=p.stock||0;$("productPrice").value=p.price||0;$("productImage").value=p.image_url||'';$("productImagePath").value=p.image_path||'';previewMainImage(p.image_url||'');setProductEditorHtml(p.description||'');$("productActive").value=String(p.is_active);pendingGalleryFiles=[];show($("productForm"));renderProductGallery(await loadProductGallery(p.id))};
+window.editProduct=async p=>{$("productId").value=p.id;$("productName").value=p.name||'';$("productCategory").value=p.category||'';$("productSku").value=p.sku||'';$("productStock").value=p.stock||0;$("productPrice").value=p.price||0;$("productImage").value=p.image_url||'';$("productImagePath").value=p.image_path||'';previewMainImage(p.image_url||'');setProductEditorHtml(p.description||'');$("productActive").value=String(p.is_active);pendingGalleryFiles=[];show($("productForm"));renderProductGallery(await loadProductGallery(p.id));renderPendingGallery()};
 $("productForm").onsubmit=async e=>{
   e.preventDefault();
   try{
