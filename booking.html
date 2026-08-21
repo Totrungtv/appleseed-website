@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Đặt lịch sửa iPhone | Apple Seed Trà Vinh</title>
+<meta name="description" content="Đặt lịch sửa iPhone tại Apple Seed Trà Vinh.">
+<link rel="stylesheet" href="booking.css">
+</head>
+<body>
+<header class="booking-header">
+  <nav class="booking-nav">
+    <a class="brand" href="index.html">
+      <img src="logo.png" alt="Apple Seed">
+      <div><b>Apple Seed</b><span>TRUNG TÂM SỬA CHỮA IPHONE</span></div>
+    </a>
+    <a class="back" href="index.html">← Về website</a>
+  </nav>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="eyebrow">APPLE SEED TRÀ VINH</div>
+    <h1>Đặt lịch sửa chữa</h1>
+    <p>Gửi thông tin trước để Apple Seed chủ động liên hệ và chuẩn bị tiếp nhận máy.</p>
+  </section>
+
+  <div class="layout">
+    <section class="card">
+      <h2>📅 Thông tin đặt lịch</h2>
+      <form id="bookingForm" class="form">
+        <div class="grid2">
+          <label>Họ và tên *
+            <input id="name" required autocomplete="name" placeholder="Nguyễn Văn A">
+          </label>
+          <label>Số điện thoại *
+            <input id="phone" required inputmode="tel" autocomplete="tel" placeholder="0898888269">
+          </label>
+        </div>
+
+        <div class="grid2">
+          <label>Dòng máy *
+            <input id="model" required placeholder="Ví dụ: iPhone 13 Pro Max">
+          </label>
+          <label>Dịch vụ cần làm *
+            <input id="service" required placeholder="Ví dụ: Thay pin / Face ID">
+          </label>
+        </div>
+
+        <label>Máy đang bị lỗi gì? *
+          <textarea id="issue" required placeholder="Mô tả tình trạng máy..."></textarea>
+        </label>
+
+        <div class="grid2">
+          <label>Ngày muốn đến
+            <input id="date" type="date">
+          </label>
+          <label>Khung giờ
+            <select id="time">
+              <option value="">Không yêu cầu</option>
+              <option>08:00 - 10:00</option>
+              <option>10:00 - 12:00</option>
+              <option>13:00 - 15:00</option>
+              <option>15:00 - 17:00</option>
+              <option>17:00 - 19:00</option>
+            </select>
+          </label>
+        </div>
+
+        <label>Ghi chú thêm
+          <textarea id="note" placeholder="Ví dụ: cần báo giá trước, cần lấy máy trong ngày..."></textarea>
+        </label>
+
+        <button id="submitBtn" class="submit" type="submit">📅 Gửi lịch hẹn</button>
+        <div id="success" class="success">
+          ✅ Đã nhận lịch hẹn.<br>
+          Mã lịch: <span id="successCode" class="code"></span><br>
+          Apple Seed sẽ liên hệ lại với bạn.
+        </div>
+        <div id="error" class="error"></div>
+        <div class="note">Thông tin được lưu vào hệ thống quản trị Apple Seed để cửa hàng theo dõi và liên hệ lại.</div>
+      </form>
+    </section>
+
+    <aside class="card">
+      <h2>Vì sao nên đặt lịch?</h2>
+      <div class="features">
+        <div class="feature"><div class="ico">📞</div><div><b>Được gọi xác nhận</b><span>Apple Seed tiếp nhận thông tin và chủ động liên hệ.</span></div></div>
+        <div class="feature"><div class="ico">🛠️</div><div><b>Chuẩn bị trước khi khách tới</b><span>Biết trước dòng máy và tình trạng để tư vấn nhanh hơn.</span></div></div>
+        <div class="feature"><div class="ico">💬</div><div><b>Trao đổi rõ nhu cầu</b><span>Có thể ghi chú yêu cầu báo giá, thời gian hoặc tình trạng đặc biệt.</span></div></div>
+        <div class="feature"><div class="ico">📍</div><div><b>Apple Seed Trà Vinh</b><span>292 Phạm Ngũ Lão, Trà Vinh · 0898888269</span></div></div>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="booking.js"></script>
+</body>
+</html>

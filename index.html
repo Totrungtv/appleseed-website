@@ -218,20 +218,17 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
 .product-modal-thumbs img{display:block;width:100%;height:72px;object-fit:cover}
 @media(max-width:900px){.products-home-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.products-home-grid{grid-template-columns:1fr}.product-home-photo{width:74px;height:74px}.product-modal{padding:10px}.product-modal-main{height:45vh}.product-modal-thumbs{grid-template-columns:repeat(4,1fr)}}
-
-.cms-pages{background:#fff;padding:34px 24px 58px}
-.cms-pages-inner{max-width:1160px;margin:auto}
-.cms-pages-inline{max-width:1160px;margin:26px auto 0}
-.cms-pages-head{text-align:center;margin-bottom:24px}
-.cms-pages-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
-.cms-page-card{display:block;border:1px solid var(--line);border-radius:14px;background:#fff;padding:20px;box-shadow:0 8px 24px rgba(35,54,91,.08);transition:.18s ease}
-.cms-page-card:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(35,54,91,.13);border-color:#cfdcff}
-.cms-page-icon{font-size:24px;margin-bottom:10px}
-.cms-page-card h3{margin:0 0 8px;font-size:18px;color:var(--ink);line-height:1.3}
-.cms-page-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.55}
-.cms-page-more{display:inline-block;margin-top:14px;color:var(--blue);font-size:12px;font-weight:850}
-@media(max-width:900px){.cms-pages-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:560px){.cms-pages{padding-left:16px;padding-right:16px}.cms-pages-grid{grid-template-columns:1fr}}
+.booking-float{
+  position:fixed;right:24px;bottom:94px;z-index:1001;
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  min-height:48px;padding:12px 16px;border-radius:999px;
+  background:#1769ff;color:#fff;font-weight:900;
+  box-shadow:0 12px 28px rgba(23,105,255,.28);
+}
+.booking-float:hover{transform:translateY(-1px)}
+@media(max-width:560px){
+  .booking-float{right:16px;bottom:92px;min-height:44px;padding:10px 13px;font-size:13px}
+}
 .chat-btn{position:fixed;right:24px;bottom:24px;width:58px;height:58px;border:0;border-radius:50%;background:#1769ff;color:#fff;display:grid;place-items:center;font-size:27px;box-shadow:0 12px 28px rgba(23,105,255,.3);z-index:1000;cursor:pointer}
 .chat-box{position:fixed;right:24px;bottom:94px;width:350px;max-width:calc(100vw - 32px);height:440px;background:#fff;border:1px solid #e2e7f0;border-radius:18px;box-shadow:0 20px 55px rgba(23,37,66,.2);display:none;flex-direction:column;overflow:hidden;z-index:1000}
 .chat-box.open{display:flex}
@@ -260,76 +257,6 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
   .menu a span:last-child{display:none}.hero{padding:28px 16px}h1{font-size:36px}.lead{font-size:16px}
   .trust{grid-template-columns:1fr}.service-grid{grid-template-columns:1fr}.services,.contact{padding-left:16px;padding-right:16px}
 }
-
-/* Published CMS pages: nằm ngay trong section Trang dịch vụ hiện có */
-.published-pages{
-  max-width:1240px;
-  margin:28px auto 0;
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:20px;
-  text-align:left;
-}
-.published-page-card{
-  background:#fff;
-  border:1px solid #e2e8f0;
-  border-radius:16px;
-  padding:22px;
-  box-shadow:0 12px 28px rgba(37,57,95,.08);
-}
-.published-page-card h3{
-  margin:0 0 10px;
-  font-size:21px;
-  color:#111827;
-}
-.published-page-card p{
-  margin:0 0 16px;
-  color:#64748b;
-  line-height:1.65;
-}
-.published-page-card a{
-  color:#1769ff;
-  font-weight:800;
-  text-decoration:none;
-}
-@media(max-width:560px){
-  .published-pages{grid-template-columns:1fr;gap:14px;margin-top:20px}
-  .published-page-card{padding:18px}
-}
-
- 
-/* CMS articles: hiển thị trực tiếp bên trong khu vực Trang dịch vụ */
-.services .cms-pages-inline{
-  max-width:1160px;
-  margin:28px auto 0;
-  text-align:left;
-}
-.services .cms-pages-grid{
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:18px;
-}
-.services .cms-page-card{
-  display:block;
-  border:1px solid var(--line);
-  border-radius:14px;
-  background:#fff;
-  padding:20px;
-  box-shadow:0 8px 24px rgba(35,54,91,.08);
-  transition:.18s ease;
-}
-.services .cms-page-card:hover{
-  transform:translateY(-3px);
-  box-shadow:0 14px 30px rgba(35,54,91,.13);
-  border-color:#cfdcff;
-}
-@media(max-width:900px){
-  .services .cms-pages-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-}
-@media(max-width:560px){
-  .services .cms-pages-grid{grid-template-columns:1fr}
-}
-
 </style>
 </head>
 
@@ -345,6 +272,7 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
 <a href="products.html"><span class="mi">🛍</span><span>Sản phẩm</span></a>
 <a href="#gioi-thieu"><span class="mi">ⓘ</span><span>Giới thiệu</span></a>
 <a href="#lien-he"><span class="mi">☎</span><span>Liên hệ</span></a>
+<a href="shop-admin.html"><span class="mi">⚙</span><span>Quản trị</span></a>
 </div>
 </nav>
 </header>
@@ -384,6 +312,7 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
   </div>
 </div>
 
+<a class="booking-float" href="booking.html" aria-label="Đặt lịch sửa chữa">📅 Đặt lịch sửa</a>
 <button class="chat-btn" id="chatBtn" aria-label="Mở trợ lý Apple Seed">🤖</button>
 <div class="chat-box" id="chatBox" aria-label="Trợ lý Apple Seed">
 <div class="chat-head"><span>🤖 Trợ lý Apple Seed</span><button class="chat-close" id="chatClose">×</button></div>
@@ -405,7 +334,7 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
   const safeHtml=h=>{const t=document.createElement('template');t.innerHTML=h||'';t.content.querySelectorAll('script,object,embed,form,style,link,meta').forEach(x=>x.remove());t.content.querySelectorAll('*').forEach(el=>[...el.attributes].forEach(a=>{const n=a.name.toLowerCase(),v=a.value||'';if(n.startsWith('on')||((n==='href'||n==='src')&&/^\s*javascript:/i.test(v)))el.removeAttribute(a.name)}));return t.innerHTML};
   const cssVars=t=>{const r=document.documentElement;r.style.setProperty('--blue',t.primary_color||'#1769ff');r.style.setProperty('--ink',t.text_color||'#17233d');r.style.setProperty('--muted',t.muted_color||'#61708a');r.style.setProperty('--bg',t.page_bg||'#f1f4ff');};
-  function staticFallback(){root.innerHTML=`<section class="hero" id="gioi-thieu"><div class="hero-inner"><div><img class="shop-photo" src="shop.jpg" alt="Cửa hàng Apple Seed Trà Vinh - trung tâm sửa chữa iPhone"></div><div><div class="eyebrow">APPLESEED • TRÀ VINH</div><h1>Apple Seed Trà Vinh</h1><p class="lead">Sửa iPhone, Face ID, main và linh kiện. Tư vấn tình trạng máy rõ ràng trước khi sửa.</p><a class="cta" href="tel:0898888269">☎ Liên hệ AppleSeed</a></div></div></section><section class="services" id="dich-vu"><div class="section-kicker">DỊCH VỤ CỦA CHÚNG TÔI</div><h2>Dịch vụ sửa chữa iPhone chuyên nghiệp</h2><div class="service-grid"><article class="service-card"><div class="service-icon">📱</div><div><h3>Sửa iPhone</h3><p>Sửa phần cứng, phần mềm uy tín, bảo hành dài hạn.</p></div></article><article class="service-card"><div class="service-icon">▦</div><div><h3>Sửa main</h3><p>Chuyên xử lý main iPhone, khắc phục lỗi không nguồn, mất áp, mất sóng...</p></div></article><article class="service-card"><div class="service-icon">⌾</div><div><h3>Face ID</h3><p>Sửa Face ID, thay linh kiện chính hãng, nhận xử lý nhanh.</p></div></article><article class="service-card"><div class="service-icon">✚</div><div><h3>Linh kiện</h3><p>Cung cấp linh kiện iPhone chính hãng, chất lượng cao, giá tốt.</p></div></article></div></section>${contactHtml()}`;}
+  function staticFallback(){root.innerHTML=`<section class="hero" id="gioi-thieu"><div class="hero-inner"><div><img class="shop-photo" src="shop.jpg" alt="Cửa hàng Apple Seed Trà Vinh - trung tâm sửa chữa iPhone"></div><div><div class="eyebrow">APPLESEED • TRÀ VINH</div><h1>Apple Seed Trà Vinh</h1><p class="lead">Sửa iPhone, Face ID, main và linh kiện. Tư vấn tình trạng máy rõ ràng trước khi sửa.</p><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="cta" href="booking.html">📅 Đặt lịch sửa</a><a class="cta" href="tel:0898888269">☎ Liên hệ AppleSeed</a></div></div></div></section><section class="services" id="dich-vu"><div class="section-kicker">DỊCH VỤ CỦA CHÚNG TÔI</div><h2>Dịch vụ sửa chữa iPhone chuyên nghiệp</h2><div class="service-grid"><article class="service-card"><div class="service-icon">📱</div><div><h3>Sửa iPhone</h3><p>Sửa phần cứng, phần mềm uy tín, bảo hành dài hạn.</p></div></article><article class="service-card"><div class="service-icon">▦</div><div><h3>Sửa main</h3><p>Chuyên xử lý main iPhone, khắc phục lỗi không nguồn, mất áp, mất sóng...</p></div></article><article class="service-card"><div class="service-icon">⌾</div><div><h3>Face ID</h3><p>Sửa Face ID, thay linh kiện chính hãng, nhận xử lý nhanh.</p></div></article><article class="service-card"><div class="service-icon">✚</div><div><h3>Linh kiện</h3><p>Cung cấp linh kiện iPhone chính hãng, chất lượng cao, giá tốt.</p></div></article></div></section>${contactHtml()}`;}
   function contactHtml(){return `<section class="contact" id="lien-he"><div class="contact-inner"><div class="contact-card"><div class="section-kicker">LIÊN HỆ APPLESEED</div><h2>Apple Seed Trà Vinh</h2><p>Trung tâm sửa chữa iPhone, Face ID, main và linh kiện. Liên hệ để được tư vấn tình trạng máy.</p><div class="contact-list"><a href="tel:0898888269">☎ 0898888269</a><div>📍 292 Phạm Ngũ Lão, Trà Vinh</div><a href="https://maps.app.goo.gl/QEWg9owQidGW5ZyG7" target="_blank" rel="noopener">🗺 Mở Google Maps</a></div></div><div class="map-card"><div class="map-title">📍 Vị trí Apple Seed Trà Vinh</div><iframe title="Google Maps Apple Seed Trà Vinh" src="https://www.google.com/maps?q=AppleSeed%20292%20Ph%E1%BA%A1m%20Ng%C5%A9%20L%C3%A3o%20Tr%C3%A0%20Vinh&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div></div></section>`;}
   const PRODUCT_BUCKET='site-images';
   function storagePublic(path){
@@ -441,33 +370,17 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
   }
   async function productImages(p,gallery){
     const list=[];
-
     const add=async x=>{
       if(!x)return;
-
-      const path=x.image_path||'';
-
-      // Ưu tiên signed URL ngay từ đầu nếu có image_path.
-      // Điều này tránh trường hợp Edge/mobile không tải được public URL
-      // trong khi Chrome vẫn có thể đang dùng cache.
-      if(path){
-        const signed=await storageSigned(path);
-        if(signed && !list.some(i=>i.url===signed)){
-          list.push({url:signed,path});
-          return;
-        }
-      }
-
-      // Không có signed URL thì mới dùng public URL.
-      const url=storagePublic(path)||normalizeImageValue(x.image_url);
-      if(url && !list.some(i=>i.url===url)){
-        list.push({url,path:path||x.image_url||''});
+      let url=storagePublic(x.image_path)||normalizeImageValue(x.image_url);
+      if(url && !list.some(i=>i.url===url)){list.push({url,path:x.image_path||x.image_url||''});return}
+      if(x.image_path){
+        const signed=await storageSigned(x.image_path);
+        if(signed && !list.some(i=>i.url===signed))list.push({url:signed,path:x.image_path});
       }
     };
-
     await add({image_url:p.image_url,image_path:p.image_path});
     for(const x of (gallery||[]))await add(x);
-
     return list;
   }
 
@@ -510,7 +423,7 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
           return `<article class="product-home-card" data-product-index="${i}" tabindex="0" role="button" aria-label="Xem chi tiết ${esc(p.name)}">
             <div class="product-home-photo">
               ${first
-                ? `<img src="${esc(first)}" alt="${esc(p.name)}" loading="lazy" data-product-img-index="${i}" data-product-image-path="${esc(item.images[0]?.path||'')}">`
+                ? `<img src="${esc(first)}" alt="${esc(p.name)}" loading="lazy" data-product-img-index="${i}" onerror="this.style.display='none';this.parentElement.textContent='🛍️';">`
                 : '🛍️'}
             </div>
             <div>
@@ -768,24 +681,20 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
       }
     });
 
-    // Fallback ảnh: nếu signed URL lỗi thì thử public URL một lần.
+    // Fallback ảnh: nếu public URL lỗi thì lấy signed URL.
     document.addEventListener('error',async e=>{
       const img=e.target;
       if(!(img instanceof HTMLImageElement))return;
-      if(!img.matches('[data-product-img-index]'))return;
+      if(!img.matches('[data-product-img-index]') || img.dataset.signedTried==='1')return;
 
-      if(img.dataset.publicTried==='1'){
-        img.style.display='none';
-        if(img.parentElement)img.parentElement.textContent='🛍️';
-        return;
-      }
-
-      const path=img.dataset.productImagePath||'';
+      const index=Number(img.dataset.productImgIndex);
+      const item=window.appleSeedProducts?.[index];
+      const path=item?.images?.[0]?.path;
       if(!path)return;
 
-      img.dataset.publicTried='1';
-      const publicUrl=storagePublic(path);
-      if(publicUrl && publicUrl!==img.src)img.src=publicUrl;
+      img.dataset.signedTried='1';
+      const signed=await storageSigned(path);
+      if(signed)img.src=signed;
     },true);
   }
 
@@ -805,36 +714,6 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
     if(document.getElementById('productModal').classList.contains('open'))
       document.getElementById('productModalClose').click();
   });
-
-  async function pagesCardsHtml(){
-    if(!sb)return '';
-    try{
-      const r=await sb.from('pages')
-        .select('id,title,slug,description,is_active')
-        .eq('is_active',true)
-        .order('id',{ascending:false});
-
-      if(r.error){
-        console.warn('Apple Seed pages query:',r.error);
-        return '';
-      }
-      if(!r.data?.length)return '';
-
-      return `<div class="cms-pages-inline">
-        <div class="cms-pages-grid">
-          ${r.data.map(p=>`<a class="cms-page-card" href="page.html?slug=${encodeURIComponent(p.slug)}">
-            <div class="cms-page-icon">📰</div>
-            <h3>${esc(p.title)}</h3>
-            ${p.description?`<p>${esc(p.description)}</p>`:''}
-            <span class="cms-page-more">Xem bài viết →</span>
-          </a>`).join('')}
-        </div>
-      </div>`;
-    }catch(e){
-      console.warn('Apple Seed: lỗi tải bài viết:',e);
-      return '';
-    }
-  }
 
   function renderSection(s){
     // ID điều hướng phải cố định theo loại section.
@@ -885,24 +764,7 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
     });
   }
 
-  async function load(){if(!sb){staticFallback();bindProductCards();fixNavigation();return}try{const [t,n,s]=await Promise.all([sb.from('site_theme_settings').select('*').eq('id',1).maybeSingle(),sb.from('site_nav_items').select('label,icon,url,is_active,sort_order').eq('is_active',true).order('sort_order',{ascending:true}),sb.from('site_home_sections').select('*').eq('is_active',true).order('sort_order',{ascending:true}).order('id',{ascending:true})]);if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){const st=document.createElement('style');st.textContent=t.data.custom_css;document.head.appendChild(st)}if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){document.querySelector('.menu').innerHTML=n.data.map(x=>`<a href="${esc(x.url||'#')}"><span class="mi">${esc(x.icon||'')}</span><span>${esc(x.label)}</span></a>`).join('')};fixNavigation();if(s.error||!s.data?.length){staticFallback();bindProductCards();fixNavigation();return}let html='';let contactRendered=false;for(const sec of s.data){if(sec.section_type==='products'){html+=await productsHtml();continue}if(sec.section_type==='map'||sec.section_type==='contact'){if(contactRendered)continue;contactRendered=true;html+=sec.section_type==='contact'?contactHtml():renderSection(sec);continue}let secHtml=renderSection(sec);
-const sectionTitle=(sec.title||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-const sectionKey=(sec.section_key||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-// CHỈ chèn bài viết vào đúng khối "Trang dịch vụ".
-// Không được chèn vào khối Dịch vụ thường (Face ID, Linh kiện...).
-const isServiceArticleSection=
-  sec.section_type==='pages' ||
-  sectionTitle.includes('trang dich vu') ||
-  sectionKey.includes('trang-dich-vu') ||
-  sectionKey.includes('trang dich vu');
-
-if(isServiceArticleSection){
-  const cards=await pagesCardsHtml();
-  if(cards && secHtml.includes('</section>')){
-    secHtml=secHtml.replace('</section>',cards+'</section>');
-  }
-}
-html+=secHtml}root.innerHTML=html+(contactRendered?'':contactHtml());
+  async function load(){if(!sb){staticFallback();bindProductCards();fixNavigation();return}try{const [t,n,s]=await Promise.all([sb.from('site_theme_settings').select('*').eq('id',1).maybeSingle(),sb.from('site_nav_items').select('label,icon,url,is_active,sort_order').eq('is_active',true).order('sort_order',{ascending:true}),sb.from('site_home_sections').select('*').eq('is_active',true).order('sort_order',{ascending:true}).order('id',{ascending:true})]);if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){const st=document.createElement('style');st.textContent=t.data.custom_css;document.head.appendChild(st)}if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){document.querySelector('.menu').innerHTML=n.data.map(x=>`<a href="${esc(x.url||'#')}"><span class="mi">${esc(x.icon||'')}</span><span>${esc(x.label)}</span></a>`).join('')};fixNavigation();if(s.error||!s.data?.length){staticFallback();bindProductCards();fixNavigation();return}let html='';let contactRendered=false;for(const sec of s.data){if(sec.section_type==='products'){html+=await productsHtml();continue}if(sec.section_type==='map'||sec.section_type==='contact'){if(contactRendered)continue;contactRendered=true;html+=sec.section_type==='contact'?contactHtml():renderSection(sec);continue}html+=renderSection(sec)}root.innerHTML=html+(contactRendered?'':contactHtml());
       fixNavigation();
       bindProductCards();
 
@@ -940,7 +802,7 @@ function answer(q){
   const model=raw.match(/(?:iphone|ip)\s*(5s|6s|7|8|x|xr|xs|11|12|13|14|15|16)(?:\s*(pro|max|plus|mini))?/i);
 
   if(s.includes("dia chi")||s.includes("o dau")||s.includes("map")||s.includes("google"))
-    return 'Apple Seed ở 292 Phạm Ngũ Lão, Trà Vinh. Bạn có thể bấm "Mở Google Maps" ở phần Liên hệ.';
+    return 'Apple Seed ở 292 Phạm Ngũ Lão, Trà Vinh. Bạn có thể bấm "Đặt lịch sửa" trên website hoặc "Mở Google Maps" ở phần Liên hệ.';
 
   if(s.includes("so dien thoai")||s.includes("sdt")||s.includes("lien he")||s.includes("goi"))
     return "Bạn có thể liên hệ Apple Seed qua số 0898888269.";
@@ -1005,32 +867,5 @@ form.onsubmit=e=>{
  },220);
 };
 </script>
-
-<script>
-(async function loadPublishedPages(){
-  const box=document.getElementById('publishedPages');
-  if(!box || typeof sb==='undefined') return;
-
-  try{
-    const r=await sb.from('pages')
-      .select('title,slug,description,is_active')
-      .eq('is_active',true)
-      .order('created_at',{ascending:false});
-
-    if(r.error || !Array.isArray(r.data) || !r.data.length) return;
-
-    box.innerHTML=r.data.map(p=>`
-      <article class="published-page-card">
-        <h3>${esc(String(p.title||''))}</h3>
-        <p>${esc(String(p.description||''))}</p>
-        <a href="page.html?slug=${encodeURIComponent(p.slug||'')}">Xem bài viết →</a>
-      </article>
-    `).join('');
-  }catch(e){
-    console.warn('Không tải được bài viết CMS:',e);
-  }
-})();
-</script>
-
 </body>
 </html>

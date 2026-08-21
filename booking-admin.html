@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Apple Seed - Lịch hẹn sửa chữa</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,Arial;background:#f5f7fb;color:#111827}
+.wrap{max-width:1250px;margin:auto;padding:28px 18px}.top{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-bottom:20px}
+h1{margin:0}.muted{color:#64748b}.card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:18px;box-shadow:0 8px 24px rgba(37,57,95,.06)}
+.login{max-width:420px;margin:80px auto}.form{display:grid;gap:12px}input,button,select{font:inherit}input{padding:12px;border:1px solid #d7deea;border-radius:10px}
+button{padding:11px 15px;border:0;border-radius:10px;background:#1769ff;color:#fff;font-weight:800;cursor:pointer}
+table{width:100%;border-collapse:collapse;min-width:1050px}th,td{text-align:left;padding:12px;border-bottom:1px solid #edf0f5;vertical-align:top}
+.table-wrap{overflow:auto}.badge{display:inline-block;padding:6px 9px;border-radius:999px;background:#eef2ff;font-size:12px;font-weight:800}
+select{padding:8px;border:1px solid #d7deea;border-radius:8px;background:#fff}.error{color:#dc2626}.hidden{display:none}
+@media(max-width:650px){.top{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<div id="login" class="card login">
+  <h2>🔐 Apple Seed Admin</h2>
+  <p class="muted">Đăng nhập để xem lịch hẹn.</p>
+  <div class="form">
+    <input id="email" type="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Mật khẩu">
+    <button id="loginBtn">Đăng nhập</button>
+    <div id="msg" class="error"></div>
+  </div>
+</div>
+
+<div id="app" class="wrap hidden">
+  <div class="top">
+    <div><h1>📅 Lịch hẹn sửa chữa</h1><div class="muted">Apple Seed · Khách đặt lịch từ website</div></div>
+    <div><button id="refresh">↻ Làm mới</button> <a href="shop-admin.html" style="display:inline-block;padding:11px 15px;border-radius:10px;background:#fff;border:1px solid #d7deea;color:#1769ff;font-weight:800;text-decoration:none">🛠️ Phiếu sửa</a> <button id="logout">Đăng xuất</button></div>
+  </div>
+  <div class="card">
+    <div id="status" class="muted">Đang tải...</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Thời gian</th><th>Mã</th><th>Khách</th><th>Máy</th><th>Dịch vụ</th><th>Lỗi</th><th>Ngày hẹn</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script>
+const sb=window.supabaseClient;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+const statusNames={new:'Mới',confirmed:'Đã xác nhận',arrived:'Khách đã đến',repairing:'Đang sửa',completed:'Hoàn tất',cancelled:'Đã hủy'};
+
+async function auth(){
+  if(!sb){$('msg').textContent='Thiếu supabase-config.js';return}
+  const r=await sb.auth.getSession();
+  if(r.data.session){$('login').classList.add('hidden');$('app').classList.remove('hidden');load()}
+}
+$('loginBtn').onclick=async()=>{
+  const r=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});
+  if(r.error){$('msg').textContent=r.error.message;return} auth();
+};
+$('logout').onclick=async()=>{await sb.auth.signOut();location.reload()};
+$('refresh').onclick=load;
+
+async function load(){
+  $('status').textContent='Đang tải...';
+  const r=await sb.from('repair_bookings').select('*').order('created_at',{ascending:false}).limit(300);
+  if(r.error){$('status').textContent='Lỗi: '+r.error.message;return}
+  const d=r.data||[];
+  $('status').textContent=`Có ${d.length} lịch hẹn`;
+  $('rows').innerHTML=d.map(x=>`
+    <tr>
+      <td>${new Date(x.created_at).toLocaleString('vi-VN')}</td>
+      <td><b>${esc(x.booking_code)}</b></td>
+      <td><b>${esc(x.customer_name)}</b><br>📞 ${esc(x.phone)}</td>
+      <td>${esc(x.device_model)}</td>
+      <td>${esc(x.service_name)}</td>
+      <td>${esc(x.customer_issue)}</td>
+      <td>${esc(x.preferred_date||'—')}<br>${esc(x.preferred_time||'')}</td>
+      <td><select onchange="changeStatus(${x.id},this.value)">
+        ${Object.entries(statusNames).map(([k,v])=>`<option value="${k}" ${x.status===k?'selected':''}>${v}</option>`).join('')}
+      </select></td>
+      <td>${x.note?`<div>${esc(x.note)}</div>`:''}${x.repair_order_id?`<div class="badge" style="margin-top:7px;background:#ecfdf3;color:#047857">✅ Đã tạo phiếu #${esc(x.repair_order_id)}</div>`:`<button onclick="convertToRepair(${x.id})" style="margin-top:7px;background:#059669">🛠️ Tạo phiếu sửa</button>`}</td>
+    </tr>`).join('')||'<tr><td colspan="9">Chưa có lịch hẹn.</td></tr>';
+}
+window.convertToRepair=async function(id){
+  if(!confirm('Tạo phiếu sửa chữa từ lịch hẹn này?\\n\\nHệ thống sẽ tìm khách theo số điện thoại; nếu chưa có sẽ tự tạo khách mới.')) return;
+  const r=await sb.from('repair_bookings').select('*').eq('id',id).maybeSingle();
+  if(r.error||!r.data){alert(r.error?.message||'Không tìm thấy lịch hẹn.');return}
+  const b=r.data;
+  if(b.repair_order_id){alert('Lịch này đã tạo phiếu sửa #'+b.repair_order_id+'.');return}
+  try{
+    let cr=await sb.from('customers').select('id,name,phone').eq('phone',b.phone).limit(1).maybeSingle();
+    if(cr.error) throw cr.error;
+    let customer=cr.data;
+    if(!customer){
+      const ins=await sb.from('customers').insert({name:b.customer_name,phone:b.phone,address:'',note:'Khách tạo từ lịch hẹn '+(b.booking_code||'')}).select('id,name,phone').single();
+      if(ins.error) throw ins.error; customer=ins.data;
+    }
+    const noteParts=['Tạo từ lịch hẹn '+(b.booking_code||''),b.preferred_date?'Ngày hẹn: '+b.preferred_date:'',b.preferred_time?'Khung giờ: '+b.preferred_time:'',b.note?'Ghi chú khách: '+b.note:''].filter(Boolean);
+    const insRepair=await sb.from('repair_orders').insert({customer_id:customer.id,device_model:b.device_model||'',imei:'',customer_issue:b.customer_issue||'',device_condition:'Khách đặt lịch online — chưa kiểm tra máy.',technician:'',estimated_total:0,paid_amount:0,status:'pending',note:noteParts.join('\\n')}).select('id').single();
+    if(insRepair.error) throw insRepair.error;
+    const up=await sb.from('repair_bookings').update({repair_order_id:insRepair.data.id,status:'confirmed'}).eq('id',b.id);
+    if(up.error) throw up.error;
+    alert('✅ Đã tạo phiếu sửa #'+insRepair.data.id+'\\nKhách: '+customer.name+'\\nMáy: '+b.device_model); load();
+  }catch(e){console.error('convertToRepair',e);alert('Không tạo được phiếu sửa:\\n'+(e?.message||String(e)));}
+};
+window.changeStatus=async(id,status)=>{
+  const r=await sb.from('repair_bookings').update({status}).eq('id',id);
+  if(r.error){alert(r.error.message);return}
+  load();
+};
+auth();
+</script>
+</body>
+</html>
