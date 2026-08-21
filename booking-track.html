@@ -58,69 +58,22 @@ window.selectBooking=async id=>{selected=bookings.find(b=>b.id===id)||null;rende
 async function renderDetail(){if(!selected){$('emptyDetail').classList.remove('hidden');$('detail').classList.add('hidden');return}$('emptyDetail').classList.add('hidden');$('detail').classList.remove('hidden');const b=selected,st=statusMap[b.status]||['Đang xử lý','new'];$('detailName').textContent=b.customer_name||'Khách hàng';$('detailCode').textContent=b.booking_code||'—';$('detailStatus').textContent=st[0];$('detailStatus').className='status '+st[1];$('detailDevice').textContent=b.device_model||'—';$('detailService').textContent=b.service_name||'—';$('detailDate').textContent=fmtDate(b.preferred_date||b.appointment_date);$('detailTime').textContent=b.preferred_time||b.appointment_time||'Không yêu cầu';$('detailIssue').textContent=b.customer_issue||'—';$('detailNote').textContent=b.note||'—';await loadMessages()}
 async function loadMessages(){if(!selected)return;const r=await sb.rpc('member_booking_messages',{p_booking_id:selected.id});if(r.error||!r.data?.ok){$('messages').innerHTML='<div class="error">'+esc(r.error?.message||r.data?.message||'Không tải được trao đổi.')+'</div>';return}const list=r.data.messages||[];$('messages').innerHTML=list.length?list.map(m=>`<div class="msg ${m.sender_type==='customer'?'customer':'admin'}">${esc(m.message).replace(/\n/g,'<br>')}<small>${m.sender_type==='customer'?'Bạn':'Apple Seed'} · ${new Date(m.created_at).toLocaleString('vi-VN')}</small></div>`).join(''):'<div class="empty">Chưa có trao đổi. Bạn có thể gửi tin nhắn đầu tiên.</div>';$('messages').scrollTop=$('messages').scrollHeight}
 $('messageForm').onsubmit=async e=>{e.preventDefault();if(!selected)return;const text=$('message').value.trim();if(!text)return;const btn=e.submitter;btn.disabled=true;btn.textContent='Đang gửi...';const r=await sb.rpc('member_send_message',{p_booking_id:selected.id,p_message:text});if(r.error||!r.data?.ok){$('messageStatus').innerHTML='<div class="error">'+esc(r.error?.message||r.data?.message||'Không gửi được tin nhắn.')+'</div>'}else{$('message').value='';$('messageStatus').innerHTML='<div class="success">✅ Đã gửi tin nhắn cho Apple Seed.</div>';await loadMessages();setTimeout(()=>$('messageStatus').innerHTML='',2500)}btn.disabled=false;btn.textContent='Gửi tin nhắn'};
-$('logout').onclick=memberLogout;
-$('loginForm').onsubmit=async e=>{
-  e.preventDefault();
 
-  clearAuthError();
+// Apple Seed: đồng bộ chat realtime giữa khách và admin.
+let chatRealtimeChannel=null;
+function startChatRealtime(){
+  if(chatRealtimeChannel) sb.removeChannel(chatRealtimeChannel);
+  chatRealtimeChannel=sb.channel('apple-seed-booking-chat-member')
+    .on('postgres_changes',{event:'*',schema:'public',table:'repair_booking_messages'},async payload=>{
+      const row=payload.new||payload.old||{};
+      if(selected && Number(row.booking_id)===Number(selected.id)) await loadMessages();
+    })
+    .subscribe(status=>{console.log('Apple Seed chat realtime (member):',status)});
+}
 
-  const b=e.submitter;
-
-  b.disabled=true;
-  b.textContent='Đang đăng nhập...';
-
-  try{
-
-    const email=$('loginEmail').value.trim();
-    const password=$('loginPassword').value;
-
-    if(!email){
-      throw new Error('Vui lòng nhập email.');
-    }
-
-    if(!password){
-      throw new Error('Vui lòng nhập mật khẩu.');
-    }
-
-    const r=await sb.auth.signInWithPassword({
-      email:email,
-      password:password
-    });
-
-    if(r.error){
-      throw r.error;
-    }
-
-    if(!r.data?.user){
-      throw new Error('Không nhận được thông tin tài khoản.');
-    }
-
-    /*
-     * Đăng nhập thành công.
-     * KHÔNG kiểm tra họ tên / số điện thoại ở đây.
-     */
-    $('authBox').classList.add('hidden');
-    $('appBox').classList.remove('hidden');
-
-    await loadDashboard();
-
-  }catch(x){
-
-    console.error('LOGIN ERROR:',x);
-
-    showAuthError(
-      x.message ||
-      'Đăng nhập không thành công.'
-    );
-
-  }finally{
-
-    b.disabled=false;
-    b.textContent='🔐 Đăng nhập';
-
-  }
-};
-$('signupForm').onsubmit=async e=>{e.preventDefault();clearAuthError();const b=e.submitter;b.disabled=true;b.textContent='Đang tạo tài khoản...';try{const d=await memberSignUp($('signupName').value,$('signupPhone').value,$('signupEmail').value,$('signupPassword').value);if(d.session){$('authBox').classList.add('hidden');$('appBox').classList.remove('hidden');await loadDashboard()}else{showAuthError('Tài khoản đã được tạo. Hãy kiểm tra email để xác nhận tài khoản rồi đăng nhập.')}}catch(x){showAuthError(x.message||'Không tạo được tài khoản.')}b.disabled=false;b.textContent='✨ Tạo tài khoản thành viên'};
-(async()=>{const session=await getMemberSession();if(session?.user){$('authBox').classList.add('hidden');$('appBox').classList.remove('hidden');await loadDashboard()}})();
+$('logout').onclick=async()=>{if(chatRealtimeChannel)sb.removeChannel(chatRealtimeChannel);await memberLogout()};
+$('loginForm').onsubmit=async e=>{e.preventDefault();clearAuthError();const b=e.submitter;b.disabled=true;b.textContent='Đang đăng nhập...';try{await memberSignIn($('loginEmail').value,$('loginPassword').value);$('authBox').classList.add('hidden');$('appBox').classList.remove('hidden');await loadDashboard();startChatRealtime()}catch(x){showAuthError(x.message||'Đăng nhập không thành công.')}b.disabled=false;b.textContent='🔐 Đăng nhập'};
+$('signupForm').onsubmit=async e=>{e.preventDefault();clearAuthError();const b=e.submitter;b.disabled=true;b.textContent='Đang tạo tài khoản...';try{const d=await memberSignUp($('signupName').value,$('signupPhone').value,$('signupEmail').value,$('signupPassword').value);if(d.session){$('authBox').classList.add('hidden');$('appBox').classList.remove('hidden');await loadDashboard();startChatRealtime()}else{showAuthError('Tài khoản đã được tạo. Hãy kiểm tra email để xác nhận tài khoản rồi đăng nhập.')}}catch(x){showAuthError(x.message||'Không tạo được tài khoản.')}b.disabled=false;b.textContent='✨ Tạo tài khoản thành viên'};
+(async()=>{const session=await getMemberSession();if(session?.user){$('authBox').classList.add('hidden');$('appBox').classList.remove('hidden');await loadDashboard();startChatRealtime()}})();
 </script>
 </body></html>

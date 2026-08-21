@@ -72,6 +72,20 @@ async function loadChatMessages(){if(!chatBooking)return;const r=await sb.from('
 window.openChat=async id=>{const b=all.find(x=>x.id===id);if(!b)return;chatBooking=b;$('chatMeta').textContent=`${b.customer_name||'Khách'} · ${b.phone||''} · ${b.booking_code||''}`;$('chatModal').classList.remove('hidden');$('chatInput').value='';await loadChatMessages();};
 $('chatClose').onclick=()=>{$('chatModal').classList.add('hidden');chatBooking=null};
 $('chatModal').onclick=e=>{if(e.target.id==='chatModal')$('chatModal').classList.add('hidden')};
-$('chatSend').onsubmit=async e=>{e.preventDefault();if(!chatBooking)return;const text=$('chatInput').value.trim();if(!text)return;const btn=e.submitter;btn.disabled=true;btn.textContent='Đang gửi...';const r=await sb.from('repair_booking_messages').insert({booking_id:chatBooking.id,sender_type:'admin',message:text});if(r.error)alert('Không gửi được: '+r.error.message);else{$('chatInput').value='';await loadChatMessages();}btn.disabled=false;btn.textContent='Gửi trả lời';};
-$('search').oninput=render;$('refresh').onclick=async()=>{await load();await loadNotifications();};$('logout').onclick=async()=>{await sb.auth.signOut();location.reload()};$('loginBtn').onclick=async()=>{const r=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(r.error){$('msg').textContent=r.error.message;return}auth()};async function auth(){if(!sb){$('msg').textContent='Thiếu supabase-config.js';return}const r=await sb.auth.getSession();if(r.data.session){$('login').classList.add('hidden');$('app').classList.remove('hidden');await load();await loadNotifications();setInterval(loadNotifications,5000)}}auth();
+$('chatSend').onsubmit=async e=>{e.preventDefault();if(!chatBooking)return;const text=$('chatInput').value.trim();if(!text)return;const btn=e.submitter;btn.disabled=true;btn.textContent='Đang gửi...';const r=await sb.from('repair_booking_messages').insert({booking_id:chatBooking.id,sender_type:'admin',message:text});if(r.error)alert('Không gửi được: '+r.error.message);else{$('chatInput').value='';await loadChatMessages();await loadNotifications();}btn.disabled=false;btn.textContent='Gửi trả lời';};
+
+// Apple Seed: đồng bộ chat realtime giữa khách và admin.
+let chatRealtimeChannel=null;
+function startChatRealtime(){
+  if(chatRealtimeChannel) sb.removeChannel(chatRealtimeChannel);
+  chatRealtimeChannel=sb.channel('apple-seed-booking-chat-admin')
+    .on('postgres_changes',{event:'*',schema:'public',table:'repair_booking_messages'},async payload=>{
+      const row=payload.new||payload.old||{};
+      if(chatBooking && Number(row.booking_id)===Number(chatBooking.id)) await loadChatMessages();
+      if(payload.eventType==='INSERT' || payload.eventType==='DELETE') await loadNotifications();
+    })
+    .subscribe(status=>{console.log('Apple Seed chat realtime (admin):',status)});
+}
+
+$('search').oninput=render;$('refresh').onclick=async()=>{await load();await loadNotifications();};$('logout').onclick=async()=>{if(chatRealtimeChannel)sb.removeChannel(chatRealtimeChannel);await sb.auth.signOut();location.reload()};$('loginBtn').onclick=async()=>{const r=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(r.error){$('msg').textContent=r.error.message;return}auth()};async function auth(){if(!sb){$('msg').textContent='Thiếu supabase-config.js';return}const r=await sb.auth.getSession();if(r.data.session){$('login').classList.add('hidden');$('app').classList.remove('hidden');await load();await loadNotifications();startChatRealtime()}}auth();
 </script></body></html>
