@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Apple Seed – Khách hàng từ website</title>
+<link rel="icon" href="favicon.png">
+<style>
+:root{--blue:#1769ff;--ink:#17233d;--muted:#61708a;--bg:#f4f7ff;--line:#e5eaf3}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--bg)}
+header{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--line)}
+.head{max-width:1200px;margin:auto;padding:18px 22px;display:flex;justify-content:space-between;align-items:center;gap:15px}
+h1{margin:0;font-size:23px}
+.sub{color:var(--muted);font-size:13px;margin-top:4px}
+button,select{font:inherit}
+.btn{border:0;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer}
+.primary{background:var(--blue);color:#fff}
+.wrap{max-width:1200px;margin:24px auto;padding:0 22px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.toolbar select,.toolbar input{border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 12px}
+.table-wrap{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:950px}
+th,td{text-align:left;padding:13px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;color:var(--muted);background:#f8faff;white-space:nowrap}
+td{font-size:14px}
+.phone{color:var(--blue);font-weight:850;white-space:nowrap}
+.product{font-weight:800}
+.note{color:var(--muted);white-space:pre-wrap;max-width:280px}
+.status{border:1px solid var(--line);border-radius:8px;padding:7px 9px;background:#fff;font-weight:750}
+.empty,.error{padding:30px;text-align:center;color:var(--muted)}
+.error{color:#b42318}
+.count{font-size:13px;color:var(--muted);margin:8px 0 14px}
+</style>
+</head>
+<body>
+<header>
+  <div class="head">
+    <div>
+      <h1>Apple Seed – Khách hàng từ website</h1>
+      <div class="sub">Theo dõi khách đã gửi thông tin mua hàng / thanh toán</div>
+    </div>
+    <button class="btn primary" id="refreshBtn">↻ Làm mới</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="toolbar">
+    <select id="statusFilter">
+      <option value="">Tất cả trạng thái</option>
+      <option value="new">Mới</option>
+      <option value="contacted">Đã liên hệ</option>
+      <option value="visited">Đã đến cửa hàng</option>
+      <option value="completed">Hoàn tất</option>
+      <option value="cancelled">Đã hủy</option>
+    </select>
+    <input id="searchInput" type="search" placeholder="Tìm tên / số điện thoại / sản phẩm">
+  </div>
+  <div class="count" id="count"></div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Thời gian</th>
+          <th>Khách hàng</th>
+          <th>Số điện thoại</th>
+          <th>Sản phẩm</th>
+          <th>Giá</th>
+          <th>Ghi chú</th>
+          <th>Trạng thái</th>
+        </tr>
+      </thead>
+      <tbody id="leadBody"></tbody>
+    </table>
+    <div class="empty" id="empty" hidden>Chưa có khách hàng nào.</div>
+    <div class="error" id="error" hidden></div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script>
+(function(){
+  const sb=window.supabaseClient;
+  const body=document.getElementById('leadBody');
+  const empty=document.getElementById('empty');
+  const error=document.getElementById('error');
+  const count=document.getElementById('count');
+  const search=document.getElementById('searchInput');
+  const filter=document.getElementById('statusFilter');
+  let rows=[];
+
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  const money=v=>Number(v||0)?Number(v).toLocaleString('vi-VN')+'đ':'';
+  const date=v=>new Date(v).toLocaleString('vi-VN');
+
+  async function load(){
+    error.hidden=true;
+    if(!sb){ error.textContent='Không tìm thấy Supabase config.'; error.hidden=false; return; }
+
+    const {data:userData,error:userError}=await sb.auth.getUser();
+    if(userError || !userData?.user){
+      error.textContent='Bạn chưa đăng nhập tài khoản quản trị Supabase.';
+      error.hidden=false;
+      return;
+    }
+
+    const r=await sb.from('store_customer_leads')
+      .select('*')
+      .order('created_at',{ascending:false})
+      .limit(500);
+
+    if(r.error){
+      console.error(r.error);
+      error.textContent='Không tải được danh sách khách hàng. Hãy kiểm tra customer-leads.sql và quyền Supabase.';
+      error.hidden=false;
+      return;
+    }
+
+    rows=r.data||[];
+    render();
+  }
+
+  function render(){
+    const q=search.value.trim().toLowerCase();
+    const st=filter.value;
+
+    const shown=rows.filter(x=>{
+      if(st && x.status!==st)return false;
+      if(!q)return true;
+      return [x.customer_name,x.phone,x.product_name,x.note]
+        .some(v=>String(v||'').toLowerCase().includes(q));
+    });
+
+    count.textContent=`Hiển thị ${shown.length} / ${rows.length} khách hàng`;
+    body.innerHTML=shown.map(x=>`
+      <tr>
+        <td>${esc(date(x.created_at))}</td>
+        <td><strong>${esc(x.customer_name)}</strong></td>
+        <td><a class="phone" href="tel:${esc(x.phone)}">${esc(x.phone)}</a></td>
+        <td><div class="product">${esc(x.product_name)}</div></td>
+        <td>${esc(money(x.product_price))}</td>
+        <td><div class="note">${esc(x.note||'')}</div></td>
+        <td>
+          <select class="status" data-id="${esc(x.id)}">
+            ${['new','contacted','visited','completed','cancelled'].map(s=>`<option value="${s}" ${x.status===s?'selected':''}>${({
+              new:'Mới',contacted:'Đã liên hệ',visited:'Đã đến cửa hàng',
+              completed:'Hoàn tất',cancelled:'Đã hủy'
+            })[s]}</option>`).join('')}
+          </select>
+        </td>
+      </tr>
+    `).join('');
+
+    empty.hidden=shown.length!==0;
+
+    body.querySelectorAll('.status').forEach(sel=>{
+      sel.addEventListener('change',async()=>{
+        const id=Number(sel.dataset.id);
+        const status=sel.value;
+        sel.disabled=true;
+        const r=await sb.from('store_customer_leads')
+          .update({status})
+          .eq('id',id);
+        sel.disabled=false;
+        if(r.error){
+          alert('Không cập nhật được trạng thái.');
+          await load();
+          return;
+        }
+        const row=rows.find(x=>x.id===id);
+        if(row)row.status=status;
+      });
+    });
+  }
+
+  document.getElementById('refreshBtn').addEventListener('click',load);
+  search.addEventListener('input',render);
+  filter.addEventListener('change',render);
+  load();
+})();
+</script>
+</body>
+</html>
