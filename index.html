@@ -33,6 +33,46 @@ a{text-decoration:none;color:inherit}button,input{font:inherit}
 body{
   padding-top:86px;
 }
+.product-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:16px;
+}
+.product-action{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  min-height:44px;
+  padding:11px 16px;
+  border-radius:10px;
+  font-weight:850;
+  border:1px solid var(--blue);
+  cursor:pointer;
+}
+.product-action-call{
+  background:var(--blue);
+  color:#fff;
+}
+.product-action-pay{
+  background:#fff;
+  color:var(--blue);
+}
+@media(max-width:560px){
+  body{padding-top:142px}
+  .site-header{height:auto}
+  .nav{padding:10px 16px 8px;gap:8px}
+  .brand{gap:9px;width:100%;min-width:0}
+  .brand img{width:48px;height:48px}
+  .brand-title{font-size:21px}
+  .brand-sub{font-size:10px;margin-top:5px;letter-spacing:.8px}
+  .menu{width:100%;height:42px;gap:8px;justify-content:space-between}
+  .menu a{flex:1;justify-content:center}
+  .mi{width:30px;height:30px;font-size:20px}
+  .product-actions{display:grid;grid-template-columns:1fr 1fr}
+  .product-action{width:100%;padding:10px 8px;font-size:13px}
+}
 .nav{max-width:1240px;height:86px;margin:auto;padding:0 28px;display:flex;align-items:center;justify-content:space-between;gap:30px}
 .brand{display:flex;align-items:center;gap:13px;min-width:330px}
 .brand img{width:66px;height:66px;object-fit:contain}
@@ -369,6 +409,10 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
       <h2>${esc(p.name)}</h2>
       ${Number(p.price||0)?`<div class="product-modal-price">${Number(p.price).toLocaleString('vi-VN')}đ</div>`:''}
       ${cleanProductDescription(p.description)?`<div class="product-modal-desc">${cleanProductDescription(p.description)}</div>`:''}
+      <div class="product-actions">
+        <a class="product-action product-action-call" href="tel:0898888269">☎ Gọi 0898888269</a>
+        <a class="product-action product-action-pay" href="tel:0898888269">💳 Thanh toán / Liên hệ</a>
+      </div>
     `;
 
     thumbs.innerHTML=imgs.map((x,i)=>`
