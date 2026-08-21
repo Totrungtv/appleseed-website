@@ -61,12 +61,6 @@ label{font-weight:700;font-size:14px;display:block}input,textarea,select{width:1
 
 .editor-shell{border:1px solid #d0d5dd;border-radius:12px;background:#fff;overflow:hidden;position:relative}.editor-topbar{display:flex;justify-content:space-between;padding:9px 12px;background:#f8fafc;border-bottom:1px solid #e4e7ec;font-size:13px}.editor-count{color:#667085}.editor-shell .native-editor{border:0;border-radius:0;min-height:320px;padding:18px;line-height:1.75;font-size:16px;outline:none;overflow:auto}.editor-shell .native-editor:empty:before{content:attr(data-placeholder);color:#98a2b3}.editor-shell .native-editor img{max-width:100%;height:auto;border-radius:10px}.editor-shell .native-editor table{width:100%;border-collapse:collapse;margin:14px 0}.editor-shell .native-editor td,.editor-shell .native-editor th{border:1px solid #d0d5dd;padding:9px;min-width:70px}.editor-shell .native-editor blockquote{border-left:4px solid #2563eb;margin:14px 0;padding:10px 15px;background:#eff6ff}.editor-shell .native-editor pre{background:#111827;color:#fff;padding:14px;border-radius:10px;overflow:auto}.editor-shell .native-editor hr{border:0;border-top:1px solid #d0d5dd;margin:20px 0}.native-toolbar{display:flex;flex-wrap:wrap;gap:5px;padding:9px;background:#f8fafc;border-top:1px solid #e4e7ec}.native-toolbar button,.native-toolbar select{border:1px solid #d0d5dd;background:#fff;border-radius:7px;padding:7px 9px;cursor:pointer;font-weight:700;color:#344054}.native-toolbar button:hover,.native-toolbar select:hover{background:#f2f4f7}.native-toolbar select{max-width:130px}.color-tool{display:flex;align-items:center;gap:3px;border:1px solid #d0d5dd;background:#fff;border-radius:7px;padding:4px 7px;font-weight:800}.color-tool input{width:24px;height:24px;margin:0;padding:0;border:0}.native-icon-picker{position:absolute;left:10px;bottom:58px;z-index:1000;display:grid;grid-template-columns:repeat(10,34px);gap:3px;background:#fff;border:1px solid #d0d5dd;border-radius:12px;padding:8px;box-shadow:0 12px 30px rgba(0,0,0,.16);max-width:390px}.native-icon-picker[hidden]{display:none!important}.native-icon-picker button{border:0;background:#fff;border-radius:7px;font-size:20px;padding:5px;cursor:pointer}.native-upload-status{font-size:12px;color:#475467;padding:6px 10px}.editor-source{width:100%;min-height:320px;border:0;padding:18px;font:13px/1.6 Consolas,monospace;background:#111827;color:#f8fafc;resize:vertical}.editor-video{position:relative;aspect-ratio:16/9;margin:14px 0}.editor-video iframe{width:100%;height:100%;border:0;border-radius:10px}.editor-fullscreen{position:fixed!important;inset:10px!important;z-index:99999!important;box-shadow:0 20px 60px rgba(0,0,0,.3)}.editor-fullscreen .native-editor{min-height:calc(100vh - 150px)}.editor-preview-modal{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:100000;display:flex;align-items:center;justify-content:center;padding:20px}.editor-preview-box{background:#fff;border-radius:16px;width:min(900px,100%);max-height:90vh;overflow:auto}.editor-preview-head{position:sticky;top:0;display:flex;justify-content:space-between;padding:13px 16px;background:#fff;border-bottom:1px solid #e4e7ec}.editor-preview-content{padding:28px;line-height:1.8}.editor-preview-content img{max-width:100%;height:auto;border-radius:10px}.editor-preview-content table{width:100%;border-collapse:collapse}.editor-preview-content td,.editor-preview-content th{border:1px solid #d0d5dd;padding:9px}
 <style>.image-main-row{display:flex;gap:8px;align-items:center}.image-main-row input:first-child{flex:1}.main-image-preview img{margin-top:8px;max-width:180px;max-height:120px;object-fit:cover;border-radius:10px;border:1px solid #e4e7ec}.main-image-preview{min-height:4px}</style>
-
-<style>
-.product-gallery-card img.gallery-thumb{width:150px;height:150px;object-fit:cover;display:block;border-radius:10px;background:#f3f4f6;border:1px solid #e5e7eb}
-.product-gallery-card .gallery-error{width:150px;height:150px;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:10px;background:#fff1f2;color:#b42318;border:1px solid #fecdd3;font-weight:700;padding:10px;box-sizing:border-box}
-.gallery-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
-</style>
 </head>
 <body>
 <div id="loginView" class="panel login">
@@ -164,7 +158,7 @@ label{font-weight:700;font-size:14px;display:block}input,textarea,select{width:1
         <label>Giá (VNĐ)<input id="productPrice" type="number" min="0" value="0"></label>
         <label>Ảnh chính sản phẩm<div class="image-main-row"><input id="productImage" placeholder="https://..."><button class="btn2" type="button" id="productMainImageBtn">📤 Tải ảnh</button><button class="btn2 danger" type="button" id="productMainImageClear">✕ Xóa ảnh</button><input id="productMainImageFile" type="file" accept="image/*" hidden></div><div id="productMainImagePreview" class="main-image-preview"></div></label>
       </div>
-      <label>Ảnh bán hàng — nhiều ảnh<div class="image-main-row"><input id="productGalleryFiles" type="file" accept="image/*,.jpg,.jpeg,.png,.webp,.gif,.heic,.heif,.avif" multiple><button class="btn2" type="button" id="clearProductGallery">✕ Xóa ảnh chờ</button><button class="btn2 danger" type="button" id="cleanupProductGallery">🧹 Dọn ảnh lỗi</button></div><div class="small">Có thể chọn nhiều ảnh cùng lúc. Ảnh đã lưu có nút Xóa và Đặt làm ảnh chính.</div><div id="productGalleryPreview" class="product-gallery"></div><div id="productGalleryPending" class="product-gallery"></div><div id="productGalleryStatus" class="small"></div></label>
+      <label>Ảnh bán hàng — nhiều ảnh<div class="image-main-row"><input id="productGalleryFiles" type="file" accept="image/*,.jpg,.jpeg,.png,.webp,.gif,.heic,.heif,.avif" multiple><button class="btn2" type="button" id="clearProductGallery">✕ Xóa ảnh chờ</button></div><div class="small">Có thể chọn nhiều ảnh cùng lúc. Ảnh đã lưu có nút Xóa và Đặt làm ảnh chính.</div><div id="productGalleryPreview" class="product-gallery"></div><div id="productGalleryPending" class="product-gallery"></div><div id="productGalleryStatus" class="small"></div></label>
       <label>Mô tả sản phẩm</label>
       <div class="editor-shell" data-editor-shell="productEditor">
 <div class="editor-topbar"><strong>Soạn thảo sản phẩm PRO</strong><span class="editor-count">0 từ</span></div>
@@ -379,121 +373,239 @@ $('resetTheme').onclick=async()=>{if(!confirm('Khôi phục giao diện mặc đ
 
 
 async function loadProductGallery(productId){
-  const {data,error}=await sb.from("product_images")
-    .select("id,product_id,image_url,image_path,sort_order,is_primary")
-    .eq("product_id",productId)
-    .order("sort_order",{ascending:true})
-    .order("id",{ascending:true});
-  if(error){console.warn("Gallery:",error.message);return []}
+  const {data,error}=await sb.from('product_images')
+    .select('id,product_id,image_url,image_path,sort_order,is_primary')
+    .eq('product_id',productId)
+    .order('sort_order',{ascending:true})
+    .order('id',{ascending:true});
+  if(error){console.warn('Gallery:',error.message);return []}
   return data||[];
 }
 
 function renderProductGallery(items=[]){
-  const box=$("productGalleryPreview"); if(!box)return;
-  if(!items.length){box.innerHTML='<div class="small">Chưa có ảnh phụ.</div>';return;}
-  box.innerHTML=items.map(x=>`<div class="product-gallery-card">
-    <img src="${escAttr(x.image_url||'')}" class="gallery-thumb ${x.is_primary?'gallery-primary':''}" alt="Ảnh sản phẩm"
-      onerror="this.outerHTML='<div class=\'gallery-error\'>❌ Ảnh lỗi / không còn trong Storage</div>'">
-    <div class="small">ID ${x.id} · ${x.is_primary?'⭐ Ảnh chính':'Ảnh phụ'}</div>
-    <button type="button" class="btn2" onclick="setGalleryPrimary(${x.id},${x.product_id})">⭐ ${x.is_primary?'Ảnh chính':'Đặt làm ảnh chính'}</button>
-    <button type="button" class="btn2 danger" onclick="deleteGalleryImage(${x.id},${x.product_id},${JSON.stringify(x.image_path||'')})">✕ Xóa ảnh</button>
-  </div>`).join('');
+  const box=$('productGalleryPreview'); if(!box)return;
+  box.innerHTML=(items||[]).map(x=>`<div class="product-gallery-card">
+    <img src="${esc(x.image_url||'')}" class="${x.is_primary?'gallery-primary':''}"
+      alt="Ảnh sản phẩm"
+      onerror="this.onerror=null;this.removeAttribute('src');this.alt='❌ Ảnh lỗi / URL không truy cập được';this.style.objectFit='contain';this.style.padding='10px';">
+    <button type="button" class="btn2"
+      onclick="setGalleryPrimary(${x.id},${x.product_id})">⭐ ${x.is_primary?'Ảnh chính':'Đặt làm ảnh chính'}</button>
+    <button type="button" class="btn2 danger"
+      onclick="deleteGalleryImage(${x.id},${x.product_id},${JSON.stringify(x.image_path||'')})">✕ Xóa ảnh</button>
+  </div>`).join('') || '<div class="small">Chưa có ảnh phụ.</div>';
 }
 
 let pendingGalleryFiles=[];
+let pendingGalleryObjectUrls=[];
+
 function isGalleryImage(file){
   if(!file)return false;
-  const type=String(file.type||'').toLowerCase(), name=String(file.name||'').toLowerCase();
+  const type=String(file.type||'').toLowerCase();
+  const name=String(file.name||'').toLowerCase();
   return type.startsWith('image/') || /\.(jpe?g|png|webp|gif|heic|heif|avif)$/i.test(name);
 }
+
 async function isRealHEIC(file){
   try{
     const b=new Uint8Array(await file.slice(0,32).arrayBuffer());
     if(b.length<12)return false;
-    const box=String.fromCharCode(...b.slice(4,8));
-    if(box!=='ftyp')return false;
+    if(String.fromCharCode(...b.slice(4,8))!=='ftyp')return false;
     const brand=String.fromCharCode(...b.slice(8,12)).toLowerCase();
     return ['heic','heix','hevc','hevx','mif1','msf1'].includes(brand);
   }catch(_){return false}
 }
+
 async function normalizeGalleryFile(file){
-  const heic=/\.(heic|heif)$/i.test(file.name||'') || await isRealHEIC(file);
+  const namedHeic=/\.(heic|heif)$/i.test(file.name||'');
+  const heic=namedHeic || await isRealHEIC(file);
   if(!heic)return file;
-  if(typeof heic2any!=='function')throw new Error('Không tải được bộ chuyển HEIC.');
+  if(typeof heic2any!=='function')
+    throw new Error('Không tải được bộ chuyển HEIC. Kiểm tra Internet rồi thử lại.');
+
   const result=await heic2any({blob:file,type:'image/jpeg',quality:.88});
   const blob=Array.isArray(result)?result[0]:result;
   const base=(file.name||'anh').replace(/\.(heic|heif|jpg|jpeg)$/i,'');
   return new File([blob],base+'.jpg',{type:'image/jpeg',lastModified:Date.now()});
 }
 
-$("productGalleryFiles").onchange=async e=>{
-  const files=Array.from(e.target.files||[]);let ok=0,big=0,bad=0,fail=0,converted=0;
-  const st=$("productGalleryStatus");if(st)st.textContent='⏳ Đang kiểm tra ảnh...';
+$('productGalleryFiles').onchange=async e=>{
+  const files=Array.from(e.target.files||[]);
+  let accepted=0,converted=0,rejectedType=0,rejectedSize=0,failed=0;
+  const st=$('productGalleryStatus');
+  if(st)st.textContent='⏳ Đang kiểm tra ảnh...';
+
   for(const original of files){
     try{
-      if(!isGalleryImage(original)){bad++;continue}
-      const f=await normalizeGalleryFile(original);if(f!==original)converted++;
-      if(f.size>8*1024*1024){big++;continue}
-      pendingGalleryFiles.push(f);ok++;
-    }catch(err){fail++;console.warn('Gallery:',original.name,err)}
+      if(!isGalleryImage(original)){rejectedType++;continue}
+      if(original.size>8*1024*1024 && !/\.(heic|heif)$/i.test(original.name||'')){
+        rejectedSize++;continue;
+      }
+
+      const f=await normalizeGalleryFile(original);
+      if(f!==original)converted++;
+      if(f.size>8*1024*1024){rejectedSize++;continue}
+
+      pendingGalleryFiles.push(f);
+      accepted++;
+    }catch(err){
+      failed++;
+      console.warn('Gallery:',original.name,err);
+    }
   }
+
   renderPendingGallery();
+
   if(st){
-    const a=[];if(ok)a.push(`✅ Đã thêm ${ok} ảnh. Tổng ảnh chờ: ${pendingGalleryFiles.length}.`);
-    if(converted)a.push(`🔄 ${converted} ảnh HEIC đã chuyển thành JPG thật.`);
-    if(big)a.push(`⚠️ ${big} ảnh vượt quá 8MB.`);if(bad)a.push(`⚠️ ${bad} file không phải ảnh.`);if(fail)a.push(`❌ ${fail} ảnh không chuyển đổi được.`);
-    st.textContent=a.join(' ')||'Chưa chọn ảnh.';
+    const parts=[];
+    if(accepted)parts.push(`✅ Đã thêm ${accepted} ảnh. Tổng ảnh chờ: ${pendingGalleryFiles.length}.`);
+    if(converted)parts.push(`🔄 ${converted} ảnh HEIC đã chuyển thành JPG thật.`);
+    if(rejectedSize)parts.push(`⚠️ ${rejectedSize} ảnh vượt quá 8MB.`);
+    if(rejectedType)parts.push(`⚠️ ${rejectedType} file không phải ảnh.`);
+    if(failed)parts.push(`❌ ${failed} ảnh không đọc/chuyển đổi được.`);
+    st.textContent=parts.join(' ')||'Chưa chọn ảnh.';
   }
+
   e.target.value='';
 };
-$("clearProductGallery").onclick=()=>{pendingGalleryFiles=[];renderPendingGallery();const st=$("productGalleryStatus");if(st)st.textContent='Đã xóa ảnh chờ.'};
+
+$('clearProductGallery').onclick=()=>{
+  pendingGalleryFiles=[];
+  renderPendingGallery();
+  const st=$('productGalleryStatus');
+  if(st)st.textContent='Đã xóa ảnh chờ.';
+};
+
 function renderPendingGallery(){
-  const box=$("productGalleryPending");if(!box)return;
-  box.innerHTML=pendingGalleryFiles.length
-    ? `<div class="small"><b>Ảnh chờ upload: ${pendingGalleryFiles.length}</b></div>`+
-      pendingGalleryFiles.map((f,i)=>`<div class="product-gallery-card"><img class="gallery-thumb" src="${URL.createObjectURL(f)}" alt="Ảnh chờ"><div class="small">${esc(f.name)} · ${(f.size/1024/1024).toFixed(1)} MB</div><button type="button" class="btn2 danger" onclick="pendingGalleryFiles.splice(${i},1);renderPendingGallery()">✕ Bỏ ảnh</button></div>`).join('') : '';
+  const box=$('productGalleryPending');if(!box)return;
+
+  pendingGalleryObjectUrls.forEach(u=>URL.revokeObjectURL(u));
+  pendingGalleryObjectUrls=[];
+
+  if(!pendingGalleryFiles.length){
+    box.innerHTML='';
+    return;
+  }
+
+  box.innerHTML='<div class="small"><b>Ảnh chờ upload: '+pendingGalleryFiles.length+'</b></div>';
+
+  pendingGalleryFiles.forEach((f,i)=>{
+    const card=document.createElement('div');
+    card.className='product-gallery-card';
+
+    const img=document.createElement('img');
+    img.alt='Ảnh chờ';
+    const url=URL.createObjectURL(f);
+    pendingGalleryObjectUrls.push(url);
+    img.src=url;
+
+    const meta=document.createElement('div');
+    meta.className='small';
+    meta.textContent=f.name+' · '+(f.size/1024/1024).toFixed(1)+' MB';
+
+    const btn=document.createElement('button');
+    btn.type='button';
+    btn.className='btn2 danger';
+    btn.textContent='✕ Bỏ ảnh';
+    btn.onclick=()=>{
+      pendingGalleryFiles.splice(i,1);
+      renderPendingGallery();
+    };
+
+    card.append(img,meta,btn);
+    box.appendChild(card);
+  });
 }
+
 async function uploadGalleryFile(file){
   const safe=file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,'-');
   const path=`products-gallery/${Date.now()}-${Math.random().toString(36).slice(2,8)}-${safe}`;
-  const r=await sb.storage.from('site-images').upload(path,file,{cacheControl:'31536000',upsert:false,contentType:file.type||'image/jpeg'});
+  const r=await sb.storage.from('site-images').upload(
+    path,file,
+    {cacheControl:'31536000',upsert:false,contentType:file.type||'image/jpeg'}
+  );
   if(r.error)throw r.error;
-  return {path,url:sb.storage.from('site-images').getPublicUrl(path).data.publicUrl};
+  return {
+    path,
+    url:sb.storage.from('site-images').getPublicUrl(path).data.publicUrl
+  };
 }
+
 window.setGalleryPrimary=async(id,productId)=>{
-  try{
-    const g=await loadProductGallery(productId),target=g.find(x=>x.id===id);if(!target)return;
-    const old=g.filter(x=>x.id!==id&&x.is_primary);if(old.length){const u=await sb.from('product_images').update({is_primary:false}).in('id',old.map(x=>x.id));if(u.error)throw u.error}
-    const r=await sb.from('product_images').update({is_primary:true}).eq('id',id);if(r.error)throw r.error;
-    const up=await sb.from('products').update({image_url:target.image_url,image_path:target.image_path||null}).eq('id',productId);if(up.error)throw up.error;
-    $("productImage").value=target.image_url;$("productImagePath").value=target.image_path||'';previewMainImage(target.image_url);renderProductGallery(await loadProductGallery(productId));status('⭐ Đã đặt ảnh làm ảnh chính.');
-  }catch(err){status('Đặt ảnh chính lỗi: '+(err?.message||err),true)}
+  const g=await loadProductGallery(productId);
+  const target=g.find(x=>x.id===id);
+  if(!target)return;
+
+  const old=g.filter(x=>x.id!==id&&x.is_primary);
+  if(old.length){
+    const rr=await sb.from('product_images')
+      .update({is_primary:false})
+      .in('id',old.map(x=>x.id));
+    if(rr.error){
+      status('Không bỏ ảnh chính cũ: '+rr.error.message,true);
+      return;
+    }
+  }
+
+  const r=await sb.from('product_images')
+    .update({is_primary:true})
+    .eq('id',id);
+
+  if(r.error){
+    status('Không đặt được ảnh chính: '+r.error.message,true);
+    return;
+  }
+
+  const up=await sb.from('products')
+    .update({image_url:target.image_url,image_path:target.image_path||null})
+    .eq('id',productId);
+
+  if(up.error){
+    status('Đổi ảnh chính lỗi: '+up.error.message,true);
+    return;
+  }
+
+  $('productImage').value=target.image_url;
+  $('productImagePath').value=target.image_path||'';
+  previewMainImage(target.image_url);
+  renderProductGallery(await loadProductGallery(productId));
+  status('⭐ Đã đặt ảnh làm ảnh chính.');
 };
+
 window.deleteGalleryImage=async(id,productId,path)=>{
-  if(!confirm('Xóa ảnh này khỏi Gallery?'))return;
-  try{
-    const r=await sb.from('product_images').delete().eq('id',id).select('id');
-    if(r.error)throw new Error('Xóa Database lỗi: '+r.error.message);
-    if(!r.data?.length)throw new Error('Database không xóa được dòng ảnh. Có thể RLS DELETE chưa cho phép.');
-    let storageMsg='';
-    if(path){const s=await sb.storage.from('site-images').remove([path]);if(s.error)storageMsg=' Database đã xóa nhưng Storage lỗi: '+s.error.message;}
-    renderProductGallery(await loadProductGallery(productId));
-    status('🗑️ Đã xóa ảnh khỏi Database.'+storageMsg,!storageMsg?false:true);
-  }catch(err){status(err?.message||String(err),true)}
+  if(!confirm('Xóa ảnh này?'))return;
+
+  const r=await sb.from('product_images').delete().eq('id',id);
+  if(r.error){
+    status('Xóa ảnh lỗi: '+r.error.message,true);
+    return;
+  }
+
+  const verify=await sb.from('product_images')
+    .select('id').eq('id',id).maybeSingle();
+
+  if(verify.error){
+    status('Đã xóa nhưng không kiểm tra lại được: '+verify.error.message,true);
+    return;
+  }
+
+  if(verify.data){
+    status('Xóa ảnh chưa thành công: bản ghi vẫn còn trong product_images.',true);
+    return;
+  }
+
+  if(path){
+    const sr=await sb.storage.from('site-images').remove([path]);
+    if(sr.error){
+      status('Đã xóa DB nhưng xóa file Storage lỗi: '+sr.error.message,true);
+    }else{
+      status('✅ Đã xóa ảnh khỏi DB và Storage.');
+    }
+  }else{
+    status('✅ Đã xóa ảnh khỏi DB.');
+  }
+
+  renderProductGallery(await loadProductGallery(productId));
 };
-window.cleanupProductGallery=async()=>{
-  const productId=Number($("productId")?.value||0);if(!productId){status('Hãy mở một sản phẩm trước.',true);return}
-  if(!confirm('Dọn TOÀN BỘ ảnh Gallery của sản phẩm này? Không xóa sản phẩm.'))return;
-  try{
-    const g=await loadProductGallery(productId),paths=g.map(x=>x.image_path).filter(Boolean);
-    const r=await sb.from('product_images').delete().eq('product_id',productId).select('id');
-    if(r.error)throw new Error('Dọn Database lỗi: '+r.error.message);
-    if(g.length && !r.data?.length)throw new Error('Database không cho xóa Gallery. Kiểm tra RLS DELETE.');
-    let storageMsg='';if(paths.length){const s=await sb.storage.from('site-images').remove(paths);if(s.error)storageMsg=' Storage lỗi: '+s.error.message;}
-    renderProductGallery([]);status(`🧹 Đã dọn ${r.data?.length||0} ảnh Gallery.`+storageMsg,!!storageMsg);
-  }catch(err){status(err?.message||String(err),true)}
-};
-$("cleanupProductGallery").onclick=window.cleanupProductGallery;
 
 async function loadProducts(){
   const {data,error}=await sb.from("products").select("id,name,category,price,description,image_url,image_path,sku,stock,is_active").order("id",{ascending:false});
@@ -514,7 +626,9 @@ $("productForm").onsubmit=async e=>{
     let productId=Number($("productId").value||0),res;
     if(productId)res=await sb.from('products').update(payload).eq('id',productId);else {res=await sb.from('products').insert(payload).select('id').single();productId=res.data?.id||0}
     if(res.error)throw res.error;
-    for(let i=0;i<pendingGalleryFiles.length;i++){const up=await uploadGalleryFile(pendingGalleryFiles[i]);const ins=await sb.from('product_images').insert({product_id:productId,image_url:up.url,image_path:up.path,sort_order:i,is_primary:false});if(ins.error){await sb.storage.from('site-images').remove([up.path]);throw ins.error}}
+    const existingGallery=await loadProductGallery(productId);
+    const nextOrder=existingGallery.reduce((m,x)=>Math.max(m,Number(x.sort_order)||0),-1)+1;
+    for(let i=0;i<pendingGalleryFiles.length;i++){const up=await uploadGalleryFile(pendingGalleryFiles[i]);const ins=await sb.from('product_images').insert({product_id:productId,image_url:up.url,image_path:up.path,sort_order:nextOrder+i,is_primary:false});if(ins.error){await sb.storage.from('site-images').remove([up.path]);throw ins.error}}
     pendingGalleryFiles=[];renderPendingGallery();clearDraft('productEditor');show($("productForm"),false);status('✅ Đã lưu sản phẩm + ảnh.');await loadProducts();
   }catch(err){status('Lưu sản phẩm lỗi: '+(err?.message||err),true)}
 };
