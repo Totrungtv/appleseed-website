@@ -1,12 +1,8 @@
 const memberSB = window.supabaseClient;
-
 const member$ = id => document.getElementById(id);
 
-/* =========================
-   ESCAPE HTML
-========================= */
 function memberEsc(s){
-  return String(s ?? '').replace(/[&<>"']/g, c => ({
+  return String(s ?? '').replace(/[&<>"']/g,c=>({
     '&':'&amp;',
     '<':'&lt;',
     '>':'&gt;',
@@ -15,105 +11,57 @@ function memberEsc(s){
   }[c]));
 }
 
-
-/* =========================
-   CHECK SUPABASE
-========================= */
-function memberCheckSB(){
-  if(!memberSB){
-    throw new Error(
-      'Supabase chưa được khởi tạo. Hãy kiểm tra file Supabase và thứ tự load JavaScript.'
-    );
-  }
-
-  if(!memberSB.auth){
-    throw new Error(
-      'Supabase Auth chưa sẵn sàng.'
-    );
-  }
-
-  return memberSB;
-}
-
-
-/* =========================
-   GET SESSION
-========================= */
 async function getMemberSession(){
+  if(!memberSB) return null;
 
-  if(!memberSB || !memberSB.auth){
+  const r = await memberSB.auth.getSession();
+
+  if(r.error){
+    console.error('GET MEMBER SESSION ERROR:', r.error);
     return null;
   }
 
-  try{
-
-    const r = await memberSB.auth.getSession();
-
-    if(r.error){
-      console.error('getMemberSession error:', r.error);
-      return null;
-    }
-
-    return r.data?.session || null;
-
-  }catch(err){
-
-    console.error('getMemberSession exception:', err);
-    return null;
-  }
+  return r.data?.session || null;
 }
 
-
-/* =========================
-   LOGOUT
-========================= */
 async function memberLogout(){
-
-  if(!memberSB || !memberSB.auth){
-    location.reload();
-    return;
-  }
-
   try{
-
-    const r = await memberSB.auth.signOut();
-
-    if(r.error){
-      console.error('Logout error:', r.error);
+    if(memberSB){
+      await memberSB.auth.signOut();
     }
-
-  }catch(err){
-
-    console.error('Logout exception:', err);
-
-  }finally{
-
-    location.reload();
-
+  }catch(e){
+    console.error('LOGOUT ERROR:', e);
   }
+
+  location.reload();
 }
 
 
-/* =========================
-   ENSURE CUSTOMER PROFILE
-========================= */
-async function memberEnsureProfile(user, fullName, phone){
+/*
+  APPLE SEED MEMBER AUTH FIX
 
-  memberCheckSB();
+  QUAN TRỌNG:
+  - Đăng nhập tài khoản cũ KHÔNG bắt nhập lại họ tên/SĐT.
+  - Nếu customer_members đã có dữ liệu thì giữ nguyên.
+  - Nếu chưa có hồ sơ thì vẫn cho đăng nhập.
+  - Chỉ bắt họ tên + SĐT khi ĐĂNG KÝ tài khoản mới.
+*/
 
-  if(!user || !user.id){
-    throw new Error('Không tìm thấy tài khoản người dùng.');
-  }
+async function memberEnsureProfile(
+  user,
+  fullName = '',
+  phone = '',
+  required = false
+){
+  if(!memberSB || !user) return null;
 
-
-  const cleanName = String(
+  let cleanName = String(
     fullName ||
     user.user_metadata?.full_name ||
     ''
   ).trim();
 
-
-  const cleanPhone = String(
+  let cleanPhone = String(
     phone ||
     user.user_metadata?.phone ||
     user.phone ||
@@ -121,149 +69,221 @@ async function memberEnsureProfile(user, fullName, phone){
   ).trim();
 
 
+  // Lấy hồ sơ hiện tại
+  const existing = await memberSB
+    .from('customer_members')
+    .select('full_name,phone,email')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+
+  if(existing.error && existing.error.code !== 'PGRST116'){
+    console.error('LOAD MEMBER PROFILE ERROR:', existing.error);
+    throw existing.error;
+  }
+
+
+  const old = existing.data || {};
+
+
+  // Nếu dữ liệu truyền vào trống thì lấy dữ liệu cũ
   if(!cleanName){
+    cleanName = String(old.full_name || '').trim();
+  }
+
+  if(!cleanPhone){
+    cleanPhone = String(old.phone || '').trim();
+  }
+
+
+  /*
+    ĐĂNG NHẬP:
+
+    Nếu hồ sơ chưa có tên/SĐT thì KHÔNG được đá ra lỗi.
+    Cho khách đăng nhập bình thường trước.
+  */
+  if(!required){
+
+    // Có hồ sơ -> cập nhật email nếu cần
+    if(existing.data){
+
+      const payload = {
+        email: user.email || old.email || null,
+        updated_at: new Date().toISOString()
+      };
+
+
+      // Chỉ bổ sung tên nếu đang thiếu
+      if(
+        (!old.full_name ||
+         String(old.full_name).trim().length < 2) &&
+        cleanName.length >= 2
+      ){
+        payload.full_name = cleanName;
+      }
+
+
+      // Chỉ bổ sung SĐT nếu đang thiếu
+      if(
+        (!old.phone ||
+         String(old.phone).trim().length < 6) &&
+        cleanPhone.length >= 6
+      ){
+        payload.phone = cleanPhone;
+      }
+
+
+      const up = await memberSB
+        .from('customer_members')
+        .update(payload)
+        .eq('user_id', user.id);
+
+
+      if(up.error){
+        console.error('UPDATE MEMBER PROFILE ERROR:', up.error);
+        throw up.error;
+      }
+
+
+      return {
+        full_name:
+          payload.full_name ||
+          old.full_name ||
+          '',
+
+        phone:
+          payload.phone ||
+          old.phone ||
+          '',
+
+        email:
+          payload.email ||
+          old.email ||
+          user.email ||
+          ''
+      };
+    }
+
+
+    /*
+      Không có customer_members:
+
+      Vẫn cho đăng nhập.
+      KHÔNG insert "Khách hàng" hoặc dữ liệu rỗng
+      để tránh lỗi RLS / NOT NULL.
+    */
+    return {
+      full_name: cleanName || '',
+      phone: cleanPhone || '',
+      email: user.email || ''
+    };
+  }
+
+
+  /*
+    ĐĂNG KÝ MỚI:
+
+    Bắt buộc họ tên + SĐT.
+  */
+
+  if(cleanName.length < 2){
     throw new Error('Vui lòng nhập họ và tên.');
   }
 
-
-  if(!cleanPhone){
+  if(cleanPhone.length < 6){
     throw new Error(
-      'Vui lòng nhập số điện thoại. Số điện thoại không được để trống.'
+      'Vui lòng nhập số điện thoại. Không được để trống.'
     );
   }
-
-
-  const payload = {
-    user_id: user.id,
-    full_name: cleanName,
-    phone: cleanPhone,
-    email: user.email || null,
-    updated_at: new Date().toISOString()
-  };
 
 
   const r = await memberSB
     .from('customer_members')
-    .upsert(
-      payload,
-      {
-        onConflict: 'user_id'
-      }
-    );
+    .upsert({
+      user_id: user.id,
+      full_name: cleanName,
+      phone: cleanPhone,
+      email: user.email || null,
+      updated_at: new Date().toISOString()
+    },{
+      onConflict: 'user_id'
+    });
 
 
-  /* QUAN TRỌNG:
-     Không được bỏ qua lỗi Supabase */
   if(r.error){
-
-    console.error(
-      'customer_members upsert error:',
-      r.error
-    );
-
-    throw new Error(
-      r.error.message ||
-      'Không thể lưu thông tin khách hàng.'
-    );
+    console.error('SAVE MEMBER PROFILE ERROR:', r.error);
+    throw r.error;
   }
 
 
-  return true;
+  return {
+    full_name: cleanName,
+    phone: cleanPhone,
+    email: user.email || ''
+  };
 }
 
 
-/* =========================
-   SIGN IN
-========================= */
-async function memberSignIn(email, password){
 
-  memberCheckSB();
+/*
+  ĐĂNG NHẬP
+*/
+async function memberSignIn(email,password){
 
   const cleanEmail = String(email || '').trim();
+
 
   if(!cleanEmail){
     throw new Error('Vui lòng nhập email.');
   }
 
+
   if(!password){
     throw new Error('Vui lòng nhập mật khẩu.');
   }
+
+
+  if(!memberSB){
+    throw new Error(
+      'Hệ thống thành viên chưa kết nối Supabase.'
+    );
+  }
+
 
   const r = await memberSB.auth.signInWithPassword({
     email: cleanEmail,
     password: password
   });
 
+
   if(r.error){
-    console.error('memberSignIn error:', r.error);
-
-    throw new Error(
-      r.error.message ||
-      'Email hoặc mật khẩu không chính xác.'
-    );
+    console.error('LOGIN ERROR:', r.error);
+    throw r.error;
   }
 
-  const user = r.data?.user;
-
-  if(!user){
-    throw new Error(
-      'Đăng nhập thành công nhưng không nhận được thông tin tài khoản.'
-    );
-  }
 
   /*
-   * ĐĂNG NHẬP KHÔNG ĐƯỢC BẮT NHẬP HỌ TÊN / SỐ ĐIỆN THOẠI.
-   *
-   * Nếu đã có hồ sơ customer_members thì giữ nguyên.
-   * Không có hồ sơ cũng KHÔNG làm đăng nhập thất bại.
-   */
+    QUAN TRỌNG NHẤT:
 
-  try{
+    Không truyền required=true.
+    Không bắt nhập họ tên/SĐT khi đăng nhập.
+  */
+  await memberEnsureProfile(
+    r.data.user,
+    '',
+    '',
+    false
+  );
 
-    const p = await memberSB
-      .from('customer_members')
-      .select('full_name, phone')
-      .eq('user_id', user.id)
-      .maybeSingle();
 
-    if(p.error){
-
-      console.warn(
-        'Không đọc được customer_members:',
-        p.error
-      );
-
-    }else if(p.data){
-
-      /*
-       * Có profile thì không cần làm gì thêm.
-       */
-      console.log(
-        'Member profile:',
-        p.data
-      );
-    }
-
-  }catch(err){
-
-    /*
-     * Lỗi profile không được phép
-     * làm hỏng đăng nhập.
-     */
-    console.warn(
-      'Profile check skipped:',
-      err
-    );
-
-  }
-
-  return user;
+  return r.data.user;
 }
 
 
-/* =========================
-   SIGN UP
-========================= */
+
+/*
+  ĐĂNG KÝ THÀNH VIÊN
+*/
 async function memberSignUp(
   fullName,
   phone,
@@ -271,27 +291,17 @@ async function memberSignUp(
   password
 ){
 
-  memberCheckSB();
+  const cleanName =
+    String(fullName || '').trim();
 
+  const cleanPhone =
+    String(phone || '').trim();
 
-  const cleanName = String(
-    fullName || ''
-  ).trim();
+  const cleanEmail =
+    String(email || '').trim();
 
-
-  const cleanPhone = String(
-    phone || ''
-  ).trim();
-
-
-  const cleanEmail = String(
-    email || ''
-  ).trim();
-
-
-  const cleanPassword = String(
-    password || ''
-  );
+  const cleanPassword =
+    String(password || '');
 
 
   if(!cleanName){
@@ -301,9 +311,23 @@ async function memberSignUp(
   }
 
 
+  if(cleanName.length < 2){
+    throw new Error(
+      'Họ và tên phải có ít nhất 2 ký tự.'
+    );
+  }
+
+
   if(!cleanPhone){
     throw new Error(
-      'Vui lòng nhập số điện thoại. Không được để trống.'
+      'Vui lòng nhập số điện thoại.'
+    );
+  }
+
+
+  if(cleanPhone.length < 6){
+    throw new Error(
+      'Số điện thoại không hợp lệ.'
     );
   }
 
@@ -329,6 +353,13 @@ async function memberSignUp(
   }
 
 
+  if(!memberSB){
+    throw new Error(
+      'Hệ thống thành viên chưa kết nối Supabase.'
+    );
+  }
+
+
   const r = await memberSB.auth.signUp({
 
     email: cleanEmail,
@@ -336,46 +367,36 @@ async function memberSignUp(
     password: cleanPassword,
 
     options: {
-
       data: {
-
         full_name: cleanName,
-
         phone: cleanPhone
-
       }
-
     }
 
   });
 
 
   if(r.error){
-
-    console.error(
-      'memberSignUp error:',
-      r.error
-    );
-
-    throw new Error(
-      r.error.message ||
-      'Không thể tạo tài khoản.'
-    );
+    console.error('SIGNUP ERROR:', r.error);
+    throw r.error;
   }
 
 
   /*
-     Trường hợp Supabase không yêu cầu
-     xác nhận email -> có session ngay.
+    Chỉ tạo customer_members ngay khi
+    Supabase trả session.
   */
-  if(r.data?.user && r.data?.session){
+  if(
+    r.data.user &&
+    r.data.session
+  ){
 
     await memberEnsureProfile(
       r.data.user,
       cleanName,
-      cleanPhone
+      cleanPhone,
+      true
     );
-
   }
 
 
@@ -383,68 +404,31 @@ async function memberSignUp(
 }
 
 
-/* =========================
-   AUTH STATE LISTENER
-========================= */
-function memberOnAuthStateChange(callback){
 
-  if(!memberSB || !memberSB.auth){
-    console.warn(
-      'memberOnAuthStateChange: Supabase Auth chưa sẵn sàng.'
-    );
+/*
+  EXPORT RA WINDOW
+*/
 
-    return {
-      data: {
-        subscription: {
-          unsubscribe: () => {}
-        }
-      }
-    };
-  }
+window.memberSB =
+  memberSB;
 
+window.member$ =
+  member$;
 
-  return memberSB.auth.onAuthStateChange(
-    (event, session) => {
+window.memberEsc =
+  memberEsc;
 
-      try{
+window.getMemberSession =
+  getMemberSession;
 
-        if(typeof callback === 'function'){
-          callback(event, session);
-        }
+window.memberLogout =
+  memberLogout;
 
-      }catch(err){
+window.memberEnsureProfile =
+  memberEnsureProfile;
 
-        console.error(
-          'Auth callback error:',
-          err
-        );
+window.memberSignIn =
+  memberSignIn;
 
-      }
-
-    }
-  );
-}
-
-
-/* =========================
-   EXPORT GLOBAL
-========================= */
-window.memberSB = memberSB;
-
-window.member$ = member$;
-
-window.memberEsc = memberEsc;
-
-window.memberCheckSB = memberCheckSB;
-
-window.getMemberSession = getMemberSession;
-
-window.memberLogout = memberLogout;
-
-window.memberEnsureProfile = memberEnsureProfile;
-
-window.memberSignIn = memberSignIn;
-
-window.memberSignUp = memberSignUp;
-
-window.memberOnAuthStateChange = memberOnAuthStateChange;
+window.memberSignUp =
+  memberSignUp;
