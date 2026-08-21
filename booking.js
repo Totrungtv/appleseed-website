@@ -47,8 +47,8 @@ form?.addEventListener('submit', async e => {
     device_model: $('model')?.value.trim() || '',
     service_name: $('service')?.value.trim() || '',
     customer_issue: $('issue')?.value.trim() || '',
-    appointment_date: $('date')?.value || null,
-    appointment_time: $('time')?.value || null,
+    preferred_date: $('date')?.value || null,
+    preferred_time: $('time')?.value || null,
     note: $('note')?.value.trim() || null,
     status: 'pending',
     member_id: session.user.id
