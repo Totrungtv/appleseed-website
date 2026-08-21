@@ -260,6 +260,43 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
   .menu a span:last-child{display:none}.hero{padding:28px 16px}h1{font-size:36px}.lead{font-size:16px}
   .trust{grid-template-columns:1fr}.service-grid{grid-template-columns:1fr}.services,.contact{padding-left:16px;padding-right:16px}
 }
+
+/* Published CMS pages: nằm ngay trong section Trang dịch vụ hiện có */
+.published-pages{
+  max-width:1240px;
+  margin:28px auto 0;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:20px;
+  text-align:left;
+}
+.published-page-card{
+  background:#fff;
+  border:1px solid #e2e8f0;
+  border-radius:16px;
+  padding:22px;
+  box-shadow:0 12px 28px rgba(37,57,95,.08);
+}
+.published-page-card h3{
+  margin:0 0 10px;
+  font-size:21px;
+  color:#111827;
+}
+.published-page-card p{
+  margin:0 0 16px;
+  color:#64748b;
+  line-height:1.65;
+}
+.published-page-card a{
+  color:#1769ff;
+  font-weight:800;
+  text-decoration:none;
+}
+@media(max-width:560px){
+  .published-pages{grid-template-columns:1fr;gap:14px;margin-top:20px}
+  .published-page-card{padding:18px}
+}
+
 </style>
 </head>
 
@@ -275,7 +312,6 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
 <a href="products.html"><span class="mi">🛍</span><span>Sản phẩm</span></a>
 <a href="#gioi-thieu"><span class="mi">ⓘ</span><span>Giới thiệu</span></a>
 <a href="#lien-he"><span class="mi">☎</span><span>Liên hệ</span></a>
-<a href="shop-admin.html"><span class="mi">⚙</span><span>Quản trị</span></a>
 </div>
 </nav>
 </header>
@@ -907,5 +943,32 @@ form.onsubmit=e=>{
  },220);
 };
 </script>
+
+<script>
+(async function loadPublishedPages(){
+  const box=document.getElementById('publishedPages');
+  if(!box || typeof sb==='undefined') return;
+
+  try{
+    const r=await sb.from('pages')
+      .select('title,slug,description,is_active')
+      .eq('is_active',true)
+      .order('created_at',{ascending:false});
+
+    if(r.error || !Array.isArray(r.data) || !r.data.length) return;
+
+    box.innerHTML=r.data.map(p=>`
+      <article class="published-page-card">
+        <h3>${esc(String(p.title||''))}</h3>
+        <p>${esc(String(p.description||''))}</p>
+        <a href="page.html?slug=${encodeURIComponent(p.slug||'')}">Xem bài viết →</a>
+      </article>
+    `).join('');
+  }catch(e){
+    console.warn('Không tải được bài viết CMS:',e);
+  }
+})();
+</script>
+
 </body>
 </html>
