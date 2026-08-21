@@ -461,7 +461,7 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
       let target='';
       if(label.includes('dich vu')) target='#dich-vu';
       else if(label.includes('san pham')) target='#san-pham';
-      else if(label.includes('gioi thieu')) target='#gioi-thieu';
+      else if(label.includes('gioi thieu')) return;
       else if(label.includes('lien he')) target='#lien-he';
 
       if(!target)return;
