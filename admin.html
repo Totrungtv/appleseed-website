@@ -20,7 +20,7 @@ body{background:var(--bg);color:var(--text)}
 .item{border:1px solid var(--line);border-radius:14px;padding:16px}
 .item h3{margin:0 0 8px}.item p{margin:5px 0;color:var(--muted);line-height:1.5}
 .item-actions{display:flex;gap:8px;margin-top:13px}
-.product-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:10px}.product-gallery-card{position:relative;border:1px solid var(--line);border-radius:12px;padding:6px;background:#fff}.product-gallery-card img{width:100%;height:110px;object-fit:cover;border-radius:8px;display:block}.product-gallery-card button{margin-top:6px;width:100%;font-size:12px}.product-gallery-card .gallery-primary{outline:2px solid #2563eb}.order-status{font-size:12px;font-weight:800;padding:4px 8px;border-radius:999px;background:#eff6ff;color:#1d4ed8;display:inline-block}.order-row{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}.payment-box{background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:12px}.payment-qr{max-width:180px;max-height:180px;object-fit:contain;border-radius:10px;background:#fff}.cart-btn{margin-top:10px;width:100%}
+.product-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:10px}.product-gallery-card{position:relative;border:1px solid var(--line);border-radius:12px;padding:6px;background:#fff}.product-gallery-card img{width:100%;height:110px;object-fit:cover;border-radius:8px;display:block}.product-gallery-card button{margin-top:6px;width:100%;font-size:12px}.product-gallery-card .gallery-primary{outline:2px solid #2563eb} .pending-gallery-card{outline:2px dashed #98a2b3}.order-status{font-size:12px;font-weight:800;padding:4px 8px;border-radius:999px;background:#eff6ff;color:#1d4ed8;display:inline-block}.order-row{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}.payment-box{background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:12px}.payment-qr{max-width:180px;max-height:180px;object-fit:contain;border-radius:10px;background:#fff}.cart-btn{margin-top:10px;width:100%}
 
 .btn2{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 11px;cursor:pointer;font-weight:700}
 .danger{color:#b42318;border-color:#fecdca}.edit{color:#175cd3}.admin-shop-link{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
@@ -60,9 +60,7 @@ label{font-weight:700;font-size:14px;display:block}input,textarea,select{width:1
 .native-upload-status{font-size:13px;color:#475467;margin:7px 0}
 
 .editor-shell{border:1px solid #d0d5dd;border-radius:12px;background:#fff;overflow:hidden;position:relative}.editor-topbar{display:flex;justify-content:space-between;padding:9px 12px;background:#f8fafc;border-bottom:1px solid #e4e7ec;font-size:13px}.editor-count{color:#667085}.editor-shell .native-editor{border:0;border-radius:0;min-height:320px;padding:18px;line-height:1.75;font-size:16px;outline:none;overflow:auto}.editor-shell .native-editor:empty:before{content:attr(data-placeholder);color:#98a2b3}.editor-shell .native-editor img{max-width:100%;height:auto;border-radius:10px}.editor-shell .native-editor table{width:100%;border-collapse:collapse;margin:14px 0}.editor-shell .native-editor td,.editor-shell .native-editor th{border:1px solid #d0d5dd;padding:9px;min-width:70px}.editor-shell .native-editor blockquote{border-left:4px solid #2563eb;margin:14px 0;padding:10px 15px;background:#eff6ff}.editor-shell .native-editor pre{background:#111827;color:#fff;padding:14px;border-radius:10px;overflow:auto}.editor-shell .native-editor hr{border:0;border-top:1px solid #d0d5dd;margin:20px 0}.native-toolbar{display:flex;flex-wrap:wrap;gap:5px;padding:9px;background:#f8fafc;border-top:1px solid #e4e7ec}.native-toolbar button,.native-toolbar select{border:1px solid #d0d5dd;background:#fff;border-radius:7px;padding:7px 9px;cursor:pointer;font-weight:700;color:#344054}.native-toolbar button:hover,.native-toolbar select:hover{background:#f2f4f7}.native-toolbar select{max-width:130px}.color-tool{display:flex;align-items:center;gap:3px;border:1px solid #d0d5dd;background:#fff;border-radius:7px;padding:4px 7px;font-weight:800}.color-tool input{width:24px;height:24px;margin:0;padding:0;border:0}.native-icon-picker{position:absolute;left:10px;bottom:58px;z-index:1000;display:grid;grid-template-columns:repeat(10,34px);gap:3px;background:#fff;border:1px solid #d0d5dd;border-radius:12px;padding:8px;box-shadow:0 12px 30px rgba(0,0,0,.16);max-width:390px}.native-icon-picker[hidden]{display:none!important}.native-icon-picker button{border:0;background:#fff;border-radius:7px;font-size:20px;padding:5px;cursor:pointer}.native-upload-status{font-size:12px;color:#475467;padding:6px 10px}.editor-source{width:100%;min-height:320px;border:0;padding:18px;font:13px/1.6 Consolas,monospace;background:#111827;color:#f8fafc;resize:vertical}.editor-video{position:relative;aspect-ratio:16/9;margin:14px 0}.editor-video iframe{width:100%;height:100%;border:0;border-radius:10px}.editor-fullscreen{position:fixed!important;inset:10px!important;z-index:99999!important;box-shadow:0 20px 60px rgba(0,0,0,.3)}.editor-fullscreen .native-editor{min-height:calc(100vh - 150px)}.editor-preview-modal{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:100000;display:flex;align-items:center;justify-content:center;padding:20px}.editor-preview-box{background:#fff;border-radius:16px;width:min(900px,100%);max-height:90vh;overflow:auto}.editor-preview-head{position:sticky;top:0;display:flex;justify-content:space-between;padding:13px 16px;background:#fff;border-bottom:1px solid #e4e7ec}.editor-preview-content{padding:28px;line-height:1.8}.editor-preview-content img{max-width:100%;height:auto;border-radius:10px}.editor-preview-content table{width:100%;border-collapse:collapse}.editor-preview-content td,.editor-preview-content th{border:1px solid #d0d5dd;padding:9px}
-<style>.image-main-row{display:flex;gap:8px;align-items:center}.image-main-row input:first-child{flex:1}.main-image-preview img{margin-top:8px;max-width:180px;max-height:120px;object-fit:cover;border-radius:10px;border:1px solid #e4e7ec}.main-image-preview{min-height:4px}
-.gallery-upload-box{border:1px dashed #cfd8e6;border-radius:14px;padding:14px;background:#fbfcfe}.gallery-upload-actions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.gallery-upload-actions .plus{border:0}.gallery-upload-box .small{margin:5px 0 8px}.pending-gallery-card{position:relative}.pending-gallery-card img{background:#f8fafc}.pending-gallery-card .btn2{font-size:12px}.gallery-empty{padding:12px;border:1px dashed #d0d5dd;border-radius:10px;color:#667085}
-</style>
+<style>.image-main-row{display:flex;gap:8px;align-items:center}.image-main-row input:first-child{flex:1}.main-image-preview img{margin-top:8px;max-width:180px;max-height:120px;object-fit:cover;border-radius:10px;border:1px solid #e4e7ec}.main-image-preview{min-height:4px}</style>
 </head>
 <body>
 <div id="loginView" class="panel login">
@@ -160,17 +158,7 @@ label{font-weight:700;font-size:14px;display:block}input,textarea,select{width:1
         <label>Giá (VNĐ)<input id="productPrice" type="number" min="0" value="0"></label>
         <label>Ảnh chính sản phẩm<div class="image-main-row"><input id="productImage" placeholder="https://..."><button class="btn2" type="button" id="productMainImageBtn">📤 Tải ảnh</button><button class="btn2 danger" type="button" id="productMainImageClear">✕ Xóa ảnh</button><input id="productMainImageFile" type="file" accept="image/*" hidden></div><div id="productMainImagePreview" class="main-image-preview"></div></label>
       </div>
-      <div class="gallery-upload-box">
-  <label style="font-weight:700">Ảnh bán hàng — nhiều ảnh</label>
-  <div class="gallery-upload-actions">
-    <button class="plus" type="button" id="chooseProductGallery">📸 Chọn nhiều ảnh</button>
-    <button class="btn2" type="button" id="clearProductGallery">✕ Xóa ảnh chờ</button>
-    <input id="productGalleryFiles" type="file" accept="image/*" multiple hidden>
-  </div>
-  <div class="small">Bấm <b>Chọn nhiều ảnh</b> → giữ Ctrl/Shift để chọn nhiều ảnh. Có thể bấm lại để thêm tiếp ảnh.</div>
-  <div id="productGalleryStatus" class="upload-status">Chưa chọn ảnh.</div>
-  <div id="productGalleryPreview" class="product-gallery"></div>
-</div>
+      <label>Ảnh bán hàng — nhiều ảnh<div class="image-main-row"><input id="productGalleryFiles" type="file" accept="image/*" multiple><button class="btn2" type="button" id="clearProductGallery">✕ Xóa ảnh chờ</button></div><div class="small">Có thể chọn nhiều ảnh cùng lúc. Ảnh đã lưu có nút Xóa và Đặt làm ảnh chính.</div><div id="productGalleryPreview" class="product-gallery"></div></label>
       <label>Mô tả sản phẩm</label>
       <div class="editor-shell" data-editor-shell="productEditor">
 <div class="editor-topbar"><strong>Soạn thảo sản phẩm PRO</strong><span class="editor-count">0 từ</span></div>
@@ -393,36 +381,33 @@ function renderProductGallery(items=[]){
   box.innerHTML=(items||[]).map(x=>`<div class="product-gallery-card"><img src="${esc(x.image_url)}" class="${x.is_primary?'gallery-primary':''}" alt="Ảnh sản phẩm"><button type="button" class="btn2" onclick="setGalleryPrimary(${x.id},${x.product_id})">⭐ ${x.is_primary?'Ảnh chính':'Đặt làm ảnh chính'}</button><button type="button" class="btn2 danger" onclick="deleteGalleryImage(${x.id},${x.product_id},${JSON.stringify(x.image_path||'')})">✕ Xóa ảnh</button></div>`).join("") || '<div class="small">Chưa có ảnh phụ.</div>';
 }
 let pendingGalleryFiles=[];
-const galleryInput=$("productGalleryFiles"), galleryChoose=$("chooseProductGallery"), galleryClear=$("clearProductGallery"), galleryStatus=$("productGalleryStatus");
-function galleryKey(f){return `${f.name}|${f.size}|${f.lastModified}`}
-function updateGalleryStatus(msg){if(galleryStatus)galleryStatus.textContent=msg||`${pendingGalleryFiles.length} ảnh đang chờ tải lên.`}
-galleryChoose.onclick=e=>{e.preventDefault();e.stopPropagation();galleryInput.click()};
-galleryInput.onchange=e=>{
+function galleryFileKey(f){return `${f.name}|${f.size}|${f.lastModified}`;}
+$("productGalleryFiles").onchange=e=>{
   const files=[...(e.target.files||[])];
   const valid=files.filter(f=>f.type.startsWith('image/')&&f.size<=8*1024*1024);
-  const bad=files.length-valid.length;
-  const seen=new Set(pendingGalleryFiles.map(galleryKey));
-  valid.forEach(f=>{const k=galleryKey(f);if(!seen.has(k)){pendingGalleryFiles.push(f);seen.add(k)}});
+  const seen=new Set(pendingGalleryFiles.map(galleryFileKey));
+  valid.forEach(f=>{const k=galleryFileKey(f);if(!seen.has(k)){pendingGalleryFiles.push(f);seen.add(k)}});
   e.target.value='';
-  if(bad)status(`Đã bỏ qua ${bad} ảnh không hợp lệ hoặc lớn hơn 8MB.`,true);
   renderPendingGallery();
 };
-galleryClear.onclick=e=>{e.preventDefault();e.stopPropagation();pendingGalleryFiles=[];renderPendingGallery()};
+$("clearProductGallery").onclick=()=>{pendingGalleryFiles=[];renderPendingGallery()};
 function renderPendingGallery(){
   const box=$("productGalleryPreview");if(!box)return;
-  box.innerHTML='';
-  if(!pendingGalleryFiles.length){box.innerHTML='<div class="gallery-empty">Chưa có ảnh chờ. Bấm <b>📸 Chọn nhiều ảnh</b> để thêm.</div>';updateGalleryStatus('Chưa chọn ảnh.');return}
-  updateGalleryStatus(`Đã chọn ${pendingGalleryFiles.length} ảnh — sẽ lưu khi bấm “Lưu sản phẩm”.`);
+  box.querySelectorAll('.pending-gallery-card').forEach(x=>x.remove());
+  if(!pendingGalleryFiles.length){
+    if(!box.children.length) box.innerHTML='<div class="small gallery-empty">Chưa có ảnh phụ.</div>';
+    return;
+  }
+  const empty=box.querySelector('.gallery-empty');if(empty)empty.remove();
   pendingGalleryFiles.forEach((f,i)=>{
     const card=document.createElement('div');card.className='product-gallery-card pending-gallery-card';
-    const img=document.createElement('img');img.alt=f.name;img.src=URL.createObjectURL(f);img.onload=()=>URL.revokeObjectURL(img.src);
-    const name=document.createElement('div');name.className='small';name.textContent=f.name;
-    const b=document.createElement('button');b.type='button';b.className='btn2 danger';b.textContent='✕ Bỏ ảnh';
-    b.onclick=e=>{e.preventDefault();e.stopPropagation();pendingGalleryFiles.splice(i,1);renderPendingGallery()};
-    card.append(img,name,b);box.appendChild(card);
+    const img=document.createElement('img');img.alt=f.name;img.src=URL.createObjectURL(f);
+    const btn=document.createElement('button');btn.type='button';btn.className='btn2 danger';btn.textContent='✕ Bỏ ảnh';
+    btn.onclick=()=>{pendingGalleryFiles.splice(i,1);renderPendingGallery()};
+    card.append(img,btn);box.appendChild(card);
   });
 }
-
+async function uploadGalleryFile(file){const safe=file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,'-'),path=`products-gallery/${Date.now()}-${Math.random().toString(36).slice(2,8)}-${safe}`;const r=await sb.storage.from('site-images').upload(path,file,{cacheControl:'31536000',upsert:false,contentType:file.type});if(r.error)throw r.error;return {path,url:sb.storage.from('site-images').getPublicUrl(path).data.publicUrl}}
 window.setGalleryPrimary=async(id,productId)=>{const g=await loadProductGallery(productId);const target=g.find(x=>x.id===id);if(!target)return;const old=g.filter(x=>x.id!==id&&x.is_primary);if(old.length)await sb.from('product_images').update({is_primary:false}).in('id',old.map(x=>x.id));const r=await sb.from('product_images').update({is_primary:true}).eq('id',id);if(r.error){status('Không đặt được ảnh chính: '+r.error.message,true);return}const oldMain=$("productImage").value;const oldPath=$("productImagePath").value;const up=await sb.from('products').update({image_url:target.image_url,image_path:target.image_path||null}).eq('id',productId);if(up.error){status('Đổi ảnh chính lỗi: '+up.error.message,true);return}$("productImage").value=target.image_url;$("productImagePath").value=target.image_path||'';previewMainImage(target.image_url);renderProductGallery(await loadProductGallery(productId));status('⭐ Đã đặt ảnh làm ảnh chính.')};
 window.deleteGalleryImage=async(id,productId,path)=>{if(!confirm('Xóa ảnh này?'))return;const r=await sb.from('product_images').delete().eq('id',id);if(r.error){status('Xóa ảnh lỗi: '+r.error.message,true);return}if(path)await sb.storage.from('site-images').remove([path]);renderProductGallery(await loadProductGallery(productId));status('Đã xóa ảnh.')};
 
