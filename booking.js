@@ -41,16 +41,16 @@ form?.addEventListener('submit', async e => {
   const bookingCode = makeBookingCode();
 
   const payload = {
-    booking_code: bookingCode,
-    customer_name: $('name')?.value.trim() || '',
-    phone: $('phone')?.value.trim() || '',
-    device_model: $('model')?.value.trim() || '',
-    service_name: $('service')?.value.trim() || '',
-    customer_issue: $('issue')?.value.trim() || '',
-    preferred_date: $('date')?.value || null,
-    preferred_time: $('time')?.value || null,
-    note: $('note')?.value.trim() || null,
-    status: 'pending',
+   booking_code: bookingCode,
+   customer_name: $('name')?.value.trim() || '',
+   phone: $('phone')?.value.trim() || '',
+   device_model: $('model')?.value.trim() || '',
+   service_name: $('service')?.value.trim() || '',
+   customer_issue: $('issue')?.value.trim() || '',
+   preferred_date: $('date')?.value || null,
+   preferred_time: $('time')?.value || null,
+   note: $('note')?.value.trim() || null,
+   status: 'pending'
   };
 
   if (
