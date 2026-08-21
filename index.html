@@ -297,6 +297,38 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
   .published-page-card{padding:18px}
 }
 
+
+/* Bài viết CMS nằm trong đúng khu vực Trang dịch vụ */
+.services .cms-pages-inline{
+  max-width:1160px;
+  margin:28px auto 0;
+  text-align:left;
+}
+.services .cms-pages-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:18px;
+}
+.services .cms-page-card{
+  display:block;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:#fff;
+  padding:20px;
+  box-shadow:0 8px 24px rgba(35,54,91,.08);
+}
+.services .cms-page-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 14px 30px rgba(35,54,91,.13);
+  border-color:#cfdcff;
+}
+@media(max-width:900px){
+  .services .cms-pages-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:560px){
+  .services .cms-pages-grid{grid-template-columns:1fr}
+}
+
 </style>
 </head>
 
@@ -840,7 +872,16 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
     });
   }
 
-  async function load(){if(!sb){staticFallback();bindProductCards();fixNavigation();return}try{const [t,n,s]=await Promise.all([sb.from('site_theme_settings').select('*').eq('id',1).maybeSingle(),sb.from('site_nav_items').select('label,icon,url,is_active,sort_order').eq('is_active',true).order('sort_order',{ascending:true}),sb.from('site_home_sections').select('*').eq('is_active',true).order('sort_order',{ascending:true}).order('id',{ascending:true})]);if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){const st=document.createElement('style');st.textContent=t.data.custom_css;document.head.appendChild(st)}if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){document.querySelector('.menu').innerHTML=n.data.map(x=>`<a href="${esc(x.url||'#')}"><span class="mi">${esc(x.icon||'')}</span><span>${esc(x.label)}</span></a>`).join('')};fixNavigation();if(s.error||!s.data?.length){staticFallback();bindProductCards();fixNavigation();return}let html='';let contactRendered=false;for(const sec of s.data){if(sec.section_type==='products'){html+=await productsHtml();continue}if(sec.section_type==='map'||sec.section_type==='contact'){if(contactRendered)continue;contactRendered=true;html+=sec.section_type==='contact'?contactHtml():renderSection(sec);continue}let secHtml=renderSection(sec);if(sec.section_type==='services'){const sectionTitle=(sec.title||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();if(sectionTitle.includes('trang dich vu')){const cards=await pagesCardsHtml();if(cards)secHtml=secHtml.replace('</section>',cards+'</section>');}}html+=secHtml}root.innerHTML=html+(contactRendered?'':contactHtml());
+  async function load(){if(!sb){staticFallback();bindProductCards();fixNavigation();return}try{const [t,n,s]=await Promise.all([sb.from('site_theme_settings').select('*').eq('id',1).maybeSingle(),sb.from('site_nav_items').select('label,icon,url,is_active,sort_order').eq('is_active',true).order('sort_order',{ascending:true}),sb.from('site_home_sections').select('*').eq('is_active',true).order('sort_order',{ascending:true}).order('id',{ascending:true})]);if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){const st=document.createElement('style');st.textContent=t.data.custom_css;document.head.appendChild(st)}if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){document.querySelector('.menu').innerHTML=n.data.map(x=>`<a href="${esc(x.url||'#')}"><span class="mi">${esc(x.icon||'')}</span><span>${esc(x.label)}</span></a>`).join('')};fixNavigation();if(s.error||!s.data?.length){staticFallback();bindProductCards();fixNavigation();return}let html='';let contactRendered=false;for(const sec of s.data){if(sec.section_type==='products'){html+=await productsHtml();continue}if(sec.section_type==='map'||sec.section_type==='contact'){if(contactRendered)continue;contactRendered=true;html+=sec.section_type==='contact'?contactHtml():renderSection(sec);continue}let secHtml=renderSection(sec);
+if(sec.section_type==='services'){
+  try{
+    const cards=await pagesCardsHtml();
+    if(cards) secHtml=secHtml.replace('</section>',cards+'</section>');
+  }catch(e){
+    console.warn('Apple Seed: không tải được bài viết CMS',e);
+  }
+}
+html+=secHtml}root.innerHTML=html+(contactRendered?'':contactHtml());
       fixNavigation();
       bindProductCards();
 
@@ -942,32 +983,6 @@ form.onsubmit=e=>{
    body.scrollTop=body.scrollHeight;
  },220);
 };
-</script>
-
-<script>
-(async function loadPublishedPages(){
-  const box=document.getElementById('publishedPages');
-  if(!box || typeof sb==='undefined') return;
-
-  try{
-    const r=await sb.from('pages')
-      .select('title,slug,description,is_active')
-      .eq('is_active',true)
-      .order('created_at',{ascending:false});
-
-    if(r.error || !Array.isArray(r.data) || !r.data.length) return;
-
-    box.innerHTML=r.data.map(p=>`
-      <article class="published-page-card">
-        <h3>${esc(String(p.title||''))}</h3>
-        <p>${esc(String(p.description||''))}</p>
-        <a href="page.html?slug=${encodeURIComponent(p.slug||'')}">Xem bài viết →</a>
-      </article>
-    `).join('');
-  }catch(e){
-    console.warn('Không tải được bài viết CMS:',e);
-  }
-})();
 </script>
 
 </body>
