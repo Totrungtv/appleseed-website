@@ -221,6 +221,7 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
 
 .cms-pages{background:#fff;padding:34px 24px 58px}
 .cms-pages-inner{max-width:1160px;margin:auto}
+.cms-pages-inline{max-width:1160px;margin:26px auto 0}
 .cms-pages-head{text-align:center;margin-bottom:24px}
 .cms-pages-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
 .cms-page-card{display:block;border:1px solid var(--line);border-radius:14px;background:#fff;padding:20px;box-shadow:0 8px 24px rgba(35,54,91,.08);transition:.18s ease}
@@ -736,29 +737,22 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
       document.getElementById('productModalClose').click();
   });
 
-  async function pagesHtml(){
+  async function pagesCardsHtml(){
     const r=await sb.from('pages')
       .select('id,title,slug,description,is_active')
       .eq('is_active',true)
       .order('id',{ascending:false});
     if(r.error || !r.data?.length) return '';
-    return `<section class="cms-pages" id="trang-dich-vu">
-      <div class="cms-pages-inner">
-        <div class="cms-pages-head">
-          <div class="section-kicker">THÔNG TIN</div>
-          <h2 style="margin:0;font-size:26px;letter-spacing:-.5px">Trang dịch vụ</h2>
-          <p style="margin:10px auto 0;max-width:720px;color:var(--muted);line-height:1.6">Các bài viết và thông tin mới từ Apple Seed.</p>
-        </div>
-        <div class="cms-pages-grid">
-          ${r.data.map(p=>`<a class="cms-page-card" href="page.html?slug=${encodeURIComponent(p.slug)}">
-            <div class="cms-page-icon">📰</div>
-            <h3>${esc(p.title)}</h3>
-            ${p.description?`<p>${esc(p.description)}</p>`:''}
-            <span class="cms-page-more">Xem bài viết →</span>
-          </a>`).join('')}
-        </div>
+    return `<div class="cms-pages-inline">
+      <div class="cms-pages-grid">
+        ${r.data.map(p=>`<a class="cms-page-card" href="page.html?slug=${encodeURIComponent(p.slug)}">
+          <div class="cms-page-icon">📰</div>
+          <h3>${esc(p.title)}</h3>
+          ${p.description?`<p>${esc(p.description)}</p>`:''}
+          <span class="cms-page-more">Xem bài viết →</span>
+        </a>`).join('')}
       </div>
-    </section>`;
+    </div>`;
   }
 
   function renderSection(s){
@@ -810,7 +804,7 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
     });
   }
 
-  async function load(){if(!sb){staticFallback();bindProductCards();fixNavigation();return}try{const [t,n,s]=await Promise.all([sb.from('site_theme_settings').select('*').eq('id',1).maybeSingle(),sb.from('site_nav_items').select('label,icon,url,is_active,sort_order').eq('is_active',true).order('sort_order',{ascending:true}),sb.from('site_home_sections').select('*').eq('is_active',true).order('sort_order',{ascending:true}).order('id',{ascending:true})]);if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){const st=document.createElement('style');st.textContent=t.data.custom_css;document.head.appendChild(st)}if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){document.querySelector('.menu').innerHTML=n.data.map(x=>`<a href="${esc(x.url||'#')}"><span class="mi">${esc(x.icon||'')}</span><span>${esc(x.label)}</span></a>`).join('')};fixNavigation();if(s.error||!s.data?.length){staticFallback();bindProductCards();fixNavigation();return}let html='';let contactRendered=false;for(const sec of s.data){if(sec.section_type==='products'){html+=await productsHtml();continue}if(sec.section_type==='map'||sec.section_type==='contact'){if(contactRendered)continue;contactRendered=true;html+=sec.section_type==='contact'?contactHtml():renderSection(sec);continue}html+=renderSection(sec)}html+=await pagesHtml();root.innerHTML=html+(contactRendered?'':contactHtml());
+  async function load(){if(!sb){staticFallback();bindProductCards();fixNavigation();return}try{const [t,n,s]=await Promise.all([sb.from('site_theme_settings').select('*').eq('id',1).maybeSingle(),sb.from('site_nav_items').select('label,icon,url,is_active,sort_order').eq('is_active',true).order('sort_order',{ascending:true}),sb.from('site_home_sections').select('*').eq('is_active',true).order('sort_order',{ascending:true}).order('id',{ascending:true})]);if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){const st=document.createElement('style');st.textContent=t.data.custom_css;document.head.appendChild(st)}if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){document.querySelector('.menu').innerHTML=n.data.map(x=>`<a href="${esc(x.url||'#')}"><span class="mi">${esc(x.icon||'')}</span><span>${esc(x.label)}</span></a>`).join('')};fixNavigation();if(s.error||!s.data?.length){staticFallback();bindProductCards();fixNavigation();return}let html='';let contactRendered=false;for(const sec of s.data){if(sec.section_type==='products'){html+=await productsHtml();continue}if(sec.section_type==='map'||sec.section_type==='contact'){if(contactRendered)continue;contactRendered=true;html+=sec.section_type==='contact'?contactHtml():renderSection(sec);continue}let secHtml=renderSection(sec);if(sec.section_type==='services'){const sectionTitle=(sec.title||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();if(sectionTitle.includes('trang dich vu')){const cards=await pagesCardsHtml();if(cards)secHtml=secHtml.replace('</section>',cards+'</section>');}}html+=secHtml}root.innerHTML=html+(contactRendered?'':contactHtml());
       fixNavigation();
       bindProductCards();
 
