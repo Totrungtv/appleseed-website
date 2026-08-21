@@ -74,12 +74,17 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
 .product-modal-box{width:min(900px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:18px;padding:18px;position:relative;box-shadow:0 25px 80px rgba(0,0,0,.25)}
 .product-modal-close{position:absolute;right:12px;top:12px;width:40px;height:40px;border:0;border-radius:50%;background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.15);font-size:24px;cursor:pointer;z-index:2}
 .product-modal-main{height:min(58vh,520px);background:#f4f6fa;border-radius:14px;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.product-modal-main img{max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain}
+.product-modal-main img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block}
 .product-modal-info{padding:16px 4px 4px}
 .product-modal-info h2{margin:0 45px 7px 0;font-size:25px}
 .product-modal-category{color:var(--blue);font-weight:850;font-size:12px;text-transform:uppercase;letter-spacing:1px}
 .product-modal-price{color:var(--blue);font-weight:900;font-size:21px;margin-top:6px}
-.product-modal-desc{color:var(--muted);line-height:1.6;margin:10px 0 0}
+.product-modal-desc{color:var(--muted);line-height:1.65;margin:10px 0 0;font-size:15px}
+.product-modal-desc p{margin:0 0 10px}
+.product-modal-desc img{max-width:100%;height:auto;border-radius:10px;display:block;margin:8px 0}
+.product-modal-desc a{color:var(--blue)}
+.product-modal-desc ul,.product-modal-desc ol{padding-left:22px}
+
 .product-modal-thumbs{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:10px}
 .product-modal-thumbs button{border:1px solid #e1e6ef;background:#fff;border-radius:8px;padding:0;overflow:hidden;cursor:pointer}
 .product-modal-thumbs img{display:block;width:100%;height:72px;object-fit:cover}
@@ -248,7 +253,7 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
           return `<article class="product-home-card" data-product-index="${i}" tabindex="0" role="button" aria-label="Xem chi tiết ${esc(p.name)}">
             <div class="product-home-photo">
               ${first
-                ? `<img src="${esc(first)}" alt="${esc(p.name)}" loading="lazy" data-product-img-index="${i}">`
+                ? `<img src="${esc(first)}" alt="${esc(p.name)}" loading="lazy" data-product-img-index="${i}" onerror="this.style.display='none';this.parentElement.textContent='🛍️';">`
                 : '🛍️'}
             </div>
             <div>
@@ -263,6 +268,23 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
     </section>`;
   }
 
+  function cleanProductDescription(value){
+    let h=String(value||'');
+
+    // Xóa các ảnh/đoạn ảnh lỗi đang được lưu trong mô tả
+    // (trường hợp URL trỏ nhầm vào admin.html).
+    h=h.replace(/<p>\s*<img\b[^>]*\bsrc\s*=\s*["'][^"']*\/admin\.html[^"']*["'][^>]*>\s*<\/p>/gi,'');
+    h=h.replace(/<img\b[^>]*\bsrc\s*=\s*["'][^"']*\/admin\.html[^"']*["'][^>]*>/gi,'');
+
+    // Cho phép HTML mô tả cơ bản nhưng loại bỏ script/form và event handler.
+    h=safeHtml(h);
+
+    // Không để URL/admin.html lọt ra giao diện dưới dạng text.
+    h=h.replace(/https?:\/\/[^"' <]+\/admin\.html\b/gi,'');
+
+    return h.trim();
+  }
+
   function openProductHome(index){
     const item=window.appleSeedProducts?.[Number(index)];
     if(!item)return;
@@ -273,14 +295,14 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
     const first=imgs[0]?.url||'';
 
     main.innerHTML=first
-      ? `<img src="${esc(first)}" alt="${esc(p.name)}">`
+      ? `<img src="${esc(first)}" alt="${esc(p.name)}" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=&quot;font-size:60px&quot;>🛍️</div>';">`
       : `<div style="font-size:60px">🛍️</div>`;
 
     info.innerHTML=`
       ${p.category?`<div class="product-modal-category">${esc(p.category)}</div>`:''}
       <h2>${esc(p.name)}</h2>
       ${Number(p.price||0)?`<div class="product-modal-price">${Number(p.price).toLocaleString('vi-VN')}đ</div>`:''}
-      ${p.description?`<div class="product-modal-desc">${esc(p.description)}</div>`:''}
+      ${cleanProductDescription(p.description)?`<div class="product-modal-desc">${cleanProductDescription(p.description)}</div>`:''}
     `;
 
     thumbs.innerHTML=imgs.map((x,i)=>`
@@ -292,7 +314,7 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
     thumbs.querySelectorAll('[data-home-thumb]').forEach(btn=>{
       btn.onclick=()=>{
         const x=imgs[Number(btn.dataset.homeThumb)];
-        if(x)main.innerHTML=`<img src="${esc(x.url)}" alt="${esc(p.name)}">`;
+        if(x)main.innerHTML=`<img src="${esc(x.url)}" alt="${esc(p.name)}" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=&quot;font-size:60px&quot;>🛍️</div>';">`;
       };
     });
 
