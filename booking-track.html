@@ -26,7 +26,7 @@
   <section class="card" style="margin-bottom:18px"><div class="profile"><div><div class="eyebrow">APPLE SEED MEMBER</div><h2 style="margin:5px 0">👋 Xin chào <span id="profileName">Khách hàng</span></h2><div id="profileMeta" class="member-meta"></div></div><div style="display:flex;gap:8px;align-items:center"><span class="pill">✓ Thành viên</span><button id="logout" class="logout" type="button">Đăng xuất</button></div></div></section>
   <div class="dashboard">
     <aside class="card"><h2 style="margin-top:0">📋 Lịch của tôi</h2><div id="bookingCount" class="muted" style="margin-bottom:13px">Đang tải...</div><div id="bookingList" class="booking-list"></div></aside>
-    <main class="card"><div id="emptyDetail" class="empty">Chọn một lịch hẹn bên trái để xem chi tiết và trao đổi với Apple Seed.</div><div id="detail" class="hidden"><div class="detail-head"><div><div class="eyebrow">LỊCH HẸN APPLE SEED</div><h2 id="detailName" style="margin:5px 0">—</h2><div>Mã lịch: <span id="detailCode" class="code">—</span></div></div><span id="detailStatus" class="status">—</span></div><div class="info-grid"><div class="info"><small>Thiết bị</small><b id="detailDevice">—</b></div><div class="info"><small>Dịch vụ</small><b id="detailService">—</b></div><div class="info"><small>Ngày hẹn</small><b id="detailDate">—</b></div><div class="info"><small>Khung giờ</small><b id="detailTime">—</b></div><div class="info"><small>Tình trạng máy</small><b id="detailIssue">—</b></div><div class="info"><small>Ghi chú</small><b id="detailNote">—</b></div></div><div class="chat"><h2>💬 Trao đổi với Apple Seed</h2><p class="muted">Tin nhắn được lưu theo đúng lịch hẹn. Bạn có thể trao đổi khi không có mặt tại cửa hàng.</p><div id="messages" class="messages"></div><form id="messageForm" class="send"><textarea id="message" rows="2" maxlength="2000" required placeholder="Nhập nội dung cần trao đổi..."></textarea><button class="btn" type="submit">Gửi tin nhắn</button></form><div id="messageStatus" style="margin-top:10px"></div></div></div></main>
+    <main class="card"><div id="emptyDetail" class="empty">Chọn một lịch hẹn bên trái để xem chi tiết và trao đổi với Apple Seed.</div><div id="detail" class="hidden"><div class="detail-head"><div><div class="eyebrow">LỊCH HẸN APPLE SEED</div><h2 id="detailName" style="margin:5px 0">—</h2><div>Mã lịch: <span id="detailCode" class="code">—</span></div></div><span id="detailStatus" class="status">—</span></div><div class="info-grid"><div class="info"><small>Thiết bị</small><b id="detailDevice">—</b></div><div class="info"><small>Dịch vụ</small><b id="detailService">—</b></div><div class="info"><small>Ngày hẹn</small><b id="detailDate">—</b></div><div class="info"><small>Khung giờ</small><b id="detailTime">—</b></div><div class="info"><small>Tình trạng máy</small><b id="detailIssue">—</b></div><div class="info"><small>Ghi chú</small><b id="detailNote">—</b></div></div><div class="chat"><h2>💬 Trao đổi với Apple Seed</h2><div class="note" style="margin:-6px 0 10px">Mã lịch / mã khách hàng: <b id="chatBookingCode" class="code">—</b></div><p class="muted">Tin nhắn được lưu theo đúng lịch hẹn. Bạn có thể trao đổi khi không có mặt tại cửa hàng.</p><div id="messages" class="messages"></div><form id="messageForm" class="send"><textarea id="message" rows="2" maxlength="2000" required placeholder="Nhập nội dung cần trao đổi..."></textarea><button class="btn" type="submit">Gửi tin nhắn</button></form><div id="messageStatus" style="margin-top:10px"></div></div></div></main>
   </div>
 </section>
 </div>
@@ -47,45 +47,18 @@ function renderList(){
   $('bookingList').innerHTML=bookings.length?bookings.map(b=>{const st=statusMap[b.status]||['Đang xử lý','new'];return `<div class="booking-item ${selected?.id===b.id?'active':''}" onclick="selectBooking(${b.id})"><div class="booking-top"><b class="code">${esc(b.booking_code||('AS-'+String(b.id).padStart(6,'0')))}</b><span class="status ${st[1]}">${st[0]}</span></div><div style="margin-top:7px;font-weight:800">${esc(b.device_model||'—')}</div><div class="muted">${esc(b.service_name||'—')} · ${esc(fmtDate(b.preferred_date||b.appointment_date))}</div></div>`}).join(''):'<div class="empty">Chưa có lịch hẹn nào.</div>';
 }
 async function loadDashboard(){
-  const r=await sb.rpc('member_dashboard');
+  const r=await sb.rpc('member_dashboard_chat_v1');
   if(r.error){showAuthError('Không tải được tài khoản: '+r.error.message);return false}
   if(!r.data?.ok){showAuthError(r.data?.message||'Không tải được tài khoản.');return false}
   const m=r.data.member||{};bookings=r.data.bookings||[];$('profileName').textContent=m.full_name||'Khách hàng';$('profileMeta').innerHTML=`📞 ${esc(m.phone||'')} · ✉️ ${esc(m.email||'')}`;renderList();
-  if(bookings.length){selected=bookings[0];renderList();await renderDetail();startMemberChatSync()}else{selected=null;stopMemberChatSync();$('emptyDetail').classList.remove('hidden');$('detail').classList.add('hidden')}
+  if(bookings.length){selected=bookings[0];renderList();await renderDetail()}else{selected=null;$('emptyDetail').classList.remove('hidden');$('detail').classList.add('hidden')}
   return true;
 }
-window.selectBooking=async id=>{stopMemberChatSync();selected=bookings.find(b=>b.id===id)||null;renderList();await renderDetail();if(selected)startMemberChatSync()};
-async function renderDetail(){if(!selected){$('emptyDetail').classList.remove('hidden');$('detail').classList.add('hidden');return}$('emptyDetail').classList.add('hidden');$('detail').classList.remove('hidden');const b=selected,st=statusMap[b.status]||['Đang xử lý','new'];$('detailName').textContent=b.customer_name||'Khách hàng';$('detailCode').textContent=b.booking_code||'—';$('detailStatus').textContent=st[0];$('detailStatus').className='status '+st[1];$('detailDevice').textContent=b.device_model||'—';$('detailService').textContent=b.service_name||'—';$('detailDate').textContent=fmtDate(b.preferred_date||b.appointment_date);$('detailTime').textContent=b.preferred_time||b.appointment_time||'Không yêu cầu';$('detailIssue').textContent=b.customer_issue||'—';$('detailNote').textContent=b.note||'—';await loadMessages()}
-let memberChatSyncTimer=null;
-let memberChatLastMessageKey='';
-
-function stopMemberChatSync(){
-  if(memberChatSyncTimer){clearInterval(memberChatSyncTimer);memberChatSyncTimer=null;}
-  memberChatLastMessageKey='';
-}
-
-async function syncMemberChatOnce(){
-  if(!selected)return;
-  try{
-    const r=await sb.rpc('member_booking_messages',{p_booking_id:selected.id});
-    if(r.error||!r.data?.ok)return;
-    const list=r.data.messages||[];
-    if(!list.length)return;
-    const last=list[list.length-1];
-    const key=String(last.id)+'|'+String(last.created_at);
-    if(!memberChatLastMessageKey){memberChatLastMessageKey=key;return;}
-    if(key!==memberChatLastMessageKey){memberChatLastMessageKey=key;await loadMessages();}
-  }catch(e){console.warn('Apple Seed member chat sync:',e);}
-}
-
-function startMemberChatSync(){
-  stopMemberChatSync();
-  memberChatSyncTimer=setInterval(syncMemberChatOnce,1000);
-}
-
-async function loadMessages(){if(!selected)return;startMemberChatSync();const r=await sb.rpc('member_booking_messages',{p_booking_id:selected.id});if(r.error||!r.data?.ok){$('messages').innerHTML='<div class="error">'+esc(r.error?.message||r.data?.message||'Không tải được trao đổi.')+'</div>';return}const list=r.data.messages||[];$('messages').innerHTML=list.length?list.map(m=>`<div class="msg ${m.sender_type==='customer'?'customer':'admin'}">${esc(m.message).replace(/\n/g,'<br>')}<small>${m.sender_type==='customer'?'Bạn':'Apple Seed'} · ${new Date(m.created_at).toLocaleString('vi-VN')}</small></div>`).join(''):'<div class="empty">Chưa có trao đổi. Bạn có thể gửi tin nhắn đầu tiên.</div>';$('messages').scrollTop=$('messages').scrollHeight}
-$('messageForm').onsubmit=async e=>{e.preventDefault();if(!selected)return;const text=$('message').value.trim();if(!text)return;const btn=e.submitter;btn.disabled=true;btn.textContent='Đang gửi...';const r=await sb.rpc('member_send_message',{p_booking_id:selected.id,p_message:text});if(r.error||!r.data?.ok){$('messageStatus').innerHTML='<div class="error">'+esc(r.error?.message||r.data?.message||'Không gửi được tin nhắn.')+'</div>'}else{$('message').value='';$('messageStatus').innerHTML='<div class="success">✅ Đã gửi tin nhắn cho Apple Seed.</div>';await loadMessages();setTimeout(()=>$('messageStatus').innerHTML='',2500)}btn.disabled=false;btn.textContent='Gửi tin nhắn'};
-$('logout').onclick=()=>{stopMemberChatSync();memberLogout()};
+window.selectBooking=async id=>{selected=bookings.find(b=>b.id===id)||null;renderList();await renderDetail()};
+async function renderDetail(){if(!selected){$('emptyDetail').classList.remove('hidden');$('detail').classList.add('hidden');return}$('emptyDetail').classList.add('hidden');$('detail').classList.remove('hidden');const b=selected,st=statusMap[b.status]||['Đang xử lý','new'];$('detailName').textContent=b.customer_name||'Khách hàng';$('detailCode').textContent=b.booking_code||'—';$('detailStatus').textContent=st[0];$('detailStatus').className='status '+st[1];$('detailDevice').textContent=b.device_model||'—';$('detailService').textContent=b.service_name||'—';$('detailDate').textContent=fmtDate(b.preferred_date||b.appointment_date);$('detailTime').textContent=b.preferred_time||b.appointment_time||'Không yêu cầu';$('detailIssue').textContent=b.customer_issue||'—';$('detailNote').textContent=b.note||'—';$('chatBookingCode').textContent=b.booking_code||('AS-'+String(b.id).padStart(6,'0'));await loadMessages()}
+async function loadMessages(){if(!selected)return;const r=await sb.rpc('member_booking_messages_chat_v1',{p_booking_id:selected.id});if(r.error||!r.data?.ok){$('messages').innerHTML='<div class="error">'+esc(r.error?.message||r.data?.message||'Không tải được trao đổi.')+'</div>';return}const list=r.data.messages||[];$('messages').innerHTML=list.length?list.map(m=>`<div class="msg ${m.sender_type==='customer'?'customer':'admin'}">${esc(m.message).replace(/\n/g,'<br>')}<small>${m.sender_type==='customer'?'Bạn':'Apple Seed'} · ${new Date(m.created_at).toLocaleString('vi-VN')}</small></div>`).join(''):'<div class="empty">Chưa có trao đổi. Bạn có thể gửi tin nhắn đầu tiên.</div>';$('messages').scrollTop=$('messages').scrollHeight}
+$('messageForm').onsubmit=async e=>{e.preventDefault();if(!selected)return;const text=$('message').value.trim();if(!text)return;const btn=e.submitter;btn.disabled=true;btn.textContent='Đang gửi...';const r=await sb.rpc('member_send_message_chat_v1',{p_booking_id:selected.id,p_message:text});if(r.error||!r.data?.ok){$('messageStatus').innerHTML='<div class="error">'+esc(r.error?.message||r.data?.message||'Không gửi được tin nhắn.')+'</div>'}else{$('message').value='';$('messageStatus').innerHTML='<div class="success">✅ Đã gửi tin nhắn cho Apple Seed.</div>';await loadMessages();setTimeout(()=>$('messageStatus').innerHTML='',2500)}btn.disabled=false;btn.textContent='Gửi tin nhắn'};
+$('logout').onclick=memberLogout;
 $('loginForm').onsubmit=async e=>{e.preventDefault();clearAuthError();const b=e.submitter;b.disabled=true;b.textContent='Đang đăng nhập...';try{await memberSignIn($('loginEmail').value,$('loginPassword').value);$('authBox').classList.add('hidden');$('appBox').classList.remove('hidden');await loadDashboard()}catch(x){showAuthError(x.message||'Đăng nhập không thành công.')}b.disabled=false;b.textContent='🔐 Đăng nhập'};
 $('signupForm').onsubmit=async e=>{e.preventDefault();clearAuthError();const b=e.submitter;b.disabled=true;b.textContent='Đang tạo tài khoản...';try{const d=await memberSignUp($('signupName').value,$('signupPhone').value,$('signupEmail').value,$('signupPassword').value);if(d.session){$('authBox').classList.add('hidden');$('appBox').classList.remove('hidden');await loadDashboard()}else{showAuthError('Tài khoản đã được tạo. Hãy kiểm tra email để xác nhận tài khoản rồi đăng nhập.')}}catch(x){showAuthError(x.message||'Không tạo được tài khoản.')}b.disabled=false;b.textContent='✨ Tạo tài khoản thành viên'};
 (async()=>{const session=await getMemberSession();if(session?.user){$('authBox').classList.add('hidden');$('appBox').classList.remove('hidden');await loadDashboard()}})();
