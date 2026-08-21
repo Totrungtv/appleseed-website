@@ -888,11 +888,13 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
   async function load(){if(!sb){staticFallback();bindProductCards();fixNavigation();return}try{const [t,n,s]=await Promise.all([sb.from('site_theme_settings').select('*').eq('id',1).maybeSingle(),sb.from('site_nav_items').select('label,icon,url,is_active,sort_order').eq('is_active',true).order('sort_order',{ascending:true}),sb.from('site_home_sections').select('*').eq('is_active',true).order('sort_order',{ascending:true}).order('id',{ascending:true})]);if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){const st=document.createElement('style');st.textContent=t.data.custom_css;document.head.appendChild(st)}if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){document.querySelector('.menu').innerHTML=n.data.map(x=>`<a href="${esc(x.url||'#')}"><span class="mi">${esc(x.icon||'')}</span><span>${esc(x.label)}</span></a>`).join('')};fixNavigation();if(s.error||!s.data?.length){staticFallback();bindProductCards();fixNavigation();return}let html='';let contactRendered=false;for(const sec of s.data){if(sec.section_type==='products'){html+=await productsHtml();continue}if(sec.section_type==='map'||sec.section_type==='contact'){if(contactRendered)continue;contactRendered=true;html+=sec.section_type==='contact'?contactHtml():renderSection(sec);continue}let secHtml=renderSection(sec);
 const sectionTitle=(sec.title||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 const sectionKey=(sec.section_key||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+// CHỈ chèn bài viết vào đúng khối "Trang dịch vụ".
+// Không được chèn vào khối Dịch vụ thường (Face ID, Linh kiện...).
 const isServiceArticleSection=
-  sec.section_type==='services' ||
+  sec.section_type==='pages' ||
   sectionTitle.includes('trang dich vu') ||
-  sectionKey.includes('dich-vu') ||
-  sectionKey.includes('dich vu');
+  sectionKey.includes('trang-dich-vu') ||
+  sectionKey.includes('trang dich vu');
 
 if(isServiceArticleSection){
   const cards=await pagesCardsHtml();
