@@ -2,209 +2,114 @@ const sb = window.supabaseClient;
 const $ = id => document.getElementById(id);
 const form = $('bookingForm');
 
-function code(){
+function makeBookingCode(){
   const d = new Date();
   const p = n => String(n).padStart(2,'0');
   return `AS-${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}-${Math.random().toString(36).slice(2,7).toUpperCase()}`;
-}
-
-/* Tạo thông báo thành công nếu HTML chưa có #success */
-function showSuccess(bookingCode){
-  let box = $('success');
-
-  if(!box){
-    box = document.createElement('div');
-    box.id = 'success';
-
-    box.style.cssText = `
-      display:none;
-      margin:18px 0;
-      padding:20px 22px;
-      border-radius:16px;
-      background:linear-gradient(135deg,#ecfdf5,#d1fae5);
-      border:1px solid #86efac;
-      color:#166534;
-      box-shadow:0 8px 24px rgba(22,101,52,.12);
-      font-family:Arial,sans-serif;
-    `;
-
-    form?.parentNode?.insertBefore(box, form);
-  }
-
-  box.innerHTML = `
-    <div style="
-      display:flex;
-      align-items:flex-start;
-      gap:14px;
-    ">
-      <div style="
-        width:42px;
-        height:42px;
-        border-radius:50%;
-        background:#16a34a;
-        color:#fff;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        font-size:24px;
-        font-weight:bold;
-        flex:none;
-      ">✓</div>
-
-      <div>
-        <div style="
-          font-size:18px;
-          font-weight:800;
-          margin-bottom:6px;
-        ">
-          ĐÃ GỬI LỊCH HẸN THÀNH CÔNG
-        </div>
-
-        <div style="
-          font-size:14px;
-          line-height:1.6;
-        ">
-          Apple Seed đã nhận được thông tin của bạn.
-          Nhân viên sẽ liên hệ để xác nhận lịch hẹn.
-        </div>
-
-        <div style="
-          margin-top:10px;
-          display:inline-block;
-          padding:8px 12px;
-          border-radius:10px;
-          background:#fff;
-          border:1px solid #bbf7d0;
-          font-weight:700;
-        ">
-          Mã lịch hẹn: ${bookingCode}
-        </div>
-      </div>
-    </div>
-  `;
-
-  box.style.display = 'block';
-
-  box.scrollIntoView({
-    behavior:'smooth',
-    block:'center'
-  });
 }
 
 form?.addEventListener('submit', async e => {
   e.preventDefault();
 
   const err = $('error');
-  const oldOk = $('success');
+  const ok = $('success');
+  const codeBox = $('successCode');
   const btn = $('submitBtn');
 
-  if(err) err.textContent = '';
+  if (err) err.style.display = 'none';
+  if (ok) ok.style.display = 'none';
 
-  /* Ẩn thông báo thành công cũ */
-  if(oldOk) oldOk.style.display = 'none';
-
-  if(!sb){
-    if(err){
-      err.textContent =
-        'Hệ thống chưa kết nối. Vui lòng gọi 0898888269.';
+  if (!sb) {
+    if (err) {
+      err.textContent = 'Hệ thống chưa kết nối. Vui lòng gọi 0898888269.';
+      err.style.display = 'block';
     }
     return;
   }
 
-  const payload = {
-    booking_code: code(),
+  const sessionResult = await sb.auth.getSession();
+  const session = sessionResult.data?.session;
+  if (!session?.user) {
+    if (err) {
+      err.textContent = 'Bạn cần đăng ký hoặc đăng nhập thành viên trước khi đặt lịch.';
+      err.style.display = 'block';
+      err.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    return;
+  }
 
+  const bookingCode = makeBookingCode();
+
+  const payload = {
+    booking_code: bookingCode,
     customer_name: $('name')?.value.trim() || '',
     phone: $('phone')?.value.trim() || '',
     device_model: $('model')?.value.trim() || '',
     service_name: $('service')?.value.trim() || '',
     customer_issue: $('issue')?.value.trim() || '',
-
-    /* ĐÚNG TÊN CỘT TRONG repair_bookings */
     appointment_date: $('date')?.value || null,
     appointment_time: $('time')?.value || null,
-
     note: $('note')?.value.trim() || null,
-
-    status: 'pending'
+    status: 'pending',
+    member_id: session.user.id
   };
 
-  if(
+  if (
     !payload.customer_name ||
     !payload.phone ||
     !payload.device_model ||
     !payload.service_name ||
     !payload.customer_issue
-  ){
-    if(err){
-      err.textContent =
-        'Vui lòng nhập đủ các trường bắt buộc.';
-    }
-    return;
-  }
-
-  if(btn){
-    btn.disabled = true;
-    btn.textContent = '⏳ Đang gửi lịch hẹn…';
-  }
-
-  try {
-
-  const r = await sb
-    .from('repair_bookings')
-    .insert(payload);
-
-  if(r.error){
-    console.error('BOOKING ERROR:', r.error);
-
-    if(err){
-      err.textContent =
-        'Chưa gửi được lịch hẹn: ' + r.error.message;
+  ) {
+    if (err) {
+      err.textContent = 'Vui lòng nhập đủ các trường bắt buộc.';
       err.style.display = 'block';
     }
-
-    if(btn){
-      btn.disabled = false;
-      btn.textContent = '📅 Gửi lịch hẹn';
-    }
-
     return;
   }
 
-   // =========================
-  // GỬI THÀNH CÔNG
-  // =========================
+  btn.disabled = true;
+  btn.textContent = '⏳ Đang gửi lịch...';
 
-  const bookingCode = payload.booking_code;
+  try {
+    /*
+      Không dùng .select().single() ở đây.
+      Public chỉ có quyền INSERT; SELECT đang dành cho Admin.
+      Dùng .insert(payload) để tránh lỗi quyền khi lấy lại dòng vừa thêm.
+    */
+    const r = await sb
+      .from('repair_bookings')
+      .insert(payload);
 
-  showSuccess(bookingCode);
+    if (r.error) throw r.error;
 
-  form.reset();
-
-  if(btn){
-    btn.disabled = false;
-    btn.textContent = '✓ Đã gửi lịch hẹn';
-  }
-
-  setTimeout(() => {
-    if(btn){
-      btn.textContent = '📅 Gửi lịch hẹn';
+    // GỬI THÀNH CÔNG -> hiện thông báo xanh + mã lịch
+    if (codeBox) codeBox.textContent = bookingCode;
+    if (ok) {
+      ok.innerHTML = `
+        <b>✅ GỬI LỊCH HẸN THÀNH CÔNG!</b><br>
+        Mã lịch của bạn: <span id="successCode" class="code">${bookingCode}</span><br>
+        Apple Seed đã nhận được thông tin và sẽ liên hệ lại để xác nhận.
+      `;
+      ok.style.display = 'block';
+      ok.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
-  }, 3000);
 
-} catch(error){
+    form.reset();
 
-  console.error('BOOKING EXCEPTION:', error);
+    btn.disabled = false;
+    btn.textContent = '📅 Gửi lịch hẹn';
 
-  if(err){
-    err.textContent =
-      'Có lỗi kết nối. Vui lòng thử lại hoặc gọi 0898888269.';
-    err.style.display = 'block';
-  }
+  } catch (e) {
+    console.error('BOOKING ERROR:', e);
 
-  if(btn){
+    if (err) {
+      err.textContent = 'Chưa gửi được lịch hẹn. Vui lòng thử lại hoặc gọi 0898888269.';
+      err.style.display = 'block';
+      err.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
     btn.disabled = false;
     btn.textContent = '📅 Gửi lịch hẹn';
   }
-}
 });
