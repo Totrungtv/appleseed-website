@@ -383,16 +383,45 @@ async function loadProductGallery(productId){
 }
 
 function renderProductGallery(items=[]){
-  const box=$('productGalleryPreview'); if(!box)return;
-  box.innerHTML=(items||[]).map(x=>`<div class="product-gallery-card">
-    <img src="${esc(x.image_url||'')}" class="${x.is_primary?'gallery-primary':''}"
-      alt="Ảnh sản phẩm"
-      onerror="this.onerror=null;this.removeAttribute('src');this.alt='❌ Ảnh lỗi / URL không truy cập được';this.style.objectFit='contain';this.style.padding='10px';">
-    <button type="button" class="btn2"
-      onclick="setGalleryPrimary(${x.id},${x.product_id})">⭐ ${x.is_primary?'Ảnh chính':'Đặt làm ảnh chính'}</button>
-    <button type="button" class="btn2 danger"
-      onclick="deleteGalleryImage(${x.id},${x.product_id},${JSON.stringify(x.image_path||'')})">✕ Xóa ảnh</button>
-  </div>`).join('') || '<div class="small">Chưa có ảnh phụ.</div>';
+  const box=$('productGalleryPreview');
+  if(!box)return;
+  box.innerHTML='';
+  const list=Array.isArray(items)?items:[];
+  if(!list.length){
+    box.innerHTML='<div class="small">Chưa có ảnh phụ.</div>';
+    return;
+  }
+  list.forEach(x=>{
+    const card=document.createElement('div');
+    card.className='product-gallery-card';
+
+    const img=document.createElement('img');
+    img.src=x.image_url||'';
+    img.alt='Ảnh sản phẩm';
+    if(x.is_primary)img.classList.add('gallery-primary');
+    img.onerror=()=>{
+      img.onerror=null;
+      img.removeAttribute('src');
+      img.alt='❌ Ảnh lỗi / URL không truy cập được';
+      img.style.objectFit='contain';
+      img.style.padding='10px';
+    };
+
+    const primary=document.createElement('button');
+    primary.type='button';
+    primary.className='btn2';
+    primary.textContent=x.is_primary?'⭐ Ảnh chính':'⭐ Đặt làm ảnh chính';
+    primary.addEventListener('click',()=>window.setGalleryPrimary(x.id,x.product_id));
+
+    const del=document.createElement('button');
+    del.type='button';
+    del.className='btn2 danger';
+    del.textContent='✕ Xóa ảnh';
+    del.addEventListener('click',()=>window.deleteGalleryImage(x.id,x.product_id,x.image_path||''));
+
+    card.append(img,primary,del);
+    box.appendChild(card);
+  });
 }
 
 let pendingGalleryFiles=[];
@@ -572,39 +601,35 @@ window.setGalleryPrimary=async(id,productId)=>{
 };
 
 window.deleteGalleryImage=async(id,productId,path)=>{
-  if(!confirm('Xóa ảnh này?'))return;
+  if(!id||!productId){status('Thiếu ID ảnh hoặc sản phẩm.',true);return;}
+  if(!confirm('Xóa ảnh này khỏi sản phẩm?'))return;
 
-  const r=await sb.from('product_images').delete().eq('id',id);
-  if(r.error){
-    status('Xóa ảnh lỗi: '+r.error.message,true);
-    return;
-  }
+  try{
+    status('⏳ Đang xóa ảnh...');
+    const r=await sb.from('product_images').delete().eq('id',id).eq('product_id',productId);
+    if(r.error)throw r.error;
 
-  const verify=await sb.from('product_images')
-    .select('id').eq('id',id).maybeSingle();
+    const verify=await sb.from('product_images').select('id,is_primary').eq('id',id).maybeSingle();
+    if(verify.error)throw verify.error;
+    if(verify.data){throw new Error('Bản ghi vẫn còn trong product_images. Kiểm tra RLS DELETE.');}
 
-  if(verify.error){
-    status('Đã xóa nhưng không kiểm tra lại được: '+verify.error.message,true);
-    return;
-  }
-
-  if(verify.data){
-    status('Xóa ảnh chưa thành công: bản ghi vẫn còn trong product_images.',true);
-    return;
-  }
-
-  if(path){
-    const sr=await sb.storage.from('site-images').remove([path]);
-    if(sr.error){
-      status('Đã xóa DB nhưng xóa file Storage lỗi: '+sr.error.message,true);
+    if(path){
+      const sr=await sb.storage.from('site-images').remove([path]);
+      if(sr.error){
+        status('⚠️ Đã xóa DB nhưng Storage chưa xóa: '+sr.error.message,true);
+      }else{
+        status('✅ Đã xóa ảnh khỏi DB và Storage.');
+      }
     }else{
-      status('✅ Đã xóa ảnh khỏi DB và Storage.');
+      status('✅ Đã xóa ảnh khỏi DB.');
     }
-  }else{
-    status('✅ Đã xóa ảnh khỏi DB.');
-  }
 
-  renderProductGallery(await loadProductGallery(productId));
+    const remaining=await loadProductGallery(productId);
+    renderProductGallery(remaining);
+  }catch(err){
+    console.error('deleteGalleryImage',err);
+    status('❌ Xóa ảnh lỗi: '+(err?.message||String(err)),true);
+  }
 };
 
 async function loadProducts(){
