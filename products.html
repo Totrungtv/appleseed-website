@@ -7,7 +7,7 @@
 <meta name="description" content="Sản phẩm Apple Seed Trà Vinh">
 <link rel="stylesheet" href="style.css">
 <style>
-.products-page{max-width:1180px;margin:0 auto;padding:72px 24px 90px}
+.products-page{width:100%;max-width:1180px;margin:0 auto;padding:72px 24px 90px;box-sizing:border-box}
 .products-head{text-align:center;margin-bottom:42px}
 .products-head .kicker{color:#22b8df;font-weight:900;letter-spacing:2px;font-size:13px}
 .products-head h1{margin:10px 0 0;font-size:40px}
@@ -94,9 +94,63 @@
     }[c]));
   }
 
+  function cleanStoragePath(value){
+    if(!value) return "";
+
+    let v=String(value).trim();
+    if(!v) return "";
+
+    // Nếu database lưu nguyên URL Supabase thì lấy phần path trong bucket.
+    try{
+      if(/^https?:\\/\\//i.test(v)){
+        const u=new URL(v);
+        const marker="/storage/v1/";
+        const i=u.pathname.indexOf(marker);
+
+        if(i>=0){
+          let p=u.pathname.slice(i+marker.length);
+
+          p=p.replace(/^render\\/image\\/public\\//,"");
+          p=p.replace(/^object\\/public\\//,"");
+          p=p.replace(/^object\\/sign\\/[^/]+\\//,"");
+
+          if(p.startsWith(BUCKET+"/")){
+            return decodeURIComponent(p.slice(BUCKET.length+1));
+          }
+        }
+
+        // URL ngoài Supabase: giữ nguyên URL.
+        return v;
+      }
+    }catch(e){}
+
+    // Nếu lỡ lưu "site-images/ten-file.jpg" thì bỏ tên bucket.
+    if(v.startsWith(BUCKET+"/")) v=v.slice(BUCKET.length+1);
+
+    // Một số dữ liệu có dấu "/" đầu.
+    v=v.replace(/^\\/+/, "");
+
+    return v;
+  }
+
   function pathUrl(path){
     if(!path || !sb)return "";
-    return sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl || "";
+    const clean=cleanStoragePath(path);
+
+    // cleanStoragePath trả về URL ngoài nếu giá trị vốn đã là URL.
+    if(/^https?:\\/\\//i.test(clean)) return clean;
+
+    return sb.storage.from(BUCKET).getPublicUrl(clean).data.publicUrl || "";
+  }
+
+  function imageUrl(value){
+    if(!value) return "";
+    const v=String(value).trim();
+    if(!v) return "";
+
+    if(/^https?:\\/\\//i.test(v)) return v;
+
+    return pathUrl(v);
   }
 
   function price(v){
@@ -109,10 +163,14 @@
     const seen=new Set();
 
     const add=(url,path,primary)=>{
-      const u=url || pathUrl(path);
+      const u=imageUrl(url) || pathUrl(path);
       if(!u || seen.has(u))return;
       seen.add(u);
-      result.push({url:u,path:path||"",primary:!!primary});
+      result.push({
+        url:u,
+        path:cleanStoragePath(path || url),
+        primary:!!primary
+      });
     };
 
     add(product.image_url,product.image_path,true);
@@ -125,13 +183,71 @@
     return result;
   }
 
+  async function signedUrl(path){
+    const clean=cleanStoragePath(path);
+    if(!clean || !sb || /^https?:\\/\\//i.test(clean)) return "";
+
+    try{
+      const r=await sb.storage.from(BUCKET).createSignedUrl(clean,3600);
+      return r?.data?.signedUrl || "";
+    }catch(e){
+      console.warn("Signed image:",e);
+      return "";
+    }
+  }
+
+  async function tryImageFallback(img){
+    if(!img || img.dataset.fallbackTried==="1") return;
+    img.dataset.fallbackTried="1";
+
+    const original=img.getAttribute("src") || "";
+    const path=img.dataset.path || "";
+
+    // 1) Nếu đang dùng render/image URL, thử object/public URL.
+    if(original.includes("/storage/v1/render/image/public/")){
+      const fallback=original.replace(
+        "/storage/v1/render/image/public/",
+        "/storage/v1/object/public/"
+      );
+
+      img.onerror=null;
+      img.src=fallback+"?v="+Date.now();
+      img.dataset.fallbackTried="2";
+      return;
+    }
+
+    // 2) Nếu bucket private hoặc public URL không đọc được,
+    // dùng signed URL cho đúng file đã upload.
+    if(path){
+      const signed=await signedUrl(path);
+      if(signed){
+        img.onerror=null;
+        img.src=signed;
+        return;
+      }
+    }
+
+    img.onerror=null;
+    img.style.display="none";
+    img.parentElement.classList.add("no-image");
+    if(!img.parentElement.textContent.trim()){
+      img.parentElement.textContent="🛍️";
+    }
+  }
+
+  function bindImageFallbacks(root=document){
+    root.querySelectorAll("img[data-storage-path]").forEach(img=>{
+      img.addEventListener("error",()=>tryImageFallback(img),{once:true});
+    });
+  }
+
   let currentImages=[];
 
   function openProduct(product,images){
     currentImages=images||[];
     const first=currentImages[0]?.url||"";
     $("modalMain").innerHTML=first
-      ? `<img src="${esc(first)}" alt="${esc(product.name)}">`
+      ? `<img src="${esc(first)}" data-storage-path="${esc(currentImages[0]?.path||"")}" alt="${esc(product.name)}">`
       : `<div class="product-photo no-image">🛍️</div>`;
 
     $("modalInfo").innerHTML=`
@@ -143,14 +259,17 @@
 
     $("modalThumbs").innerHTML=currentImages.map((x,i)=>`
       <button type="button" data-thumb="${i}">
-        <img src="${esc(x.url)}" alt="Ảnh ${i+1}">
+        <img src="${esc(x.url)}" data-storage-path="${esc(x.path||"")}" alt="Ảnh ${i+1}">
       </button>
     `).join("");
+
+    bindImageFallbacks($("modalMain"));
+    bindImageFallbacks($("modalThumbs"));
 
     $("modalThumbs").querySelectorAll("[data-thumb]").forEach(b=>{
       b.onclick=()=>{
         const x=currentImages[Number(b.dataset.thumb)];
-        if(x) $("modalMain").innerHTML=`<img src="${esc(x.url)}" alt="${esc(product.name)}">`;
+        if(x){ $("modalMain").innerHTML=`<img src="${esc(x.url)}" data-storage-path="${esc(x.path||"")}" alt="${esc(product.name)}">`; bindImageFallbacks($("modalMain")); }
       };
     });
 
@@ -218,8 +337,7 @@
       return `<article class="product-card-public" data-product-id="${product.id}">
         <div class="product-photo ${image?"":"no-image"}">
           ${image
-            ? `<img src="${esc(image)}" alt="${esc(product.name)}" loading="lazy"
-                onerror="this.onerror=null;this.src='';this.parentElement.classList.add('no-image');this.parentElement.textContent='🛍️';">`
+            ? `<img src="${esc(image)}" data-storage-path="${esc(images[0]?.path||"")}" alt="${esc(product.name)}" loading="lazy">`
             : "🛍️"}
         </div>
         <div class="product-body">
@@ -231,6 +349,8 @@
         </div>
       </article>`;
     }).join("");
+
+    bindImageFallbacks($("productsGrid"));
 
     $("productsGrid").querySelectorAll("[data-product-id]").forEach(card=>{
       card.onclick=()=>{
