@@ -61,6 +61,13 @@ label{font-weight:700;font-size:14px;display:block}input,textarea,select{width:1
 
 .editor-shell{border:1px solid #d0d5dd;border-radius:12px;background:#fff;overflow:hidden;position:relative}.editor-topbar{display:flex;justify-content:space-between;padding:9px 12px;background:#f8fafc;border-bottom:1px solid #e4e7ec;font-size:13px}.editor-count{color:#667085}.editor-shell .native-editor{border:0;border-radius:0;min-height:320px;padding:18px;line-height:1.75;font-size:16px;outline:none;overflow:auto}.editor-shell .native-editor:empty:before{content:attr(data-placeholder);color:#98a2b3}.editor-shell .native-editor img{max-width:100%;height:auto;border-radius:10px}.editor-shell .native-editor table{width:100%;border-collapse:collapse;margin:14px 0}.editor-shell .native-editor td,.editor-shell .native-editor th{border:1px solid #d0d5dd;padding:9px;min-width:70px}.editor-shell .native-editor blockquote{border-left:4px solid #2563eb;margin:14px 0;padding:10px 15px;background:#eff6ff}.editor-shell .native-editor pre{background:#111827;color:#fff;padding:14px;border-radius:10px;overflow:auto}.editor-shell .native-editor hr{border:0;border-top:1px solid #d0d5dd;margin:20px 0}.native-toolbar{display:flex;flex-wrap:wrap;gap:5px;padding:9px;background:#f8fafc;border-top:1px solid #e4e7ec}.native-toolbar button,.native-toolbar select{border:1px solid #d0d5dd;background:#fff;border-radius:7px;padding:7px 9px;cursor:pointer;font-weight:700;color:#344054}.native-toolbar button:hover,.native-toolbar select:hover{background:#f2f4f7}.native-toolbar select{max-width:130px}.color-tool{display:flex;align-items:center;gap:3px;border:1px solid #d0d5dd;background:#fff;border-radius:7px;padding:4px 7px;font-weight:800}.color-tool input{width:24px;height:24px;margin:0;padding:0;border:0}.native-icon-picker{position:absolute;left:10px;bottom:58px;z-index:1000;display:grid;grid-template-columns:repeat(10,34px);gap:3px;background:#fff;border:1px solid #d0d5dd;border-radius:12px;padding:8px;box-shadow:0 12px 30px rgba(0,0,0,.16);max-width:390px}.native-icon-picker[hidden]{display:none!important}.native-icon-picker button{border:0;background:#fff;border-radius:7px;font-size:20px;padding:5px;cursor:pointer}.native-upload-status{font-size:12px;color:#475467;padding:6px 10px}.editor-source{width:100%;min-height:320px;border:0;padding:18px;font:13px/1.6 Consolas,monospace;background:#111827;color:#f8fafc;resize:vertical}.editor-video{position:relative;aspect-ratio:16/9;margin:14px 0}.editor-video iframe{width:100%;height:100%;border:0;border-radius:10px}.editor-fullscreen{position:fixed!important;inset:10px!important;z-index:99999!important;box-shadow:0 20px 60px rgba(0,0,0,.3)}.editor-fullscreen .native-editor{min-height:calc(100vh - 150px)}.editor-preview-modal{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:100000;display:flex;align-items:center;justify-content:center;padding:20px}.editor-preview-box{background:#fff;border-radius:16px;width:min(900px,100%);max-height:90vh;overflow:auto}.editor-preview-head{position:sticky;top:0;display:flex;justify-content:space-between;padding:13px 16px;background:#fff;border-bottom:1px solid #e4e7ec}.editor-preview-content{padding:28px;line-height:1.8}.editor-preview-content img{max-width:100%;height:auto;border-radius:10px}.editor-preview-content table{width:100%;border-collapse:collapse}.editor-preview-content td,.editor-preview-content th{border:1px solid #d0d5dd;padding:9px}
 <style>.image-main-row{display:flex;gap:8px;align-items:center}.image-main-row input:first-child{flex:1}.main-image-preview img{margin-top:8px;max-width:180px;max-height:120px;object-fit:cover;border-radius:10px;border:1px solid #e4e7ec}.main-image-preview{min-height:4px}</style>
+<style>
+#productGalleryPending .product-gallery-card{
+  display:inline-flex;vertical-align:top;flex-direction:column;gap:8px;
+  width:170px;margin:8px;
+}
+</style>
+
 </head>
 <body>
 <div id="loginView" class="panel login">
@@ -264,6 +271,7 @@ label{font-weight:700;font-size:14px;display:block}input,textarea,select{width:1
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
 <script src="supabase-config.js"></script>
 <script>
 let sb = window.supabaseClient;
@@ -413,11 +421,52 @@ $("clearProductGallery").onclick=()=>{
   const st=$("productGalleryStatus");if(st)st.textContent='Đã xóa ảnh chờ.';
 };
 function renderPendingGallery(){
-  const box=$("productGalleryPending");if(!box)return;
-  box.innerHTML=pendingGalleryFiles.length
-    ? `<div class="small"><b>Ảnh chờ upload: ${pendingGalleryFiles.length}</b></div>`+pendingGalleryFiles.map((f,i)=>`<div class="product-gallery-card"><img src="${URL.createObjectURL(f)}" alt="Ảnh chờ"><div class="small">${esc(f.name)} · ${(f.size/1024/1024).toFixed(1)} MB</div><button type="button" class="btn2 danger" onclick="pendingGalleryFiles.splice(${i},1);renderPendingGallery()">✕ Bỏ ảnh</button></div>`).join('')
-    : '';
+  const box=$("productGalleryPending"); if(!box)return;
+  if(!pendingGalleryFiles.length){ box.innerHTML=''; return; }
+
+  box.innerHTML='<div class="small"><b>Ảnh chờ upload: '+pendingGalleryFiles.length+'</b></div>';
+
+  pendingGalleryFiles.forEach((f,i)=>{
+    const card=document.createElement('div');
+    card.className='product-gallery-card';
+
+    const img=document.createElement('img');
+    img.alt='Ảnh chờ';
+    img.style.cssText='width:150px;height:150px;object-fit:cover;display:block;border-radius:10px;background:#f3f4f6;border:1px solid #e5e7eb';
+
+    const meta=document.createElement('div');
+    meta.className='small';
+    meta.textContent=f.name+' · '+(f.size/1024/1024).toFixed(1)+' MB';
+
+    const btn=document.createElement('button');
+    btn.type='button';
+    btn.className='btn2 danger';
+    btn.textContent='✕ Bỏ ảnh';
+    btn.onclick=()=>{ pendingGalleryFiles.splice(i,1); renderPendingGallery(); };
+
+    card.appendChild(img);
+    card.appendChild(meta);
+    card.appendChild(btn);
+    box.appendChild(card);
+
+    const isHeic=/\.(heic|heif)$/i.test(f.name) || /image\/(heic|heif)/i.test(f.type||'');
+
+    if(isHeic && typeof heic2any==='function'){
+      heic2any({blob:f,type:'image/jpeg',quality:.85})
+        .then(blob=>{
+          const b=Array.isArray(blob)?blob[0]:blob;
+          img.src=URL.createObjectURL(b);
+        })
+        .catch(()=>{
+          img.alt='Không xem trước được HEIC';
+          img.style.objectFit='contain';
+        });
+    }else{
+      img.src=URL.createObjectURL(f);
+    }
+  });
 }
+
 async function uploadGalleryFile(file){const safe=file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,'-'),path=`products-gallery/${Date.now()}-${Math.random().toString(36).slice(2,8)}-${safe}`;const r=await sb.storage.from('site-images').upload(path,file,{cacheControl:'31536000',upsert:false,contentType:file.type});if(r.error)throw r.error;return {path,url:sb.storage.from('site-images').getPublicUrl(path).data.publicUrl}}
 window.setGalleryPrimary=async(id,productId)=>{const g=await loadProductGallery(productId);const target=g.find(x=>x.id===id);if(!target)return;const old=g.filter(x=>x.id!==id&&x.is_primary);if(old.length)await sb.from('product_images').update({is_primary:false}).in('id',old.map(x=>x.id));const r=await sb.from('product_images').update({is_primary:true}).eq('id',id);if(r.error){status('Không đặt được ảnh chính: '+r.error.message,true);return}const oldMain=$("productImage").value;const oldPath=$("productImagePath").value;const up=await sb.from('products').update({image_url:target.image_url,image_path:target.image_path||null}).eq('id',productId);if(up.error){status('Đổi ảnh chính lỗi: '+up.error.message,true);return}$("productImage").value=target.image_url;$("productImagePath").value=target.image_path||'';previewMainImage(target.image_url);renderProductGallery(await loadProductGallery(productId));status('⭐ Đã đặt ảnh làm ảnh chính.')};
 window.deleteGalleryImage=async(id,productId,path)=>{if(!confirm('Xóa ảnh này?'))return;const r=await sb.from('product_images').delete().eq('id',id);if(r.error){status('Xóa ảnh lỗi: '+r.error.message,true);return}if(path)await sb.storage.from('site-images').remove([path]);renderProductGallery(await loadProductGallery(productId));status('Đã xóa ảnh.')};
