@@ -47,7 +47,7 @@ function renderList(){
   $('bookingList').innerHTML=bookings.length?bookings.map(b=>{const st=statusMap[b.status]||['Đang xử lý','new'];return `<div class="booking-item ${selected?.id===b.id?'active':''}" onclick="selectBooking(${b.id})"><div class="booking-top"><b class="code">${esc(b.booking_code||('AS-'+String(b.id).padStart(6,'0')))}</b><span class="status ${st[1]}">${st[0]}</span></div><div style="margin-top:7px;font-weight:800">${esc(b.device_model||'—')}</div><div class="muted">${esc(b.service_name||'—')} · ${esc(fmtDate(b.preferred_date||b.appointment_date))}</div></div>`}).join(''):'<div class="empty">Chưa có lịch hẹn nào.</div>';
 }
 async function loadDashboard(){
-  const r=await sb.rpc('member_dashboard');
+  const r=await sb.rpc('member_dashboard_v2');
   if(r.error){showAuthError('Không tải được tài khoản: '+r.error.message);return false}
   if(!r.data?.ok){showAuthError(r.data?.message||'Không tải được tài khoản.');return false}
   const m=r.data.member||{};bookings=r.data.bookings||[];$('profileName').textContent=m.full_name||'Khách hàng';$('profileMeta').innerHTML=`📞 ${esc(m.phone||'')} · ✉️ ${esc(m.email||'')}`;renderList();
