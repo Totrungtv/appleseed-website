@@ -74,155 +74,162 @@ $('chatClose').onclick=()=>{$('chatModal').classList.add('hidden');chatBooking=n
 $('chatModal').onclick=e=>{if(e.target.id==='chatModal')$('chatModal').classList.add('hidden')};
 $('chatSend').onsubmit=async e=>{e.preventDefault();if(!chatBooking)return;const text=$('chatInput').value.trim();if(!text)return;const btn=e.submitter;btn.disabled=true;btn.textContent='Đang gửi...';const r=await sb.from('repair_booking_messages').insert({booking_id:chatBooking.id,sender_type:'admin',message:text});if(r.error)alert('Không gửi được: '+r.error.message);else{$('chatInput').value='';await loadChatMessages();await loadNotifications();}btn.disabled=false;btn.textContent='Gửi trả lời';};
 
-// Apple Seed: đồng bộ chat realtime giữa khách và admin.
 // ======================================================
-// APPLE SEED CHAT SYNC - KHÁCH
-// Realtime + fallback kiểm tra mỗi 1 giây
-// ======================================================
+  // APPLE SEED CHAT SYNC - ADMIN
+  // Fallback polling mỗi 1 giây + Realtime nếu Supabase hỗ trợ
+  // ======================================================
 
-let chatRealtimeChannel = null;
-let chatSyncTimer = null;
-let chatLastMessageId = null;
+  let chatRealtimeChannel = null;
+  let chatSyncTimer = null;
+  let chatLastMessageId = null;
 
-function startChatRealtime(){
+  function stopChatSync(){
+    if(chatSyncTimer){
+      clearInterval(chatSyncTimer);
+      chatSyncTimer = null;
+    }
 
-  if(chatRealtimeChannel){
+    if(chatRealtimeChannel){
+      try{ sb.removeChannel(chatRealtimeChannel); }catch(e){}
+      chatRealtimeChannel = null;
+    }
 
-    sb.removeChannel(
-      chatRealtimeChannel
-    );
-
-    chatRealtimeChannel = null;
+    chatLastMessageId = null;
   }
 
-  if(chatSyncTimer){
+  function startChatSync(){
+    stopChatSync();
 
-    clearInterval(
-      chatSyncTimer
-    );
+    // Realtime: nếu publication/RLS đã bật thì nhận ngay.
+    try{
+      chatRealtimeChannel = sb
+        .channel('apple-seed-admin-chat-' + Date.now())
+        .on(
+          'postgres_changes',
+          {
+            event:'INSERT',
+            schema:'public',
+            table:'repair_booking_messages'
+          },
+          async payload => {
+            const row = payload?.new || {};
 
-    chatSyncTimer = null;
-  }
+            if(
+              chatBooking &&
+              String(row.booking_id) === String(chatBooking.id)
+            ){
+              chatLastMessageId = String(row.id || '');
+              await loadChatMessages();
+            }
 
+            await loadNotifications();
+          }
+        )
+        .subscribe(status => {
+          console.log('APPLE SEED ADMIN CHAT:', status);
+        });
+    }catch(e){
+      console.warn('Realtime admin không khả dụng:', e);
+    }
 
-  // ------------------------------------------
-  // REALTIME
-  // ------------------------------------------
-
-  chatRealtimeChannel = sb
-    .channel(
-      'apple-seed-booking-chat-member-' +
-      Date.now()
-    )
-
-    .on(
-      'postgres_changes',
-      {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'repair_booking_messages'
-      },
-      async payload => {
-
-        console.log(
-          'CHAT MEMBER REALTIME:',
-          payload
-        );
-
-        const row =
-          payload.new || {};
-
-        if(
-          selected &&
-          String(row.booking_id) ===
-          String(selected.id)
-        ){
-
-          await loadMessages();
-        }
-      }
-    )
-
-    .subscribe(status => {
-
-      console.log(
-        'APPLE SEED MEMBER CHAT:',
-        status
-      );
-
-    });
-
-
-  // ------------------------------------------
-  // FALLBACK 1 GIÂY
-  // ------------------------------------------
-
-  chatSyncTimer = setInterval(
-    async () => {
-
-      if(!selected) return;
+    // Fallback chắc chắn: kiểm tra DB mỗi 1 giây.
+    chatSyncTimer = setInterval(async () => {
+      if(!chatBooking) return;
 
       try{
-
         const r = await sb
           .from('repair_booking_messages')
-          .select(
-            'id,booking_id,sender_type,message,created_at'
-          )
-          .eq(
-            'booking_id',
-            selected.id
-          )
-          .order(
-            'created_at',
-            {
-              ascending:false
-            }
-          )
+          .select('id,booking_id,sender_type,message,created_at')
+          .eq('booking_id', chatBooking.id)
+          .order('created_at',{ascending:false})
           .limit(1);
 
-        if(r.error) return;
+        if(r.error || !r.data?.length) return;
 
-        const latest =
-          r.data?.[0];
-
-        if(!latest) return;
-
-        const newId =
-          String(latest.id);
+        const latest = r.data[0];
+        const latestId = String(latest.id);
 
         if(!chatLastMessageId){
-
-          chatLastMessageId =
-            newId;
-
+          chatLastMessageId = latestId;
           return;
         }
 
-        if(
-          newId !==
-          chatLastMessageId
-        ){
-
-          chatLastMessageId =
-            newId;
-
-          await loadMessages();
+        if(latestId !== chatLastMessageId){
+          chatLastMessageId = latestId;
+          await loadChatMessages();
+          await loadNotifications();
         }
-
       }catch(e){
+        console.warn('ADMIN CHAT SYNC ERROR:', e);
+      }
+    },1000);
+  }
 
-        console.warn(
-          'MEMBER CHAT SYNC:',
-          e
-        );
+  window.openChat=async id=>{
+    const b=all.find(x=>String(x.id)===String(id));
+    if(!b)return;
 
+    chatBooking=b;
+    chatLastMessageId=null;
+
+    $('chatMeta').textContent=
+      `${b.customer_name||'Khách'} · ${b.phone||''} · ${b.booking_code||''}`;
+
+    $('chatModal').classList.remove('hidden');
+    $('chatInput').value='';
+
+    await loadChatMessages();
+    startChatSync();
+  };
+
+  $('chatClose').onclick=()=>{
+    $('chatModal').classList.add('hidden');
+    chatBooking=null;
+    stopChatSync();
+  };
+
+  $('chatModal').onclick=e=>{
+    if(e.target.id==='chatModal'){
+      $('chatModal').classList.add('hidden');
+      chatBooking=null;
+      stopChatSync();
+    }
+  };
+
+  $('chatSend').onsubmit=async e=>{
+    e.preventDefault();
+    if(!chatBooking)return;
+
+    const text=$('chatInput').value.trim();
+    if(!text)return;
+
+    const btn=e.submitter;
+    btn.disabled=true;
+    btn.textContent='Đang gửi...';
+
+    try{
+      const r=await sb
+        .from('repair_booking_messages')
+        .insert({
+          booking_id:chatBooking.id,
+          sender_type:'admin',
+          message:text
+        });
+
+      if(r.error){
+        alert('Không gửi được: '+r.error.message);
+        return;
       }
 
-    },
-    1000
-  );
-}
+      $('chatInput').value='';
+      await loadChatMessages();
+      await loadNotifications();
 
-$('search').oninput=render;$('refresh').onclick=async()=>{await load();await loadNotifications();};$('logout').onclick=async()=>{if(chatRealtimeChannel)sb.removeChannel(chatRealtimeChannel);await sb.auth.signOut();location.reload()};$('loginBtn').onclick=async()=>{const r=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(r.error){$('msg').textContent=r.error.message;return}auth()};async function auth(){if(!sb){$('msg').textContent='Thiếu supabase-config.js';return}const r=await sb.auth.getSession();if(r.data.session){$('login').classList.add('hidden');$('app').classList.remove('hidden');await load();await loadNotifications();startChatRealtime()}}auth();
+    }finally{
+      btn.disabled=false;
+      btn.textContent='Gửi trả lời';
+    }
+  };
+
+  $('search').oninput=render;$('refresh').onclick=async()=>{await load();await loadNotifications();};$('logout').onclick=async()=>{stopChatSync();await sb.auth.signOut();location.reload()};$('loginBtn').onclick=async()=>{const r=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(r.error){$('msg').textContent=r.error.message;return}auth()};async function auth(){if(!sb){$('msg').textContent='Thiếu supabase-config.js';return}const r=await sb.auth.getSession();if(r.data.session){$('login').classList.add('hidden');$('app').classList.remove('hidden');await load();await loadNotifications()}}auth();
 </script></body></html>
