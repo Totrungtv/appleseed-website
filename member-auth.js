@@ -179,37 +179,23 @@ async function memberSignIn(email, password){
 
   memberCheckSB();
 
-
-  const cleanEmail = String(
-    email || ''
-  ).trim();
-
+  const cleanEmail = String(email || '').trim();
 
   if(!cleanEmail){
     throw new Error('Vui lòng nhập email.');
   }
 
-
   if(!password){
     throw new Error('Vui lòng nhập mật khẩu.');
   }
 
-
   const r = await memberSB.auth.signInWithPassword({
-
     email: cleanEmail,
-
     password: password
-
   });
 
-
   if(r.error){
-
-    console.error(
-      'memberSignIn error:',
-      r.error
-    );
+    console.error('memberSignIn error:', r.error);
 
     throw new Error(
       r.error.message ||
@@ -217,9 +203,7 @@ async function memberSignIn(email, password){
     );
   }
 
-
   const user = r.data?.user;
-
 
   if(!user){
     throw new Error(
@@ -227,21 +211,13 @@ async function memberSignIn(email, password){
     );
   }
 
-
-  /* Lấy thông tin profile hiện có */
-  let profileName =
-    user.user_metadata?.full_name || '';
-
-  let profilePhone =
-    user.user_metadata?.phone ||
-    user.phone ||
-    '';
-
-
   /*
-     Nếu metadata chưa có tên/số,
-     thử lấy từ customer_members.
-  */
+   * ĐĂNG NHẬP KHÔNG ĐƯỢC BẮT NHẬP HỌ TÊN / SỐ ĐIỆN THOẠI.
+   *
+   * Nếu đã có hồ sơ customer_members thì giữ nguyên.
+   * Không có hồ sơ cũng KHÔNG làm đăng nhập thất bại.
+   */
+
   try{
 
     const p = await memberSB
@@ -250,44 +226,36 @@ async function memberSignIn(email, password){
       .eq('user_id', user.id)
       .maybeSingle();
 
+    if(p.error){
 
-    if(!p.error && p.data){
+      console.warn(
+        'Không đọc được customer_members:',
+        p.error
+      );
 
-      profileName =
-        profileName ||
-        p.data.full_name ||
-        '';
+    }else if(p.data){
 
-      profilePhone =
-        profilePhone ||
-        p.data.phone ||
-        '';
+      /*
+       * Có profile thì không cần làm gì thêm.
+       */
+      console.log(
+        'Member profile:',
+        p.data
+      );
     }
 
   }catch(err){
 
+    /*
+     * Lỗi profile không được phép
+     * làm hỏng đăng nhập.
+     */
     console.warn(
-      'Không đọc được customer_members:',
+      'Profile check skipped:',
       err
     );
-  }
-
-
-  /*
-     Chỉ tạo/cập nhật profile khi đủ dữ liệu.
-     Tránh login bị chết nếu tài khoản cũ
-     chưa có profile hoàn chỉnh.
-  */
-  if(profileName && profilePhone){
-
-    await memberEnsureProfile(
-      user,
-      profileName,
-      profilePhone
-    );
 
   }
-
 
   return user;
 }
