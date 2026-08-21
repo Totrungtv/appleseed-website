@@ -18,6 +18,8 @@ h1,h2,h3,p{margin-top:0}.top h1{margin-bottom:5px}.muted{color:#667085;font-size
 .formgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.formgrid .full{grid-column:1/-1}label{font-weight:700;font-size:13px;display:block}input,select,textarea{width:100%;margin-top:6px;border:1px solid #d0d5dd;border-radius:9px;padding:10px 11px;font:inherit;background:#fff}textarea{min-height:85px;resize:vertical}
 .modal{position:fixed;inset:0;background:rgba(15,23,42,.45);display:flex;align-items:center;justify-content:center;padding:18px;z-index:5}.modalbox{background:#fff;border-radius:18px;width:min(850px,100%);max-height:90vh;overflow:auto;padding:22px}.hidden{display:none!important}.right{text-align:right}.danger{color:#b42318}.btn.danger{border-color:#fecdca;color:#b42318}.success{color:#067647}.notice{padding:11px 13px;border-radius:10px;background:#eff8ff;color:#175cd3;margin-bottom:14px}
 .split{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.parts-pages{display:flex;gap:9px;flex-wrap:wrap;margin:0 0 16px}.part-page{border:1px solid #d0d5dd;background:#fff;border-radius:10px;padding:10px 13px;font-weight:800;cursor:pointer;color:#111827}.part-page.active{background:#2563eb;color:#fff;border-color:#2563eb}.part-page.manage{border-style:dashed}.parts-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.parts-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}.parts-grid .listbox{min-width:0}.listbox{border:1px solid #e4e7ec;border-radius:14px;overflow:hidden}.listbox h3{padding:14px 16px;margin:0;background:#f8fafc;border-bottom:1px solid #e4e7ec}.listitem{padding:14px 16px;border-bottom:1px solid #eaecf0}.listitem:last-child{border-bottom:0}.small{font-size:12px}.search{max-width:320px}
+.lead-new{background:#eff6ff;color:#1d4ed8}.lead-contacted{background:#fff7ed;color:#c2410c}.lead-visited{background:#ecfdf3;color:#047857}.lead-completed{background:#dcfce7;color:#166534}.lead-cancelled{background:#fef2f2;color:#b91c1c}.lead-phone{color:#1769ff;font-weight:850;white-space:nowrap}.lead-note{white-space:pre-wrap;max-width:300px}.lead-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}.lead-toolbar input,.lead-toolbar select{max-width:260px}.lead-count{font-size:13px;color:#667085;margin-bottom:12px}
+
 @media(max-width:800px){.split{grid-template-columns:1fr}}
 @media(max-width:1050px){.cards{grid-template-columns:repeat(3,1fr)}}@media(max-width:700px){.wrap{padding:14px}.top{align-items:flex-start;flex-direction:column}.cards,.formgrid{grid-template-columns:1fr}.formgrid .full{grid-column:auto}}
 </style>
@@ -39,6 +41,7 @@ h1,h2,h3,p{margin-top:0}.top h1{margin-bottom:5px}.muted{color:#667085;font-size
 <button class="tab active" data-tab="dashboard">📊 Tổng quan</button>
 <button class="tab" data-tab="repairs">🔧 Sửa chữa</button>
 <button class="tab" data-tab="customers">👤 Khách hàng</button>
+<button class="tab" data-tab="webLeads">🌐 Khách từ website</button>
 <button class="tab" data-tab="inventory">📦 Kho</button>
 <button class="tab" data-tab="finance">💰 Thu chi</button>
 <button class="tab" data-tab="revenue">📈 Doanh thu</button>
@@ -64,6 +67,27 @@ h1,h2,h3,p{margin-top:0}.top h1{margin-bottom:5px}.muted{color:#667085;font-size
 <section id="repairs" class="view hidden"><div class="panel"><div class="top"><div><h2>🔧 Phiếu sửa chữa</h2><div class="muted">Quản lý toàn bộ máy nhận sửa.</div></div><button class="btn primary" id="newRepair">＋ Tạo phiếu</button></div><div id="repairsList"></div></div></section>
 
 <section id="customers" class="view hidden"><div class="panel"><div class="top"><div><h2>👤 Khách hàng</h2><div class="muted">Danh sách khách và lịch sử sửa.</div></div><button class="btn primary" id="newCustomer">＋ Thêm khách</button></div><div id="customersList"></div></div></section>
+<section id="webLeads" class="view hidden">
+<div class="panel">
+  <div class="top">
+    <div><h2>🌐 Khách từ website</h2><div class="muted">Theo dõi khách đã gửi họ tên và số điện thoại từ nút Thanh toán / Liên hệ trên website.</div></div>
+    <button class="btn primary" id="refreshWebLeads">↻ Làm mới</button>
+  </div>
+  <div class="lead-toolbar">
+    <input id="webLeadSearch" type="search" placeholder="Tìm tên / số điện thoại / sản phẩm">
+    <select id="webLeadStatus">
+      <option value="">Tất cả trạng thái</option>
+      <option value="new">Mới</option>
+      <option value="contacted">Đã liên hệ</option>
+      <option value="visited">Đã đến cửa hàng</option>
+      <option value="completed">Hoàn tất</option>
+      <option value="cancelled">Đã hủy</option>
+    </select>
+  </div>
+  <div class="lead-count" id="webLeadCount"></div>
+  <div id="webLeadsList"></div>
+</div>
+</section>
 
 <section id="inventory" class="view hidden"><div class="panel"><div class="top"><div><h2>📦 Kho linh kiện</h2><div class="muted">Theo dõi tồn kho và giá nhập.</div></div><button class="btn primary" id="newStock">＋ Nhập linh kiện</button></div><div id="inventoryList"></div></div></section>
 
@@ -108,9 +132,9 @@ async function auth(){
 }
 $("loginBtn").onclick=async()=>{let r=await sb.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(r.error){$("loginMsg").textContent=r.error.message;return}auth()};
 $("logout").onclick=async()=>{await sb.auth.signOut();location.reload()};
-document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".view").forEach(x=>x.classList.add("hidden"));$(b.dataset.tab).classList.remove("hidden");if(b.dataset.tab==="repairs")loadRepairs();if(b.dataset.tab==="customers")loadCustomers();if(b.dataset.tab==="inventory")loadInventory();if(b.dataset.tab==="finance")loadFinance();if(b.dataset.tab==="revenue")loadRevenue();if(b.dataset.tab==="warranty")loadWarranty();if(b.dataset.tab==="pans")loadPans();if(b.dataset.tab==="parts")loadParts()});
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".view").forEach(x=>x.classList.add("hidden"));$(b.dataset.tab).classList.remove("hidden");if(b.dataset.tab==="repairs")loadRepairs();if(b.dataset.tab==="customers")loadCustomers();if(b.dataset.tab==="webLeads")loadWebLeads();if(b.dataset.tab==="inventory")loadInventory();if(b.dataset.tab==="finance")loadFinance();if(b.dataset.tab==="revenue")loadRevenue();if(b.dataset.tab==="warranty")loadWarranty();if(b.dataset.tab==="pans")loadPans();if(b.dataset.tab==="parts")loadParts()});
 
-async function loadAll(){loadDashboard();loadRepairs();loadCustomers();loadInventory();loadFinance();loadRevenue();loadWarranty();loadPans();loadParts()}
+async function loadAll(){loadDashboard();loadRepairs();loadCustomers();loadWebLeads();loadInventory();loadFinance();loadRevenue();loadWarranty();loadPans();loadParts()}
 async function loadDashboard(){
  let [r,c,i,f]=await Promise.all([
   sb.from("repair_orders").select("id,status,device_model,customer_id,estimated_total").order("created_at",{ascending:false}).limit(100),
@@ -177,6 +201,101 @@ window.deleteCustomer=async id=>{
 $("newCustomer").onclick=()=>openCustomerForm();
 window.editCustomer=x=>openCustomerForm(x);
 function openCustomerForm(x={}){openModal(x.id?"Sửa khách hàng":"Thêm khách hàng",`<form id="customerForm" class="formgrid"><label>Tên khách<input id="cName" value="${esc(x.name||"")}" required></label><label>Điện thoại<input id="cPhone" value="${esc(x.phone||"")}" required></label><label>Địa chỉ<input id="cAddress" value="${esc(x.address||"")}"></label><label>Ghi chú<input id="cNote" value="${esc(x.note||"")}"></label><div class="full right"><button class="btn primary">💾 Lưu</button></div></form>`);$("customerForm").onsubmit=async e=>{e.preventDefault();let p={name:$("cName").value.trim(),phone:$("cPhone").value.trim(),address:$("cAddress").value.trim(),note:$("cNote").value.trim()};let z=await(x.id?sb.from("customers").update(p).eq("id",x.id):sb.from("customers").insert(p));if(z.error){alert(z.error.message);return}closeModal();loadCustomers();loadDashboard()}}
+
+let webLeadRows=[];
+
+function leadStatusBadge(s){
+  const m={
+    new:["Mới","lead-new"],
+    contacted:["Đã liên hệ","lead-contacted"],
+    visited:["Đã đến cửa hàng","lead-visited"],
+    completed:["Hoàn tất","lead-completed"],
+    cancelled:["Đã hủy","lead-cancelled"]
+  };
+  const x=m[s]||m.new;
+  return `<span class="badge ${x[1]}">${x[0]}</span>`;
+}
+
+async function loadWebLeads(){
+  if(!$("webLeadsList"))return;
+  let r=await sb.from("store_customer_leads").select("*").order("created_at",{ascending:false}).limit(500);
+  if(r.error){
+    $("webLeadsList").innerHTML="<div class='notice'>Chưa có bảng <b>store_customer_leads</b>. Hãy chạy file <b>customer-leads.sql</b> trong Supabase.</div>";
+    $("webLeadCount").textContent="";
+    return;
+  }
+  webLeadRows=r.data||[];
+  renderWebLeads();
+}
+
+function renderWebLeads(){
+  const q=($("webLeadSearch")?.value||"").trim().toLowerCase();
+  const st=$("webLeadStatus")?.value||"";
+  const d=webLeadRows.filter(x=>{
+    if(st&&x.status!==st)return false;
+    if(!q)return true;
+    return [x.customer_name,x.phone,x.product_name,x.note]
+      .some(v=>String(v||"").toLowerCase().includes(q));
+  });
+
+  $("webLeadCount").textContent=`Hiển thị ${d.length} / ${webLeadRows.length} khách`;
+
+  if(!d.length){
+    $("webLeadsList").innerHTML="<div class='notice'>Chưa có khách phù hợp.</div>";
+    return;
+  }
+
+  $("webLeadsList").innerHTML=`<div class="table-wrap"><table>
+    <tr>
+      <th>Thời gian</th>
+      <th>Khách hàng</th>
+      <th>Số điện thoại</th>
+      <th>Sản phẩm</th>
+      <th>Giá</th>
+      <th>Ghi chú</th>
+      <th>Trạng thái</th>
+    </tr>
+    ${d.map(x=>`<tr>
+      <td>${new Date(x.created_at).toLocaleString("vi-VN")}</td>
+      <td><b>${esc(x.customer_name)}</b></td>
+      <td><a class="lead-phone" href="tel:${esc(x.phone)}">${esc(x.phone)}</a></td>
+      <td><b>${esc(x.product_name)}</b></td>
+      <td>${money(x.product_price)}</td>
+      <td><div class="lead-note">${esc(x.note||"")}</div></td>
+      <td>
+        <select data-lead-id="${x.id}" class="lead-status-select">
+          <option value="new" ${x.status==="new"?"selected":""}>Mới</option>
+          <option value="contacted" ${x.status==="contacted"?"selected":""}>Đã liên hệ</option>
+          <option value="visited" ${x.status==="visited"?"selected":""}>Đã đến cửa hàng</option>
+          <option value="completed" ${x.status==="completed"?"selected":""}>Hoàn tất</option>
+          <option value="cancelled" ${x.status==="cancelled"?"selected":""}>Đã hủy</option>
+        </select>
+      </td>
+    </tr>`).join("")}
+  </table></div>`;
+
+  $("webLeadsList").querySelectorAll(".lead-status-select").forEach(sel=>{
+    sel.onchange=async()=>{
+      const id=Number(sel.dataset.leadId);
+      const status=sel.value;
+      sel.disabled=true;
+      const r=await sb.from("store_customer_leads").update({status}).eq("id",id);
+      sel.disabled=false;
+      if(r.error){
+        alert("Không cập nhật được trạng thái: "+r.error.message);
+        await loadWebLeads();
+        return;
+      }
+      const row=webLeadRows.find(x=>x.id===id);
+      if(row)row.status=status;
+    };
+  });
+}
+
+$("refreshWebLeads").onclick=()=>loadWebLeads();
+$("webLeadSearch").oninput=renderWebLeads;
+$("webLeadStatus").onchange=renderWebLeads;
+
 async function loadInventory(){let r=await sb.from("inventory_items").select("*").order("id",{ascending:false});if(r.error){$("inventoryList").innerHTML="<div class='notice'>Chưa có bảng inventory_items. Hãy chạy <b>supabase-shop.sql</b>.</div>";return}let d=r.data||[];$("inventoryList").innerHTML=`<div class="table-wrap"><table><tr><th>ID</th><th>Linh kiện</th><th>Nhóm</th><th>Mã</th><th>Tồn</th><th>Giá nhập</th><th>Giá bán</th><th></th></tr>${d.map(x=>`<tr><td>#${x.id}</td><td>${esc(x.name)}</td><td>${esc(x.category||"Linh kiện khác")}</td><td>${esc(x.sku||"")}</td><td>${x.quantity}</td><td>${money(x.cost_price)}</td><td>${money(x.sale_price)}</td><td><button class="btn" onclick='editStock(${JSON.stringify(x).replace(/'/g,"&#39;")})'>Sửa</button> <button class="btn danger" onclick="deleteStock(${x.id})">🗑️ Xóa</button></td></tr>`).join("")}</table></div>`}
 window.deleteStock=async id=>{
   if(!confirm("XÓA linh kiện kho #"+id+"?")) return;
