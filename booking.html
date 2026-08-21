@@ -143,26 +143,250 @@
   tabLogin.onclick=()=>tabs(false);tabSignup.onclick=()=>tabs(true);
   tabLogin.onclick();
   async function refresh(){
-    clearErr();
-    const session=await getMemberSession();
-    if(session?.user){
-      await memberEnsureProfile(session.user,'','');
-      loggedOut.style.display='none';loggedIn.style.display='block';area.classList.remove('booking-locked');
-      const u=session.user, m=u.user_metadata||{};
-      const pr=await sb.from('customer_members').select('full_name,phone,email').eq('user_id',u.id).maybeSingle();
-      const profile=pr.data||{};
-      document.getElementById('memberDisplayName').textContent=profile.full_name||m.full_name||'Khách hàng';
-      document.getElementById('memberDisplayMeta').textContent=(profile.phone||m.phone||u.phone||'')+' · '+(profile.email||u.email||'');
-      const nameInput=document.getElementById('name'), phoneInput=document.getElementById('phone');
-      if(nameInput && !nameInput.value) nameInput.value=profile.full_name||m.full_name||'';
-      if(phoneInput && !phoneInput.value) phoneInput.value=profile.phone||m.phone||u.phone||'';
-    }else{
-      loggedOut.style.display='block';loggedIn.style.display='none';area.classList.add('booking-locked');
-    }
+  clearErr();
+
+  if(!sb){
+    showErr('Không kết nối được hệ thống Supabase.');
+    return;
   }
-  loginForm.onsubmit=async e=>{e.preventDefault();clearErr();const b=e.submitter;b.disabled=true;b.textContent='Đang đăng nhập...';try{await memberSignIn(document.getElementById('memberLoginEmail').value,document.getElementById('memberLoginPassword').value);await refresh()}catch(x){showErr(x.message||'Đăng nhập không thành công.')}b.disabled=false;b.textContent='🔐 Đăng nhập thành viên'};
-  signupForm.onsubmit=async e=>{e.preventDefault();clearErr();const b=e.submitter;b.disabled=true;b.textContent='Đang tạo tài khoản...';try{const d=await memberSignUp(document.getElementById('memberName').value,document.getElementById('memberPhone').value,document.getElementById('memberEmail').value,document.getElementById('memberPassword').value);if(d.session){await refresh()}else{showErr('Tài khoản đã được tạo. Hãy kiểm tra email để xác nhận tài khoản rồi đăng nhập.')}}catch(x){showErr(x.message||'Không tạo được tài khoản.')}b.disabled=false;b.textContent='✨ Tạo tài khoản thành viên'};
-  document.getElementById('memberLogout').onclick=memberLogout;
+
+  try{
+    const sessionResult = await sb.auth.getSession();
+    const session = sessionResult.data?.session || null;
+
+    if(session?.user){
+
+      loggedOut.style.display = 'none';
+      loggedIn.style.display = 'block';
+      area.classList.remove('booking-locked');
+
+      const u = session.user;
+      const m = u.user_metadata || {};
+
+      /*
+        QUAN TRỌNG:
+        KHÔNG gọi memberEnsureProfile() ở đây nữa.
+        Login chỉ cần Supabase xác thực thành công.
+      */
+
+      let profile = {};
+
+      try{
+        const pr = await sb
+          .from('customer_members')
+          .select('full_name,phone,email')
+          .eq('user_id',u.id)
+          .maybeSingle();
+
+        if(pr.data){
+          profile = pr.data;
+        }
+      }catch(profileError){
+        console.warn(
+          'Không đọc được customer_members:',
+          profileError
+        );
+      }
+
+      const displayName =
+        profile.full_name ||
+        m.full_name ||
+        'Khách hàng';
+
+      const displayPhone =
+        profile.phone ||
+        m.phone ||
+        u.phone ||
+        '';
+
+      const displayEmail =
+        profile.email ||
+        u.email ||
+        '';
+
+      document.getElementById(
+        'memberDisplayName'
+      ).textContent = displayName;
+
+      document.getElementById(
+        'memberDisplayMeta'
+      ).textContent =
+        displayPhone +
+        (displayPhone && displayEmail ? ' · ' : '') +
+        displayEmail;
+
+      const nameInput =
+        document.getElementById('name');
+
+      const phoneInput =
+        document.getElementById('phone');
+
+      if(
+        nameInput &&
+        !nameInput.value &&
+        displayName !== 'Khách hàng'
+      ){
+        nameInput.value = displayName;
+      }
+
+      if(
+        phoneInput &&
+        !phoneInput.value &&
+        displayPhone
+      ){
+        phoneInput.value = displayPhone;
+      }
+
+    }else{
+
+      loggedOut.style.display = 'block';
+      loggedIn.style.display = 'none';
+      area.classList.add('booking-locked');
+
+    }
+
+  }catch(x){
+
+    console.error(
+      'MEMBER REFRESH ERROR:',
+      x
+    );
+
+    showErr(
+      x.message ||
+      'Không thể kiểm tra trạng thái đăng nhập.'
+    );
+  }
+}
+
+
+/*
+  LOGIN TRỰC TIẾP SUPABASE
+  Không phụ thuộc member-auth.js
+*/
+loginForm.onsubmit = async e => {
+
+  e.preventDefault();
+  clearErr();
+
+  const b = e.submitter;
+
+  const email =
+    document.getElementById(
+      'memberLoginEmail'
+    ).value.trim();
+
+  const password =
+    document.getElementById(
+      'memberLoginPassword'
+    ).value;
+
+  if(!email){
+    showErr('Vui lòng nhập email.');
+    return;
+  }
+
+  if(!password){
+    showErr('Vui lòng nhập mật khẩu.');
+    return;
+  }
+
+  b.disabled = true;
+  b.textContent = 'Đang đăng nhập...';
+
+  try{
+
+    const r = await sb.auth.signInWithPassword({
+      email: email,
+      password: password
+    });
+
+    if(r.error){
+      throw r.error;
+    }
+
+    /*
+      Login thành công.
+      KHÔNG gọi memberEnsureProfile().
+    */
+
+    await refresh();
+
+  }catch(x){
+
+    console.error(
+      'LOGIN ERROR:',
+      x
+    );
+
+    showErr(
+      x.message ||
+      'Email hoặc mật khẩu không đúng.'
+    );
+
+  }finally{
+
+    b.disabled = false;
+    b.textContent = '🔐 Đăng nhập thành viên';
+
+  }
+};
+
+
+/*
+  ĐĂNG KÝ
+  Phần này vẫn dùng member-auth.js
+*/
+signupForm.onsubmit = async e => {
+
+  e.preventDefault();
+  clearErr();
+
+  const b = e.submitter;
+
+  b.disabled = true;
+  b.textContent = 'Đang tạo tài khoản...';
+
+  try{
+
+    const d = await memberSignUp(
+      document.getElementById('memberName').value,
+      document.getElementById('memberPhone').value,
+      document.getElementById('memberEmail').value,
+      document.getElementById('memberPassword').value
+    );
+
+    if(d.session){
+
+      await refresh();
+
+    }else{
+
+      showErr(
+        'Tài khoản đã được tạo. Hãy kiểm tra email để xác nhận tài khoản rồi đăng nhập.'
+      );
+
+    }
+
+  }catch(x){
+
+    console.error(
+      'SIGNUP ERROR:',
+      x
+    );
+
+    showErr(
+      x.message ||
+      'Không tạo được tài khoản.'
+    );
+
+  }finally{
+
+    b.disabled = false;
+    b.textContent = '✨ Tạo tài khoản thành viên';
+
+  }
+};
   await refresh();
 })();
 </script>
