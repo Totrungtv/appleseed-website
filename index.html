@@ -269,20 +269,38 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
   }
 
   function cleanProductDescription(value){
-    let h=String(value||'');
+    let h=String(value||'').trim();
+    if(!h)return '';
 
-    // Xóa các ảnh/đoạn ảnh lỗi đang được lưu trong mô tả
-    // (trường hợp URL trỏ nhầm vào admin.html).
-    h=h.replace(/<p>\s*<img\b[^>]*\bsrc\s*=\s*["'][^"']*\/admin\.html[^"']*["'][^>]*>\s*<\/p>/gi,'');
-    h=h.replace(/<img\b[^>]*\bsrc\s*=\s*["'][^"']*\/admin\.html[^"']*["'][^>]*>/gi,'');
+    // Database có thể đang chứa HTML đã bị encode thành &lt;p&gt;...&lt;/p&gt;.
+    // Decode 1-2 lần trước khi sanitize để không hiện nguyên mã HTML ra màn hình.
+    for(let i=0;i<2;i++){
+      const box=document.createElement('textarea');
+      box.innerHTML=h;
+      const decoded=box.value;
+      if(decoded===h)break;
+      h=decoded;
+    }
 
-    // Cho phép HTML mô tả cơ bản nhưng loại bỏ script/form và event handler.
-    h=safeHtml(h);
+    // Bỏ toàn bộ ảnh/đoạn HTML trỏ nhầm về admin.html.
+    h=h.replace(/<p[^>]*>\s*(?:<img\b[^>]*>)?\s*<\/p>/gi, m=>{
+      return /admin\.html/i.test(m)?'':m;
+    });
+    h=h.replace(/<img\b[^>]*\bsrc\s*=\s*["'][^"']*admin\.html[^"']*["'][^>]*>/gi,'');
 
-    // Không để URL/admin.html lọt ra giao diện dưới dạng text.
-    h=h.replace(/https?:\/\/[^"' <]+\/admin\.html\b/gi,'');
+    // Nếu mô tả chỉ còn URL/admin.html hoặc thẻ rỗng thì coi như không có mô tả.
+    h=h.replace(/https?:\/\/[^"' <]+admin\.html\b/gi,'');
+    h=h.replace(/<p[^>]*>\s*<\/p>/gi,'');
+    h=h.replace(/^\s*<p>\s*<\/p>\s*$/i,'');
 
-    return h.trim();
+    // Sanitize HTML hợp lệ.
+    h=safeHtml(h).trim();
+
+    // Không hiển thị lại literal HTML/URL lỗi.
+    if(/admin\.html/i.test(h)) return '';
+    if(/^(\s*<[^>]+>\s*)+$/i.test(h) && !/<(img|a|ul|ol|li|strong|b|em|i|br)\b/i.test(h)) return '';
+
+    return h;
   }
 
   function openProductHome(index){
@@ -338,43 +356,22 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
 
       const nav=e.target.closest?.('.menu a');
       if(nav){
-        const label=(nav.textContent||'').trim().toLowerCase();
-        let href=nav.getAttribute('href')||'';
+        const label=(nav.textContent||'').normalize('NFD')
+          .replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
 
-        // CMS có thể lưu URL là "dich-vu", "gioi-thieu"... thay vì "#dich-vu".
-        const map=[
-          ['dịch vụ','#dich-vu'],['dich vu','#dich-vu'],
-          ['sản phẩm','#san-pham'],['san pham','products.html'],
-          ['giới thiệu','#gioi-thieu'],['gioi thieu','#gioi-thieu'],
-          ['liên hệ','#lien-he'],['lien he','#lien-he']
-        ];
+        let targetId='';
+        if(label.includes('dich vu')) targetId='dich-vu';
+        else if(label.includes('san pham')) targetId='san-pham';
+        else if(label.includes('gioi thieu')) targetId='gioi-thieu';
+        else if(label.includes('lien he')) targetId='lien-he';
 
-        if(label.includes('sản phẩm')||label.includes('san pham')){
-          const productSection=document.getElementById('san-pham');
-          if(productSection){
-            e.preventDefault();
-            productSection.scrollIntoView({behavior:'smooth',block:'start'});
-            return;
-          }
-          return;
-        }
-
-        const item=map.find(x=>label.includes(x[0]));
-        if(item && item[1].startsWith('#')){
-          const target=document.querySelector(item[1]);
+        if(targetId){
+          const target=document.getElementById(targetId);
           if(target){
             e.preventDefault();
+            e.stopPropagation();
             target.scrollIntoView({behavior:'smooth',block:'start'});
-            return;
-          }
-        }
-
-        // Nếu href là một anchor nhưng anchor chưa tồn tại, thử bỏ dấu # / chuẩn hóa.
-        if(href.startsWith('#')){
-          const target=document.querySelector(href);
-          if(target){
-            e.preventDefault();
-            target.scrollIntoView({behavior:'smooth',block:'start'});
+            history.replaceState(null,'','#'+targetId);
           }
         }
       }
