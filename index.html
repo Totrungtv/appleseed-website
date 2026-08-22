@@ -242,6 +242,34 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
 }
 .chat-btn{position:fixed;right:24px;bottom:24px;width:58px;height:58px;border:0;border-radius:50%;background:#1769ff;color:#fff;display:grid;place-items:center;font-size:27px;box-shadow:0 12px 28px rgba(23,105,255,.3);z-index:1000;cursor:pointer}
 .chat-box{position:fixed;right:24px;bottom:94px;width:350px;max-width:calc(100vw - 32px);height:440px;background:#fff;border:1px solid #e2e7f0;border-radius:18px;box-shadow:0 20px 55px rgba(23,37,66,.2);display:none;flex-direction:column;overflow:hidden;z-index:1000}
+/* MEMBER AUTH HOME */
+.member-auth-buttons{display:flex;align-items:center;gap:8px;margin-left:4px}
+.member-auth-btn{border:1px solid #d8e0ef;background:#fff;color:var(--blue);border-radius:9px;padding:9px 12px;font-size:13px;font-weight:850;cursor:pointer;white-space:nowrap}
+.member-auth-btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.member-auth-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(15,23,42,.72);z-index:12000}
+.member-auth-modal.open{display:flex}
+.member-auth-box{width:min(520px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:18px;padding:22px;position:relative;box-shadow:0 25px 80px rgba(0,0,0,.25)}
+.member-auth-close{position:absolute;right:12px;top:12px;width:40px;height:40px;border:0;border-radius:50%;background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.15);font-size:24px;cursor:pointer}
+.member-auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:18px 0 14px}
+.member-auth-tabs button{border:1px solid #d9dfeb;background:#fff;border-radius:10px;padding:11px;font-weight:850;color:#52627b;cursor:pointer}
+.member-auth-tabs button.active{background:var(--blue);border-color:var(--blue);color:#fff}
+.member-auth-form{display:grid;gap:12px}
+.member-auth-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.member-auth-form label{font-size:13px;font-weight:800}
+.member-auth-form input{width:100%;margin-top:6px;border:1px solid #d9dfeb;border-radius:10px;padding:12px 13px;outline:none}
+.member-auth-form input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(23,105,255,.10)}
+.member-auth-submit{min-height:46px;border:0;border-radius:10px;background:var(--blue);color:#fff;font-weight:850;cursor:pointer}
+.member-auth-submit:disabled{opacity:.65;cursor:wait}
+.member-auth-note{font-size:12px;line-height:1.5;color:var(--muted)}
+.member-auth-status{display:none;padding:11px 12px;border-radius:10px;font-size:13px;line-height:1.5}
+.member-auth-status.show{display:block}.member-auth-status.ok{background:#ecfdf3;color:#16794a}.member-auth-status.err{background:#fff1f2;color:#b42318}
+.member-auth-resend{display:none;margin-top:8px;border:0;background:transparent;color:var(--blue);font-weight:800;cursor:pointer;padding:0}
+.member-auth-resend.show{display:inline-block}
+.member-user-pill{display:none;align-items:center;gap:7px;color:var(--blue);font-size:13px;font-weight:850}
+.member-user-pill.show{display:flex}
+.member-logout-btn{border:0;background:transparent;color:#b42318;font-weight:800;cursor:pointer;padding:5px}
+@media(max-width:900px){.member-auth-buttons{width:100%;margin:0}.member-auth-btn{flex:1}.member-user-pill{width:100%;justify-content:center}}
+@media(max-width:560px){.member-auth-grid{grid-template-columns:1fr}.member-auth-box{padding:20px 16px;border-radius:16px}.member-auth-buttons{gap:6px}.member-auth-btn{padding:8px 7px;font-size:12px}}
 .chat-box.open{display:flex}
 body.apple-chat-open .booking-float{display:none}
 
@@ -286,7 +314,12 @@ body.apple-chat-open .booking-float{display:none}
 <a href="#gioi-thieu"><span class="mi">ⓘ</span><span>Giới thiệu</span></a>
 <a href="#lien-he"><span class="mi">☎</span><span>Liên hệ</span></a>
 <a href="shop-admin.html"><span class="mi">⚙</span><span>Quản trị</span></a>
-</div>
+ <div class="member-auth-buttons" id="memberAuthButtons">
+   <button class="member-auth-btn" type="button" id="memberHomeLoginBtn">🔐 Đăng nhập</button>
+   <button class="member-auth-btn primary" type="button" id="memberHomeSignupBtn">✨ Đăng ký</button>
+   <div class="member-user-pill" id="memberUserPill"><span id="memberUserName">👤 Thành viên</span><button class="member-logout-btn" type="button" id="memberHomeLogoutBtn">Đăng xuất</button></div>
+ </div>
+ </div>
 </nav>
 </header>
 
@@ -325,6 +358,33 @@ body.apple-chat-open .booking-float{display:none}
   </div>
 </div>
 
+<div class="member-auth-modal" id="memberAuthModal" role="dialog" aria-modal="true" aria-labelledby="memberAuthTitle">
+  <div class="member-auth-box">
+    <button class="member-auth-close" id="memberAuthClose" type="button" aria-label="Đóng">×</button>
+    <div class="eyebrow">APPLE SEED MEMBER</div>
+    <h2 id="memberAuthTitle" style="margin:0 48px 7px 0">👤 Tài khoản khách hàng</h2>
+    <p class="member-auth-note">Đăng ký một lần để quản lý lịch sửa chữa, trạng thái và trao đổi với Apple Seed.</p>
+    <div class="member-auth-tabs">
+      <button id="memberHomeTabLogin" class="active" type="button">Đăng nhập</button>
+      <button id="memberHomeTabSignup" type="button">Đăng ký thành viên</button>
+    </div>
+    <form id="memberHomeLoginForm" class="member-auth-form">
+      <label>Email<input id="memberHomeLoginEmail" type="email" autocomplete="email" required placeholder="email@example.com"></label>
+      <label>Mật khẩu<input id="memberHomeLoginPassword" type="password" autocomplete="current-password" required placeholder="••••••••"></label>
+      <button class="member-auth-submit" type="submit">🔐 Đăng nhập</button>
+    </form>
+    <form id="memberHomeSignupForm" class="member-auth-form" style="display:none">
+      <div class="member-auth-grid"><label>Họ và tên *<input id="memberHomeSignupName" required autocomplete="name" placeholder="Nguyễn Văn A"></label><label>Số điện thoại *<input id="memberHomeSignupPhone" required inputmode="tel" autocomplete="tel" placeholder="0898888269"></label></div>
+      <label>Email *<input id="memberHomeSignupEmail" type="email" required autocomplete="email" placeholder="email@gmail.com"></label>
+      <label>Mật khẩu *<input id="memberHomeSignupPassword" type="password" minlength="6" required autocomplete="new-password" placeholder="Tối thiểu 6 ký tự"></label>
+      <button class="member-auth-submit" type="submit">✨ Tạo tài khoản thành viên</button>
+      <div class="member-auth-note">Sau khi đăng ký, hệ thống sẽ gửi email xác nhận. Hãy mở Gmail và bấm <b>link xác nhận</b> để kích hoạt tài khoản trước khi đăng nhập.</div>
+    </form>
+    <div class="member-auth-status" id="memberAuthStatus"></div>
+    <button class="member-auth-resend" id="memberAuthResend" type="button">📩 Gửi lại email xác nhận</button>
+  </div>
+</div>
+
 <a class="booking-float" href="booking.html" aria-label="Đặt lịch sửa chữa">📅 Đặt lịch sửa</a>
 <button class="chat-btn" id="chatBtn" aria-label="Mở trợ lý Apple Seed">🤖</button>
 <div class="chat-box" id="chatBox" aria-label="Trợ lý Apple Seed">
@@ -343,6 +403,7 @@ body.apple-chat-open .booking-float{display:none}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
+<script src="member-auth.js"></script>
 <script>
 (function(){
   const sb=window.supabaseClient;
@@ -850,6 +911,26 @@ body.apple-chat-open .booking-float{display:none}
       });
     }catch(e){console.error('AppleSeed CMS:',e);staticFallback();fixNavigation();bindProductCards()}}
   load();
+})();
+</script>
+<script>
+(function(){
+  const modal=document.getElementById('memberAuthModal'),loginBtn=document.getElementById('memberHomeLoginBtn'),signupBtn=document.getElementById('memberHomeSignupBtn'),closeBtn=document.getElementById('memberAuthClose'),tabLogin=document.getElementById('memberHomeTabLogin'),tabSignup=document.getElementById('memberHomeTabSignup'),loginForm=document.getElementById('memberHomeLoginForm'),signupForm=document.getElementById('memberHomeSignupForm'),status=document.getElementById('memberAuthStatus'),resend=document.getElementById('memberAuthResend'),userPill=document.getElementById('memberUserPill'),userName=document.getElementById('memberUserName'),logout=document.getElementById('memberHomeLogoutBtn');
+  let lastSignupEmail='';
+  if(!modal || !window.memberSB) return;
+  const showStatus=(text,ok=false)=>{status.textContent=text;status.className='member-auth-status show '+(ok?'ok':'err')};
+  const clearStatus=()=>{status.textContent='';status.className='member-auth-status';resend.classList.remove('show')};
+  const tabs=(signup)=>{clearStatus();loginForm.style.display=signup?'none':'grid';signupForm.style.display=signup?'grid':'none';tabLogin.classList.toggle('active',!signup);tabSignup.classList.toggle('active',signup)};
+  const open=(signup=false)=>{modal.classList.add('open');tabs(signup);setTimeout(()=>{(signup?document.getElementById('memberHomeSignupName'):document.getElementById('memberHomeLoginEmail'))?.focus()},50)};
+  const close=()=>{modal.classList.remove('open');clearStatus()};
+  loginBtn.onclick=()=>open(false);signupBtn.onclick=()=>open(true);closeBtn.onclick=close;tabLogin.onclick=()=>tabs(false);tabSignup.onclick=()=>tabs(true);modal.addEventListener('click',e=>{if(e.target===modal)close()});
+  async function refresh(){const session=await getMemberSession();if(session?.user){const u=session.user,meta=u.user_metadata||{};userName.textContent='👤 '+(meta.full_name||u.email||'Thành viên');loginBtn.style.display='none';signupBtn.style.display='none';userPill.classList.add('show')}else{loginBtn.style.display='inline-block';signupBtn.style.display='inline-block';userPill.classList.remove('show')}}
+  loginForm.onsubmit=async e=>{e.preventDefault();clearStatus();const b=e.submitter;b.disabled=true;b.textContent='Đang đăng nhập...';try{await memberSignIn(document.getElementById('memberHomeLoginEmail').value,document.getElementById('memberHomeLoginPassword').value);close();await refresh()}catch(x){showStatus(x.message||'Đăng nhập không thành công.')}b.disabled=false;b.textContent='🔐 Đăng nhập'};
+  signupForm.onsubmit=async e=>{e.preventDefault();clearStatus();const b=e.submitter;b.disabled=true;b.textContent='Đang tạo tài khoản...';lastSignupEmail=document.getElementById('memberHomeSignupEmail').value.trim();try{const d=await memberSignUp(document.getElementById('memberHomeSignupName').value,document.getElementById('memberHomeSignupPhone').value,lastSignupEmail,document.getElementById('memberHomeSignupPassword').value);if(d.session){showStatus('✅ Tài khoản đã được tạo và email đã được xác nhận. Bạn có thể sử dụng tài khoản ngay.',true);setTimeout(close,900);await refresh()}else{showStatus('✅ Đã tạo tài khoản. Hãy mở Gmail, tìm email xác nhận của Apple Seed/Supabase và bấm link xác nhận để kích hoạt tài khoản. Sau khi kích hoạt, quay lại đây để đăng nhập.',true);resend.classList.add('show')}}catch(x){showStatus(x.message||'Không tạo được tài khoản.')}b.disabled=false;b.textContent='✨ Tạo tài khoản thành viên'};
+  resend.onclick=async()=>{if(!lastSignupEmail)return;resend.disabled=true;resend.textContent='Đang gửi lại...';try{await memberResendSignupEmail(lastSignupEmail);showStatus('📩 Đã gửi lại email xác nhận. Hãy kiểm tra Gmail và cả mục Spam/Quảng cáo.',true)}catch(x){showStatus(x.message||'Không gửi lại được email.')}resend.disabled=false;resend.textContent='📩 Gửi lại email xác nhận'};
+  logout.onclick=async()=>{await memberLogout()};
+  memberOnAuthStateChange(async(event)=>{if(event==='SIGNED_IN'||event==='INITIAL_SESSION'||event==='TOKEN_REFRESHED'){await refresh();if(event==='SIGNED_IN'&&modal.classList.contains('open')){showStatus('✅ Xác nhận/đăng nhập thành công.',true);setTimeout(close,700)}}});
+  refresh();
 })();
 </script>
 <script>
