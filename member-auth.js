@@ -1,8 +1,26 @@
+/* =========================================================
+   APPLE SEED - MEMBER AUTH
+   Đăng nhập / Đăng ký / Email xác nhận / Hồ sơ thành viên
+   ========================================================= */
+
 const memberSB = window.supabaseClient;
+
 const member$ = id => document.getElementById(id);
 
-function memberEsc(s){
-  return String(s ?? '').replace(/[&<>"']/g,c=>({
+
+/* =========================================================
+   CẤU HÌNH
+   ========================================================= */
+
+const MEMBER_SITE_URL = 'https://appleseedtravinh.com/index.html';
+
+
+/* =========================================================
+   ESCAPE HTML
+   ========================================================= */
+
+function memberEsc(value){
+  return String(value ?? '').replace(/[&<>"']/g, c => ({
     '&':'&amp;',
     '<':'&lt;',
     '>':'&gt;',
@@ -11,41 +29,175 @@ function memberEsc(s){
   }[c]));
 }
 
+
+/* =========================================================
+   KIỂM TRA SUPABASE
+   ========================================================= */
+
+function memberCheckSB(){
+
+  if(!memberSB){
+
+    throw new Error(
+      'Supabase chưa được khởi tạo. Hãy kiểm tra supabase-config.js.'
+    );
+
+  }
+
+  if(!memberSB.auth){
+
+    throw new Error(
+      'Supabase Auth chưa sẵn sàng.'
+    );
+
+  }
+
+  return memberSB;
+}
+
+
+/* =========================================================
+   LẤY SESSION
+   ========================================================= */
+
 async function getMemberSession(){
-  if(!memberSB) return null;
 
-  const r = await memberSB.auth.getSession();
-
-  if(r.error){
-    console.error('GET MEMBER SESSION ERROR:', r.error);
+  if(!memberSB || !memberSB.auth){
     return null;
   }
 
-  return r.data?.session || null;
+  try{
+
+    const result =
+      await memberSB.auth.getSession();
+
+    if(result.error){
+
+      console.error(
+        'getMemberSession error:',
+        result.error
+      );
+
+      return null;
+    }
+
+    return result.data?.session || null;
+
+  }catch(error){
+
+    console.error(
+      'getMemberSession exception:',
+      error
+    );
+
+    return null;
+  }
 }
+
+
+/* =========================================================
+   LOGOUT
+   ========================================================= */
 
 async function memberLogout(){
-  try{
-    if(memberSB){
-      await memberSB.auth.signOut();
-    }
-  }catch(e){
-    console.error('LOGOUT ERROR:', e);
+
+  if(!memberSB || !memberSB.auth){
+
+    location.reload();
+
+    return;
   }
 
-  location.reload();
+  try{
+
+    const result =
+      await memberSB.auth.signOut();
+
+    if(result.error){
+
+      console.error(
+        'Logout error:',
+        result.error
+      );
+
+    }
+
+  }catch(error){
+
+    console.error(
+      'Logout exception:',
+      error
+    );
+
+  }finally{
+
+    location.reload();
+
+  }
 }
 
 
-/*
-  APPLE SEED MEMBER AUTH FIX
+/* =========================================================
+   LẤY PROFILE KHÁCH HÀNG
+   ========================================================= */
 
-  QUAN TRỌNG:
-  - Đăng nhập tài khoản cũ KHÔNG bắt nhập lại họ tên/SĐT.
-  - Nếu customer_members đã có dữ liệu thì giữ nguyên.
-  - Nếu chưa có hồ sơ thì vẫn cho đăng nhập.
-  - Chỉ bắt họ tên + SĐT khi ĐĂNG KÝ tài khoản mới.
-*/
+async function memberGetProfile(user){
+
+  if(!memberSB || !user){
+    return null;
+  }
+
+  try{
+
+    const result =
+      await memberSB
+        .from('customer_members')
+        .select(
+          'user_id,full_name,phone,email'
+        )
+        .eq(
+          'user_id',
+          user.id
+        )
+        .maybeSingle();
+
+    if(result.error){
+
+      console.warn(
+        'memberGetProfile:',
+        result.error
+      );
+
+      return null;
+    }
+
+    return result.data || null;
+
+  }catch(error){
+
+    console.warn(
+      'memberGetProfile exception:',
+      error
+    );
+
+    return null;
+  }
+}
+
+
+/* =========================================================
+   TẠO / CẬP NHẬT PROFILE
+   =========================================================
+
+   QUAN TRỌNG:
+
+   - ĐĂNG NHẬP:
+     Không bắt nhập lại họ tên / SĐT.
+
+   - ĐĂNG KÝ:
+     Bắt buộc họ tên + SĐT.
+
+   ========================================================= */
 
 async function memberEnsureProfile(
   user,
@@ -53,237 +205,318 @@ async function memberEnsureProfile(
   phone = '',
   required = false
 ){
-  if(!memberSB || !user) return null;
 
-  let cleanName = String(
-    fullName ||
-    user.user_metadata?.full_name ||
-    ''
-  ).trim();
+  memberCheckSB();
 
-  let cleanPhone = String(
-    phone ||
-    user.user_metadata?.phone ||
-    user.phone ||
-    ''
-  ).trim();
+  if(!user || !user.id){
 
+    throw new Error(
+      'Không tìm thấy tài khoản người dùng.'
+    );
 
-  // Lấy hồ sơ hiện tại
-  const existing = await memberSB
-    .from('customer_members')
-    .select('full_name,phone,email')
-    .eq('user_id', user.id)
-    .maybeSingle();
-
-
-  if(existing.error && existing.error.code !== 'PGRST116'){
-    console.error('LOAD MEMBER PROFILE ERROR:', existing.error);
-    throw existing.error;
   }
 
 
-  const old = existing.data || {};
+  /* -----------------------------------------
+     Lấy profile cũ trước
+     ----------------------------------------- */
 
+  let oldProfile = null;
 
-  // Nếu dữ liệu truyền vào trống thì lấy dữ liệu cũ
-  if(!cleanName){
-    cleanName = String(old.full_name || '').trim();
+  try{
+
+    const result =
+      await memberSB
+        .from('customer_members')
+        .select(
+          'user_id,full_name,phone,email'
+        )
+        .eq(
+          'user_id',
+          user.id
+        )
+        .maybeSingle();
+
+    if(
+      result.error &&
+      result.error.code !== 'PGRST116'
+    ){
+
+      console.warn(
+        'Không đọc được profile cũ:',
+        result.error
+      );
+
+    }else{
+
+      oldProfile =
+        result.data || null;
+
+    }
+
+  }catch(error){
+
+    console.warn(
+      'Profile lookup exception:',
+      error
+    );
+
   }
 
-  if(!cleanPhone){
-    cleanPhone = String(old.phone || '').trim();
-  }
+
+  /* -----------------------------------------
+     Ghép dữ liệu mới + dữ liệu cũ
+     ----------------------------------------- */
+
+  const cleanName =
+    String(
+      fullName ||
+      user.user_metadata?.full_name ||
+      oldProfile?.full_name ||
+      ''
+    ).trim();
 
 
-  /*
-    ĐĂNG NHẬP:
+  const cleanPhone =
+    String(
+      phone ||
+      user.user_metadata?.phone ||
+      user.phone ||
+      oldProfile?.phone ||
+      ''
+    ).trim();
 
-    Nếu hồ sơ chưa có tên/SĐT thì KHÔNG được đá ra lỗi.
-    Cho khách đăng nhập bình thường trước.
-  */
+
+  /* -----------------------------------------
+     ĐĂNG NHẬP:
+     Không được bắt nhập lại thông tin
+     ----------------------------------------- */
+
   if(!required){
 
-    // Có hồ sơ -> cập nhật email nếu cần
-    if(existing.data){
+    /*
+      Nếu profile đã tồn tại:
+      giữ nguyên.
+    */
 
-      const payload = {
-        email: user.email || old.email || null,
-        updated_at: new Date().toISOString()
-      };
+    if(oldProfile){
 
+      return oldProfile;
 
-      // Chỉ bổ sung tên nếu đang thiếu
-      if(
-        (!old.full_name ||
-         String(old.full_name).trim().length < 2) &&
-        cleanName.length >= 2
-      ){
-        payload.full_name = cleanName;
-      }
-
-
-      // Chỉ bổ sung SĐT nếu đang thiếu
-      if(
-        (!old.phone ||
-         String(old.phone).trim().length < 6) &&
-        cleanPhone.length >= 6
-      ){
-        payload.phone = cleanPhone;
-      }
-
-
-      const up = await memberSB
-        .from('customer_members')
-        .update(payload)
-        .eq('user_id', user.id);
-
-
-      if(up.error){
-        console.error('UPDATE MEMBER PROFILE ERROR:', up.error);
-        throw up.error;
-      }
-
-
-      return {
-        full_name:
-          payload.full_name ||
-          old.full_name ||
-          '',
-
-        phone:
-          payload.phone ||
-          old.phone ||
-          '',
-
-        email:
-          payload.email ||
-          old.email ||
-          user.email ||
-          ''
-      };
     }
 
 
     /*
-      Không có customer_members:
-
-      Vẫn cho đăng nhập.
-      KHÔNG insert "Khách hàng" hoặc dữ liệu rỗng
-      để tránh lỗi RLS / NOT NULL.
+      Nếu tài khoản cũ chưa có profile:
+      không làm đăng nhập thất bại.
     */
-    return {
-      full_name: cleanName || '',
-      phone: cleanPhone || '',
-      email: user.email || ''
-    };
+
+    if(!cleanName || !cleanPhone){
+
+      return null;
+
+    }
+
   }
 
 
-  /*
-    ĐĂNG KÝ MỚI:
+  /* -----------------------------------------
+     ĐĂNG KÝ:
+     bắt buộc họ tên + SĐT
+     ----------------------------------------- */
 
-    Bắt buộc họ tên + SĐT.
-  */
+  if(!cleanName){
 
-  if(cleanName.length < 2){
-    throw new Error('Vui lòng nhập họ và tên.');
-  }
-
-  if(cleanPhone.length < 6){
     throw new Error(
-      'Vui lòng nhập số điện thoại. Không được để trống.'
+      'Vui lòng nhập họ và tên.'
     );
+
   }
 
 
-  const r = await memberSB
-    .from('customer_members')
-    .upsert({
-      user_id: user.id,
-      full_name: cleanName,
-      phone: cleanPhone,
-      email: user.email || null,
-      updated_at: new Date().toISOString()
-    },{
-      onConflict: 'user_id'
-    });
+  if(!cleanPhone){
 
+    throw new Error(
+      'Vui lòng nhập số điện thoại.'
+    );
 
-  if(r.error){
-    console.error('SAVE MEMBER PROFILE ERROR:', r.error);
-    throw r.error;
   }
 
 
-  return {
-    full_name: cleanName,
-    phone: cleanPhone,
-    email: user.email || ''
+  /* -----------------------------------------
+     Lưu customer_members
+     ----------------------------------------- */
+
+  const payload = {
+
+    user_id:user.id,
+
+    full_name:cleanName,
+
+    phone:cleanPhone,
+
+    email:user.email ||
+          oldProfile?.email ||
+          null,
+
+    updated_at:
+      new Date().toISOString()
+
   };
+
+
+  const result =
+    await memberSB
+      .from('customer_members')
+      .upsert(
+        payload,
+        {
+          onConflict:'user_id'
+        }
+      );
+
+
+  if(result.error){
+
+    console.error(
+      'customer_members upsert error:',
+      result.error
+    );
+
+    throw new Error(
+      result.error.message ||
+      'Không thể lưu thông tin thành viên.'
+    );
+
+  }
+
+
+  return payload;
 }
 
 
+/* =========================================================
+   ĐĂNG NHẬP
+   ========================================================= */
 
-/*
-  ĐĂNG NHẬP
-*/
-async function memberSignIn(email,password){
+async function memberSignIn(
+  email,
+  password
+){
 
-  const cleanEmail = String(email || '').trim();
+  memberCheckSB();
+
+
+  const cleanEmail =
+    String(
+      email || ''
+    ).trim();
 
 
   if(!cleanEmail){
-    throw new Error('Vui lòng nhập email.');
+
+    throw new Error(
+      'Vui lòng nhập email.'
+    );
+
   }
 
 
   if(!password){
-    throw new Error('Vui lòng nhập mật khẩu.');
-  }
 
-
-  if(!memberSB){
     throw new Error(
-      'Hệ thống thành viên chưa kết nối Supabase.'
+      'Vui lòng nhập mật khẩu.'
     );
+
   }
 
 
-  const r = await memberSB.auth.signInWithPassword({
-    email: cleanEmail,
-    password: password
-  });
+  const result =
+    await memberSB.auth.signInWithPassword({
+
+      email:cleanEmail,
+
+      password:password
+
+    });
 
 
-  if(r.error){
-    console.error('LOGIN ERROR:', r.error);
-    throw r.error;
+  if(result.error){
+
+    console.error(
+      'memberSignIn error:',
+      result.error
+    );
+
+
+    /*
+      Nếu email chưa xác nhận,
+      Supabase sẽ trả lỗi tại đây.
+    */
+
+    throw new Error(
+      result.error.message ||
+      'Email hoặc mật khẩu không chính xác.'
+    );
+
+  }
+
+
+  const user =
+    result.data?.user;
+
+
+  if(!user){
+
+    throw new Error(
+      'Đăng nhập thành công nhưng không nhận được tài khoản.'
+    );
+
   }
 
 
   /*
-    QUAN TRỌNG NHẤT:
+    QUAN TRỌNG:
 
-    Không truyền required=true.
-    Không bắt nhập họ tên/SĐT khi đăng nhập.
+    Đăng nhập KHÔNG gọi
+    memberEnsureProfile với required=true.
+
+    Vì vậy không bắt nhập lại
+    họ tên / số điện thoại.
   */
-  await memberEnsureProfile(
-    r.data.user,
-    '',
-    '',
-    false
-  );
+
+  try{
+
+    await memberEnsureProfile(
+      user,
+      '',
+      '',
+      false
+    );
+
+  }catch(error){
+
+    /*
+      Lỗi profile không làm hỏng
+      đăng nhập.
+    */
+
+    console.warn(
+      'Profile check skipped:',
+      error
+    );
+
+  }
 
 
-  return r.data.user;
+  return user;
 }
 
 
+/* =========================================================
+   ĐĂNG KÝ
+   ========================================================= */
 
-/*
-  ĐĂNG KÝ THÀNH VIÊN
-*/
 async function memberSignUp(
   fullName,
   phone,
@@ -291,123 +524,357 @@ async function memberSignUp(
   password
 ){
 
+  memberCheckSB();
+
+
   const cleanName =
-    String(fullName || '').trim();
+    String(
+      fullName || ''
+    ).trim();
+
 
   const cleanPhone =
-    String(phone || '').trim();
+    String(
+      phone || ''
+    ).trim();
+
 
   const cleanEmail =
-    String(email || '').trim();
+    String(
+      email || ''
+    ).trim();
+
 
   const cleanPassword =
-    String(password || '');
+    String(
+      password || ''
+    );
 
+
+  /* -----------------------------------------
+     KIỂM TRA DỮ LIỆU
+     ----------------------------------------- */
 
   if(!cleanName){
+
     throw new Error(
       'Vui lòng nhập họ và tên.'
     );
-  }
 
-
-  if(cleanName.length < 2){
-    throw new Error(
-      'Họ và tên phải có ít nhất 2 ký tự.'
-    );
   }
 
 
   if(!cleanPhone){
+
     throw new Error(
       'Vui lòng nhập số điện thoại.'
     );
-  }
 
-
-  if(cleanPhone.length < 6){
-    throw new Error(
-      'Số điện thoại không hợp lệ.'
-    );
   }
 
 
   if(!cleanEmail){
+
     throw new Error(
       'Vui lòng nhập email.'
     );
+
   }
 
 
   if(!cleanPassword){
+
     throw new Error(
       'Vui lòng nhập mật khẩu.'
     );
+
   }
 
 
   if(cleanPassword.length < 6){
+
     throw new Error(
       'Mật khẩu phải có ít nhất 6 ký tự.'
     );
+
   }
 
 
-  if(!memberSB){
-    throw new Error(
-      'Hệ thống thành viên chưa kết nối Supabase.'
-    );
-  }
+  /* -----------------------------------------
+     TẠO TÀI KHOẢN SUPABASE
+     ----------------------------------------- */
 
+  const result =
+    await memberSB.auth.signUp({
 
-  const r = await memberSB.auth.signUp({
+      email:cleanEmail,
 
-    email: cleanEmail,
+      password:cleanPassword,
 
-    password: cleanPassword,
+      options:{
 
-    options: {
-      data: {
-        full_name: cleanName,
-        phone: cleanPhone
+        /*
+          Supabase sẽ đưa khách về
+          trang chủ sau khi bấm link
+          xác nhận trong email.
+        */
+
+        emailRedirectTo:
+          MEMBER_SITE_URL,
+
+        data:{
+
+          full_name:
+            cleanName,
+
+          phone:
+            cleanPhone
+
+        }
+
       }
-    }
 
-  });
+    });
 
 
-  if(r.error){
-    console.error('SIGNUP ERROR:', r.error);
-    throw r.error;
+  if(result.error){
+
+    console.error(
+      'memberSignUp error:',
+      result.error
+    );
+
+
+    throw new Error(
+      result.error.message ||
+      'Không thể tạo tài khoản.'
+    );
+
   }
 
 
-  /*
-    Chỉ tạo customer_members ngay khi
-    Supabase trả session.
-  */
-  if(
-    r.data.user &&
-    r.data.session
-  ){
+  const user =
+    result.data?.user;
+
+
+  const session =
+    result.data?.session;
+
+
+  if(!user){
+
+    throw new Error(
+      'Không tạo được tài khoản.'
+    );
+
+  }
+
+
+  /* -----------------------------------------
+     TRƯỜNG HỢP KHÔNG YÊU CẦU EMAIL CONFIRM
+     ----------------------------------------- */
+
+  if(session){
 
     await memberEnsureProfile(
-      r.data.user,
+      user,
       cleanName,
       cleanPhone,
       true
     );
+
   }
 
 
-  return r.data;
+  /*
+    Nếu Supabase yêu cầu xác nhận email:
+    session sẽ null.
+
+    Khi đó customer_members chưa cần tạo
+    ngay. Sau khi xác nhận email + đăng nhập,
+    profile sẽ được tạo.
+  */
+
+
+  return {
+
+    user:user,
+
+    session:session,
+
+    emailConfirmationRequired:
+      !session
+
+  };
+
 }
 
 
+/* =========================================================
+   GỬI LẠI EMAIL XÁC NHẬN
+   ========================================================= */
 
-/*
-  EXPORT RA WINDOW
-*/
+async function memberResendSignupEmail(
+  email
+){
+
+  memberCheckSB();
+
+
+  const cleanEmail =
+    String(
+      email || ''
+    ).trim();
+
+
+  if(!cleanEmail){
+
+    throw new Error(
+      'Vui lòng nhập email.'
+    );
+
+  }
+
+
+  const result =
+    await memberSB.auth.resend({
+
+      type:'signup',
+
+      email:cleanEmail,
+
+      options:{
+
+        emailRedirectTo:
+          MEMBER_SITE_URL
+
+      }
+
+    });
+
+
+  if(result.error){
+
+    console.error(
+      'memberResendSignupEmail error:',
+      result.error
+    );
+
+
+    throw new Error(
+      result.error.message ||
+      'Không thể gửi lại email xác nhận.'
+    );
+
+  }
+
+
+  return result.data;
+}
+
+
+/* =========================================================
+   KIỂM TRA EMAIL ĐÃ XÁC NHẬN
+   ========================================================= */
+
+async function memberIsEmailConfirmed(){
+
+  const session =
+    await getMemberSession();
+
+
+  if(!session?.user){
+
+    return false;
+
+  }
+
+
+  const user =
+    session.user;
+
+
+  return Boolean(
+    user.email_confirmed_at
+  );
+
+}
+
+
+/* =========================================================
+   AUTH STATE CHANGE
+   ========================================================= */
+
+function memberOnAuthStateChange(
+  callback
+){
+
+  if(
+    !memberSB ||
+    !memberSB.auth
+  ){
+
+    console.warn(
+      'memberOnAuthStateChange: Supabase Auth chưa sẵn sàng.'
+    );
+
+
+    return {
+
+      data:{
+
+        subscription:{
+
+          unsubscribe:
+            () => {}
+
+        }
+
+      }
+
+    };
+
+  }
+
+
+  return memberSB.auth.onAuthStateChange(
+    (
+      event,
+      session
+    ) => {
+
+      try{
+
+        if(
+          typeof callback ===
+          'function'
+        ){
+
+          callback(
+            event,
+            session
+          );
+
+        }
+
+      }catch(error){
+
+        console.error(
+          'Auth callback error:',
+          error
+        );
+
+      }
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   EXPORT GLOBAL
+   ========================================================= */
 
 window.memberSB =
   memberSB;
@@ -418,11 +885,17 @@ window.member$ =
 window.memberEsc =
   memberEsc;
 
+window.memberCheckSB =
+  memberCheckSB;
+
 window.getMemberSession =
   getMemberSession;
 
 window.memberLogout =
   memberLogout;
+
+window.memberGetProfile =
+  memberGetProfile;
 
 window.memberEnsureProfile =
   memberEnsureProfile;
@@ -432,3 +905,12 @@ window.memberSignIn =
 
 window.memberSignUp =
   memberSignUp;
+
+window.memberResendSignupEmail =
+  memberResendSignupEmail;
+
+window.memberIsEmailConfirmed =
+  memberIsEmailConfirmed;
+
+window.memberOnAuthStateChange =
+  memberOnAuthStateChange;
