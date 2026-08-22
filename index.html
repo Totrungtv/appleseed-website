@@ -313,7 +313,6 @@ body.apple-chat-open .booking-float{display:none}
 <a href="products.html"><span class="mi">🛍</span><span>Sản phẩm</span></a>
 <a href="#gioi-thieu"><span class="mi">ⓘ</span><span>Giới thiệu</span></a>
 <a href="#lien-he"><span class="mi">☎</span><span>Liên hệ</span></a>
-<a href="shop-admin.html"><span class="mi">⚙</span><span>Quản trị</span></a>
  <div class="member-auth-buttons" id="memberAuthButtons">
    <button class="member-auth-btn" type="button" id="memberHomeLoginBtn">🔐 Đăng nhập</button>
    <button class="member-auth-btn primary" type="button" id="memberHomeSignupBtn">✨ Đăng ký</button>
@@ -894,14 +893,25 @@ body.apple-chat-open .booking-float{display:none}
   const menu=document.querySelector('.menu');
   const memberAuth=document.getElementById('memberAuthButtons');
 
-  menu.innerHTML=n.data.map(x=>`
-    <a href="${esc(x.url||'#')}">
-      <span class="mi">${esc(x.icon||'')}</span>
-      <span>${esc(x.label)}</span>
-    </a>
-  `).join('');
+  // Chỉ xóa các mục menu cũ, không xóa khu vực thành viên.
+  menu.querySelectorAll(':scope > a').forEach(a=>a.remove());
 
-  // Giữ lại Đăng nhập / Đăng ký thành viên
+  const menuHtml=n.data
+    .filter(x=>{
+      const label=String(x.label||'').normalize('NFD')
+        .replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+      return label!=='quan tri';
+    })
+    .map(x=>`
+      <a href="${esc(x.url||'#')}">
+        <span class="mi">${esc(x.icon||'')}</span>
+        <span>${esc(x.label)}</span>
+      </a>
+    `).join('');
+
+  menu.insertAdjacentHTML('afterbegin',menuHtml);
+
+  // Luôn giữ Đăng nhập / Đăng ký ở cuối menu.
   if(memberAuth){
     menu.appendChild(memberAuth);
   }
