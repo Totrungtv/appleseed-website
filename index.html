@@ -229,6 +229,23 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
 .chat-input{display:flex;gap:8px;padding:10px;border-top:1px solid #e6eaf1}
 .chat-input input{min-width:0;flex:1;border:1px solid #d9dfeb;border-radius:10px;padding:10px 12px;outline:none}
 .chat-input button{border:0;background:var(--blue);color:#fff;border-radius:10px;padding:0 15px;font-weight:800;cursor:pointer}
+.chat-booking{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  margin:10px 0 2px;
+  padding:10px 14px;
+  border-radius:10px;
+  background:var(--blue);
+  color:#fff;
+  text-decoration:none;
+  font-weight:850;
+  font-size:13px;
+  box-shadow:0 6px 16px rgba(23,105,255,.18);
+}
+.chat-booking:hover{filter:brightness(.96)}
+
 
 @media(max-width:900px){
  .nav{height:auto;padding:15px 20px;flex-wrap:wrap}.site-header{height:auto}.brand{min-width:0}
@@ -380,6 +397,7 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
 <div class="chat-head"><span>🤖 Trợ lý Apple Seed</span><button class="chat-close" id="chatClose">×</button></div>
 <div class="chat-body" id="chatBody">
 <div class="msg bot">Xin chào 👋 Tôi là trợ lý Apple Seed. Bạn cần hỏi về sửa iPhone, Face ID, main, linh kiện hay địa chỉ cửa hàng?</div>
+<a class="chat-booking" href="booking.html">📅 Đặt lịch sửa</a>
 </div>
 <form class="chat-input" id="chatForm">
 <input id="chatInput" autocomplete="off" placeholder="Nhập câu hỏi...">
