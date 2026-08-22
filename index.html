@@ -806,10 +806,18 @@ body.apple-chat-open .booking-float{display:none}
       </section>`;
     }
 
-    const r=await sb.from('pages')
+    const pageQuery=sb.from('pages')
       .select('id,title,slug,description,is_active')
       .eq('is_active',true)
       .order('id',{ascending:false});
+
+    const r=await Promise.race([
+      pageQuery,
+      new Promise(resolve=>setTimeout(()=>resolve({
+        error:{message:'Trang dịch vụ phản hồi quá chậm.'},
+        data:[]
+      }),5000))
+    ]);
 
     if(r.error){
       console.warn('AppleSeed pages:',r.error.message);
@@ -893,7 +901,7 @@ body.apple-chat-open .booking-float{display:none}
   const menu=document.querySelector('.menu');
   const memberAuth=document.getElementById('memberAuthButtons');
 
-  // Chỉ xóa các mục menu cũ, không xóa khu vực thành viên.
+  // Chỉ xóa các link menu cũ; tuyệt đối không xóa khu vực thành viên.
   menu.querySelectorAll(':scope > a').forEach(a=>a.remove());
 
   const menuHtml=n.data
@@ -911,11 +919,25 @@ body.apple-chat-open .booking-float{display:none}
 
   menu.insertAdjacentHTML('afterbegin',menuHtml);
 
-  // Luôn giữ Đăng nhập / Đăng ký ở cuối menu.
   if(memberAuth){
     menu.appendChild(memberAuth);
   }
-}};fixNavigation();if(s.error||!s.data?.length){staticFallback();bindProductCards();fixNavigation();return}let html='';let contactRendered=false;for(const sec of s.data){if(sec.section_type==='products'){html+=await productsHtml();continue}if(sec.section_type==='pages'||sec.section_type==='dynamic-pages'){html+=await dynamicPagesHtml(sec);continue}if(sec.section_type==='map'||sec.section_type==='contact'){if(contactRendered)continue;contactRendered=true;html+=sec.section_type==='contact'?contactHtml():renderSection(sec);continue}html+=renderSection(sec)}root.innerHTML=html+(contactRendered?'':contactHtml());
+}};fixNavigation();if(s.error||!s.data?.length){staticFallback();bindProductCards();fixNavigation();return}let html='';let contactRendered=false;for(const sec of s.data){
+  try{
+    if(sec.section_type==='products'){html+=await productsHtml();continue}
+    if(sec.section_type==='pages'||sec.section_type==='dynamic-pages'){html+=await dynamicPagesHtml(sec);continue}
+    if(sec.section_type==='map'||sec.section_type==='contact'){
+      if(contactRendered)continue;
+      contactRendered=true;
+      html+=sec.section_type==='contact'?contactHtml():renderSection(sec);
+      continue;
+    }
+    html+=renderSection(sec);
+  }catch(sectionError){
+    console.warn('Apple Seed section skipped:',sectionError);
+  }
+}
+root.innerHTML=html+(contactRendered?'':contactHtml());
       fixNavigation();
       bindProductCards();
 
