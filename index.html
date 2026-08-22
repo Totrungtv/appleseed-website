@@ -197,6 +197,17 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
 .product-home-card p{margin:0;color:#718096;font-size:11px;line-height:1.45}
 .product-home-price{margin-top:6px;color:var(--blue);font-weight:850;font-size:13px}
 .product-home-count{margin-top:5px;color:#98a2b3;font-size:10px}
+.dynamic-pages-wrap{max-width:1160px;margin:auto}
+.dynamic-pages-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.dynamic-page-card{display:block;min-height:145px;padding:18px;border:1px solid var(--line);border-radius:12px;background:#fff;box-shadow:0 8px 24px rgba(35,54,91,.08);text-align:left;transition:.18s ease}
+.dynamic-page-card:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(35,54,91,.13);border-color:#cfdcff}
+.dynamic-page-card h3{margin:0 0 9px;font-size:16px;color:var(--ink)}
+.dynamic-page-card p{margin:0;color:#718096;font-size:13px;line-height:1.55}
+.dynamic-page-more{display:inline-block;margin-top:14px;color:var(--blue);font-size:12px;font-weight:850}
+.dynamic-page-empty{text-align:center;color:#94a3b8;padding:20px;grid-column:1/-1}
+@media(max-width:900px){.dynamic-pages-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.dynamic-pages-grid{grid-template-columns:1fr}}
+
 .product-modal{position:fixed;inset:0;background:rgba(15,23,42,.72);display:none;align-items:center;justify-content:center;padding:22px;z-index:9999}
 .product-modal.open{display:flex}
 .product-modal-box{width:min(900px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:18px;padding:18px;position:relative;box-shadow:0 25px 80px rgba(0,0,0,.25)}
@@ -715,6 +726,55 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
       document.getElementById('productModalClose').click();
   });
 
+  async function dynamicPagesHtml(section){
+    const title=section?.title||'Trang dịch vụ';
+    const subtitle=section?.subtitle||'Các dịch vụ mới có thể được thêm từ trang quản trị.';
+
+    if(!sb){
+      return `<section class="services" id="trang-dich-vu">
+        <div class="section-kicker">${esc(section?.eyebrow||'THÔNG TIN')}</div>
+        <h2>${esc(title)}</h2>
+        <p class="lead" style="margin:0 auto 20px">${esc(subtitle)}</p>
+        <div class="dynamic-pages-wrap"><div class="dynamic-pages-grid">
+          <div class="dynamic-page-empty">Không thể tải trang dịch vụ.</div>
+        </div></div>
+      </section>`;
+    }
+
+    const r=await sb.from('pages')
+      .select('id,title,slug,description,is_active')
+      .eq('is_active',true)
+      .order('id',{ascending:false});
+
+    if(r.error){
+      console.warn('AppleSeed pages:',r.error.message);
+      return `<section class="services" id="trang-dich-vu">
+        <div class="section-kicker">${esc(section?.eyebrow||'THÔNG TIN')}</div>
+        <h2>${esc(title)}</h2>
+        <p class="lead" style="margin:0 auto 20px">${esc(subtitle)}</p>
+        <div class="dynamic-pages-wrap"><div class="dynamic-pages-grid">
+          <div class="dynamic-page-empty">Chưa thể tải trang dịch vụ.</div>
+        </div></div>
+      </section>`;
+    }
+
+    const pages=r.data||[];
+    const cards=pages.length
+      ? pages.map(p=>`<a class="dynamic-page-card" href="page.html?slug=${encodeURIComponent(p.slug||'')}">
+          <h3>${esc(p.title||'Dịch vụ Apple Seed')}</h3>
+          <p>${esc(p.description||'Xem thông tin dịch vụ Apple Seed.')}</p>
+          <span class="dynamic-page-more">Xem trang →</span>
+        </a>`).join('')
+      : '<div class="dynamic-page-empty">Chưa có trang dịch vụ nào được đăng.</div>';
+
+    return `<section class="services" id="trang-dich-vu">
+      <div class="section-kicker">${esc(section?.eyebrow||'THÔNG TIN')}</div>
+      <h2>${esc(title)}</h2>
+      <p class="lead" style="margin:0 auto 20px">${esc(subtitle)}</p>
+      <div class="dynamic-pages-wrap"><div class="dynamic-pages-grid">${cards}</div></div>
+    </section>`;
+  }
+
   function renderSection(s){
     // ID điều hướng phải cố định theo loại section.
     // section_key trong Admin có thể là tên tùy ý, không được để nó
@@ -764,7 +824,7 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
     });
   }
 
-  async function load(){if(!sb){staticFallback();bindProductCards();fixNavigation();return}try{const [t,n,s]=await Promise.all([sb.from('site_theme_settings').select('*').eq('id',1).maybeSingle(),sb.from('site_nav_items').select('label,icon,url,is_active,sort_order').eq('is_active',true).order('sort_order',{ascending:true}),sb.from('site_home_sections').select('*').eq('is_active',true).order('sort_order',{ascending:true}).order('id',{ascending:true})]);if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){const st=document.createElement('style');st.textContent=t.data.custom_css;document.head.appendChild(st)}if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){document.querySelector('.menu').innerHTML=n.data.map(x=>`<a href="${esc(x.url||'#')}"><span class="mi">${esc(x.icon||'')}</span><span>${esc(x.label)}</span></a>`).join('')};fixNavigation();if(s.error||!s.data?.length){staticFallback();bindProductCards();fixNavigation();return}let html='';let contactRendered=false;for(const sec of s.data){if(sec.section_type==='products'){html+=await productsHtml();continue}if(sec.section_type==='map'||sec.section_type==='contact'){if(contactRendered)continue;contactRendered=true;html+=sec.section_type==='contact'?contactHtml():renderSection(sec);continue}html+=renderSection(sec)}root.innerHTML=html+(contactRendered?'':contactHtml());
+  async function load(){if(!sb){staticFallback();bindProductCards();fixNavigation();return}try{const [t,n,s]=await Promise.all([sb.from('site_theme_settings').select('*').eq('id',1).maybeSingle(),sb.from('site_nav_items').select('label,icon,url,is_active,sort_order').eq('is_active',true).order('sort_order',{ascending:true}),sb.from('site_home_sections').select('*').eq('is_active',true).order('sort_order',{ascending:true}).order('id',{ascending:true})]);if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){const st=document.createElement('style');st.textContent=t.data.custom_css;document.head.appendChild(st)}if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){document.querySelector('.menu').innerHTML=n.data.map(x=>`<a href="${esc(x.url||'#')}"><span class="mi">${esc(x.icon||'')}</span><span>${esc(x.label)}</span></a>`).join('')};fixNavigation();if(s.error||!s.data?.length){staticFallback();bindProductCards();fixNavigation();return}let html='';let contactRendered=false;for(const sec of s.data){if(sec.section_type==='products'){html+=await productsHtml();continue}if(sec.section_type==='pages'||sec.section_type==='dynamic-pages'){html+=await dynamicPagesHtml(sec);continue}if(sec.section_type==='map'||sec.section_type==='contact'){if(contactRendered)continue;contactRendered=true;html+=sec.section_type==='contact'?contactHtml():renderSection(sec);continue}html+=renderSection(sec)}root.innerHTML=html+(contactRendered?'':contactHtml());
       fixNavigation();
       bindProductCards();
 
