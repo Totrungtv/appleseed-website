@@ -5,107 +5,60 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Apple Seed AI Board</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Inter,ui-sans-serif,system-ui,sans-serif;background:linear-gradient(135deg,#f7fbff,#eef7ff 52%,#e8f2ff);color:#10233f}
-#apple-seed-ai{padding:28px}
-.wrap{max-width:1180px;margin:auto}
-.top{display:flex;justify-content:space-between;gap:20px;align-items:center;margin-bottom:24px;flex-wrap:wrap}
-.kicker{font-size:11px;font-weight:900;letter-spacing:.18em;color:#647b98;margin-bottom:7px}
-h1{font-size:36px;letter-spacing:-.04em;margin:0 0 6px}
-h2{font-size:18px;margin:0 0 8px;color:#12365e}
-.muted{color:#647b98;font-size:14px}
-.badges{display:flex;gap:10px;flex-wrap:wrap}
-.badge,.pill{border:1px solid #cfe2f7;background:#fff;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:800;color:#17385f}
-.grid{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}
-.card{background:rgba(255,255,255,.96);border:1px solid #cfe2f7;border-radius:20px;padding:20px;box-shadow:0 18px 55px rgba(30,80,130,.1)}
-.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
-.field{display:flex;flex-direction:column;gap:7px}.full{grid-column:1/-1}
-label{font-size:12px;font-weight:700;color:#46617f}
-input,select,textarea{width:100%;border:1px solid #cfe0f2;background:#f7fbff;color:#10233f;border-radius:11px;padding:11px 12px;font:inherit;outline:none}
-textarea{min-height:100px;resize:vertical}
-input:focus,select:focus,textarea:focus{border-color:#4a9df8;box-shadow:0 0 0 3px #4a9df81f}
-.drop{min-height:140px;border:1.5px dashed #8bb9e8;border-radius:15px;display:grid;place-items:center;text-align:center;padding:20px;margin-top:14px;color:#5f7895;background:linear-gradient(135deg,#f8fcff,#edf7ff)}
-.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-.btn{border:0;border-radius:12px;padding:12px 18px;font-weight:800;cursor:pointer}
-.primary{background:linear-gradient(135deg,#1479e8,#3ba7ff);color:#fff;box-shadow:0 8px 24px #1479e838}
-.secondary{background:#eaf4ff;color:#145ca8;border:1px solid #c8e1fa}
-.result{margin-top:14px;border-left:4px solid #278cf0;padding:14px 16px;background:#f5faff;border-radius:12px}
-.case{padding:13px;border:1px solid #d5e5f5;border-radius:13px;background:#fff}.case+.case{margin-top:9px}
-.meter{height:9px;background:#dceafa;border-radius:99px;overflow:hidden}.meter span{display:block;width:50%;height:100%;background:linear-gradient(90deg,#1679e8,#55b8ff)}
-.chat{display:none}.chat.show{display:block}
-@media(max-width:800px){#apple-seed-ai{padding:16px}.grid,.fields{grid-template-columns:1fr}.full{grid-column:auto}h1{font-size:30px}}
+body{margin:0;font-family:Inter,system-ui,sans-serif;background:linear-gradient(135deg,#f7fbff,#eef7ff 52%,#e8f2ff);color:#10233f}
+.wrap{max-width:1180px;margin:auto;padding:30px}.top{display:flex;justify-content:space-between;gap:20px;align-items:center;flex-wrap:wrap}
+.kicker{font-size:11px;font-weight:900;letter-spacing:.18em;color:#647b98}h1{font-size:36px;margin:6px 0}.muted{color:#647b98;font-size:14px}
+.grid{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}.card{background:#fff;border:1px solid #cfe2f7;border-radius:20px;padding:20px;box-shadow:0 18px 55px #1e50821a;margin-top:18px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.full{grid-column:1/-1}.field{display:flex;flex-direction:column;gap:7px;margin-top:14px}
+label{font-size:12px;font-weight:800;color:#46617f}input,select,textarea{width:100%;border:1px solid #cfe0f2;background:#f7fbff;color:#10233f;border-radius:11px;padding:11px;font:inherit;box-sizing:border-box}
+textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;padding:12px 18px;font-weight:800;cursor:pointer}.primary{background:linear-gradient(135deg,#1479e8,#3ba7ff);color:white}.secondary{background:#eaf4ff;color:#145ca8}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}.result{margin-top:14px;padding:14px 16px;background:#f5faff;border-left:4px solid #278cf0;border-radius:12px}
+.pill{display:inline-block;padding:5px 9px;border-radius:999px;background:#eaf4ff;color:#155b9e;border:1px solid #cce3f8;font-size:12px;margin:3px}
+.case{padding:13px;border:1px solid #d5e5f5;border-radius:13px;background:#fff;margin-top:10px}.drop{min-height:120px;margin-top:15px;border:1.5px dashed #8bb9e8;border-radius:15px;display:grid;place-items:center;text-align:center;background:#f4faff}
+@media(max-width:800px){.grid,.fields{grid-template-columns:1fr}.full{grid-column:auto}h1{font-size:30px}}
 </style>
 </head>
-<body>
-<div id="apple-seed-ai">
-<div class="wrap">
-<div class="top">
-<div><div class="kicker">APPLE SEED • ENGINEERING LAB</div><h1>AI Board Intelligence</h1><div class="muted">PANIC • Schematic • Boardview • Measurement • Case Intelligence</div></div>
-<div class="badges"><span class="badge">🪙 <span id="coins">1,250</span> COIN</span><span class="badge">● AI ONLINE</span></div>
-</div>
+<body><main class="wrap">
+<header class="top"><div><div class="kicker">APPLE SEED • ENGINEERING LAB</div><h1>AI Board Intelligence</h1><div class="muted">PANIC • Schematic • Boardview • Measurement • Case Intelligence</div></div><div><span class="pill">🪙 1,250 COIN</span><span class="pill">● AI ONLINE</span></div></header>
 
-<div class="grid">
-<section class="card">
-<h2>🧪 Diagnostic Workspace</h2><div class="muted">Build a complete repair case before asking AI.</div>
+<section class="grid">
+<div class="card"><h2>🧪 Diagnostic Workspace</h2><div class="muted">Tạo ca kỹ thuật và chuẩn bị dữ liệu cho AI.</div>
 <div class="fields">
-<div class="field"><label>Thiết bị</label><select id="model"><option>iPhone 14 Pro Max</option><option>iPhone 15 Pro Max</option><option>iPhone 13 Pro Max</option><option>iPhone 12 Pro Max</option></select></div>
+<div class="field"><label>Thiết bị</label><select><option>iPhone 14 Pro Max</option><option>iPhone 15 Pro Max</option><option>iPhone 13 Pro Max</option></select></div>
 <div class="field"><label>Loại lỗi</label><select><option>PANIC / Kernel</option><option>Boot / No Power</option><option>Baseband</option><option>Face ID</option><option>I2C / Sensor</option></select></div>
 <div class="field full"><label>PANIC LOG</label><textarea id="panic">panic 0x20000 compass</textarea></div>
 <div class="field"><label>Boot current</label><input placeholder="0.080A → 0.000A"></div>
 <div class="field"><label>Vbat / nguồn</label><input placeholder="4.20V"></div>
 <div class="field"><label>Diode / Resistance</label><input placeholder="Giá trị đo"></div>
 <div class="field"><label>I2C / SDA / SCL</label><input placeholder="Địa chỉ / tình trạng"></div>
-<div class="field full"><label>Ghi chú kỹ thuật viên</label><textarea placeholder="Hiện tượng, bước đã làm, linh kiện đã thay..."></textarea></div>
 </div>
-<div class="drop">📷<strong>Thả ảnh main / schematic / ZXW / boardview</strong><span class="muted">Module demo • Storage thật nối sau</span></div>
-<div class="actions"><button class="btn primary" id="analyze">⚡ PHÂN TÍCH AI · 10 COIN</button><button class="btn secondary" id="clear">Xóa dữ liệu</button></div>
-<div id="status" class="muted" style="margin-top:9px"></div>
+<div class="drop">📷<br><strong>Thả ảnh main / schematic / boardview</strong><br><span class="muted">Bước sau nối Supabase Storage</span></div>
+<div class="actions"><button class="btn primary" id="analyze">⚡ PHÂN TÍCH AI</button></div><div id="result" class="result">Chưa phân tích.</div></div>
+
+<div class="card"><h2>🧠 AI Diagnosis</h2><div class="muted">Evidence-first • không kết luận khi thiếu dữ liệu.</div>
+<div class="result"><strong>Case Intelligence</strong><div class="case"><b>iPhone 14 Pro Max · 0x20000 · Compass</b><div class="muted">Ưu tiên compass/sensor + I2C. Cần đo và đối chiếu board tốt.</div><span class="pill">I2C</span><span class="pill">PANIC</span></div></div>
+<h2 style="margin-top:22px">📐 Schematic Intelligence</h2><div class="fields"><div class="field"><label>Tài liệu</label><select><option>Schematic</option><option>Boardview / ZXW</option><option>Pinout</option><option>Ảnh main</option></select></div><div class="field"><label>Vùng / linh kiện</label><input placeholder="U5200 / I2C compass / PP_VDD"></div></div><div class="actions"><button class="btn primary">📐 ANALYZE SCHEMATIC</button></div></div>
 </section>
 
-<section class="card">
-<h2>🧠 AI Diagnosis</h2><div class="muted">Evidence-first analysis • không kết luận khi thiếu dữ liệu</div>
-<div id="result" class="result"><strong>Chưa phân tích</strong><p class="muted">Nhập PANIC/đo mạch rồi chạy AI.</p></div>
-<div style="margin-top:22px"><h2>📐 Schematic Intelligence</h2>
-<div class="fields">
-<div class="field"><label>Loại tài liệu</label><select id="stype"><option>Schematic</option><option>Boardview / ZXW</option><option>Ảnh main dưới kính</option><option>Ảnh đo diode / trở</option></select></div>
-<div class="field"><label>Vùng / linh kiện</label><input id="area" placeholder="U5200 / I2C compass / PP_VDD"></div>
-</div>
-<div class="actions"><button class="btn primary" id="schematic">📐 ANALYZE SCHEMATIC</button></div>
-<div id="sresult" class="result">Chưa có phân tích sơ đồ.</div>
-</div>
-</section>
-</div>
+<section class="card"><div class="kicker">LIBRARY</div><h2>📚 Schematic Library</h2><div class="muted">Kho sơ đồ theo từng model iPhone.</div>
+<div class="fields"><div class="case"><b>📁 iPhone 14 Pro Max</b><div class="muted">Schematic • Boardview • Pinout</div><span class="pill">12 files</span></div><div class="case"><b>📁 iPhone 15 Pro Max</b><div class="muted">Schematic • Boardview • Pinout</div><span class="pill">8 files</span></div><div class="case"><b>📁 iPhone 13 Pro Max</b><div class="muted">Schematic • Panic reference</div><span class="pill">15 files</span></div><div class="case"><b>📁 iPhone 12 Pro Max</b><div class="muted">Schematic • Pinout</div><span class="pill">6 files</span></div></div>
+<div class="actions"><input id="file" type="file" accept=".pdf,.jpg,.jpeg,.png,.zip,.rar,.brd,.asc,.fz,.sch"><button class="btn primary" id="upload">📥 Thêm vào thư viện</button></div><div id="uploadStatus" class="muted" style="margin-top:8px"></div></section>
 
-<section class="card" style="margin-top:18px">
-<h2>🗂️ Schematic Library</h2><div class="muted">Kho sơ đồ riêng theo từng dòng iPhone.</div>
-<div class="fields">
-<div class="case"><strong>📁 iPhone 14 Pro Max</strong><div class="muted">Schematic • Boardview • Pinout</div><span class="pill">12 files</span></div>
-<div class="case"><strong>📁 iPhone 15 Pro Max</strong><div class="muted">Schematic • Boardview • Pinout</div><span class="pill">8 files</span></div>
-<div class="case"><strong>📁 iPhone 13 Pro Max</strong><div class="muted">Schematic • Panic reference</div><span class="pill">15 files</span></div>
-<div class="case"><strong>📁 iPhone 12 Pro Max</strong><div class="muted">Schematic • Boardview • Pinout</div><span class="pill">6 files</span></div>
-</div>
-</section>
+<section class="card"><div class="kicker">COMMUNITY</div><h2>🚨 PANIC Control Center</h2><div class="muted">Đăng ca bệnh thực tế, theo dõi phản hồi và sau này xác minh thành Knowledge Base.</div>
+<div class="case"><b>iPhone 14 Pro Max · Panic 0x20000 · Compass</b><div class="muted">6 kỹ thuật viên đang theo dõi.</div><span class="pill">I2C</span><span class="pill">6 replies</span></div>
+<div class="actions"><button class="btn primary">＋ Đăng ca PANIC</button><button class="btn secondary">💬 Chat theo case</button><button class="btn secondary">🔒 Chat riêng</button></div></section>
 
-<section class="card" style="margin-top:18px">
-<div class="kicker">APPLE SEED COMMUNITY</div><h2 style="font-size:24px">🚨 PANIC Control Center</h2>
-<div class="muted">Chia sẻ bệnh thực tế, chat nhóm theo ca và tìm kỹ thuật viên.</div>
-<div class="fields">
-<div class="case"><strong>🚨 Chia sẻ PANIC bệnh thực tế</strong><p class="muted">Model, panic log, ảnh main, phép đo và kết quả sửa.</p><button class="btn primary" id="post">＋ Đăng ca PANIC</button></div>
-<div class="case"><strong>🔎 Tìm kỹ thuật viên</strong><input id="member" placeholder="Tên / nickname / chuyên môn" style="margin-top:8px"><div style="margin-top:8px"><span class="pill">🟢 Trung Repair</span><span class="pill">🟢 BoardLab VN</span><span class="pill">🟢 iPhone Doctor</span></div></div>
-</div>
-<div class="actions"><button class="btn secondary" id="chatBtn">💬 Mở chat demo</button></div>
-<div id="chat" class="chat result"><strong>💬 Phòng chat</strong><div class="muted">Sau này nối Supabase Realtime để chat online thật.</div><div style="display:flex;gap:8px;margin-top:9px"><input id="msg" placeholder="Trao đổi với anh em..."><button class="btn primary" id="send">Gửi</button></div><div id="sent" class="muted" style="margin-top:8px"></div></div>
-</section>
-</div>
-</div>
+<section class="card"><div class="kicker">ENGINEERING CENTER</div><h2>🗺️ Full System Map</h2><div class="fields">
+<div class="case"><b>🔬 AI Board Lab</b><div class="muted">PANIC • Measurement • I2C • RFFE</div></div>
+<div class="case"><b>📐 Schematic Library</b><div class="muted">Model → schematic → boardview → pinout</div></div>
+<div class="case"><b>🚨 PANIC Center</b><div class="muted">Case thật → thảo luận → xác minh</div></div>
+<div class="case"><b>💬 Technician Network</b><div class="muted">Online → nhóm → chat riêng</div></div>
+<div class="case"><b>🧠 Verified Knowledge</b><div class="muted">Case xác minh → AI knowledge</div></div>
+<div class="case"><b>🛡️ Admin Control</b><div class="muted">Duyệt case • thành viên • dữ liệu</div></div>
+</div></section>
+</main>
 <script>
-const $=id=>document.getElementById(id);
-$("analyze").onclick=()=>{const p=$("panic").value.trim();if(!p){$("status").textContent="Hãy nhập PANIC LOG.";return}$("result").innerHTML='<strong>🔎 Phân tích sơ bộ</strong><p>PANIC <b>'+p.replace(/[<>]/g,"")+'</b> → ưu tiên kiểm tra compass/sensor và đường I2C.</p><p><b>Chưa kết luận linh kiện.</b> Cần đối chiếu nguồn, trở và SDA/SCL với board tốt.</p><div class="meter"><span></span></div><div class="muted">Độ tin cậy demo: 50%</div>';$("coins").textContent="1,240";$("status").textContent="Demo AI hoàn tất."};
-$("schematic").onclick=()=>{$("sresult").innerHTML='<strong>🔬 Demo phân tích '+$("stype").value+'</strong><p>Khu vực: <b>'+($("area").value||"chưa chọn").replace(/[<>]/g,"")+'</b>.</p><span class="pill">Power rail</span><span class="pill">I2C / SDA / SCL</span><span class="pill">Component path</span>'};
-$("clear").onclick=()=>location.reload();
-$("post").onclick=()=>alert("Demo: form đăng PANIC thực tế.");
-$("chatBtn").onclick=()=>$("chat").classList.add("show");
-$("send").onclick=()=>{const v=$("msg").value.trim();if(!v)return;$("sent").textContent="Bạn: "+v+" • Demo realtime";$("msg").value=""};
+document.getElementById('analyze').onclick=()=>document.getElementById('result').innerHTML='<b>🔎 Phân tích sơ bộ</b><p>PANIC 0x20000 + compass → ưu tiên cụm compass/sensor và I2C. Chưa kết luận linh kiện.</p><span class="pill">Power</span><span class="pill">SDA/SCL</span><span class="pill">Board comparison</span>';
+document.getElementById('upload').onclick=()=>{const f=document.getElementById('file').files[0];document.getElementById('uploadStatus').textContent=f?'Đã chọn: '+f.name+' — giao diện sẵn sàng nối Storage thật.':'Chưa chọn file.'};
 </script>
-</body>
-</html>
+</body></html>
