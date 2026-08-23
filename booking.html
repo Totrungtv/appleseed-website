@@ -386,7 +386,85 @@ signupForm.onsubmit = async e => {
     b.textContent = '✨ Tạo tài khoản thành viên';
 
   }
-};
+
+  /*
+    ĐĂNG XUẤT THÀNH VIÊN
+    Booking tự xử lý trực tiếp để không phụ thuộc
+    member-auth.js có đúng phiên bản hay không.
+  */
+  const logoutBtn = document.getElementById('memberLogout');
+
+  if(logoutBtn){
+    logoutBtn.addEventListener('click', async () => {
+      clearErr();
+
+      if(logoutBtn.disabled) return;
+
+      logoutBtn.disabled = true;
+      logoutBtn.textContent = 'Đang đăng xuất...';
+
+      try{
+        if(!sb || !sb.auth){
+          throw new Error('Không kết nối được hệ thống đăng nhập.');
+        }
+
+        const { error: logoutError } = await sb.auth.signOut();
+
+        if(logoutError){
+          throw logoutError;
+        }
+
+        // Xóa trạng thái phụ của website nếu có.
+        try{
+          sessionStorage.removeItem('apple_seed_member');
+        }catch(e){}
+
+        try{
+          localStorage.removeItem('apple_seed_member');
+        }catch(e){}
+
+        // Cập nhật giao diện ngay lập tức.
+        loggedOut.style.display = 'block';
+        loggedIn.style.display = 'none';
+        area.classList.add('booking-locked');
+
+        // Xóa dữ liệu tự điền của tài khoản cũ.
+        const nameInput = document.getElementById('name');
+        const phoneInput = document.getElementById('phone');
+        if(nameInput) nameInput.value = '';
+        if(phoneInput) phoneInput.value = '';
+
+        document.getElementById('memberLoginEmail').value = '';
+        document.getElementById('memberLoginPassword').value = '';
+
+        showErr('Đã đăng xuất thành công.');
+
+        // Đợi Supabase hoàn tất event SIGNED_OUT rồi đồng bộ lại.
+        setTimeout(() => {
+          clearErr();
+          refresh();
+        }, 250);
+
+      }catch(x){
+        console.error('BOOKING LOGOUT ERROR:', x);
+        showErr(x?.message || 'Đăng xuất không thành công.');
+      }finally{
+        logoutBtn.disabled = false;
+        logoutBtn.textContent = 'Đăng xuất';
+      }
+    });
+  }
+
+  // Theo dõi thay đổi phiên đăng nhập để giao diện booking
+  // luôn đồng bộ với Supabase.
+  if(sb?.auth){
+    sb.auth.onAuthStateChange((event) => {
+      if(event === 'SIGNED_OUT' || event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED'){
+        setTimeout(refresh, 0);
+      }
+    });
+  }
+
   await refresh();
 })();
 </script>
