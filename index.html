@@ -959,7 +959,38 @@ img{-webkit-user-drag:none}
       grid.innerHTML='<p style="grid-column:1/-1;color:#b42318">Không thể tải bài viết dịch vụ.</p>';
     }
   }
+  function ensureBookingNav(){
+    const menu=document.querySelector('.menu');
+    if(!menu) return;
+
+    // Luôn giữ nút Đặt lịch, kể cả khi Admin/CMS không có mục này trong site_nav_items.
+    const hasBooking=[...menu.querySelectorAll(':scope > a')].some(a=>{
+      const href=(a.getAttribute('href')||'').toLowerCase();
+      const label=(a.textContent||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+      return href.includes('booking.html') || label.includes('dat lich');
+    });
+
+    if(hasBooking){
+      const existing=[...menu.querySelectorAll(':scope > a')].find(a=>{
+        const href=(a.getAttribute('href')||'').toLowerCase();
+        const label=(a.textContent||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+        return href.includes('booking.html') || label.includes('dat lich');
+      });
+      if(existing) existing.classList.add('booking-nav');
+      return;
+    }
+
+    const memberAuth=document.getElementById('memberAuthButtons');
+    const a=document.createElement('a');
+    a.className='booking-nav';
+    a.href='booking.html';
+    a.innerHTML='<span class="mi">📅</span><span>Đặt lịch</span>';
+    if(memberAuth) menu.insertBefore(a,memberAuth);
+    else menu.appendChild(a);
+  }
+
   function fixNavigation(){
+    ensureBookingNav();
     document.querySelectorAll('.menu a').forEach(a=>{
       const label=(a.textContent||'').normalize('NFD')
         .replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
@@ -1004,7 +1035,10 @@ img{-webkit-user-drag:none}
       menu.querySelectorAll(':scope > a').forEach(a=>a.remove());
       menu.insertAdjacentHTML('afterbegin',n.data.map(x=>`<a href="${esc(x.url||'#')}"><span class="mi">${esc(x.icon||'')}</span><span>${esc(x.label)}</span></a>`).join(''));
       if(memberAuth) menu.appendChild(memberAuth);
-    };fixNavigation();if(s.error||!s.data?.length){staticFallback();bindProductCards();fixNavigation();return}let html='';let contactRendered=false;for(const sec of s.data){if(sec.section_type==='products'){html+=await productsHtml();continue}if(sec.section_type==='map'||sec.section_type==='contact'){if(contactRendered)continue;contactRendered=true;html+=sec.section_type==='contact'?contactHtml():renderSection(sec);continue}html+=renderSection(sec)}root.innerHTML=html+(contactRendered?'':contactHtml());
+    }
+      // CMS có thể trả về danh sách nav thiếu Đặt lịch -> tự bổ sung lại.
+      ensureBookingNav();
+      fixNavigation();if(s.error||!s.data?.length){staticFallback();bindProductCards();fixNavigation();return}let html='';let contactRendered=false;for(const sec of s.data){if(sec.section_type==='products'){html+=await productsHtml();continue}if(sec.section_type==='map'||sec.section_type==='contact'){if(contactRendered)continue;contactRendered=true;html+=sec.section_type==='contact'?contactHtml():renderSection(sec);continue}html+=renderSection(sec)}root.innerHTML=html+(contactRendered?'':contactHtml());
       fixNavigation();
       bindProductCards();
       await loadDynamicPages();
