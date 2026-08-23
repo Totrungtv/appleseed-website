@@ -513,6 +513,94 @@ async function memberSignIn(
   return user;
 
 }
+/* =========================================================
+   QUÊN MẬT KHẨU
+   ========================================================= */
+
+async function memberForgotPassword(email){
+
+  memberCheckSB();
+
+  const cleanEmail =
+    String(email || '').trim();
+
+  if(!cleanEmail){
+    throw new Error(
+      'Vui lòng nhập email.'
+    );
+  }
+
+  const result =
+    await memberSB.auth.resetPasswordForEmail(
+      cleanEmail,
+      {
+        redirectTo:
+          'https://appleseedtravinh.com/reset-password.html'
+      }
+    );
+
+  if(result.error){
+
+    console.error(
+      'memberForgotPassword error:',
+      result.error
+    );
+
+    throw new Error(
+      result.error.message ||
+      'Không thể gửi email đặt lại mật khẩu.'
+    );
+  }
+
+  return result.data;
+}
+
+
+/* =========================================================
+   ĐỔI MẬT KHẨU SAU KHI BẤM LINK EMAIL
+   ========================================================= */
+
+async function memberUpdatePassword(
+  newPassword
+){
+
+  memberCheckSB();
+
+  const password =
+    String(newPassword || '');
+
+  if(!password){
+    throw new Error(
+      'Vui lòng nhập mật khẩu mới.'
+    );
+  }
+
+  if(password.length < 6){
+    throw new Error(
+      'Mật khẩu mới phải có ít nhất 6 ký tự.'
+    );
+  }
+
+  const result =
+    await memberSB.auth.updateUser({
+      password:password
+    });
+
+  if(result.error){
+
+    console.error(
+      'memberUpdatePassword error:',
+      result.error
+    );
+
+    throw new Error(
+      result.error.message ||
+      'Không thể đổi mật khẩu.'
+    );
+  }
+
+  return result.data;
+}
 
 
 /* =========================================================
@@ -903,3 +991,8 @@ window.memberIsEmailConfirmed =
 
 window.memberOnAuthStateChange =
   memberOnAuthStateChange;
+window.memberForgotPassword =
+  memberForgotPassword;
+
+window.memberUpdatePassword =
+  memberUpdatePassword;
