@@ -419,7 +419,35 @@ async function memberLogout(){
    QUÊN MẬT KHẨU
    GỬI LINK VÀO GMAIL
    ========================================================= */
+async function memberResendSignupEmail(email){
 
+  memberCheckSB();
+
+  const cleanEmail =
+    String(email || '')
+      .trim()
+      .toLowerCase();
+
+  if(!cleanEmail){
+    throw new Error('Vui lòng nhập email tài khoản.');
+  }
+
+  const result =
+    await memberSB.auth.resend({
+      type: 'signup',
+      email: cleanEmail,
+      options: {
+        emailRedirectTo:
+          window.location.origin
+      }
+    });
+
+  if(result.error){
+    throw result.error;
+  }
+
+  return true;
+}
 async function memberForgotPassword(
   email
 ){
