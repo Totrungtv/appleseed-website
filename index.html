@@ -229,7 +229,7 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
 .chat-input{display:flex;gap:8px;padding:10px;border-top:1px solid #e6eaf1}
 .chat-input input{min-width:0;flex:1;border:1px solid #d9dfeb;border-radius:10px;padding:10px 12px;outline:none}
 .chat-input button{border:0;background:var(--blue);color:#fff;border-radius:10px;padding:0 15px;font-weight:800;cursor:pointer}
-.chat-booking{
+.chat-booking{position:static!important;float:none!important;clear:both!important;transform:none!important;
   display:inline-flex;
   align-items:center;
   justify-content:center;
@@ -1110,48 +1110,5 @@ form.onsubmit=e=>{
  },220);
 };
 </script>
-
-<style id="apple-seed-booking-only-inside-chat">
-/* CHỈ giữ nút Đặt lịch bên trong robot */
-#chatBox .chat-booking{display:inline-flex!important}
-</style>
-<script id="apple-seed-remove-floating-booking">
-(function(){
-  function cleanBookingButtons(){
-    document.querySelectorAll('a,button,[role="button"]').forEach(function(el){
-      if(el.closest('#chatBox')) return;
-
-      var text=(el.textContent||'')
-        .replace(/\s+/g,' ')
-        .replace(/^[\s📅🗓️📆]+|[\s]+$/g,'')
-        .trim();
-
-      if(text !== 'Đặt lịch sửa') return;
-
-      // Xoá chính nút nếu nó nằm ngoài robot.
-      el.remove();
-    });
-  }
-
-  // Chạy ngay + sau khi CMS/Supabase render.
-  cleanBookingButtons();
-
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', cleanBookingButtons);
-  }
-
-  window.addEventListener('load', cleanBookingButtons);
-
-  var observer = new MutationObserver(function(){
-    cleanBookingButtons();
-  });
-
-  observer.observe(document.documentElement,{
-    childList:true,
-    subtree:true
-  });
-})();
-</script>
-
 </body>
 </html>
