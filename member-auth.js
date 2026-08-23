@@ -12,7 +12,9 @@ const member$ = id => document.getElementById(id);
    CẤU HÌNH
    ========================================================= */
 
-const MEMBER_SITE_URL = 'https://appleseedtravinh.com/index.html';
+// URL WEBSITE THẬT CỦA APPLE SEED
+// TUYỆT ĐỐI KHÔNG DÙNG localhost
+const MEMBER_SITE_URL = 'https://appleseedtravinh.com/';
 
 
 /* =========================================================
@@ -615,8 +617,8 @@ async function memberSignUp(
 
         /*
           Supabase sẽ đưa khách về
-          trang chủ sau khi bấm link
-          xác nhận trong email.
+          website Apple Seed sau khi
+          bấm link xác nhận trong email.
         */
 
         emailRedirectTo:
