@@ -1,5 +1,5 @@
 /* =========================================================
-   APPLE SEED MEMBER AUTH - VIP FULL
+   APPLE SEED MEMBER AUTH - VIP FULL FIX
    Đăng ký / Xác nhận email / Đăng nhập / Đăng xuất
    Quên mật khẩu / Gửi lại email / Đổi mật khẩu
    ========================================================= */
@@ -103,12 +103,19 @@ async function memberEnsureProfile(
     return null;
   }
 
+
+  /* -------------------------------------------------------
+     Lấy dữ liệu từ tham số trước,
+     nếu không có thì lấy từ user_metadata
+     ------------------------------------------------------- */
+
   const name =
     String(
       fullName ||
       user.user_metadata?.full_name ||
       ''
     ).trim();
+
 
   const mobile =
     String(
@@ -117,9 +124,62 @@ async function memberEnsureProfile(
       ''
     ).trim();
 
+
+  /* -------------------------------------------------------
+     Nếu không có số điện thoại:
+
+     KHÔNG upsert record mới vì database của Apple Seed
+     đang có CHECK CONSTRAINT bắt buộc phone.
+
+     Nếu record đã tồn tại thì lấy record cũ.
+     ------------------------------------------------------- */
+
+  if(!mobile){
+
+    try{
+
+      const existing =
+        await memberSB
+          .from('customer_members')
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+
+      if(existing.error){
+
+        console.warn(
+          'Apple Seed customer_members select:',
+          existing.error
+        );
+
+        return null;
+      }
+
+
+      return existing.data || null;
+
+    }catch(error){
+
+      console.warn(
+        'Apple Seed profile lookup:',
+        error
+      );
+
+      return null;
+    }
+
+  }
+
+
+  /* -------------------------------------------------------
+     Có số điện thoại mới cập nhật / tạo profile
+     ------------------------------------------------------- */
+
   const payload = {
 
-    user_id: user.id,
+    user_id:
+      user.id,
 
     full_name:
       name || 'Khách hàng',
@@ -142,28 +202,78 @@ async function memberEnsureProfile(
       .upsert(
         payload,
         {
-          onConflict:'user_id'
+          onConflict:
+            'user_id'
         }
       );
 
 
   if(result.error){
 
-    /*
-      Không chặn đăng nhập nếu profile lỗi.
-      Auth vẫn hoạt động bình thường.
-    */
-
     console.warn(
       'Apple Seed customer_members:',
       result.error
     );
 
+    /*
+      Không chặn Supabase Auth chỉ vì
+      bảng customer_members bị lỗi.
+    */
+
     return null;
   }
 
 
-  return result.data;
+  return result.data || null;
+
+}
+
+
+/* =========================================================
+   AUTH STATE CHANGE
+   ========================================================= */
+
+function memberOnAuthStateChange(
+  callback
+){
+
+  memberCheckSB();
+
+
+  return memberSB.auth.onAuthStateChange(
+    (event, session) => {
+
+      try{
+
+        console.log(
+          'Apple Seed Auth:',
+          event
+        );
+
+
+        if(
+          typeof callback ===
+          'function'
+        ){
+
+          callback(
+            event,
+            session
+          );
+
+        }
+
+      }catch(error){
+
+        console.error(
+          'Apple Seed auth callback:',
+          error
+        );
+
+      }
+
+    }
+  );
 
 }
 
@@ -171,32 +281,6 @@ async function memberEnsureProfile(
 /* =========================================================
    ĐĂNG KÝ
    ========================================================= */
-function memberOnAuthStateChange(callback){
-
-  memberCheckSB();
-
-  if(!memberSB || !memberSB.auth){
-    console.error(
-      'Apple Seed: Supabase Auth chưa sẵn sàng.'
-    );
-    return null;
-  }
-
-  return memberSB.auth.onAuthStateChange(
-    (event, session) => {
-
-      console.log(
-        'Apple Seed Auth:',
-        event
-      );
-
-      if(typeof callback === 'function'){
-        callback(event, session);
-      }
-
-    }
-  );
-}
 
 async function memberSignUp(
   fullName,
@@ -209,21 +293,29 @@ async function memberSignUp(
 
 
   const cleanName =
-    String(fullName || '').trim();
+    String(
+      fullName || ''
+    ).trim();
 
 
   const cleanPhone =
-    String(phone || '').trim();
+    String(
+      phone || ''
+    ).trim();
 
 
   const cleanEmail =
-    String(email || '')
+    String(
+      email || ''
+    )
       .trim()
       .toLowerCase();
 
 
   const cleanPassword =
-    String(password || '');
+    String(
+      password || ''
+    );
 
 
   if(!cleanName){
@@ -265,9 +357,11 @@ async function memberSignUp(
   const result =
     await memberSB.auth.signUp({
 
-      email: cleanEmail,
+      email:
+        cleanEmail,
 
-      password: cleanPassword,
+      password:
+        cleanPassword,
 
       options: {
 
@@ -297,10 +391,10 @@ async function memberSignUp(
   }
 
 
-  /*
-    Nếu Supabase cho session ngay,
-    tạo profile luôn.
-  */
+  /* -------------------------------------------------------
+     Nếu Supabase trả session ngay
+     thì tạo profile.
+     ------------------------------------------------------- */
 
   if(
     result.data?.user &&
@@ -334,13 +428,17 @@ async function memberSignIn(
 
 
   const cleanEmail =
-    String(email || '')
+    String(
+      email || ''
+    )
       .trim()
       .toLowerCase();
 
 
   const cleanPassword =
-    String(password || '');
+    String(
+      password || ''
+    );
 
 
   if(!cleanEmail){
@@ -384,10 +482,18 @@ async function memberSignIn(
   }
 
 
+  /* -------------------------------------------------------
+     Sau khi đăng nhập:
+     cố cập nhật profile nếu metadata có phone.
+     Nếu không có phone thì không làm hỏng đăng nhập.
+     ------------------------------------------------------- */
+
   if(result.data?.user){
 
     await memberEnsureProfile(
-      result.data.user
+      result.data.user,
+      result.data.user.user_metadata?.full_name || '',
+      result.data.user.user_metadata?.phone || ''
     );
 
   }
@@ -422,18 +528,20 @@ async function memberLogout(){
   }
 
 
-  /*
-    Không xóa dữ liệu website.
-    Chỉ kết thúc phiên đăng nhập.
-  */
-
   try{
 
     sessionStorage.removeItem(
       'apple_seed_member'
     );
 
-  }catch(e){}
+  }catch(error){
+
+    console.warn(
+      'Apple Seed sessionStorage:',
+      error
+    );
+
+  }
 
 
   return true;
@@ -442,39 +550,10 @@ async function memberLogout(){
 
 
 /* =========================================================
-   QUÊN MẬT KHẨU
-   GỬI LINK VÀO GMAIL
+   GỬI LẠI EMAIL ĐĂNG KÝ
    ========================================================= */
-async function memberResendSignupEmail(email){
 
-  memberCheckSB();
-
-  const cleanEmail =
-    String(email || '')
-      .trim()
-      .toLowerCase();
-
-  if(!cleanEmail){
-    throw new Error('Vui lòng nhập email tài khoản.');
-  }
-
-  const result =
-    await memberSB.auth.resend({
-      type: 'signup',
-      email: cleanEmail,
-      options: {
-        emailRedirectTo:
-          window.location.origin
-      }
-    });
-
-  if(result.error){
-    throw result.error;
-  }
-
-  return true;
-}
-async function memberForgotPassword(
+async function memberResendSignupEmail(
   email
 ){
 
@@ -482,7 +561,9 @@ async function memberForgotPassword(
 
 
   const cleanEmail =
-    String(email || '')
+    String(
+      email || ''
+    )
       .trim()
       .toLowerCase();
 
@@ -496,13 +577,75 @@ async function memberForgotPassword(
   }
 
 
-  /*
-    Link trong Gmail sẽ quay về:
-    https://appleseedtravinh.com/reset-password.html
+  const result =
+    await memberSB.auth.resend({
 
-    Dùng origin để khi test localhost cũng
-    tự lấy đúng domain hiện tại.
-  */
+      type:
+        'signup',
+
+      email:
+        cleanEmail,
+
+      options: {
+
+        emailRedirectTo:
+          window.location.origin
+
+      }
+
+    });
+
+
+  if(result.error){
+
+    console.error(
+      'Apple Seed resend signup email:',
+      result.error
+    );
+
+    throw result.error;
+  }
+
+
+  return true;
+
+}
+
+
+/* =========================================================
+   QUÊN MẬT KHẨU
+   GỬI LINK RESET VÀO GMAIL
+   ========================================================= */
+
+async function memberForgotPassword(
+  email
+){
+
+  memberCheckSB();
+
+
+  const cleanEmail =
+    String(
+      email || ''
+    )
+      .trim()
+      .toLowerCase();
+
+
+  if(!cleanEmail){
+
+    throw new Error(
+      'Vui lòng nhập email tài khoản.'
+    );
+
+  }
+
+
+  /* -------------------------------------------------------
+     Link trong Gmail sẽ đưa khách về:
+
+     https://appleseedtravinh.com/reset-password.html
+     ------------------------------------------------------- */
 
   const redirectUrl =
     window.location.origin +
@@ -557,7 +700,9 @@ async function memberUpdatePassword(
 
 
   const cleanPassword =
-    String(newPassword || '');
+    String(
+      newPassword || ''
+    );
 
 
   if(!cleanPassword){
@@ -615,7 +760,9 @@ async function memberResendConfirmation(
 
 
   const cleanEmail =
-    String(email || '')
+    String(
+      email || ''
+    )
       .trim()
       .toLowerCase();
 
@@ -630,16 +777,15 @@ async function memberResendConfirmation(
 
 
   const result =
-    await memberSB.auth
-      .resend({
+    await memberSB.auth.resend({
 
-        type:
-          'signup',
+      type:
+        'signup',
 
-        email:
-          cleanEmail
+      email:
+        cleanEmail
 
-      });
+    });
 
 
   if(result.error){
@@ -739,41 +885,74 @@ function memberListenAuthState(
 window.memberSB =
   memberSB;
 
+
 window.memberEsc =
   memberEsc;
+
 
 window.memberCheckSB =
   memberCheckSB;
 
+
 window.getMemberSession =
   getMemberSession;
+
 
 window.getMemberUser =
   getMemberUser;
 
+
 window.memberEnsureProfile =
   memberEnsureProfile;
+
 
 window.memberSignUp =
   memberSignUp;
 
+
 window.memberSignIn =
   memberSignIn;
+
 
 window.memberLogout =
   memberLogout;
 
+
 window.memberForgotPassword =
   memberForgotPassword;
+
 
 window.memberUpdatePassword =
   memberUpdatePassword;
 
+
 window.memberResendConfirmation =
   memberResendConfirmation;
 
+
+/*
+  QUAN TRỌNG:
+  index.html đang gọi memberResendSignupEmail
+  nên phải export đúng tên này.
+*/
+
+window.memberResendSignupEmail =
+  memberResendSignupEmail;
+
+
+/*
+  QUAN TRỌNG:
+  index.html đang gọi memberOnAuthStateChange
+  nên phải export đúng tên này.
+*/
+
+window.memberOnAuthStateChange =
+  memberOnAuthStateChange;
+
+
 window.memberRefreshSession =
   memberRefreshSession;
+
 
 window.memberListenAuthState =
   memberListenAuthState;
@@ -784,5 +963,5 @@ window.memberListenAuthState =
    ========================================================= */
 
 console.log(
-  '✅ Apple Seed Member Auth VIP loaded.'
+  '✅ Apple Seed Member Auth VIP FIX loaded.'
 );
