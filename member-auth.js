@@ -171,6 +171,32 @@ async function memberEnsureProfile(
 /* =========================================================
    ĐĂNG KÝ
    ========================================================= */
+function memberOnAuthStateChange(callback){
+
+  memberCheckSB();
+
+  if(!memberSB || !memberSB.auth){
+    console.error(
+      'Apple Seed: Supabase Auth chưa sẵn sàng.'
+    );
+    return null;
+  }
+
+  return memberSB.auth.onAuthStateChange(
+    (event, session) => {
+
+      console.log(
+        'Apple Seed Auth:',
+        event
+      );
+
+      if(typeof callback === 'function'){
+        callback(event, session);
+      }
+
+    }
+  );
+}
 
 async function memberSignUp(
   fullName,
