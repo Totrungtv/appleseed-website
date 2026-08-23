@@ -1,5 +1,5 @@
 /* =========================================================
-   APPLE SEED MEMBER AUTH - VIP FULL FIX
+   APPLE SEED MEMBER AUTH - VIP FULL FIX V8
    Đăng ký / Xác nhận email / Đăng nhập / Đăng xuất
    Quên mật khẩu / Gửi lại email / Đổi mật khẩu
    ========================================================= */
@@ -103,19 +103,12 @@ async function memberEnsureProfile(
     return null;
   }
 
-
-  /* -------------------------------------------------------
-     Lấy dữ liệu từ tham số trước,
-     nếu không có thì lấy từ user_metadata
-     ------------------------------------------------------- */
-
   const name =
     String(
       fullName ||
       user.user_metadata?.full_name ||
       ''
     ).trim();
-
 
   const mobile =
     String(
@@ -125,14 +118,8 @@ async function memberEnsureProfile(
     ).trim();
 
 
-  /* -------------------------------------------------------
-     Nếu không có số điện thoại:
-
-     KHÔNG upsert record mới vì database của Apple Seed
-     đang có CHECK CONSTRAINT bắt buộc phone.
-
-     Nếu record đã tồn tại thì lấy record cũ.
-     ------------------------------------------------------- */
+  /* Nếu chưa có phone thì không tạo record
+     vì DB đang bắt buộc phone */
 
   if(!mobile){
 
@@ -145,7 +132,6 @@ async function memberEnsureProfile(
           .eq('user_id', user.id)
           .maybeSingle();
 
-
       if(existing.error){
 
         console.warn(
@@ -155,7 +141,6 @@ async function memberEnsureProfile(
 
         return null;
       }
-
 
       return existing.data || null;
 
@@ -168,13 +153,8 @@ async function memberEnsureProfile(
 
       return null;
     }
-
   }
 
-
-  /* -------------------------------------------------------
-     Có số điện thoại mới cập nhật / tạo profile
-     ------------------------------------------------------- */
 
   const payload = {
 
@@ -205,7 +185,9 @@ async function memberEnsureProfile(
           onConflict:
             'user_id'
         }
-      );
+      )
+      .select()
+      .single();
 
 
   if(result.error){
@@ -215,17 +197,11 @@ async function memberEnsureProfile(
       result.error
     );
 
-    /*
-      Không chặn Supabase Auth chỉ vì
-      bảng customer_members bị lỗi.
-    */
-
     return null;
   }
 
 
   return result.data || null;
-
 }
 
 
@@ -239,7 +215,6 @@ function memberOnAuthStateChange(
 
   memberCheckSB();
 
-
   return memberSB.auth.onAuthStateChange(
     (event, session) => {
 
@@ -250,10 +225,8 @@ function memberOnAuthStateChange(
           event
         );
 
-
         if(
-          typeof callback ===
-          'function'
+          typeof callback === 'function'
         ){
 
           callback(
@@ -274,7 +247,6 @@ function memberOnAuthStateChange(
 
     }
   );
-
 }
 
 
@@ -365,6 +337,9 @@ async function memberSignUp(
 
       options: {
 
+        emailRedirectTo:
+          window.location.origin,
+
         data: {
 
           full_name:
@@ -391,10 +366,10 @@ async function memberSignUp(
   }
 
 
-  /* -------------------------------------------------------
-     Nếu Supabase trả session ngay
-     thì tạo profile.
-     ------------------------------------------------------- */
+  /*
+    Nếu Supabase trả session ngay
+    thì tạo customer_members.
+  */
 
   if(
     result.data?.user &&
@@ -411,7 +386,6 @@ async function memberSignUp(
 
 
   return result.data;
-
 }
 
 
@@ -478,15 +452,47 @@ async function memberSignIn(
       result.error
     );
 
+    const message =
+      String(
+        result.error.message || ''
+      ).toLowerCase();
+
+
+    if(
+      message.includes(
+        'email not confirmed'
+      )
+    ){
+
+      throw new Error(
+        'Email chưa được xác nhận. Hãy mở Gmail và bấm link xác nhận tài khoản trước khi đăng nhập.'
+      );
+
+    }
+
+
+    if(
+      message.includes(
+        'invalid login credentials'
+      )
+    ){
+
+      throw new Error(
+        'Email hoặc mật khẩu không đúng. Nếu quên mật khẩu, hãy bấm “Quên mật khẩu?” để đặt lại mật khẩu.'
+      );
+
+    }
+
+
     throw result.error;
   }
 
 
-  /* -------------------------------------------------------
-     Sau khi đăng nhập:
-     cố cập nhật profile nếu metadata có phone.
-     Nếu không có phone thì không làm hỏng đăng nhập.
-     ------------------------------------------------------- */
+  /*
+    Đăng nhập thành công thì cập nhật profile.
+    Lỗi customer_members không được
+    làm hỏng đăng nhập.
+  */
 
   if(result.data?.user){
 
@@ -500,7 +506,6 @@ async function memberSignIn(
 
 
   return result.data;
-
 }
 
 
@@ -545,7 +550,6 @@ async function memberLogout(){
 
 
   return true;
-
 }
 
 
@@ -608,13 +612,11 @@ async function memberResendSignupEmail(
 
 
   return true;
-
 }
 
 
 /* =========================================================
    QUÊN MẬT KHẨU
-   GỬI LINK RESET VÀO GMAIL
    ========================================================= */
 
 async function memberForgotPassword(
@@ -641,12 +643,6 @@ async function memberForgotPassword(
   }
 
 
-  /* -------------------------------------------------------
-     Link trong Gmail sẽ đưa khách về:
-
-     https://appleseedtravinh.com/reset-password.html
-     ------------------------------------------------------- */
-
   const redirectUrl =
     window.location.origin +
     '/reset-password.html';
@@ -661,14 +657,11 @@ async function memberForgotPassword(
   const result =
     await memberSB.auth
       .resetPasswordForEmail(
-
         cleanEmail,
-
         {
           redirectTo:
             redirectUrl
         }
-
       );
 
 
@@ -684,12 +677,11 @@ async function memberForgotPassword(
 
 
   return true;
-
 }
 
 
 /* =========================================================
-   ĐỔI MẬT KHẨU SAU KHI BẤM LINK GMAIL
+   ĐỔI MẬT KHẨU
    ========================================================= */
 
 async function memberUpdatePassword(
@@ -744,7 +736,6 @@ async function memberUpdatePassword(
 
 
   return result.data?.user || null;
-
 }
 
 
@@ -800,7 +791,6 @@ async function memberResendConfirmation(
 
 
   return true;
-
 }
 
 
@@ -829,7 +819,6 @@ async function memberRefreshSession(){
 
 
   return result.data?.session || null;
-
 }
 
 
@@ -874,7 +863,41 @@ function memberListenAuthState(
     }
 
   );
+}
 
+
+/* =========================================================
+   DIAGNOSTIC
+   ========================================================= */
+
+async function memberDebug(){
+
+  memberCheckSB();
+
+
+  const sessionResult =
+    await memberSB.auth.getSession();
+
+
+  const userResult =
+    await memberSB.auth.getUser();
+
+
+  return {
+
+    session:
+      sessionResult.data?.session || null,
+
+    user:
+      userResult.data?.user || null,
+
+    sessionError:
+      sessionResult.error || null,
+
+    userError:
+      userResult.error || null
+
+  };
 }
 
 
@@ -930,21 +953,9 @@ window.memberResendConfirmation =
   memberResendConfirmation;
 
 
-/*
-  QUAN TRỌNG:
-  index.html đang gọi memberResendSignupEmail
-  nên phải export đúng tên này.
-*/
-
 window.memberResendSignupEmail =
   memberResendSignupEmail;
 
-
-/*
-  QUAN TRỌNG:
-  index.html đang gọi memberOnAuthStateChange
-  nên phải export đúng tên này.
-*/
 
 window.memberOnAuthStateChange =
   memberOnAuthStateChange;
@@ -958,10 +969,14 @@ window.memberListenAuthState =
   memberListenAuthState;
 
 
+window.memberDebug =
+  memberDebug;
+
+
 /* =========================================================
    READY
    ========================================================= */
 
 console.log(
-  '✅ Apple Seed Member Auth VIP FIX loaded.'
+  '✅ Apple Seed Member Auth VIP V8 loaded.'
 );
