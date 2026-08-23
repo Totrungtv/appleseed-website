@@ -519,38 +519,47 @@ async function memberSignIn(
    ĐĂNG KÝ
    ========================================================= */
 
-async function memberSignUp(
-  fullName,
-  phone,
-  email,
-  password
+async function memberResendSignupEmail(
+  email
 ){
-
   memberCheckSB();
 
-
-  const cleanName =
-    String(
-      fullName || ''
-    ).trim();
-
-
-  const cleanPhone =
-    String(
-      phone || ''
-    ).trim();
-
-
   const cleanEmail =
-    String(
-      email || ''
-    ).trim();
+    String(email || '').trim();
 
-
-  const cleanPassword =
-    String(
-      password || ''
+  if(!cleanEmail){
+    throw new Error(
+      'Vui lòng nhập email.'
     );
+  }
+
+  const result =
+    await memberSB.auth.resend({
+      type:'signup',
+
+      email:cleanEmail,
+
+      options:{
+        emailRedirectTo:
+          MEMBER_SITE_URL
+      }
+    });
+
+  if(result.error){
+
+    console.error(
+      'memberResendSignupEmail error:',
+      result.error
+    );
+
+    throw new Error(
+      result.error.message ||
+      'Không thể gửi lại email xác nhận.'
+    );
+  }
+
+  return result.data;
+}
 
 
   /* -----------------------------------------
