@@ -218,6 +218,8 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
 .product-modal-thumbs img{display:block;width:100%;height:72px;object-fit:cover}
 @media(max-width:900px){.products-home-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.products-home-grid{grid-template-columns:1fr}.product-home-photo{width:74px;height:74px}.product-modal{padding:10px}.product-modal-main{height:45vh}.product-modal-thumbs{grid-template-columns:repeat(4,1fr)}}
+.booking-nav{display:inline-flex;align-items:center;justify-content:center;gap:7px;background:var(--blue);color:#fff!important;padding:10px 14px;border-radius:9px;font-weight:850;box-shadow:0 6px 16px rgba(23,105,255,.18);white-space:nowrap}
+.booking-nav:hover{filter:brightness(.96)}
 .chat-btn{position:fixed;right:24px;bottom:24px;width:58px;height:58px;border:0;border-radius:50%;background:#1769ff;color:#fff;display:grid;place-items:center;font-size:27px;box-shadow:0 12px 28px rgba(23,105,255,.3);z-index:1000;cursor:pointer}
 .chat-box{position:fixed;right:24px;bottom:94px;width:350px;max-width:calc(100vw - 32px);height:440px;background:#fff;border:1px solid #e2e7f0;border-radius:18px;box-shadow:0 20px 55px rgba(23,37,66,.2);display:none;flex-direction:column;overflow:hidden;z-index:1000}
 .chat-box.open{display:flex}
@@ -263,6 +265,16 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
   .menu a span:last-child{display:none}.hero{padding:28px 16px}h1{font-size:36px}.lead{font-size:16px}
   .trust{grid-template-columns:1fr}.service-grid{grid-template-columns:1fr}.services,.contact{padding-left:16px;padding-right:16px}
 }
+
+/* ===== APPLE SEED - TRANG DICH VU DONG ===== */
+.dynamic-pages-section .dynamic-pages-grid{max-width:1160px;margin:0 auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;text-align:left}
+.dynamic-pages-section .page-card{display:block;padding:20px;border:1px solid var(--line);border-radius:14px;background:#fff;box-shadow:0 8px 24px rgba(35,54,91,.08);transition:.18s ease}
+.dynamic-pages-section .page-card:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(35,54,91,.13);border-color:#cfdcff}
+.dynamic-pages-section .page-card h3{margin:0 0 8px;font-size:16px;color:var(--ink);line-height:1.35}
+.dynamic-pages-section .page-card p{margin:0;color:#718096;font-size:13px;line-height:1.55}
+.dynamic-pages-section .page-more{display:inline-block;margin-top:12px;color:var(--blue);font-size:12px;font-weight:850}
+@media(max-width:900px){.dynamic-pages-section .dynamic-pages-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.dynamic-pages-section .dynamic-pages-grid{grid-template-columns:1fr}}
 
 /* ===== APPLE SEED MEMBER AUTH ===== */
 .member-auth-buttons{display:flex;align-items:center;gap:8px;margin-left:4px}
@@ -331,6 +343,7 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
 <a href="products.html"><span class="mi">🛍</span><span>Sản phẩm</span></a>
 <a href="#gioi-thieu"><span class="mi">ⓘ</span><span>Giới thiệu</span></a>
 <a href="#lien-he"><span class="mi">☎</span><span>Liên hệ</span></a>
+<a class="booking-nav" href="booking.html"><span class="mi">📅</span><span>Đặt lịch</span></a>
 
 <div class="member-auth-buttons" id="memberAuthButtons">
   <button class="member-auth-btn" type="button" id="memberHomeLoginBtn">🔐 Đăng nhập</button>
@@ -844,14 +857,83 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
 
   function renderSection(s){
     // ID điều hướng phải cố định theo loại section.
-    // section_key trong Admin có thể là tên tùy ý, không được để nó
-    // làm mất các điểm neo mà menu #dich-vu/#gioi-thieu/#lien-he đang dùng.
     let rawId='';
     if(s.section_type==='services') rawId='dich-vu';
     else if(s.section_type==='hero') rawId='gioi-thieu';
     else if(s.section_type==='map'||s.section_type==='contact') rawId='lien-he';
+    else if(s.section_type==='pages'||s.section_key==='dynamic-pages') rawId='trang-dich-vu';
     else rawId=s.section_key||'';
-    const id=esc(rawId);const bg=s.bg_color||'';const color=s.text_color||'';const accent=s.accent_color||'';const style=`${bg?`background:${esc(bg)};`:''}${color?`color:${esc(color)};`:''}${accent?`--blue:${esc(accent)};`:''}`;const content=s.content_html?safeHtml(s.content_html):'';const image=s.image_url?`<img class="shop-photo" src="${esc(s.image_url)}" alt="${esc(s.image_alt||s.title||'Apple Seed')}">`:'';const button=s.button_text?`<a class="cta" href="${esc(s.button_url||'#')}">${esc(s.button_text)}</a>`:'';if(s.section_type==='hero')return `<section class="hero" id="${id}" style="${style}"><div class="hero-inner"><div>${image}</div><div>${s.eyebrow?`<div class="eyebrow">${esc(s.eyebrow)}</div>`:''}<h1>${esc(s.title||'')}</h1>${s.subtitle?`<p class="lead">${esc(s.subtitle)}</p>`:''}${content?`<div class="lead">${content}</div>`:''}${button}</div></div></section>`;if(s.section_type==='services')return `<section class="services" id="${id}" style="${style}"><div class="section-kicker">${esc(s.eyebrow||'DỊCH VỤ')}</div><h2>${esc(s.title||'')}</h2><div class="service-grid">${content?`<div style="grid-column:1/-1;text-align:left">${content}</div>`:''}</div></section>`;if(s.section_type==='map')return `<section class="contact" id="${id}" style="${style}"><div class="contact-inner"><div class="contact-card"><div class="section-kicker">${esc(s.eyebrow||'LIÊN HỆ')}</div><h2>${esc(s.title||'Apple Seed Trà Vinh')}</h2><div>${content}</div></div><div class="map-card"><div class="map-title">${esc(s.subtitle||'📍 Vị trí Apple Seed Trà Vinh')}</div><iframe title="Google Maps Apple Seed Trà Vinh" src="https://www.google.com/maps?q=AppleSeed%20292%20Ph%E1%BA%A1m%20Ng%C5%A9%20L%C3%A3o%20Tr%C3%A0%20Vinh&output=embed" loading="lazy"></iframe></div></div></section>`;return `<section class="services" id="${id}" style="${style}"><div class="section-kicker">${esc(s.eyebrow||'')}</div><h2>${esc(s.title||'')}</h2>${s.subtitle?`<p class="lead" style="margin:0 auto 20px">${esc(s.subtitle)}</p>`:''}<div style="max-width:1160px;margin:auto;text-align:left">${content}</div>${button?`<div style="margin-top:20px">${button}</div>`:''}</section>`;}
+
+    const id=esc(rawId);
+    const bg=s.bg_color||'';
+    const color=s.text_color||'';
+    const accent=s.accent_color||'';
+    const style=`${bg?`background:${esc(bg)};`:''}${color?`color:${esc(color)};`:''}${accent?`--blue:${esc(accent)};`:''}`;
+    const content=s.content_html?safeHtml(s.content_html):'';
+    const image=s.image_url?`<img class="shop-photo" src="${esc(s.image_url)}" alt="${esc(s.image_alt||s.title||'Apple Seed')}">`:'';
+    const button=s.button_text?`<a class="cta" href="${esc(s.button_url||'#')}">${esc(s.button_text)}</a>`:'';
+
+    // TRANG DỊCH VỤ ĐỘNG: bài viết lấy từ bảng public.pages.
+    // Không dùng content_html của section làm danh sách bài viết.
+    if(s.section_type==='pages'||s.section_key==='dynamic-pages'){
+      return `<section class="services dynamic-pages-section" id="${id}" style="${style}">
+        <div style="max-width:1160px;margin:auto">
+          <div class="section-kicker">${esc(s.eyebrow||'THÔNG TIN')}</div>
+          <h2>${esc(s.title||'Trang dịch vụ')}</h2>
+          ${s.subtitle?`<p class="lead" style="margin:0 auto 20px">${esc(s.subtitle)}</p>`:''}
+          <div id="dynamicPagesGrid" class="dynamic-pages-grid">
+            <p style="grid-column:1/-1;color:#718096">Đang tải trang dịch vụ...</p>
+          </div>
+        </div>
+      </section>`;
+    }
+
+    if(s.section_type==='hero')return `<section class="hero" id="${id}" style="${style}"><div class="hero-inner"><div>${image}</div><div>${s.eyebrow?`<div class="eyebrow">${esc(s.eyebrow)}</div>`:''}<h1>${esc(s.title||'')}</h1>${s.subtitle?`<p class="lead">${esc(s.subtitle)}</p>`:''}${content?`<div class="lead">${content}</div>`:''}${button}</div></div></section>`;
+    if(s.section_type==='services')return `<section class="services" id="${id}" style="${style}"><div class="section-kicker">${esc(s.eyebrow||'DỊCH VỤ')}</div><h2>${esc(s.title||'')}</h2><div class="service-grid">${content?`<div style="grid-column:1/-1;text-align:left">${content}</div>`:''}</div></section>`;
+    if(s.section_type==='map')return `<section class="contact" id="${id}" style="${style}"><div class="contact-inner"><div class="contact-card"><div class="section-kicker">${esc(s.eyebrow||'LIÊN HỆ')}</div><h2>${esc(s.title||'Apple Seed Trà Vinh')}</h2><div>${content}</div></div><div class="map-card"><div class="map-title">${esc(s.subtitle||'📍 Vị trí Apple Seed Trà Vinh')}</div><iframe title="Google Maps Apple Seed Trà Vinh" src="https://www.google.com/maps?q=AppleSeed%20292%20Ph%E1%BA%A1m%20Ng%C5%A9%20L%C3%A3o%20Tr%C3%A0%20Vinh&output=embed" loading="lazy"></iframe></div></div></section>`;
+    return `<section class="services" id="${id}" style="${style}"><div class="section-kicker">${esc(s.eyebrow||'')}</div><h2>${esc(s.title||'')}</h2>${s.subtitle?`<p class="lead" style="margin:0 auto 20px">${esc(s.subtitle)}</p>`:''}<div style="max-width:1160px;margin:auto;text-align:left">${content}</div>${button?`<div style="margin-top:20px">${button}</div>`:''}</section>`;
+  }
+
+  async function loadDynamicPages(){
+    const grid=document.getElementById('dynamicPagesGrid');
+    if(!grid)return;
+    if(!window.supabaseClient){
+      grid.innerHTML='<p style="grid-column:1/-1;color:#b42318">Không kết nối được dữ liệu trang dịch vụ.</p>';
+      return;
+    }
+
+    const escapePage=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+
+    try{
+      const {data,error}=await window.supabaseClient
+        .from('pages')
+        .select('id,title,slug,description,is_active')
+        .eq('is_active',true)
+        .order('id',{ascending:false});
+
+      if(error){
+        console.warn('Apple Seed pages:',error);
+        grid.innerHTML='<p style="grid-column:1/-1;color:#b42318">Chưa tải được bài viết dịch vụ.</p>';
+        return;
+      }
+
+      if(!data?.length){
+        grid.innerHTML='<p style="grid-column:1/-1;color:#718096">Hiện chưa có bài viết dịch vụ.</p>';
+        return;
+      }
+
+      grid.innerHTML=data.map(page=>`
+        <a class="page-card" href="page.html?slug=${encodeURIComponent(page.slug||'')}">
+          <h3>${escapePage(page.title||'Dịch vụ Apple Seed')}</h3>
+          <p>${escapePage(page.description||'Xem thông tin dịch vụ Apple Seed.')}</p>
+          <span class="page-more">Xem trang →</span>
+        </a>
+      `).join('');
+    }catch(e){
+      console.warn('Apple Seed dynamic pages:',e);
+      grid.innerHTML='<p style="grid-column:1/-1;color:#b42318">Không thể tải bài viết dịch vụ.</p>';
+    }
+  }
   function fixNavigation(){
     document.querySelectorAll('.menu a').forEach(a=>{
       const label=(a.textContent||'').normalize('NFD')
@@ -900,6 +982,7 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
     };fixNavigation();if(s.error||!s.data?.length){staticFallback();bindProductCards();fixNavigation();return}let html='';let contactRendered=false;for(const sec of s.data){if(sec.section_type==='products'){html+=await productsHtml();continue}if(sec.section_type==='map'||sec.section_type==='contact'){if(contactRendered)continue;contactRendered=true;html+=sec.section_type==='contact'?contactHtml():renderSection(sec);continue}html+=renderSection(sec)}root.innerHTML=html+(contactRendered?'':contactHtml());
       fixNavigation();
       bindProductCards();
+      await loadDynamicPages();
 
       // Nếu mở trực tiếp index.html#dich-vu/#san-pham/... thì chờ DOM ổn định rồi cuộn.
       requestAnimationFrame(()=>{
