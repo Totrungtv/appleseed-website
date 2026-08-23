@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-src 'self' https://www.google.com https://www.google.com/maps/; form-action 'self'; upgrade-insecure-requests">
+
 
 <title>Sửa iPhone Trà Vinh – Apple Seed | Sửa iPhone Uy Tín</title>
 <meta name="description" content="Apple Seed Trà Vinh chuyên sửa iPhone, Face ID, main iPhone, màn hình, pin, camera và linh kiện. Tư vấn tình trạng máy rõ ràng trước khi sửa.">
@@ -328,6 +331,12 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
 .member-reset-status.err{background:#fff1f2;color:#b42318}
 .member-reset-back{border:0;background:transparent;color:var(--blue);font-weight:800;cursor:pointer;padding:4px}
 
+
+/* ===== APPLE SEED SECURITY DETERRENCE ===== */
+html.apple-seed-lock-copy,html.apple-seed-lock-copy body{-webkit-user-select:none!important;user-select:none!important}
+input,textarea,select,[contenteditable="true"]{-webkit-user-select:text!important;user-select:text!important}
+img{-webkit-user-drag:none}
+@media print{body:before{content:"APPLE SEED • NỘI DUNG BẢN QUYỀN • appleseedtravinh.com";position:fixed;top:45%;left:8%;right:8%;text-align:center;font-size:28px;font-weight:900;opacity:.18;z-index:2147483647;transform:rotate(-18deg);pointer-events:none}}
 </style>
 </head>
 
@@ -343,7 +352,7 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
 <a href="products.html"><span class="mi">🛍</span><span>Sản phẩm</span></a>
 <a href="#gioi-thieu"><span class="mi">ⓘ</span><span>Giới thiệu</span></a>
 <a href="#lien-he"><span class="mi">☎</span><span>Liên hệ</span></a>
-<a class="booking-nav" href="booking.html"><span class="mi">📅</span><span>Đặt lịch Sửa Chửa</span></a>
+<a class="booking-nav" href="booking.html"><span class="mi">📅</span><span>Đặt lịch</span></a>
 
 <div class="member-auth-buttons" id="memberAuthButtons">
   <button class="member-auth-btn" type="button" id="memberHomeLoginBtn">🔐 Đăng nhập</button>
@@ -1305,6 +1314,16 @@ form.onsubmit=e=>{
    body.scrollTop=body.scrollHeight;
  },220);
 };
+</script>
+<script>
+(function(){'use strict';
+const root=document.documentElement;root.classList.add('apple-seed-lock-copy');
+const editable=el=>{if(!el)return false;const t=String(el.tagName||'').toLowerCase();return t==='input'||t==='textarea'||t==='select'||!!el.isContentEditable};
+document.addEventListener('contextmenu',e=>{if(!editable(e.target))e.preventDefault()},{capture:true});
+['copy','cut','dragstart'].forEach(type=>document.addEventListener(type,e=>{if(!editable(e.target))e.preventDefault()},{capture:true}));
+document.addEventListener('keydown',e=>{if(editable(e.target))return;const k=String(e.key||'').toLowerCase(),m=e.ctrlKey||e.metaKey;if((m&&['c','x','u','s','p'].includes(k))||(m&&e.shiftKey&&['i','j','c'].includes(k))||k==='f12'){e.preventDefault();e.stopPropagation()}},{capture:true});
+try{if(window.top!==window.self)window.top.location=window.self.location}catch(_){document.documentElement.style.display='none'}
+})();
 </script>
 </body>
 </html>
