@@ -1,5 +1,5 @@
 /* =========================================================
-   APPLE SEED MEMBER AUTH - VIP FULL FIX V8
+   APPLE SEED MEMBER AUTH - VIP FULL FIX
    Đăng ký / Xác nhận email / Đăng nhập / Đăng xuất
    Quên mật khẩu / Gửi lại email / Đổi mật khẩu
    ========================================================= */
@@ -117,42 +117,78 @@ async function memberEnsureProfile(
       ''
     ).trim();
 
+  /*
+    Lấy profile cũ trước.
+    Không ghi phone rỗng vào customer_members
+    vì bảng đang có CHECK phone_required.
+  */
 
-  /* Nếu chưa có phone thì không tạo record
-     vì DB đang bắt buộc phone */
+  let existingProfile = null;
 
-  if(!mobile){
+  try{
 
-    try{
+    const existingResult =
+      await memberSB
+        .from('customer_members')
+        .select(
+          'user_id,full_name,phone,email'
+        )
+        .eq(
+          'user_id',
+          user.id
+        )
+        .maybeSingle();
 
-      const existing =
-        await memberSB
-          .from('customer_members')
-          .select('*')
-          .eq('user_id', user.id)
-          .maybeSingle();
-
-      if(existing.error){
-
-        console.warn(
-          'Apple Seed customer_members select:',
-          existing.error
-        );
-
-        return null;
-      }
-
-      return existing.data || null;
-
-    }catch(error){
+    if(existingResult.error){
 
       console.warn(
-        'Apple Seed profile lookup:',
-        error
+        'Apple Seed đọc customer_members:',
+        existingResult.error
       );
 
-      return null;
+    }else{
+
+      existingProfile =
+        existingResult.data || null;
+
     }
+
+  }catch(error){
+
+    console.warn(
+      'Apple Seed đọc profile:',
+      error
+    );
+
+  }
+
+
+  /*
+    Ưu tiên:
+    1. phone truyền vào
+    2. phone metadata
+    3. phone profile cũ
+  */
+
+  const finalPhone =
+    mobile ||
+    String(
+      existingProfile?.phone || ''
+    ).trim();
+
+
+  /*
+    Chưa có số điện thoại:
+    không upsert để tránh lỗi CHECK.
+  */
+
+  if(!finalPhone){
+
+    console.warn(
+      'Apple Seed: chưa có số điện thoại để tạo customer_members.'
+    );
+
+    return existingProfile || null;
   }
 
 
@@ -162,13 +198,17 @@ async function memberEnsureProfile(
       user.id,
 
     full_name:
-      name || 'Khách hàng',
+      name ||
+      existingProfile?.full_name ||
+      'Khách hàng',
 
     phone:
-      mobile,
+      finalPhone,
 
     email:
-      user.email || null,
+      user.email ||
+      existingProfile?.email ||
+      null,
 
     updated_at:
       new Date().toISOString()
@@ -185,12 +225,14 @@ async function memberEnsureProfile(
           onConflict:
             'user_id'
         }
-      )
-      .select()
-      .single();
+      );
 
 
   if(result.error){
+
+    /*
+      Profile lỗi không được làm hỏng đăng nhập.
+    */
 
     console.warn(
       'Apple Seed customer_members:',
@@ -201,7 +243,7 @@ async function memberEnsureProfile(
   }
 
 
-  return result.data || null;
+  return result.data;
 }
 
 
@@ -209,44 +251,32 @@ async function memberEnsureProfile(
    AUTH STATE CHANGE
    ========================================================= */
 
-function memberOnAuthStateChange(
-  callback
-){
+function memberOnAuthStateChange(callback){
 
   memberCheckSB();
 
   return memberSB.auth.onAuthStateChange(
     (event, session) => {
 
-      try{
+      console.log(
+        'Apple Seed Auth:',
+        event
+      );
 
-        console.log(
-          'Apple Seed Auth:',
-          event
-        );
+      if(
+        typeof callback === 'function'
+      ){
 
-        if(
-          typeof callback === 'function'
-        ){
-
-          callback(
-            event,
-            session
-          );
-
-        }
-
-      }catch(error){
-
-        console.error(
-          'Apple Seed auth callback:',
-          error
+        callback(
+          event,
+          session
         );
 
       }
 
     }
   );
+
 }
 
 
@@ -337,9 +367,6 @@ async function memberSignUp(
 
       options: {
 
-        emailRedirectTo:
-          window.location.origin,
-
         data: {
 
           full_name:
@@ -367,8 +394,8 @@ async function memberSignUp(
 
 
   /*
-    Nếu Supabase trả session ngay
-    thì tạo customer_members.
+    Nếu Supabase cho session ngay
+    thì tạo profile.
   */
 
   if(
@@ -386,6 +413,7 @@ async function memberSignUp(
 
 
   return result.data;
+
 }
 
 
@@ -452,65 +480,31 @@ async function memberSignIn(
       result.error
     );
 
-    const message =
-      String(
-        result.error.message || ''
-      ).toLowerCase();
-
-
-    if(
-      message.includes(
-        'email not confirmed'
-      )
-    ){
-
-      throw new Error(
-        'Email chưa được xác nhận. Hãy mở Gmail và bấm link xác nhận tài khoản trước khi đăng nhập.'
-      );
-
-    }
-
-
-    if(
-      message.includes(
-        'invalid login credentials'
-      )
-    ){
-
-      throw new Error(
-        'Email hoặc mật khẩu không đúng. Nếu quên mật khẩu, hãy bấm “Quên mật khẩu?” để đặt lại mật khẩu.'
-      );
-
-    }
-
-
     throw result.error;
   }
 
 
-  /*
-    Đăng nhập thành công thì cập nhật profile.
-    Lỗi customer_members không được
-    làm hỏng đăng nhập.
-  */
-
   if(result.data?.user){
 
+    /*
+      Không bắt đăng nhập nhập lại
+      họ tên / số điện thoại.
+    */
+
     await memberEnsureProfile(
-      result.data.user,
-      result.data.user.user_metadata?.full_name || '',
-      result.data.user.user_metadata?.phone || ''
+      result.data.user
     );
 
   }
 
 
   return result.data;
+
 }
 
 
 /* =========================================================
-   ĐĂNG XUẤT
+   ĐĂNG XUẤT - FIX
    ========================================================= */
 
 async function memberLogout(){
@@ -518,14 +512,125 @@ async function memberLogout(){
   memberCheckSB();
 
 
+  try{
+
+    const result =
+      await memberSB.auth.signOut();
+
+
+    if(result.error){
+
+      console.error(
+        'Apple Seed logout:',
+        result.error
+      );
+
+      throw result.error;
+    }
+
+
+    /*
+      Xóa session phụ nếu có.
+    */
+
+    try{
+
+      sessionStorage.removeItem(
+        'apple_seed_member'
+      );
+
+    }catch(error){
+
+      console.warn(
+        'Apple Seed sessionStorage:',
+        error
+      );
+
+    }
+
+
+    /*
+      QUAN TRỌNG:
+      Booking page đang đọc session lúc load.
+      Sau logout reload trang để UI chắc chắn
+      chuyển về trạng thái chưa đăng nhập.
+    */
+
+    window.location.reload();
+
+    return true;
+
+  }catch(error){
+
+    console.error(
+      'Apple Seed logout exception:',
+      error
+    );
+
+    throw error;
+
+  }
+
+}
+
+
+/* =========================================================
+   QUÊN MẬT KHẨU
+   ========================================================= */
+
+async function memberForgotPassword(
+  email
+){
+
+  memberCheckSB();
+
+
+  const cleanEmail =
+    String(
+      email || ''
+    )
+      .trim()
+      .toLowerCase();
+
+
+  if(!cleanEmail){
+
+    throw new Error(
+      'Vui lòng nhập email tài khoản.'
+    );
+
+  }
+
+
+  const redirectUrl =
+    window.location.origin +
+    '/reset-password.html';
+
+
+  console.log(
+    'Apple Seed reset password:',
+    redirectUrl
+  );
+
+
   const result =
-    await memberSB.auth.signOut();
+    await memberSB.auth
+      .resetPasswordForEmail(
+
+        cleanEmail,
+
+        {
+          redirectTo:
+            redirectUrl
+        }
+
+      );
 
 
   if(result.error){
 
     console.error(
-      'Apple Seed logout:',
+      'Apple Seed forgot password:',
       result.error
     );
 
@@ -533,23 +638,68 @@ async function memberLogout(){
   }
 
 
-  try{
+  return true;
 
-    sessionStorage.removeItem(
-      'apple_seed_member'
+}
+
+
+/* =========================================================
+   ĐỔI MẬT KHẨU
+   ========================================================= */
+
+async function memberUpdatePassword(
+  newPassword
+){
+
+  memberCheckSB();
+
+
+  const cleanPassword =
+    String(
+      newPassword || ''
     );
 
-  }catch(error){
 
-    console.warn(
-      'Apple Seed sessionStorage:',
-      error
+  if(!cleanPassword){
+
+    throw new Error(
+      'Vui lòng nhập mật khẩu mới.'
     );
 
   }
 
 
-  return true;
+  if(cleanPassword.length < 6){
+
+    throw new Error(
+      'Mật khẩu mới phải có ít nhất 6 ký tự.'
+    );
+
+  }
+
+
+  const result =
+    await memberSB.auth.updateUser({
+
+      password:
+        cleanPassword
+
+    });
+
+
+  if(result.error){
+
+    console.error(
+      'Apple Seed update password:',
+      result.error
+    );
+
+    throw result.error;
+  }
+
+
+  return result.data?.user || null;
+
 }
 
 
@@ -612,130 +762,7 @@ async function memberResendSignupEmail(
 
 
   return true;
-}
 
-
-/* =========================================================
-   QUÊN MẬT KHẨU
-   ========================================================= */
-
-async function memberForgotPassword(
-  email
-){
-
-  memberCheckSB();
-
-
-  const cleanEmail =
-    String(
-      email || ''
-    )
-      .trim()
-      .toLowerCase();
-
-
-  if(!cleanEmail){
-
-    throw new Error(
-      'Vui lòng nhập email tài khoản.'
-    );
-
-  }
-
-
-  const redirectUrl =
-    window.location.origin +
-    '/reset-password.html';
-
-
-  console.log(
-    'Apple Seed reset password:',
-    redirectUrl
-  );
-
-
-  const result =
-    await memberSB.auth
-      .resetPasswordForEmail(
-        cleanEmail,
-        {
-          redirectTo:
-            redirectUrl
-        }
-      );
-
-
-  if(result.error){
-
-    console.error(
-      'Apple Seed forgot password:',
-      result.error
-    );
-
-    throw result.error;
-  }
-
-
-  return true;
-}
-
-
-/* =========================================================
-   ĐỔI MẬT KHẨU
-   ========================================================= */
-
-async function memberUpdatePassword(
-  newPassword
-){
-
-  memberCheckSB();
-
-
-  const cleanPassword =
-    String(
-      newPassword || ''
-    );
-
-
-  if(!cleanPassword){
-
-    throw new Error(
-      'Vui lòng nhập mật khẩu mới.'
-    );
-
-  }
-
-
-  if(cleanPassword.length < 6){
-
-    throw new Error(
-      'Mật khẩu mới phải có ít nhất 6 ký tự.'
-    );
-
-  }
-
-
-  const result =
-    await memberSB.auth.updateUser({
-
-      password:
-        cleanPassword
-
-    });
-
-
-  if(result.error){
-
-    console.error(
-      'Apple Seed update password:',
-      result.error
-    );
-
-    throw result.error;
-  }
-
-
-  return result.data?.user || null;
 }
 
 
@@ -791,6 +818,7 @@ async function memberResendConfirmation(
 
 
   return true;
+
 }
 
 
@@ -819,11 +847,12 @@ async function memberRefreshSession(){
 
 
   return result.data?.session || null;
+
 }
 
 
 /* =========================================================
-   THEO DÕI TRẠNG THÁI ĐĂNG NHẬP
+   LISTEN AUTH STATE
    ========================================================= */
 
 function memberListenAuthState(
@@ -863,41 +892,7 @@ function memberListenAuthState(
     }
 
   );
-}
 
-
-/* =========================================================
-   DIAGNOSTIC
-   ========================================================= */
-
-async function memberDebug(){
-
-  memberCheckSB();
-
-
-  const sessionResult =
-    await memberSB.auth.getSession();
-
-
-  const userResult =
-    await memberSB.auth.getUser();
-
-
-  return {
-
-    session:
-      sessionResult.data?.session || null,
-
-    user:
-      userResult.data?.user || null,
-
-    sessionError:
-      sessionResult.error || null,
-
-    userError:
-      userResult.error || null
-
-  };
 }
 
 
@@ -908,69 +903,50 @@ async function memberDebug(){
 window.memberSB =
   memberSB;
 
-
 window.memberEsc =
   memberEsc;
-
 
 window.memberCheckSB =
   memberCheckSB;
 
-
 window.getMemberSession =
   getMemberSession;
-
 
 window.getMemberUser =
   getMemberUser;
 
-
 window.memberEnsureProfile =
   memberEnsureProfile;
-
 
 window.memberSignUp =
   memberSignUp;
 
+window.memberOnAuthStateChange =
+  memberOnAuthStateChange;
 
 window.memberSignIn =
   memberSignIn;
 
-
 window.memberLogout =
   memberLogout;
-
 
 window.memberForgotPassword =
   memberForgotPassword;
 
-
 window.memberUpdatePassword =
   memberUpdatePassword;
-
 
 window.memberResendConfirmation =
   memberResendConfirmation;
 
-
 window.memberResendSignupEmail =
   memberResendSignupEmail;
-
-
-window.memberOnAuthStateChange =
-  memberOnAuthStateChange;
-
 
 window.memberRefreshSession =
   memberRefreshSession;
 
-
 window.memberListenAuthState =
   memberListenAuthState;
-
-
-window.memberDebug =
-  memberDebug;
 
 
 /* =========================================================
@@ -978,5 +954,5 @@ window.memberDebug =
    ========================================================= */
 
 console.log(
-  '✅ Apple Seed Member Auth VIP V8 loaded.'
+  '✅ Apple Seed Member Auth VIP FIX loaded.'
 );
