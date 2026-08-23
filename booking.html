@@ -43,7 +43,7 @@
       <div id="memberAuthError" class="member-error" style="display:none;margin-top:12px"></div>
     </div>
     <div id="memberLoggedIn" style="display:none">
-      <div class="member-info"><div><div class="eyebrow">APPLE SEED MEMBER</div><h2 style="margin:5px 0">👋 Xin chào <span id="memberDisplayName">Khách hàng</span></h2><div id="memberDisplayMeta" style="color:#64748b;font-size:13px"></div></div><div style="display:flex;gap:8px;align-items:center"><span class="member-pill">✓ Đã đăng nhập</span><button id="memberLogout" class="member-logout" type="button" onclick="appleSeedForceLogout(event)">Đăng xuất</button></div></div>
+      <div class="member-info"><div><div class="eyebrow">APPLE SEED MEMBER</div><h2 style="margin:5px 0">👋 Xin chào <span id="memberDisplayName">Khách hàng</span></h2><div id="memberDisplayMeta" style="color:#64748b;font-size:13px"></div></div><div style="display:flex;gap:8px;align-items:center"><span class="member-pill">✓ Đã đăng nhập</span><button id="memberLogout" class="member-logout" type="button">Đăng xuất</button></div></div>
       <p class="member-note">Bạn đã đăng nhập. Lịch hẹn mới sẽ tự động gắn vào tài khoản này và các lịch cũ trùng số điện thoại sẽ được liên kết để tiện tra cứu.</p>
     </div>
   </section>
@@ -143,307 +143,55 @@
   tabLogin.onclick=()=>tabs(false);tabSignup.onclick=()=>tabs(true);
   tabLogin.onclick();
   async function refresh(){
-  clearErr();
-
-  if(!sb){
-    showErr('Không kết nối được hệ thống Supabase.');
-    return;
-  }
-
-  try{
-    const sessionResult = await sb.auth.getSession();
-    const session = sessionResult.data?.session || null;
-
+    clearErr();
+    const session=await getMemberSession();
     if(session?.user){
-
-      loggedOut.style.display = 'none';
-      loggedIn.style.display = 'block';
-      area.classList.remove('booking-locked');
-
-      const u = session.user;
-      const m = u.user_metadata || {};
-
-      /*
-        QUAN TRỌNG:
-        KHÔNG gọi memberEnsureProfile() ở đây nữa.
-        Login chỉ cần Supabase xác thực thành công.
-      */
-
-      let profile = {};
-
-      try{
-        const pr = await sb
-          .from('customer_members')
-          .select('full_name,phone,email')
-          .eq('user_id',u.id)
-          .maybeSingle();
-
-        if(pr.data){
-          profile = pr.data;
-        }
-      }catch(profileError){
-        console.warn(
-          'Không đọc được customer_members:',
-          profileError
-        );
-      }
-
-      const displayName =
-        profile.full_name ||
-        m.full_name ||
-        'Khách hàng';
-
-      const displayPhone =
-        profile.phone ||
-        m.phone ||
-        u.phone ||
-        '';
-
-      const displayEmail =
-        profile.email ||
-        u.email ||
-        '';
-
-      document.getElementById(
-        'memberDisplayName'
-      ).textContent = displayName;
-
-      document.getElementById(
-        'memberDisplayMeta'
-      ).textContent =
-        displayPhone +
-        (displayPhone && displayEmail ? ' · ' : '') +
-        displayEmail;
-
-      const nameInput =
-        document.getElementById('name');
-
-      const phoneInput =
-        document.getElementById('phone');
-
-      if(
-        nameInput &&
-        !nameInput.value &&
-        displayName !== 'Khách hàng'
-      ){
-        nameInput.value = displayName;
-      }
-
-      if(
-        phoneInput &&
-        !phoneInput.value &&
-        displayPhone
-      ){
-        phoneInput.value = displayPhone;
-      }
-
+      await memberEnsureProfile(session.user,'','');
+      loggedOut.style.display='none';loggedIn.style.display='block';area.classList.remove('booking-locked');
+      const u=session.user, m=u.user_metadata||{};
+      const pr=await sb.from('customer_members').select('full_name,phone,email').eq('user_id',u.id).maybeSingle();
+      const profile=pr.data||{};
+      document.getElementById('memberDisplayName').textContent=profile.full_name||m.full_name||'Khách hàng';
+      document.getElementById('memberDisplayMeta').textContent=(profile.phone||m.phone||u.phone||'')+' · '+(profile.email||u.email||'');
+      const nameInput=document.getElementById('name'), phoneInput=document.getElementById('phone');
+      if(nameInput && !nameInput.value) nameInput.value=profile.full_name||m.full_name||'';
+      if(phoneInput && !phoneInput.value) phoneInput.value=profile.phone||m.phone||u.phone||'';
     }else{
-
-      loggedOut.style.display = 'block';
-      loggedIn.style.display = 'none';
-      area.classList.add('booking-locked');
-
+      loggedOut.style.display='block';loggedIn.style.display='none';area.classList.add('booking-locked');
     }
-
-  }catch(x){
-
-    console.error(
-      'MEMBER REFRESH ERROR:',
-      x
-    );
-
-    showErr(
-      x.message ||
-      'Không thể kiểm tra trạng thái đăng nhập.'
-    );
   }
-}
-
-
-/*
-  LOGIN TRỰC TIẾP SUPABASE
-  Không phụ thuộc member-auth.js
-*/
-loginForm.onsubmit = async e => {
-
-  e.preventDefault();
-  clearErr();
-
-  const b = e.submitter;
-
-  const email =
-    document.getElementById(
-      'memberLoginEmail'
-    ).value.trim();
-
-  const password =
-    document.getElementById(
-      'memberLoginPassword'
-    ).value;
-
-  if(!email){
-    showErr('Vui lòng nhập email.');
-    return;
-  }
-
-  if(!password){
-    showErr('Vui lòng nhập mật khẩu.');
-    return;
-  }
-
-  b.disabled = true;
-  b.textContent = 'Đang đăng nhập...';
-
-  try{
-
-    const r = await sb.auth.signInWithPassword({
-      email: email,
-      password: password
-    });
-
-    if(r.error){
-      throw r.error;
-    }
-
-    /*
-      Login thành công.
-      KHÔNG gọi memberEnsureProfile().
-    */
-
-    await refresh();
-
-  }catch(x){
-
-    console.error(
-      'LOGIN ERROR:',
-      x
-    );
-
-    showErr(
-      x.message ||
-      'Email hoặc mật khẩu không đúng.'
-    );
-
-  }finally{
-
-    b.disabled = false;
-    b.textContent = '🔐 Đăng nhập thành viên';
-
-  }
-};
-
-
-/*
-  ĐĂNG KÝ
-  Phần này vẫn dùng member-auth.js
-*/
-signupForm.onsubmit = async e => {
-
-  e.preventDefault();
-  clearErr();
-
-  const b = e.submitter;
-
-  b.disabled = true;
-  b.textContent = 'Đang tạo tài khoản...';
-
-  try{
-
-    const d = await memberSignUp(
-      document.getElementById('memberName').value,
-      document.getElementById('memberPhone').value,
-      document.getElementById('memberEmail').value,
-      document.getElementById('memberPassword').value
-    );
-
-    if(d.session){
-
+  loginForm.addEventListener('submit',async e=>{
+    e.preventDefault();
+    e.stopPropagation();
+    clearErr();
+    const b=loginForm.querySelector('button[type="submit"]');
+    const email=document.getElementById('memberLoginEmail').value.trim().toLowerCase();
+    const password=document.getElementById('memberLoginPassword').value;
+    if(!email||!password){showErr('Vui lòng nhập đầy đủ email và mật khẩu.');return;}
+    b.disabled=true;b.textContent='Đang đăng nhập...';
+    try{
+      if(!sb||!sb.auth) throw new Error('Supabase Auth chưa sẵn sàng.');
+      const r=await sb.auth.signInWithPassword({email,password});
+      if(r.error) throw r.error;
       await refresh();
-
-    }else{
-
-      showErr(
-        'Tài khoản đã được tạo. Hãy kiểm tra email để xác nhận tài khoản rồi đăng nhập.'
-      );
-
+    }catch(x){
+      console.error('Apple Seed booking login:',x);
+      showErr(x?.message||'Đăng nhập không thành công.');
+    }finally{
+      b.disabled=false;b.textContent='🔐 Đăng nhập thành viên';
     }
-
-  }catch(x){
-
-    console.error(
-      'SIGNUP ERROR:',
-      x
-    );
-
-    showErr(
-      x.message ||
-      'Không tạo được tài khoản.'
-    );
-
-  }finally{
-
-    b.disabled = false;
-    b.textContent = '✨ Tạo tài khoản thành viên';
-
-  }
-
-  /*
-    ĐĂNG XUẤT THÀNH VIÊN — xử lý trực tiếp bằng Supabase.
-  */
-  window.appleSeedForceLogout = async function(event){
-    if(event){
-      event.preventDefault();
-      event.stopPropagation();
-    }
-
-    const btn = document.getElementById('memberLogout');
-    if(btn && btn.dataset.busy === '1') return false;
-    if(btn){
-      btn.dataset.busy = '1';
-      btn.disabled = true;
-      btn.textContent = 'Đang đăng xuất...';
-    }
-
+  });
+  signupForm.onsubmit=async e=>{e.preventDefault();clearErr();const b=e.submitter;b.disabled=true;b.textContent='Đang tạo tài khoản...';try{const d=await memberSignUp(document.getElementById('memberName').value,document.getElementById('memberPhone').value,document.getElementById('memberEmail').value,document.getElementById('memberPassword').value);if(d.session){await refresh()}else{showErr('Tài khoản đã được tạo. Hãy kiểm tra email để xác nhận tài khoản rồi đăng nhập.')}}catch(x){showErr(x.message||'Không tạo được tài khoản.')}b.disabled=false;b.textContent='✨ Tạo tài khoản thành viên'};
+  document.getElementById('memberLogout').onclick=async()=>{
     try{
-      const client = window.supabaseClient;
-      if(client?.auth){
-        // local = kết thúc phiên ngay trên trình duyệt, không phụ thuộc
-        // việc server revoke refresh token có thành công hay không.
-        const result = await client.auth.signOut({scope:'local'});
-        if(result?.error) console.warn('Supabase signOut:', result.error);
-      }
-    }catch(error){
-      console.warn('Apple Seed logout:', error);
+      await sb.auth.signOut({scope:'local'});
+      await refresh();
+      location.reload();
+    }catch(x){
+      console.error('Apple Seed logout:',x);
+      showErr(x?.message||'Đăng xuất không thành công.');
     }
-
-    // Xóa các trạng thái phiên cũ của website.
-    try{ sessionStorage.removeItem('apple_seed_member'); }catch(e){}
-    try{ localStorage.removeItem('apple_seed_member'); }catch(e){}
-
-    // Xóa các key Supabase Auth còn sót trong localStorage.
-    try{
-      Object.keys(localStorage).forEach(key => {
-        if(key.startsWith('sb-') && (key.includes('auth-token') || key.includes('auth'))) {
-          localStorage.removeItem(key);
-        }
-      });
-    }catch(e){}
-
-    // Quay lại booking.html với URL mới để tránh cache giao diện cũ.
-    window.location.replace('booking.html?logout=' + Date.now());
-    return false;
   };
-
-  // Theo dõi thay đổi phiên đăng nhập để giao diện booking
-  // luôn đồng bộ với Supabase.
-  if(sb?.auth){
-    sb.auth.onAuthStateChange((event) => {
-      if(event === 'SIGNED_OUT' || event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED'){
-        setTimeout(refresh, 0);
-      }
-    });
-  }
-
   await refresh();
 })();
 </script>
