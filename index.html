@@ -309,6 +309,18 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
 @media(max-width:900px){.service-content{max-width:100%}}
 
 </style>
+
+<style>
+.page-service-grid{grid-template-columns:repeat(2,minmax(0,1fr));text-align:left}
+.page-service-card{align-items:flex-start;min-height:0;transition:transform .18s ease,box-shadow .18s ease}
+.page-service-card:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(35,54,91,.12)}
+.page-service-body{min-width:0;flex:1}
+.page-service-body h3{font-size:17px;margin:0 0 7px;color:var(--ink)}
+.page-service-body p{font-size:13px;line-height:1.6;margin:0 0 10px;color:var(--muted)}
+.page-service-link{display:inline-flex;align-items:center;color:var(--blue);font-size:13px;font-weight:800;text-decoration:none}
+.page-section-intro{max-width:1160px;margin:0 auto 18px;text-align:left}
+@media(max-width:750px){.page-service-grid{grid-template-columns:1fr}}
+</style>
 </head>
 
 <body>
@@ -529,6 +541,53 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
           </article>`;
         }).join('')}
       </div>
+    </section>`;
+  }
+
+  async function pagesHtml(section={}){
+    // Trang dịch vụ được tạo/lưu từ Admin nằm trong bảng `pages`.
+    // Chỉ lấy bài đang xuất bản để đưa ra trang chủ.
+    const r=await sb.from('pages')
+      .select('id,title,slug,description,content,is_active')
+      .eq('is_active',true)
+      .order('id',{ascending:false});
+
+    if(r.error){
+      console.warn('Apple Seed: không tải được pages:',r.error.message);
+      return `<section class="services" id="dich-vu" style="${section.bg_color?`background:${esc(section.bg_color)};`:''}${section.text_color?`color:${esc(section.text_color)};`:''}">
+        <div class="section-kicker">${esc(section.eyebrow||'DỊCH VỤ')}</div>
+        <h2>${esc(section.title||'Trang dịch vụ')}</h2>
+        ${section.subtitle?`<p class="lead service-subtitle">${esc(section.subtitle)}</p>`:''}
+        <div class="service-content"><div class="service-empty">Không tải được danh sách dịch vụ.</div></div>
+      </section>`;
+    }
+
+    const pages=r.data||[];
+    const cards=pages.map(p=>{
+      const desc=String(p.description||'').trim();
+      return `<article class="service-card page-service-card">
+        <div class="service-icon">📄</div>
+        <div class="page-service-body">
+          <h3>${esc(p.title)}</h3>
+          ${desc?`<p>${esc(desc)}</p>`:''}
+          <a class="page-service-link" href="page.html?slug=${encodeURIComponent(p.slug)}">Xem chi tiết →</a>
+        </div>
+      </article>`;
+    }).join('');
+
+    const content=cards || `<div class="service-empty">Chưa có bài viết dịch vụ nào được xuất bản.</div>`;
+    const bg=section.bg_color||'';
+    const color=section.text_color||'';
+    const accent=section.accent_color||'';
+    const style=`${bg?`background:${esc(bg)};`:''}${color?`color:${esc(color)};`:''}${accent?`--blue:${esc(accent)};`:''}`;
+
+    return `<section class="services" id="dich-vu" style="${style}">
+      <div class="section-kicker">${esc(section.eyebrow||'DỊCH VỤ')}</div>
+      <h2>${esc(section.title||'Trang dịch vụ')}</h2>
+      ${section.subtitle?`<p class="lead service-subtitle">${esc(section.subtitle)}</p>`:''}
+      ${section.content_html?`<div class="service-content page-section-intro">${safeHtml(section.content_html)}</div>`:''}
+      <div class="service-grid page-service-grid">${content}</div>
+      ${section.button_text?`<div style="margin-top:20px"><a class="cta" href="${esc(section.button_url||'#')}">${esc(section.button_text)}</a></div>`:''}
     </section>`;
   }
 
@@ -814,7 +873,7 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
     // section_key trong Admin có thể là tên tùy ý, không được để nó
     // làm mất các điểm neo mà menu #dich-vu/#gioi-thieu/#lien-he đang dùng.
     let rawId='';
-    if(s.section_type==='services') rawId='dich-vu';
+    if(s.section_type==='services'||s.section_type==='pages') rawId='dich-vu';
     else if(s.section_type==='hero') rawId='gioi-thieu';
     else if(s.section_type==='map'||s.section_type==='contact') rawId='lien-he';
     else rawId=s.section_key||'';
@@ -864,7 +923,7 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
       menu.querySelectorAll(':scope > a').forEach(a=>a.remove());
       menu.insertAdjacentHTML('afterbegin',n.data.map(x=>`<a href="${esc(x.url||'#')}"><span class="mi">${esc(x.icon||'')}</span><span>${esc(x.label)}</span></a>`).join(''));
       if(memberAuth) menu.appendChild(memberAuth);
-    };fixNavigation();if(s.error||!s.data?.length){staticFallback();bindProductCards();fixNavigation();return}let html='';let contactRendered=false;for(const sec of s.data){if(sec.section_type==='products'){html+=await productsHtml();continue}if(sec.section_type==='map'||sec.section_type==='contact'){if(contactRendered)continue;contactRendered=true;html+=sec.section_type==='contact'?contactHtml():renderSection(sec);continue}html+=renderSection(sec)}root.innerHTML=html+(contactRendered?'':contactHtml());
+    };fixNavigation();if(s.error||!s.data?.length){staticFallback();bindProductCards();fixNavigation();return}let html='';let contactRendered=false;for(const sec of s.data){if(sec.section_type==='products'){html+=await productsHtml();continue}if(sec.section_type==='pages'){html+=await pagesHtml(sec);continue}if(sec.section_type==='map'||sec.section_type==='contact'){if(contactRendered)continue;contactRendered=true;html+=sec.section_type==='contact'?contactHtml():renderSection(sec);continue}html+=renderSection(sec)}root.innerHTML=html+(contactRendered?'':contactHtml());
       fixNavigation();
       bindProductCards();
 
