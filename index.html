@@ -1110,5 +1110,38 @@ form.onsubmit=e=>{
  },220);
 };
 </script>
+
+<style id="apple-seed-no-floating-booking">
+/* Chỉ giữ nút Đặt lịch nằm bên trong khung trợ lý.
+   Nút đặt lịch ở các khu vực nội dung/hero vẫn giữ nguyên. */
+a.chat-booking{display:inline-flex!important}
+</style>
+<script>
+(function(){
+  function removeFloatingBooking(){
+    document.querySelectorAll('a,button').forEach(function(el){
+      if(el.closest('#chatBox')) return;
+      const txt=(el.textContent||'').replace(/\\s+/g,' ').trim();
+      if(!/^(📅\\s*)?Đặt lịch sửa$/.test(txt)) return;
+
+      const cs=getComputedStyle(el);
+      const r=el.getBoundingClientRect();
+
+      /* Chỉ xoá nút nổi/fixed ở ngoài robot.
+         Không đụng nút CTA Đặt lịch trong phần trang chính. */
+      if(cs.position==='fixed' || cs.position==='sticky' ||
+         (r.width > 0 && r.height > 0 && r.bottom > window.innerHeight-180 && r.right > window.innerWidth-220)){
+        el.remove();
+      }
+    });
+  }
+
+  removeFloatingBooking();
+  window.addEventListener('load', removeFloatingBooking);
+  const mo=new MutationObserver(removeFloatingBooking);
+  mo.observe(document.body,{childList:true,subtree:true});
+})();
+</script>
+
 </body>
 </html>
