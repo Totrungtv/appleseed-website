@@ -43,7 +43,7 @@
       <div id="memberAuthError" class="member-error" style="display:none;margin-top:12px"></div>
     </div>
     <div id="memberLoggedIn" style="display:none">
-      <div class="member-info"><div><div class="eyebrow">APPLE SEED MEMBER</div><h2 style="margin:5px 0">👋 Xin chào <span id="memberDisplayName">Khách hàng</span></h2><div id="memberDisplayMeta" style="color:#64748b;font-size:13px"></div></div><div style="display:flex;gap:8px;align-items:center"><span class="member-pill">✓ Đã đăng nhập</span><button id="memberLogout" class="member-logout" type="button">Đăng xuất</button></div></div>
+      <div class="member-info"><div><div class="eyebrow">APPLE SEED MEMBER</div><h2 style="margin:5px 0">👋 Xin chào <span id="memberDisplayName">Khách hàng</span></h2><div id="memberDisplayMeta" style="color:#64748b;font-size:13px"></div></div><div style="display:flex;gap:8px;align-items:center"><span class="member-pill">✓ Đã đăng nhập</span><button id="memberLogout" class="member-logout" type="button" onclick="appleSeedForceLogout(event)">Đăng xuất</button></div></div>
       <p class="member-note">Bạn đã đăng nhập. Lịch hẹn mới sẽ tự động gắn vào tài khoản này và các lịch cũ trùng số điện thoại sẽ được liên kết để tiện tra cứu.</p>
     </div>
   </section>
@@ -388,72 +388,51 @@ signupForm.onsubmit = async e => {
   }
 
   /*
-    ĐĂNG XUẤT THÀNH VIÊN
-    Booking tự xử lý trực tiếp để không phụ thuộc
-    member-auth.js có đúng phiên bản hay không.
+    ĐĂNG XUẤT THÀNH VIÊN — xử lý trực tiếp bằng Supabase.
   */
-  const logoutBtn = document.getElementById('memberLogout');
+  window.appleSeedForceLogout = async function(event){
+    if(event){
+      event.preventDefault();
+      event.stopPropagation();
+    }
 
-  if(logoutBtn){
-    logoutBtn.addEventListener('click', async () => {
-      clearErr();
+    const btn = document.getElementById('memberLogout');
+    if(btn && btn.dataset.busy === '1') return false;
+    if(btn){
+      btn.dataset.busy = '1';
+      btn.disabled = true;
+      btn.textContent = 'Đang đăng xuất...';
+    }
 
-      if(logoutBtn.disabled) return;
-
-      logoutBtn.disabled = true;
-      logoutBtn.textContent = 'Đang đăng xuất...';
-
-      try{
-        if(!sb || !sb.auth){
-          throw new Error('Không kết nối được hệ thống đăng nhập.');
-        }
-
-        const { error: logoutError } = await sb.auth.signOut();
-
-        if(logoutError){
-          throw logoutError;
-        }
-
-        // Xóa trạng thái phụ của website nếu có.
-        try{
-          sessionStorage.removeItem('apple_seed_member');
-        }catch(e){}
-
-        try{
-          localStorage.removeItem('apple_seed_member');
-        }catch(e){}
-
-        // Cập nhật giao diện ngay lập tức.
-        loggedOut.style.display = 'block';
-        loggedIn.style.display = 'none';
-        area.classList.add('booking-locked');
-
-        // Xóa dữ liệu tự điền của tài khoản cũ.
-        const nameInput = document.getElementById('name');
-        const phoneInput = document.getElementById('phone');
-        if(nameInput) nameInput.value = '';
-        if(phoneInput) phoneInput.value = '';
-
-        document.getElementById('memberLoginEmail').value = '';
-        document.getElementById('memberLoginPassword').value = '';
-
-        showErr('Đã đăng xuất thành công.');
-
-        // Đợi Supabase hoàn tất event SIGNED_OUT rồi đồng bộ lại.
-        setTimeout(() => {
-          clearErr();
-          refresh();
-        }, 250);
-
-      }catch(x){
-        console.error('BOOKING LOGOUT ERROR:', x);
-        showErr(x?.message || 'Đăng xuất không thành công.');
-      }finally{
-        logoutBtn.disabled = false;
-        logoutBtn.textContent = 'Đăng xuất';
+    try{
+      const client = window.supabaseClient;
+      if(client?.auth){
+        // local = kết thúc phiên ngay trên trình duyệt, không phụ thuộc
+        // việc server revoke refresh token có thành công hay không.
+        const result = await client.auth.signOut({scope:'local'});
+        if(result?.error) console.warn('Supabase signOut:', result.error);
       }
-    });
-  }
+    }catch(error){
+      console.warn('Apple Seed logout:', error);
+    }
+
+    // Xóa các trạng thái phiên cũ của website.
+    try{ sessionStorage.removeItem('apple_seed_member'); }catch(e){}
+    try{ localStorage.removeItem('apple_seed_member'); }catch(e){}
+
+    // Xóa các key Supabase Auth còn sót trong localStorage.
+    try{
+      Object.keys(localStorage).forEach(key => {
+        if(key.startsWith('sb-') && (key.includes('auth-token') || key.includes('auth'))) {
+          localStorage.removeItem(key);
+        }
+      });
+    }catch(e){}
+
+    // Quay lại booking.html với URL mới để tránh cache giao diện cũ.
+    window.location.replace('booking.html?logout=' + Date.now());
+    return false;
+  };
 
   // Theo dõi thay đổi phiên đăng nhập để giao diện booking
   // luôn đồng bộ với Supabase.
