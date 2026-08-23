@@ -4,8 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Apple Seed Trà Vinh</title>
-<meta id="description" name="description" content="Apple Seed Trà Vinh">
-<meta name="robots" content="index, follow">
+<meta id="description" name="description" content="Apple Seed Trà Vinh chuyên sửa điện thoại, sửa iPhone, Face ID, main, màn hình, pin, camera và linh kiện.">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta id="og-title" property="og:title" content="Apple Seed Trà Vinh">
+<meta id="og-description" property="og:description" content="Apple Seed Trà Vinh chuyên sửa điện thoại và iPhone.">
+<meta id="og-type" property="og:type" content="article">
+<meta id="og-url" property="og:url" content="https://appleseedtravinh.com/page.html">
+<meta property="og:site_name" content="Apple Seed Trà Vinh">
+<script type="application/ld+json" id="page-schema">{}</script>
 <link id="canonical" rel="canonical" href="https://appleseedtravinh.com/page.html">
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="stylesheet" href="style.css">
@@ -61,12 +67,19 @@
  const state=document.getElementById("state"),article=document.getElementById("content");
  if(!slug){state.textContent="Thiếu slug trang.";return;}
  if(!window.supabaseClient){state.textContent="Không thể kết nối dữ liệu.";return;}
- const {data,error}=await window.supabaseClient.from("pages").select("title,description,content,is_active").eq("slug",slug).eq("is_active",true).maybeSingle();
+ const {data,error}=await window.supabaseClient.from("pages").select("title,description,content,is_active,slug").eq("slug",slug).eq("is_active",true).maybeSingle();
  if(error||!data){state.textContent="Không tìm thấy trang.";return;}
+ const pageUrl=location.origin+location.pathname+"?slug="+encodeURIComponent(data.slug||slug);
+ const pageDescription=String(data.description||data.title||"Apple Seed Trà Vinh").replace(/\s+/g," ").trim().slice(0,300);
  document.title=data.title+" | Apple Seed";
- document.getElementById("description").content=data.description||data.title;
- document.getElementById("canonical").href=location.href;
+ document.getElementById("description").content=pageDescription;
+ document.getElementById("canonical").href=pageUrl;
+ document.getElementById("og-title").content=data.title+" | Apple Seed";
+ document.getElementById("og-description").content=pageDescription;
+ document.getElementById("og-url").content=pageUrl;
  document.getElementById("title").textContent=data.title;
+ const schema={"@context":"https://schema.org","@type":"Article","mainEntityOfPage":{"@type":"WebPage","@id":pageUrl},"headline":String(data.title||"").slice(0,110),"description":pageDescription,"author":{"@type":"Organization","name":"Apple Seed Trà Vinh","url":"https://appleseedtravinh.com/"},"publisher":{"@type":"Organization","name":"Apple Seed Trà Vinh","logo":{"@type":"ImageObject","url":"https://appleseedtravinh.com/logo.png"}},"articleSection":"Dịch vụ sửa chữa điện thoại Trà Vinh","inLanguage":"vi-VN"};
+ document.getElementById("page-schema").textContent=JSON.stringify(schema);
  const body=document.getElementById("body");
  function safeRichHtml(html){
    const tpl=document.createElement("template"); tpl.innerHTML=html||"";
