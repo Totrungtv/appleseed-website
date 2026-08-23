@@ -12,9 +12,7 @@ const member$ = id => document.getElementById(id);
    CẤU HÌNH
    ========================================================= */
 
-// URL WEBSITE THẬT CỦA APPLE SEED
-// TUYỆT ĐỐI KHÔNG DÙNG localhost
-const MEMBER_SITE_URL = 'https://appleseedtravinh.com/';
+const MEMBER_SITE_URL = 'https://appleseedtravinh.com/index.html';
 
 
 /* =========================================================
@@ -106,8 +104,8 @@ async function memberLogout(){
   if(!memberSB || !memberSB.auth){
 
     location.reload();
-
     return;
+
   }
 
   try{
@@ -394,6 +392,7 @@ async function memberEnsureProfile(
 
 
   return payload;
+
 }
 
 
@@ -512,6 +511,7 @@ async function memberSignIn(
 
 
   return user;
+
 }
 
 
@@ -617,8 +617,8 @@ async function memberSignUp(
 
         /*
           Supabase sẽ đưa khách về
-          website Apple Seed sau khi
-          bấm link xác nhận trong email.
+          trang chủ sau khi bấm link
+          xác nhận trong email.
         */
 
         emailRedirectTo:
@@ -772,6 +772,7 @@ async function memberResendSignupEmail(
 
 
   return result.data;
+
 }
 
 
@@ -840,6 +841,7 @@ function memberOnAuthStateChange(
 
 
   return memberSB.auth.onAuthStateChange(
+
     (
       event,
       session
@@ -869,6 +871,7 @@ function memberOnAuthStateChange(
       }
 
     }
+
   );
 
 }
