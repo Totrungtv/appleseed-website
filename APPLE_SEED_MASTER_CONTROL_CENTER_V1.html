@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Apple Seed — Master Control Center</title>
+<style>
+:root{--blue:#1769ff;--ink:#17233d;--muted:#667085;--bg:#f5f8ff;--line:#e5eaf2;--ok:#16834b;--warn:#b54708;--todo:#475467}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.55 Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+.wrap{max-width:1280px;margin:auto;padding:24px}.top{background:#fff;border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:0 10px 30px #17233d0d;margin-bottom:18px}
+h1,h2,h3{margin:0}h1{font-size:30px}.sub{color:var(--muted);margin-top:6px}.badge{display:inline-block;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:900;margin-right:5px}.done{background:#eaf8f0;color:var(--ok)}.todo{background:#eef2f7;color:var(--todo)}.warn{background:#fff4e8;color:var(--warn)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 6px 20px #17233d08}.card h2{font-size:18px;margin-bottom:8px}.card h3{font-size:14px;margin:14px 0 5px}.card ul{margin:7px 0 0;padding-left:20px}.card li{margin:4px 0}.wide{grid-column:1/-1}.two{grid-column:span 2}.road{display:grid;grid-template-columns:48px 1fr auto;gap:12px;align-items:start;padding:12px 0;border-bottom:1px solid var(--line)}.road:last-child{border-bottom:0}.num{width:34px;height:34px;border-radius:10px;background:#eaf1ff;color:var(--blue);display:grid;place-items:center;font-weight:900}.status{font-size:11px;font-weight:900;padding:5px 8px;border-radius:999px;white-space:nowrap}.note{background:#f8fafc;border:1px dashed #ccd5e3;border-radius:12px;padding:12px;margin-top:12px;color:#52627b}.critical{border-left:4px solid var(--blue)}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:9px;border-bottom:1px solid var(--line);vertical-align:top}th{font-size:12px;color:var(--muted)}.footer{margin-top:18px;color:var(--muted);font-size:12px;text-align:center}@media(max-width:900px){.grid{grid-template-columns:1fr}.two,.wide{grid-column:auto}.road{grid-template-columns:40px 1fr}.status{grid-column:2}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section class="top">
+  <div><span class="badge done">BASE ĐÃ CHẠY</span><span class="badge done">VIDEO V1</span><span class="badge todo">AI/SEO ĐANG XÂY</span></div>
+  <h1>🍎 Apple Seed — MASTER CONTROL CENTER</h1>
+  <div class="sub">Một trang duy nhất để nhìn toàn bộ kiến trúc, biết cái gì đã có, cái gì còn thiếu và thứ tự phát triển. Không sửa production trực tiếp.</div>
+</section>
+
+<div class="grid">
+<section class="card critical">
+<h2>1. 🏠 Website / CMS</h2>
+<ul>
+<li>Trang chủ động từ CMS</li><li>Dịch vụ / bài viết</li><li>Sản phẩm + gallery</li><li>Liên hệ + Google Maps</li><li>Điều hướng / Đặt lịch</li><li>Theme, màu, logo, CSS</li>
+</ul>
+<span class="badge done">ĐANG CÓ</span>
+<h3>Cần bổ sung</h3><ul><li>Quản lý SEO theo từng trang</li><li>Media Library chung</li><li>Version / rollback nội dung</li></ul>
+</section>
+
+<section class="card critical">
+<h2>2. 👥 Member</h2>
+<ul>
+<li>Đăng ký / đăng nhập</li><li>Xác nhận email</li><li>Quên / đổi mật khẩu</li><li>Profile Supabase</li><li>Đăng nội dung/video</li>
+</ul>
+<span class="badge done">NỀN ĐÃ CÓ</span>
+<h3>Cần bổ sung</h3><ul><li>Trang hồ sơ thành viên</li><li>Khóa / mở thành viên</li><li>Xóa thành viên theo quyền Admin</li><li>Phân quyền member / staff / admin</li></ul>
+</section>
+
+<section class="card critical">
+<h2>3. 🎬 Video Repair Library</h2>
+<ul>
+<li>YouTube URL → ID</li><li>Thumbnail, lazy player</li><li>10 chuyên mục</li><li>Model / lỗi / tag</li><li>Member gửi → pending</li><li>Admin duyệt / ẩn / sửa / xóa</li>
+</ul>
+<span class="badge done">V1 ĐÃ LÀM</span>
+<h3>Cần bổ sung</h3><ul><li>Upload file video thật (nếu sau này cần)</li><li>Playlist / series</li><li>Lượt xem / bookmark</li><li>Report video</li></ul>
+</section>
+
+<section class="card">
+<h2>4. 🧠 Knowledge Base</h2>
+<ul>
+<li>Bài viết kỹ thuật</li><li>Ca sửa thực tế</li><li>Tài liệu / hình ảnh</li><li>Tags + model + lỗi</li><li>⭐ Trạng thái đã xác minh</li><li>Người xác minh + thời gian</li>
+</ul>
+<span class="badge todo">CẦN LÀM</span>
+<div class="note">Đã xác minh = nguồn tri thức chuẩn. AI được đọc nguồn chuẩn nhưng không tự sửa tài liệu gốc.</div>
+</section>
+
+<section class="card">
+<h2>5. ⚠️ PANIC / Board Intelligence</h2>
+<ul>
+<li>Nạp panic log</li><li>Model / iOS / board</li><li>Boot current / dòng nguồn</li><li>I2C SDA/SCL</li><li>NAND / Baseband / Face ID</li><li>Power sequence</li><li>Kết quả sửa + xác minh</li>
+</ul>
+<span class="badge todo">CẦN LÀM</span>
+</section>
+
+<section class="card">
+<h2>6. 🤖 AI Knowledge Engine</h2>
+<ul>
+<li>Đọc Knowledge Base đã xác minh</li><li>Đọc hồ sơ PANIC đã xác minh</li><li>Trích xuất kiến thức</li><li>Gợi ý liên kết ca sửa</li><li>AI log / lịch sử chạy</li><li>Không để API key ở frontend</li>
+</ul>
+<span class="badge todo">CẦN LÀM</span>
+</section>
+
+<section class="card">
+<h2>7. 🔎 SEO Center</h2>
+<ul>
+<li>Website profile / lĩnh vực</li><li>Từ khóa mục tiêu</li><li>Keyword clusters</li><li>Meta title / description</li><li>Schema / sitemap / canonical</li><li>SEO suggestions từ AI</li><li>Phê duyệt trước khi xuất bản</li>
+</ul>
+<span class="badge todo">CẦN LÀM</span>
+</section>
+
+<section class="card">
+<h2>8. 🛡️ Security / Audit</h2>
+<ul>
+<li>RLS Supabase</li><li>Admin / Staff role</li><li>Member không tự duyệt</li><li>Audit log thao tác Admin</li><li>Backup trước migration</li><li>Migration riêng từng chức năng</li><li>Rollback plan</li>
+</ul>
+<span class="badge warn">PHẢI GIỮ LUÔN</span>
+</section>
+
+<section class="card">
+<h2>9. ⚡ Performance</h2>
+<ul>
+<li>YouTube chỉ tạo iframe khi bấm xem</li><li>Ảnh lazy-load</li><li>Không chạy AI trong browser</li><li>Không tải thư viện nặng nếu chưa dùng</li><li>Cache dữ liệu phù hợp</li><li>Giảm request Supabase dư thừa</li>
+</ul>
+<span class="badge done">NGUYÊN TẮC ĐÃ ĐẶT</span>
+</section>
+
+<section class="card wide">
+<h2>10. 🧩 Các module quản trị phải gom về một Admin Control Center</h2>
+<table>
+<tr><th>Module</th><th>Admin có thể làm</th><th>Trạng thái</th></tr>
+<tr><td>🏠 Website</td><td>Thêm / sửa / ẩn / hiện / xóa / sắp xếp / đổi giao diện</td><td>Đang có nền</td></tr>
+<tr><td>📄 Pages</td><td>Soạn bài, HTML editor, ảnh, video, SEO</td><td>Đang có nền</td></tr>
+<tr><td>🛍️ Shop</td><td>Sản phẩm, giá, tồn, gallery, ẩn / hiện</td><td>Đang có</td></tr>
+<tr><td>📅 Booking</td><td>Xem, xử lý, đổi trạng thái lịch</td><td>Đang có</td></tr>
+<tr><td>👥 Members</td><td>Xem, khóa/mở, phân quyền, xóa theo chính sách</td><td>Cần hoàn thiện</td></tr>
+<tr><td>🎬 Videos</td><td>Duyệt, sửa, ẩn, xóa, phân loại</td><td>V1</td></tr>
+<tr><td>🧠 Knowledge</td><td>Nạp, sửa, xác minh, phiên bản hóa</td><td>Cần làm</td></tr>
+<tr><td>⚠️ PANIC</td><td>Nạp log, phân tích, liên kết ca sửa, xác minh</td><td>Cần làm</td></tr>
+<tr><td>🔎 SEO</td><td>Keyword, meta, schema, sitemap, AI đề xuất</td><td>Cần làm</td></tr>
+<tr><td>🤖 AI</td><td>Knowledge sources, prompt/rules, run log, duyệt output</td><td>Cần làm</td></tr>
+<tr><td>🛡️ Security</td><td>Role, RLS, audit, backup/migration</td><td>Cần hoàn thiện</td></tr>
+</table>
+</section>
+
+<section class="card wide">
+<h2>11. 🚀 ROADMAP — thứ tự làm để không rối</h2>
+<div class="road"><div class="num">1</div><div><b>Admin Control Center</b><br>Gom toàn bộ module vào một dashboard; sidebar + tìm kiếm module + trạng thái.</div><span class="status done">NỀN</span></div>
+<div class="road"><div class="num">2</div><div><b>Member Management</b><br>Profile, role, khóa/mở, xóa theo quyền và audit.</div><span class="status">TIẾP THEO</span></div>
+<div class="road"><div class="num">3</div><div><b>Knowledge Base</b><br>Bài viết, tài liệu, ca sửa, xác minh, version.</div><span class="status">TIẾP THEO</span></div>
+<div class="road"><div class="num">4</div><div><b>PANIC Intelligence</b><br>Hồ sơ panic + đo đạc + kết quả sửa + liên kết model/IC/board.</div><span class="status">TIẾP THEO</span></div>
+<div class="road"><div class="num">5</div><div><b>SEO Center</b><br>Website profile → keywords → content plan → meta/schema → approval.</div><span class="status">TIẾP THEO</span></div>
+<div class="road"><div class="num">6</div><div><b>AI Knowledge Engine</b><br>AI chỉ dùng nguồn đã xác minh; có log, kiểm duyệt và rollback.</div><span class="status">SAU CÙNG</span></div>
+<div class="road"><div class="num">7</div><div><b>Social / Technician Network</b><br>Thành viên kết nối, chat, chia sẻ ca sửa, bình luận, bookmark.</div><span class="status">GIAI ĐOẠN SAU</span></div>
+</section>
+
+<section class="card wide">
+<h2>12. ❗ Những thứ đang thiếu và phải đưa vào kế hoạch</h2>
+<ul>
+<li><b>Audit Log:</b> ai sửa/xóa/duyệt cái gì, lúc nào.</li>
+<li><b>Versioning:</b> nội dung quan trọng phải quay lại bản trước.</li>
+<li><b>Soft Delete:</b> ưu tiên ẩn/thùng rác trước khi xóa vĩnh viễn.</li>
+<li><b>Media Library:</b> một nơi quản lý ảnh/tài liệu dùng chung.</li>
+<li><b>Content Workflow:</b> Draft → Review → Verified → Published → Archived.</li>
+<li><b>AI Approval:</b> AI chỉ đề xuất; Admin quyết định nội dung xuất bản.</li>
+<li><b>Search toàn hệ thống:</b> tìm member/video/PANIC/knowledge/page từ một ô.</li>
+<li><b>Taxonomy:</b> Model → lỗi → linh kiện/IC → triệu chứng → giải pháp → ca sửa.</li>
+<li><b>Backup & Migration Center:</b> mỗi chức năng một migration riêng, có rollback.</li>
+<li><b>Monitoring:</b> lỗi Supabase, lỗi video, lỗi AI, request thất bại.</li>
+</ul>
+</section>
+
+<section class="card wide">
+<h2>13. 🎯 Quy tắc kiến trúc Apple Seed</h2>
+<div class="note">
+<b>Không đập cái đang chạy để làm cái mới.</b> Mỗi chức năng mới = migration riêng + backup + staging + test + rollback.
+<br><br>
+<b>AI không phải nguồn chân lý.</b> Nguồn chuẩn là tài liệu/ca PANIC đã được người có quyền xác minh.
+<br><br>
+<b>Frontend phải nhẹ.</b> Không đưa secret/API key vào HTML/JS; AI xử lý phía server/backend.
+<br><br>
+<b>Admin phải quản được về sau.</b> Không hard-code dữ liệu quan trọng vào HTML nếu dữ liệu có khả năng thay đổi.
+</div>
+</section>
+</div>
+<div class="footer">APPLE SEED • MASTER PLAN V1 • Dùng làm bản đồ phát triển, không thay thế migration/database schema.</div>
+</div>
+</body>
+</html>
