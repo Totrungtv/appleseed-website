@@ -1,0 +1,41 @@
+APPLE SEED — YOUTUBE SEARCH ENGINE V1
+
+1) Supabase Edge Function
+- Create a function named: youtube-search
+- Use the file youtube-search-index.ts
+- Deploy it to the same Supabase project.
+
+2) Secret
+Set Edge Function secret:
+YOUTUBE_API_KEY=YOUR_YOUTUBE_DATA_API_V3_KEY
+
+Do NOT put this key in HTML, JS frontend, Git, or public files.
+
+3) Google Cloud
+- Enable YouTube Data API v3 for the Google Cloud project.
+- Create an API key.
+- Restrict the key as tightly as practical for the project/API use.
+
+4) Frontend
+ai-board.html already calls:
+supabaseClient.functions.invoke('youtube-search', { body: { q, maxResults, regionCode:'VN', relevanceLanguage:'vi' } })
+
+The frontend also supports direct YouTube URL playback without the search API.
+
+5) Performance
+- Search results show thumbnails first.
+- YouTube iframe is created only after the user clicks a result.
+- No autoplay on page load.
+- API key stays server-side.
+
+6) Why search needs the backend
+YouTube keyword search uses the YouTube Data API. The key must not be exposed in frontend code.
+Search requests have a quota cost, so later we should add caching/rate limiting before opening this to a large public audience.
+
+7) Current scope
+- Search YouTube
+- Show thumbnails/title/channel
+- Click → watch inside Apple Seed
+- Paste YouTube URL → watch inside Apple Seed
+- Later: "Gán vào Apple Seed" button → save approved video to apple_seed_videos
+- Later: model/fault/category/tag/Knowledge/PANIC linking
