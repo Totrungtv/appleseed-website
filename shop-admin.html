@@ -22,6 +22,27 @@ h1,h2,h3,p{margin-top:0}.top h1{margin-bottom:5px}.muted{color:#667085;font-size
 
 @media(max-width:800px){.split{grid-template-columns:1fr}}
 @media(max-width:1050px){.cards{grid-template-columns:repeat(3,1fr)}}@media(max-width:700px){.wrap{padding:14px}.top{align-items:flex-start;flex-direction:column}.cards,.formgrid{grid-template-columns:1fr}.formgrid .full{grid-column:auto}}
+
+/* ===== APPLE SEED • PAN AI SCHEMATIC TOOL ===== */
+.pan-ai-box{grid-column:1/-1;border:1px solid #cfe2f7;background:linear-gradient(135deg,#f8fcff,#eef7ff);border-radius:16px;padding:16px;margin-top:4px}
+.pan-ai-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.pan-ai-title{font-weight:900;font-size:17px;color:#12325b}
+.pan-ai-sub{font-size:12px;color:#667085;margin-top:4px}
+.pan-ai-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.pan-ai-grid .full{grid-column:1/-1}
+.pan-ai-drop{border:2px dashed #b8cbe2;border-radius:13px;padding:16px;text-align:center;background:#fff;cursor:pointer}
+.pan-ai-drop.drag{border-color:#2563eb;background:#eff6ff}
+.pan-ai-preview{display:flex;gap:10px;align-items:center;margin-top:10px}
+.pan-ai-preview img{width:92px;height:68px;object-fit:cover;border-radius:10px;border:1px solid #d0d5dd;background:#f8fafc}
+.pan-ai-file{font-size:12px;color:#475467;word-break:break-all}
+.pan-editor-wrap{border:1px solid #d0d5dd;border-radius:10px;background:#fff;overflow:hidden}
+.pan-editor-tools{display:flex;gap:5px;flex-wrap:wrap;padding:7px;border-bottom:1px solid #e4e7ec;background:#f8fafc}
+.pan-editor-tools button{border:1px solid #d0d5dd;background:#fff;border-radius:7px;padding:6px 9px;font-weight:800;cursor:pointer}
+.pan-editor{min-height:105px;padding:11px;outline:none;line-height:1.55}
+.pan-ai-result{margin-top:12px;background:#fff;border:1px solid #d0d5dd;border-radius:12px;padding:14px;white-space:pre-wrap;line-height:1.6;max-height:360px;overflow:auto}
+.pan-ai-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+@media(max-width:700px){.pan-ai-grid{grid-template-columns:1fr}.pan-ai-grid .full{grid-column:auto}}
+
 </style>
 </head>
 <body>
@@ -97,7 +118,7 @@ h1,h2,h3,p{margin-top:0}.top h1{margin-bottom:5px}.muted{color:#667085;font-size
 
 <section id="pans" class="view hidden">
 <div class="panel">
-  <div class="top"><div><h2>🛠️ Pan thực tế</h2><div class="muted">Lưu lại các pan đã gặp và cách xử lý thực tế của cửa hàng.</div></div><button class="btn primary" id="newPan">＋ Thêm pan</button></div>
+  <div class="top"><div><h2>🛠️ Pan thực tế</h2><div class="muted">Lưu lại các pan đã gặp và cách xử lý thực tế của cửa hàng.</div></div><div class="actions"><button class="btn" id="openPanAI">🤖 AI + Sơ đồ</button><button class="btn primary" id="newPan">＋ Thêm pan</button></div></div>
   <div id="panList"></div>
 </div>
 </section>
@@ -431,7 +452,7 @@ async function loadPans(){
  const render=arr=>arr.length?arr.map(x=>`<div class="listitem"><div class="top" style="margin-bottom:8px"><div><b>${esc(x.model)}</b> · ${esc(x.title)}</div><button class="btn" onclick='editPan(${JSON.stringify(x).replace(/'/g,"&#39;")})'>Sửa</button> <button class="btn danger" onclick="deletePan(${x.id})">🗑️ Xóa</button></div><div class="small muted">${esc(x.symptoms||"")}</div><div style="margin-top:8px">${x.area?'<b>Khu vực/IC:</b> '+esc(x.area)+' · ':''}${x.result?'<b>Kết quả:</b> '+esc(x.result):''}</div></div>`).join(""):"<div class='listitem muted'>Chưa có pan.</div>";
  $("panList").innerHTML=`<div class="split"><div class="listbox"><h3>🍎 iPhone</h3>${render(ios)}</div><div class="listbox"><h3>🤖 Android</h3>${render(ands)}</div></div>`;
 }
-$("newPan").onclick=()=>openPanForm();window.editPan=x=>openPanForm(x);
+$("newPan").onclick=()=>openPanForm();window.editPan=x=>openPanForm(x);$("openPanAI").onclick=()=>openPanForm();
 window.deletePan=async id=>{
   if(!confirm("XÓA pan #"+id+"?")) return;
   let r=await sb.from("pan_cases").delete().eq("id",id);
@@ -439,21 +460,189 @@ window.deletePan=async id=>{
   closeModal(); loadPans();
 };
 function openPanForm(x={}){
- openModal(x.id?"Sửa pan #"+x.id:"Thêm pan thực tế",`<form id="panForm" class="formgrid">
- <label>Hệ máy<select id="pPlatform"><option value="iphone">iPhone</option><option value="android">Android</option></select></label>
- <label>Model<input id="pModel" value="${esc(x.model||"")}" placeholder="iPhone 12 Pro / Redmi Note 9S" required></label>
- <label class="full">Tên pan<input id="pTitle" value="${esc(x.title||"")}" placeholder="Mất nguồn, đơ cảm ứng, panic..." required></label>
- <label class="full">Triệu chứng<textarea id="pSymptoms">${esc(x.symptoms||"")}</textarea></label>
- <label>Khu vực / IC nghi ngờ<input id="pArea" value="${esc(x.area||"")}" placeholder="PMIC, Touch IC, I2C..."></label>
- <label>Kết quả<input id="pResult" value="${esc(x.result||"")}" placeholder="Done / không thành công"></label>
- <label class="full">Cách xử lý<textarea id="pFix">${esc(x.fix||"")}</textarea></label>
- <label class="full">Ghi chú / từ khóa tìm kiếm<textarea id="pNote">${esc(x.note||"")}</textarea></label>
- <div class="full right"><button class="btn primary">💾 Lưu pan</button></div></form>`);
- if(x.platform)$("pPlatform").value=x.platform;
- $("panForm").onsubmit=async e=>{e.preventDefault();let q={platform:$("pPlatform").value,model:$("pModel").value.trim(),title:$("pTitle").value.trim(),symptoms:$("pSymptoms").value.trim(),area:$("pArea").value.trim(),result:$("pResult").value.trim(),fix:$("pFix").value.trim(),note:$("pNote").value.trim()};let z=await(x.id?sb.from("pan_cases").update(q).eq("id",x.id):sb.from("pan_cases").insert(q));if(z.error){alert(z.error.message);return}closeModal();loadPans()}
-}
+  openModal(x.id?"Sửa pan #"+x.id:"Thêm pan thực tế",`<form id="panForm" class="formgrid">
+  <label>Hệ máy<select id="pPlatform"><option value="iphone">iPhone</option><option value="android">Android</option></select></label>
+  <label>Model<input id="pModel" value="${esc(x.model||"")}" placeholder="iPhone 12 Pro / Redmi Note 9S" required></label>
+  <label class="full">Tên pan<input id="pTitle" value="${esc(x.title||"")}" placeholder="Mất nguồn, đơ cảm ứng, panic..." required></label>
+  <label class="full">Triệu chứng<textarea id="pSymptoms">${esc(x.symptoms||"")}</textarea></label>
+  <label>Khu vực / IC nghi ngờ<input id="pArea" value="${esc(x.area||"")}" placeholder="PMIC, Touch IC, I2C..."></label>
+  <label>Kết quả<input id="pResult" value="${esc(x.result||"")}" placeholder="Done / không thành công"></label>
+  <label class="full">Cách xử lý<textarea id="pFix">${esc(x.fix||"")}</textarea></label>
+  <label class="full">Ghi chú / từ khóa tìm kiếm<textarea id="pNote">${esc(x.note||"")}</textarea></label>
 
-const DEFAULT_PART_PAGES=[
+  <div class="pan-ai-box">
+    <div class="pan-ai-head">
+      <div><div class="pan-ai-title">🤖 AI PHÂN TÍCH PAN + SƠ ĐỒ</div>
+      <div class="pan-ai-sub">Nạp schematic/ảnh board, ghi dữ liệu đo và để AI phân tích. AI không thay thế đo đạc thực tế.</div></div>
+      <button type="button" class="btn" id="panAiCopyTop">📋 Sao chép</button>
+    </div>
+
+    <div class="pan-ai-grid">
+      <label>Board / PCB
+        <input id="panAiBoard" placeholder="Ví dụ: 820-xxxx / Jxxx / Axx">
+      </label>
+      <label>Boot current / điện áp đo
+        <input id="panAiMeasure" placeholder="Ví dụ: 0.12A, PP_VDD_MAIN = 0V...">
+      </label>
+
+      <div class="full">
+        <label>Dữ liệu kỹ thuật cho AI</label>
+        <div class="pan-editor-wrap">
+          <div class="pan-editor-tools">
+            <button type="button" data-pan-cmd="bold"><b>B</b></button>
+            <button type="button" data-pan-cmd="italic"><i>I</i></button>
+            <button type="button" data-pan-cmd="underline"><u>U</u></button>
+            <button type="button" data-pan-cmd="insertUnorderedList">• Danh sách</button>
+            <button type="button" data-pan-cmd="insertOrderedList">1. Danh sách</button>
+            <button type="button" id="panAiClearText">Xóa</button>
+          </div>
+          <div id="panAiEditor" class="pan-editor" contenteditable="true" spellcheck="true">${esc(x.ai_notes||"")}</div>
+        </div>
+      </div>
+
+      <div class="full">
+        <label>Sơ đồ / ảnh board / ảnh đo đạc</label>
+        <div id="panAiDrop" class="pan-ai-drop">
+          <div style="font-size:28px">📐</div>
+          <b>Chọn ảnh hoặc kéo thả vào đây</b>
+          <div class="pan-ai-sub">PNG, JPG, WEBP · nên dùng ảnh độ phân giải cao</div>
+          <input id="panAiFile" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+        </div>
+        <div id="panAiPreview" class="pan-ai-preview hidden"></div>
+      </div>
+
+      <div class="full pan-ai-actions">
+        <button type="button" class="btn primary" id="panAiAnalyze">🤖 AI phân tích sơ đồ + PAN</button>
+        <button type="button" class="btn" id="panAiOpenOnly">📐 Nạp sơ đồ</button>
+        <button type="button" class="btn" id="panAiCopy">📋 Sao chép kết quả</button>
+      </div>
+
+      <div class="full">
+        <div id="panAiStatus" class="notice hidden"></div>
+        <div id="panAiResult" class="pan-ai-result hidden"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="full right"><button class="btn primary">💾 Lưu pan</button></div>
+  </form>`);
+
+  if(x.platform)$("pPlatform").value=x.platform;
+
+  let selectedFile=null, lastAnalysis="";
+  const editor=$("panAiEditor");
+
+  $("panAiDrop").onclick=()=>$("panAiFile").click();
+  $("panAiOpenOnly").onclick=()=>$("panAiFile").click();
+  $("panAiFile").onchange=e=>{selectedFile=e.target.files?.[0]||null;renderPanAiFile()};
+  ["dragenter","dragover"].forEach(ev=>$("panAiDrop").addEventListener(ev,e=>{e.preventDefault();$("panAiDrop").classList.add("drag")}));
+  ["dragleave","drop"].forEach(ev=>$("panAiDrop").addEventListener(ev,e=>{e.preventDefault();$("panAiDrop").classList.remove("drag")}));
+  $("panAiDrop").ondrop=e=>{selectedFile=e.dataTransfer.files?.[0]||null;renderPanAiFile()};
+
+  function renderPanAiFile(){
+    const box=$("panAiPreview");
+    if(!selectedFile){box.classList.add("hidden");box.innerHTML="";return}
+    if(!/^image\/(png|jpeg|webp)$/.test(selectedFile.type)){alert("Chỉ nhận PNG, JPG hoặc WEBP.");selectedFile=null;return}
+    const url=URL.createObjectURL(selectedFile);
+    box.classList.remove("hidden");
+    box.innerHTML=`<img src="${url}" alt=""><div class="pan-ai-file"><b>${esc(selectedFile.name)}</b><br>${Math.round(selectedFile.size/1024)} KB</div>`;
+  }
+
+  document.querySelectorAll("[data-pan-cmd]").forEach(btn=>{
+    btn.onclick=()=>{editor.focus();document.execCommand(btn.dataset.panCmd,false,null)};
+  });
+  $("panAiClearText").onclick=()=>{editor.innerHTML=""};
+
+  function aiNotes(){
+    const base=[
+      "Triệu chứng: "+$("pSymptoms").value.trim(),
+      "Khu vực/IC nghi ngờ: "+$("pArea").value.trim(),
+      "Kết quả: "+$("pResult").value.trim(),
+      "Cách xử lý hiện tại: "+$("pFix").value.trim(),
+      "Ghi chú: "+$("pNote").value.trim(),
+      "Boot current / điện áp: "+$("panAiMeasure").value.trim(),
+      "Dữ liệu kỹ thuật: "+editor.innerText.trim()
+    ].filter(x=>x.split(":").slice(1).join(":").trim()).join("\n");
+    return base;
+  }
+
+  async function runPanAI(){
+    if(!selectedFile){alert("Pa chưa nạp ảnh schematic/board.");return}
+    const status=$("panAiStatus"), result=$("panAiResult"), btn=$("panAiAnalyze");
+    status.classList.remove("hidden");result.classList.add("hidden");
+    status.textContent="⏳ Đang upload sơ đồ và gọi AI phân tích...";
+    btn.disabled=true;
+
+    try{
+      const safe=selectedFile.name.toLowerCase().replace(/[^a-z0-9._-]+/g,"-");
+      const path=`pan-ai/${session.user.id}/${Date.now()}-${Math.random().toString(36).slice(2,8)}-${safe}`;
+      const up=await sb.storage.from("ai-schematics").upload(path,selectedFile,{cacheControl:"3600",upsert:false});
+      if(up.error)throw up.error;
+
+      const ins=await sb.from("ai_schematic_analyses").insert({
+        title:($("pModel").value.trim()+" — "+$("pTitle").value.trim()).slice(0,180),
+        device_model:$("pModel").value.trim(),
+        board_code:$("panAiBoard").value.trim(),
+        notes:aiNotes(),
+        file_path:path,
+        file_name:selectedFile.name,
+        mime_type:selectedFile.type,
+        ai_status:"queued",
+        created_by:session.user.id
+      }).select("id").single();
+      if(ins.error)throw ins.error;
+
+      const call=await sb.functions.invoke("analyze-schematic",{
+        body:{
+          analysis_id:ins.data.id,
+          file_path:path,
+          device_model:$("pModel").value.trim(),
+          board_code:$("panAiBoard").value.trim(),
+          notes:aiNotes(),
+          mime_type:selectedFile.type
+        }
+      });
+      if(call.error)throw call.error;
+      if(call.data?.error)throw new Error(call.data.error);
+
+      lastAnalysis=call.data?.analysis||"AI không trả về kết quả.";
+      result.textContent=lastAnalysis;
+      result.classList.remove("hidden");
+      status.classList.remove("notice");
+      status.classList.add("notice");
+      status.textContent="✅ AI đã phân tích xong. Hãy kiểm tra lại bằng đo đạc thực tế.";
+    }catch(err){
+      status.textContent="❌ "+(err?.message||String(err));
+    }finally{btn.disabled=false}
+  }
+
+  $("panAiAnalyze").onclick=runPanAI;
+  const copyAI=async()=>{
+    const text=lastAnalysis||$("panAiResult").innerText||"";
+    if(!text){alert("Chưa có kết quả AI để sao chép.");return}
+    await navigator.clipboard.writeText(text);
+    alert("✅ Đã sao chép kết quả AI.");
+  };
+  $("panAiCopy").onclick=copyAI;
+  $("panAiCopyTop").onclick=copyAI;
+
+  $("panForm").onsubmit=async e=>{
+    e.preventDefault();
+    let q={
+      platform:$("pPlatform").value,
+      model:$("pModel").value.trim(),
+      title:$("pTitle").value.trim(),
+      symptoms:$("pSymptoms").value.trim(),
+      area:$("pArea").value.trim(),
+      result:$("pResult").value.trim(),
+      fix:$("pFix").value.trim(),
+      note:$("pNote").value.trim()
+    };
+    let z=await(x.id?sb.from("pan_cases").update(q).eq("id",x.id):sb.from("pan_cases").insert(q));
+    if(z.error){alert(z.error.message);return}
+    closeModal();loadPans();
+  }
+}const DEFAULT_PART_PAGES=[
   {name:"Màn hình",icon:"📱",sort_order:10},
   {name:"Pin",icon:"🔋",sort_order:20},
   {name:"Mặt kính / lưng",icon:"🖼️",sort_order:30},
