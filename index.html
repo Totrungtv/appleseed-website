@@ -378,6 +378,25 @@ img{-webkit-user-drag:none}
 .youtube-top-section .apple-seed-youtube-search{margin-top:0!important;}
 @media(max-width:560px){.youtube-top-section{padding:14px 12px 8px}.youtube-top-section .apple-seed-youtube-search{padding:14px!important}.youtube-top-section .apple-seed-youtube-search input{min-width:0!important;width:100%;flex:1 1 100%;}.youtube-top-section .apple-seed-youtube-search button{width:100%;}}
 
+
+/* ===== YOUTUBE MODAL MOBILE FIX V2 ===== */
+.video-modal{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.video-modal-box{position:relative;z-index:1}
+.video-modal-close{
+  position:absolute!important;right:10px!important;top:10px!important;
+  z-index:50!important;pointer-events:auto!important;
+  width:42px!important;height:42px!important;display:grid!important;place-items:center!important;
+  cursor:pointer!important;-webkit-appearance:none!important;appearance:none!important;
+}
+@media(max-width:560px){
+  .video-modal{padding:10px!important;align-items:center!important}
+  .video-modal-box{width:100%!important;max-height:92vh!important;border-radius:18px!important}
+  .video-modal-close{right:8px!important;top:8px!important;width:44px!important;height:44px!important;font-size:28px!important}
+  .video-player{border-radius:12px!important}
+  .video-modal-info{padding:12px!important;max-height:36vh!important;overflow:auto!important}
+  .video-modal-info h2{font-size:20px!important;line-height:1.3!important}
+}
+
 </style>
 </head>
 
@@ -1217,6 +1236,25 @@ img{-webkit-user-drag:none}
 
   btn.addEventListener('click',searchYoutube);
   input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchYoutube();}});
+
+  // Đóng player YouTube: click + touch trên mobile, và ESC.
+  const videoModal=document.getElementById('videoViewModal');
+  const videoClose=document.getElementById('videoViewClose');
+  const videoPlayer=document.getElementById('videoPlayer');
+  function closeYoutubePlayer(){
+    if(!videoModal)return;
+    videoModal.classList.remove('open');
+    if(videoPlayer)videoPlayer.innerHTML='';
+    document.body.style.overflow='';
+  }
+  if(videoClose){
+    videoClose.addEventListener('click',closeYoutubePlayer);
+    videoClose.addEventListener('touchend',e=>{e.preventDefault();closeYoutubePlayer();},{passive:false});
+  }
+  if(videoModal){
+    videoModal.addEventListener('click',e=>{if(e.target===videoModal)closeYoutubePlayer();});
+  }
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeYoutubePlayer();});
 })();
 </script>
 

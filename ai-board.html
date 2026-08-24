@@ -51,6 +51,22 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
 @media(max-width:900px){.repair-video-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.repair-video-grid{grid-template-columns:1fr}.repair-video-filters{display:grid}.repair-video-filters input,.repair-video-filters select{width:100%;min-width:0}}
 
+
+/* ===== YOUTUBE PLAYER CLOSE MOBILE FIX V2 ===== */
+.youtube-player-modal{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.youtube-player-box{position:relative}
+.youtube-player-close{
+  position:relative!important;z-index:50!important;
+  pointer-events:auto!important;touch-action:manipulation!important;
+  -webkit-appearance:none!important;appearance:none!important;
+}
+@media(max-width:560px){
+  .youtube-player-modal{padding:10px!important}
+  .youtube-player-box{width:100%!important;max-height:92vh!important}
+  .youtube-player-close{width:44px!important;height:44px!important;font-size:28px!important}
+  .youtube-player-title{max-height:24vh!important;overflow:auto!important}
+}
+
 </style>
 </head>
 <body><main class="wrap">
@@ -220,7 +236,10 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
     title.textContent=t||'YouTube'; modal.classList.add('open');
   }
   function stop(){modal.classList.remove('open');frame.innerHTML='';title.textContent='';}
-  close.addEventListener('click',stop); modal.addEventListener('click',e=>{if(e.target===modal)stop();}); document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
+  close.addEventListener('click',stop);
+close.addEventListener('touchend',e=>{e.preventDefault();stop();},{passive:false});
+modal.addEventListener('click',e=>{if(e.target===modal)stop();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
   function render(items){
     if(!items.length){grid.innerHTML='<div class="youtube-empty">Không có kết quả phù hợp.</div>';return;}
     grid.innerHTML=items.map(v=>`<article class="youtube-card" data-video-id="${esc(v.videoId)}" data-title="${esc(v.title)}"><div class="youtube-thumb"><img loading="lazy" src="${esc(v.thumbnail)}" alt=""><span class="youtube-play">▶</span></div><div class="youtube-info"><div class="youtube-title">${esc(v.title)}</div><div class="youtube-channel">${esc(v.channelTitle||'YouTube')}</div></div></article>`).join('');
