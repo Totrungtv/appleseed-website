@@ -1472,19 +1472,27 @@ button,a,input,textarea{ -webkit-tap-highlight-color:transparent }
   const sb=window.supabaseClient;
   const root=document.getElementById('homeRenderer');
 
-  // Public CMS reads use a separate client without the member session.
-  // This prevents an expired/stale member token after logout from causing
-  // 401 errors on public SELECT requests such as site_nav_items.
-  const publicSb=(sb && window.supabase?.createClient)
-    ? window.supabase.createClient(sb.supabaseUrl,sb.supabaseKey,{
-        auth:{
-          persistSession:false,
-          autoRefreshToken:false,
-          detectSessionInUrl:false
-        }
-      })
-    : sb;
-  window.appleSeedPublicSupabase=publicSb;
+  // Public CMS reads intentionally avoid creating a second Supabase Auth client.
+  // This prevents GoTrueClient duplication warnings and avoids carrying the
+  // Member session/token into public CMS requests after logout.
+  const publicCmsFetch=async(path,query='')=>{
+    if(!sb?.supabaseUrl||!sb?.supabaseKey) throw new Error('Thiếu cấu hình Supabase.');
+    const url=String(sb.supabaseUrl).replace(/\/+$/,'')+'/rest/v1/'+path+query;
+    const res=await fetch(url,{
+      method:'GET',
+      headers:{
+        apikey:sb.supabaseKey,
+        Authorization:'Bearer '+sb.supabaseKey
+      },
+      cache:'no-store'
+    });
+    if(!res.ok){
+      const body=await res.text().catch(()=> '');
+      throw new Error(`CMS public request ${res.status}: ${body.slice(0,180)}`);
+    }
+    return res.json();
+  };
+  window.appleSeedPublicCmsFetch=publicCmsFetch;
 
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
   const safeHtml=h=>{const t=document.createElement('template');t.innerHTML=h||'';t.content.querySelectorAll('script,object,embed,form,style,link,meta').forEach(x=>x.remove());t.content.querySelectorAll('*').forEach(el=>[...el.attributes].forEach(a=>{const n=a.name.toLowerCase(),v=a.value||'';if(n.startsWith('on')||((n==='href'||n==='src')&&/^\s*javascript:/i.test(v)))el.removeAttribute(a.name)}));return t.innerHTML};
@@ -1912,8 +1920,8 @@ button,a,input,textarea{ -webkit-tap-highlight-color:transparent }
   async function loadDynamicPages(){
     const grid=document.getElementById('dynamicPagesGrid');
     if(!grid)return;
-    const cmsSb=window.appleSeedPublicSupabase||window.supabaseClient;
-    if(!cmsSb){
+    const publicFetch=window.appleSeedPublicCmsFetch;
+    if(!publicFetch){
       grid.innerHTML='<p style="grid-column:1/-1;color:#b42318">Không kết nối được dữ liệu trang dịch vụ.</p>';
       return;
     }
@@ -1921,17 +1929,8 @@ button,a,input,textarea{ -webkit-tap-highlight-color:transparent }
     const escapePage=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 
     try{
-      const {data,error}=await cmsSb
-        .from('pages')
-        .select('id,title,slug,description,is_active')
-        .eq('is_active',true)
-        .order('id',{ascending:false});
-
-      if(error){
-        console.warn('Apple Seed pages:',error);
-        grid.innerHTML='<p style="grid-column:1/-1;color:#b42318">Chưa tải được bài viết dịch vụ.</p>';
-        return;
-      }
+      const rows=await publicFetch('pages','?select=id,title,slug,description,is_active&is_active=eq.true&order=id.desc');
+      const data=Array.isArray(rows)?rows:[];
 
       if(!data?.length){
         grid.innerHTML='<p style="grid-column:1/-1;color:#718096">Hiện chưa có bài viết dịch vụ.</p>';
@@ -2030,12 +2029,14 @@ button,a,input,textarea{ -webkit-tap-highlight-color:transparent }
   async function load(){
     if(!sb){staticFallback();bindProductCards();fixNavigation();return}
     try{
-      const cmsSb=window.appleSeedPublicSupabase||sb;
-      const [t,n,s]=await Promise.all([
-        cmsSb.from('site_theme_settings').select('*').eq('id',1).maybeSingle(),
-        cmsSb.from('site_nav_items').select('label,icon,url,is_active,sort_order').eq('is_active',true).order('sort_order',{ascending:true}),
-        cmsSb.from('site_home_sections').select('*').eq('is_active',true).order('sort_order',{ascending:true}).order('id',{ascending:true})
+      const [themeRows,navRows,sectionRows]=await Promise.all([
+        publicCmsFetch('site_theme_settings','?id=eq.1&select=*'),
+        publicCmsFetch('site_nav_items','?select=label,icon,url,is_active,sort_order&is_active=eq.true&order=sort_order.asc'),
+        publicCmsFetch('site_home_sections','?select=*&is_active=eq.true&order=sort_order.asc,id.asc')
       ]);
+      const t={data:themeRows?.[0]||null};
+      const n={data:Array.isArray(navRows)?navRows:[],error:null};
+      const s={data:Array.isArray(sectionRows)?sectionRows:[],error:null};
       if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){const st=document.createElement('style');st.textContent=t.data.custom_css;document.head.appendChild(st)}if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){
       const menu=document.querySelector('.menu');
       const memberAuth=document.getElementById('memberAuthButtons');
