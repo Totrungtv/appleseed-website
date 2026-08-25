@@ -373,11 +373,52 @@ img{-webkit-user-drag:none}
 .youtube-search-loading{padding:18px;text-align:center;color:#718096}
 
 
-/* ===== AI ENGINEERING CENTER FLOATING BUTTON ===== */
-.apple-seed-ai-float{position:absolute;top:16px;right:18px;z-index:19000;display:block!important}
-.apple-seed-ai-float a{display:inline-flex;align-items:center;gap:8px;padding:11px 16px;border-radius:999px;background:linear-gradient(135deg,#176fe5,#3da8ff);color:#fff;text-decoration:none;font-weight:900;font-size:12px;letter-spacing:.02em;box-shadow:0 10px 26px rgba(23,111,229,.25);border:1px solid rgba(255,255,255,.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-.apple-seed-ai-float a:hover{transform:translateY(-1px);box-shadow:0 13px 30px rgba(23,111,229,.32)}
-@media(max-width:560px){.apple-seed-ai-float{top:10px;right:10px}.apple-seed-ai-float a{padding:9px 12px;font-size:10px}}
+/* ===== AI ENGINEERING CENTER =====
+   Không fixed: cuộn cùng trang.
+   Hạ xuống dưới header để không đè menu.
+*/
+.apple-seed-ai-float{
+  position:absolute;
+  top:96px;
+  right:18px;
+  z-index:19000;
+  display:block!important;
+}
+
+.apple-seed-ai-float a{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:11px 16px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#176fe5,#3da8ff);
+  color:#fff;
+  text-decoration:none;
+  font-weight:900;
+  font-size:12px;
+  letter-spacing:.02em;
+  box-shadow:0 10px 26px rgba(23,111,229,.25);
+  border:1px solid rgba(255,255,255,.65);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+
+.apple-seed-ai-float a:hover{
+  transform:translateY(-1px);
+  box-shadow:0 13px 30px rgba(23,111,229,.32);
+}
+
+/* Mobile: cũng cuộn theo trang và nằm dưới header */
+@media(max-width:560px){
+  .apple-seed-ai-float{
+    top:230px;
+    right:10px;
+  }
+  .apple-seed-ai-float a{
+    padding:9px 12px;
+    font-size:10px;
+  }
+}
 
 /* ===== TOP YOUTUBE ENGINE ===== */
 .youtube-top-section{padding:22px 24px 10px;background:transparent;}
