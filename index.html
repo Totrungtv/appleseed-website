@@ -415,114 +415,105 @@ img{-webkit-user-drag:none}
 
 </style>
 
-/* ===== APPLE SEED ROBOT FRIEND — SAFE ISOLATED ANIMATION ===== */
-#as-robot-intro{
-  position:fixed;
-  left:50%;
-  top:46%;
-  width:92px;
-  height:118px;
-  z-index:99999;
-  pointer-events:none;
-  opacity:0;
+<style id="apple-seed-robot-css">
+/* ===== APPLE SEED ROBOT FRIEND — ISOLATED ===== */
+#asRobotFriend{
+  position:fixed;left:50%;top:45%;
+  width:92px;height:118px;z-index:99999;
+  pointer-events:none;opacity:0;
   transform:translate(-50%,-50%);
   filter:drop-shadow(0 14px 20px rgba(23,105,255,.25));
 }
-#as-robot-intro .as-r{
-  position:relative;
-  width:92px;
-  height:118px;
-  transform-origin:50% 100%;
-}
-#as-robot-intro .as-head{
-  position:absolute;left:18px;top:4px;width:56px;height:42px;
+#asRobotFriend .asrf-body{position:relative;width:92px;height:118px}
+#asRobotFriend .asrf-head{
+  position:absolute;left:18px;top:5px;width:56px;height:42px;
   border:3px solid #1769ff;border-radius:16px;
   background:linear-gradient(#fff,#e7eef8);
 }
-#as-robot-intro .as-antenna{
+#asRobotFriend .asrf-antenna{
   position:absolute;left:50%;top:-16px;width:3px;height:14px;
   background:#1769ff;transform:translateX(-50%);
 }
-#as-robot-intro .as-antenna:after{
+#asRobotFriend .asrf-antenna:after{
   content:"";position:absolute;left:50%;top:-7px;width:10px;height:10px;
   border-radius:50%;background:#3da8ff;transform:translateX(-50%);
-  box-shadow:0 0 12px rgba(61,168,255,.7);
 }
-#as-robot-intro .as-eye{
+#asRobotFriend .asrf-eye{
   position:absolute;top:14px;width:9px;height:9px;border-radius:50%;
   background:#1769ff;
 }
-#as-robot-intro .as-eye.l{left:12px}
-#as-robot-intro .as-eye.r{right:12px}
-#as-robot-intro .as-mouth{
+#asRobotFriend .asrf-eye.l{left:12px}
+#asRobotFriend .asrf-eye.r{right:12px}
+#asRobotFriend .asrf-mouth{
   position:absolute;left:50%;bottom:7px;width:18px;height:5px;
   border-radius:8px;background:#1769ff;transform:translateX(-50%);
 }
-#as-robot-intro .as-body{
+#asRobotFriend .asrf-torso{
   position:absolute;left:16px;top:52px;width:60px;height:45px;
   border:3px solid #1769ff;border-radius:14px;
   background:linear-gradient(#fff,#e7eef8);
 }
-#as-robot-intro .as-body:after{
+#asRobotFriend .asrf-torso:after{
   content:"AI";position:absolute;left:50%;top:50%;
   transform:translate(-50%,-50%);font-size:12px;font-weight:900;color:#1769ff;
 }
-#as-robot-intro .as-arm{
-  position:absolute;top:58px;width:12px;height:36px;border:3px solid #1769ff;
-  border-radius:9px;background:#e1ebf7;transform-origin:50% 5px;
+#asRobotFriend .asrf-arm{
+  position:absolute;top:58px;width:12px;height:36px;
+  border:3px solid #1769ff;border-radius:9px;background:#e1ebf7;
+  transform-origin:50% 5px;
 }
-#as-robot-intro .as-arm.l{left:3px}
-#as-robot-intro .as-arm.r{right:3px}
-#as-robot-intro .as-leg{
-  position:absolute;top:96px;width:14px;height:24px;border:3px solid #1769ff;
-  border-radius:8px;background:#e1ebf7;transform-origin:50% 4px;
+#asRobotFriend .asrf-arm.l{left:3px}
+#asRobotFriend .asrf-arm.r{right:3px}
+#asRobotFriend .asrf-leg{
+  position:absolute;top:96px;width:14px;height:24px;
+  border:3px solid #1769ff;border-radius:8px;background:#e1ebf7;
+  transform-origin:50% 4px;
 }
-#as-robot-intro .as-leg.l{left:26px}
-#as-robot-intro .as-leg.r{right:26px}
-#as-robot-intro .as-shadow{
-  position:absolute;left:50%;bottom:-7px;width:64px;height:10px;border-radius:50%;
-  background:rgba(20,50,100,.14);transform:translateX(-50%);
+#asRobotFriend .asrf-leg.l{left:26px}
+#asRobotFriend .asrf-leg.r{right:26px}
+#asRobotFriend .asrf-shadow{
+  position:absolute;left:50%;bottom:-7px;width:64px;height:10px;
+  border-radius:50%;background:rgba(20,50,100,.14);
+  transform:translateX(-50%);
 }
-#as-robot-intro .as-hi{
+#asRobotFriend .asrf-bubble{
   position:absolute;left:80px;top:-5px;white-space:nowrap;
   padding:8px 12px;border-radius:13px;background:#fff;color:#17315d;
   border:1px solid #e5eaf2;box-shadow:0 8px 22px rgba(23,37,66,.15);
   font-size:13px;font-weight:800;
 }
-#as-robot-intro.as-show{
-  animation:asRobotShow .45s ease forwards;
+#asRobotFriend.asrf-show{
+  animation:asrfShow .45s ease forwards;
 }
-#as-robot-intro.as-walk .as-leg.l{animation:asLegL .20s ease-in-out infinite alternate}
-#as-robot-intro.as-walk .as-leg.r{animation:asLegR .20s ease-in-out infinite alternate}
-#as-robot-intro.as-walk .as-arm.l{animation:asArmL .20s ease-in-out infinite alternate}
-#as-robot-intro.as-walk .as-arm.r{animation:asArmR .20s ease-in-out infinite alternate}
-#as-robot-intro.as-walk .as-r{animation:asBody .20s ease-in-out infinite alternate}
-#as-robot-intro.as-fly .as-r{animation:asFly .7s ease forwards}
-#as-robot-intro.as-fly{animation:asFade .7s ease forwards}
-
-@keyframes asRobotShow{
+#asRobotFriend.asrf-walk .asrf-leg.l{animation:asrfLegL .20s ease-in-out infinite alternate}
+#asRobotFriend.asrf-walk .asrf-leg.r{animation:asrfLegR .20s ease-in-out infinite alternate}
+#asRobotFriend.asrf-walk .asrf-arm.l{animation:asrfArmL .20s ease-in-out infinite alternate}
+#asRobotFriend.asrf-walk .asrf-arm.r{animation:asrfArmR .20s ease-in-out infinite alternate}
+#asRobotFriend.asrf-walk .asrf-body{animation:asrfBody .20s ease-in-out infinite alternate}
+#asRobotFriend.asrf-fly .asrf-body{animation:asrfFly .7s ease forwards}
+#asRobotFriend.asrf-fly{animation:asrfFade .7s ease forwards}
+@keyframes asrfShow{
   from{opacity:0;transform:translate(-50%,-50%) scale(.55)}
   to{opacity:1;transform:translate(-50%,-50%) scale(1)}
 }
-@keyframes asLegL{from{transform:rotate(18deg)}to{transform:rotate(-18deg)}}
-@keyframes asLegR{from{transform:rotate(-18deg)}to{transform:rotate(18deg)}}
-@keyframes asArmL{from{transform:rotate(-20deg)}to{transform:rotate(20deg)}}
-@keyframes asArmR{from{transform:rotate(20deg)}to{transform:rotate(-20deg)}}
-@keyframes asBody{from{transform:translateY(0)}to{transform:translateY(-4px)}}
-@keyframes asFly{
+@keyframes asrfLegL{from{transform:rotate(18deg)}to{transform:rotate(-18deg)}}
+@keyframes asrfLegR{from{transform:rotate(-18deg)}to{transform:rotate(18deg)}}
+@keyframes asrfArmL{from{transform:rotate(-20deg)}to{transform:rotate(20deg)}}
+@keyframes asrfArmR{from{transform:rotate(20deg)}to{transform:rotate(-20deg)}}
+@keyframes asrfBody{from{transform:translateY(0)}to{transform:translateY(-4px)}}
+@keyframes asrfFly{
   0%{transform:scale(1) rotate(0)}
   65%{transform:scale(.62) rotate(-8deg)}
   100%{transform:scale(.30) rotate(0)}
 }
-@keyframes asFade{from{opacity:1}to{opacity:0}}
+@keyframes asrfFade{from{opacity:1}to{opacity:0}}
 @media(max-width:560px){
-  #as-robot-intro{width:78px;height:100px}
-  #as-robot-intro .as-r{transform:scale(.84);transform-origin:50% 100%}
-  #as-robot-intro .as-hi{left:62px;font-size:11px}
+  #asRobotFriend{width:78px;height:100px}
+  #asRobotFriend .asrf-body{transform:scale(.84);transform-origin:50% 100%}
+  #asRobotFriend .asrf-bubble{left:62px;font-size:11px}
 }
-@media(prefers-reduced-motion:reduce){
-  #as-robot-intro{display:none!important}
-}
+@media(prefers-reduced-motion:reduce){#asRobotFriend{display:none!important}}
+</style>
 
 </head>
 
@@ -1920,103 +1911,81 @@ form.onsubmit=async e=>{
 })();
 </script>
 
-<script>
-/* ===== APPLE SEED ROBOT FRIEND — SAFE ISOLATED SCRIPT ===== */
+<script id="apple-seed-robot-js">
 (function(){
-  function startAppleSeedRobot(){
+  function init(){
     try{
-      if(sessionStorage.getItem("as_robot_intro_seen")==="1") return;
-      sessionStorage.setItem("as_robot_intro_seen","1");
+      if(sessionStorage.getItem("asrf_seen")==="1") return;
+      sessionStorage.setItem("asrf_seen","1");
     }catch(e){}
 
     var target=document.getElementById("chatBtn");
-    if(!target || document.getElementById("as-robot-intro")) return;
+    if(!target || document.getElementById("asRobotFriend")) return;
 
     var el=document.createElement("div");
-    el.id="as-robot-intro";
-    el.innerHTML =
-      '<div class="as-r">'+
-        '<div class="as-antenna"></div>'+
-        '<div class="as-head">'+
-          '<span class="as-eye l"></span>'+
-          '<span class="as-eye r"></span>'+
-          '<span class="as-mouth"></span>'+
+    el.id="asRobotFriend";
+    el.innerHTML=
+      '<div class="asrf-body">'+
+        '<div class="asrf-antenna"></div>'+
+        '<div class="asrf-head">'+
+          '<span class="asrf-eye l"></span>'+
+          '<span class="asrf-eye r"></span>'+
+          '<span class="asrf-mouth"></span>'+
         '</div>'+
-        '<div class="as-arm l"></div>'+
-        '<div class="as-arm r"></div>'+
-        '<div class="as-body"></div>'+
-        '<div class="as-leg l"></div>'+
-        '<div class="as-leg r"></div>'+
-        '<div class="as-shadow"></div>'+
+        '<div class="asrf-arm l"></div><div class="asrf-arm r"></div>'+
+        '<div class="asrf-torso"></div>'+
+        '<div class="asrf-leg l"></div><div class="asrf-leg r"></div>'+
+        '<div class="asrf-shadow"></div>'+
       '</div>'+
-      '<div class="as-hi">Xin chào 👋</div>';
+      '<div class="asrf-bubble">Xin chào 👋</div>';
 
     document.body.appendChild(el);
 
     var vw=window.innerWidth, vh=window.innerHeight;
-    el.style.left=(vw*0.50)+"px";
-    el.style.top=(vh*0.45)+"px";
-    el.classList.add("as-show");
+    el.style.left=(vw*.50)+"px";
+    el.style.top=(vh*.45)+"px";
+    el.classList.add("asrf-show");
 
     function move(x,y,duration){
-      return el.animate([
-        {left:el.style.left,top:el.style.top},
-        {left:x+"px",top:y+"px"}
-      ],{
-        duration:duration,
-        easing:"cubic-bezier(.18,.78,.25,1)",
-        fill:"forwards"
-      }).finished.then(function(){
-        el.style.left=x+"px";
-        el.style.top=y+"px";
+      return el.animate(
+        [{left:el.style.left,top:el.style.top},{left:x+"px",top:y+"px"}],
+        {duration:duration,easing:"cubic-bezier(.18,.78,.25,1)",fill:"forwards"}
+      ).finished.then(function(){
+        el.style.left=x+"px";el.style.top=y+"px";
       });
     }
 
-    function flyBack(){
+    function returnHome(){
       var r=target.getBoundingClientRect();
-      var x=r.left+r.width/2;
-      var y=r.top+r.height/2;
+      var x=r.left+r.width/2, y=r.top+r.height/2;
+      el.classList.remove("asrf-walk");
+      el.classList.add("asrf-fly");
 
-      el.classList.remove("as-walk");
-      el.classList.add("as-fly");
-
-      el.animate([
-        {left:el.style.left,top:el.style.top},
-        {left:(x-90)+"px",top:(y-140)+"px"},
-        {left:x+"px",top:y+"px"}
-      ],{
-        duration:1100,
-        easing:"cubic-bezier(.22,.75,.18,1)",
-        fill:"forwards"
-      }).finished.then(function(){
-        if(el.parentNode) el.parentNode.removeChild(el);
-      }).catch(function(){
-        if(el.parentNode) el.parentNode.removeChild(el);
-      });
+      el.animate(
+        [
+          {left:el.style.left,top:el.style.top},
+          {left:(x-90)+"px",top:(y-140)+"px"},
+          {left:x+"px",top:y+"px"}
+        ],
+        {duration:1100,easing:"cubic-bezier(.22,.75,.18,1)",fill:"forwards"}
+      ).finished.then(function(){el.remove()}).catch(function(){el.remove()});
     }
 
     setTimeout(function(){
-      el.classList.add("as-walk");
-
+      el.classList.add("asrf-walk");
       move(vw*.28,vh*.42,800)
-      .then(function(){ return move(vw*.58,vh*.32,850); })
-      .then(function(){ return move(vw*.78,vh*.50,850); })
-      .then(function(){ return move(vw*.67,vh*.66,800); })
-      .then(function(){
-        setTimeout(flyBack,220);
-      })
-      .catch(function(){
-        if(el.parentNode) el.parentNode.removeChild(el);
-      });
+      .then(function(){return move(vw*.58,vh*.32,850)})
+      .then(function(){return move(vw*.78,vh*.50,850)})
+      .then(function(){return move(vw*.67,vh*.66,800)})
+      .then(function(){setTimeout(returnHome,220)})
+      .catch(function(){el.remove()});
     },650);
   }
 
   if(document.readyState==="loading"){
-    document.addEventListener("DOMContentLoaded",function(){
-      setTimeout(startAppleSeedRobot,300);
-    });
+    document.addEventListener("DOMContentLoaded",function(){setTimeout(init,300)});
   }else{
-    setTimeout(startAppleSeedRobot,300);
+    setTimeout(init,300);
   }
 })();
 </script>
