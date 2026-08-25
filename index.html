@@ -569,6 +569,476 @@ img{-webkit-user-drag:none}
 @media(prefers-reduced-motion:reduce){#asRobotFriend{display:none!important}}
 
 </style>
+
+
+<style id="apple-seed-premium-v2">
+/* =========================================================
+   APPLE SEED PREMIUM V2 — VISUAL SKIN ONLY
+   Không đổi HTML structure / ID / JS / Supabase / API.
+   Chỉ nâng cấp giao diện.
+   ========================================================= */
+
+:root{
+  --blue:#1769ff;
+  --blue-2:#4aa3ff;
+  --ink:#0d1830;
+  --muted:#64748b;
+  --bg:#f5f8ff;
+  --line:#e4eaf4;
+  --navy:#08142b;
+  --card:#ffffff;
+}
+
+/* Page foundation */
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(circle at 10% 0%,rgba(23,105,255,.06),transparent 28%),
+    linear-gradient(180deg,#f8fbff 0%,#fff 38%,#f7faff 100%);
+  color:var(--ink);
+}
+
+/* Header — premium glass, still fixed and same structure */
+.site-header{
+  height:86px!important;
+  background:rgba(255,255,255,.88)!important;
+  border-bottom:1px solid rgba(210,220,235,.72)!important;
+  box-shadow:0 8px 30px rgba(15,35,70,.06)!important;
+  backdrop-filter:blur(18px) saturate(150%)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(150%)!important;
+}
+.nav{
+  max-width:1320px!important;
+  padding:0 30px!important;
+  gap:24px!important;
+}
+.brand{gap:12px!important}
+.brand img{
+  width:60px!important;
+  height:60px!important;
+  filter:drop-shadow(0 6px 12px rgba(23,105,255,.10));
+}
+.brand-title{
+  font-size:25px!important;
+  font-weight:900!important;
+  letter-spacing:-.8px!important;
+  color:#0c1830!important;
+}
+.brand-sub{
+  color:#718096!important;
+  font-size:10px!important;
+  letter-spacing:1.35px!important;
+  font-weight:800!important;
+}
+.menu{
+  gap:22px!important;
+  color:#1c5fe0!important;
+  font-size:15px!important;
+  font-weight:800!important;
+}
+.menu>a{
+  position:relative;
+  padding:10px 2px;
+  transition:color .2s ease,transform .2s ease;
+}
+.menu>a:after{
+  content:"";
+  position:absolute;
+  left:8px;
+  right:8px;
+  bottom:2px;
+  height:2px;
+  border-radius:999px;
+  background:linear-gradient(90deg,var(--blue),var(--blue-2));
+  transform:scaleX(0);
+  transform-origin:center;
+  transition:transform .22s ease;
+}
+.menu>a:hover{
+  color:#0d4fc9!important;
+  transform:translateY(-1px);
+}
+.menu>a:hover:after{transform:scaleX(1)}
+
+.booking-nav{
+  border-radius:13px!important;
+  padding:12px 17px!important;
+  box-shadow:0 10px 24px rgba(23,105,255,.20)!important;
+}
+
+/* Member buttons */
+.member-auth-btn{
+  border-radius:12px!important;
+  padding:10px 13px!important;
+  border-color:#dce4f1!important;
+  box-shadow:0 4px 12px rgba(20,40,80,.04);
+  transition:.2s ease;
+}
+.member-auth-btn:hover{transform:translateY(-1px);box-shadow:0 8px 18px rgba(20,40,80,.09)}
+.member-auth-btn.primary{
+  background:linear-gradient(135deg,#1769ff,#3b94ff)!important;
+  border-color:transparent!important;
+}
+
+/* AI Engineering Center — premium, in document flow */
+.apple-seed-ai-float{
+  padding:10px 30px 8px!important;
+  background:linear-gradient(180deg,rgba(248,251,255,.95),rgba(248,251,255,.72));
+}
+.apple-seed-ai-float a{
+  padding:10px 16px!important;
+  border-radius:999px!important;
+  background:linear-gradient(135deg,#0c55d8,#3da8ff)!important;
+  box-shadow:0 10px 26px rgba(23,105,255,.20)!important;
+  font-size:11px!important;
+  letter-spacing:.06em!important;
+}
+
+/* Hero — premium engineering look */
+.hero{
+  position:relative;
+  overflow:hidden;
+  padding:78px 24px 70px!important;
+  background:
+    radial-gradient(circle at 80% 15%,rgba(63,150,255,.18),transparent 30%),
+    radial-gradient(circle at 12% 90%,rgba(23,105,255,.12),transparent 30%),
+    linear-gradient(135deg,#07152e 0%,#0b2145 52%,#0d3568 100%)!important;
+  color:#fff!important;
+}
+.hero:before{
+  content:"";
+  position:absolute;
+  width:520px;height:520px;
+  right:-180px;top:-220px;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:50%;
+  box-shadow:
+    0 0 0 70px rgba(255,255,255,.025),
+    0 0 0 140px rgba(255,255,255,.018);
+  pointer-events:none;
+}
+.hero-inner{
+  position:relative;
+  z-index:1;
+  max-width:1260px!important;
+  grid-template-columns:minmax(0,1.05fr) minmax(360px,.95fr)!important;
+  gap:62px!important;
+}
+.shop-photo{
+  border-radius:24px!important;
+  box-shadow:
+    0 28px 70px rgba(0,0,0,.32),
+    0 0 0 1px rgba(255,255,255,.16)!important;
+  aspect-ratio:1.62/1!important;
+  transition:transform .45s ease,box-shadow .45s ease;
+}
+.shop-photo:hover{
+  transform:translateY(-5px) scale(1.008);
+  box-shadow:0 34px 82px rgba(0,0,0,.38),0 0 0 1px rgba(255,255,255,.22)!important;
+}
+.eyebrow{
+  color:#66b5ff!important;
+  font-size:12px!important;
+  letter-spacing:3.5px!important;
+  font-weight:900!important;
+}
+.hero h1,
+.hero h1 *{
+  color:#fff!important;
+}
+.hero h1{
+  font-size:clamp(44px,5vw,68px)!important;
+  line-height:.98!important;
+  letter-spacing:-2.8px!important;
+  text-shadow:0 8px 30px rgba(0,0,0,.20);
+}
+.hero .lead{
+  color:rgba(235,243,255,.80)!important;
+  font-size:18px!important;
+  line-height:1.7!important;
+}
+.hero .cta{
+  border-radius:13px!important;
+  padding:14px 21px!important;
+  background:linear-gradient(135deg,#1769ff,#4aa3ff)!important;
+  box-shadow:0 14px 30px rgba(0,0,0,.20)!important;
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+.hero .cta:hover{
+  transform:translateY(-2px);
+  box-shadow:0 18px 36px rgba(0,0,0,.28)!important;
+}
+.hero .cta+ .cta{
+  background:rgba(255,255,255,.08)!important;
+  border:1px solid rgba(255,255,255,.22);
+  backdrop-filter:blur(10px);
+}
+.trust{
+  gap:12px!important;
+}
+.trust-item{
+  padding:12px 13px;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:14px;
+  background:rgba(255,255,255,.055);
+  color:rgba(235,243,255,.70)!important;
+  backdrop-filter:blur(8px);
+}
+.trust b{color:#fff!important}
+.trust-icon{
+  border-color:#4aa3ff!important;
+  color:#72beff!important;
+}
+
+/* Section rhythm */
+.services{
+  position:relative;
+  padding:76px 24px 82px!important;
+  background:#fff!important;
+}
+.services:before{
+  content:"";
+  display:block;
+  width:70px;
+  height:4px;
+  margin:0 auto 24px;
+  border-radius:99px;
+  background:linear-gradient(90deg,#1769ff,#58b1ff);
+}
+.section-kicker{
+  color:#1769ff!important;
+  letter-spacing:2.8px!important;
+  font-size:11px!important;
+}
+.services h2{
+  font-size:34px!important;
+  letter-spacing:-1.2px!important;
+  color:#0c1830!important;
+  margin-bottom:34px!important;
+}
+
+/* Service cards */
+.service-grid{
+  max-width:1180px!important;
+  gap:18px!important;
+}
+.service-card{
+  position:relative;
+  min-height:150px!important;
+  padding:22px!important;
+  border:1px solid #e4eaf4!important;
+  border-radius:20px!important;
+  background:
+    linear-gradient(145deg,#fff 0%,#fbfdff 100%)!important;
+  box-shadow:0 12px 32px rgba(18,45,90,.07)!important;
+  overflow:hidden;
+  transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;
+}
+.service-card:before{
+  content:"";
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:4px;
+  background:linear-gradient(180deg,#1769ff,#64b7ff);
+  opacity:.85;
+}
+.service-card:after{
+  content:"";
+  position:absolute;
+  width:90px;height:90px;
+  right:-35px;bottom:-35px;
+  border-radius:50%;
+  background:rgba(23,105,255,.045);
+}
+.service-card:hover{
+  transform:translateY(-6px);
+  border-color:#cbdcff!important;
+  box-shadow:0 22px 45px rgba(18,45,90,.12)!important;
+}
+.service-icon{
+  width:54px!important;height:54px!important;
+  border-radius:16px;
+  background:#eef5ff;
+  font-size:29px!important;
+  box-shadow:inset 0 0 0 1px rgba(23,105,255,.08);
+}
+.service-card h3{
+  font-size:16px!important;
+  color:#10203c!important;
+}
+.service-card p{
+  font-size:12px!important;
+  color:#6b7b93!important;
+}
+
+/* Products */
+.products-home-grid{gap:18px!important}
+.product-home-card{
+  border-radius:18px!important;
+  padding:16px!important;
+  box-shadow:0 10px 28px rgba(18,45,90,.07)!important;
+  border-color:#e4eaf4!important;
+}
+.product-home-card:hover{
+  transform:translateY(-5px)!important;
+  box-shadow:0 20px 40px rgba(18,45,90,.12)!important;
+}
+.product-home-photo{
+  width:90px!important;height:90px!important;
+  border-radius:14px!important;
+  background:#f1f5fb!important;
+}
+.product-home-price{color:#1769ff!important;font-size:14px!important}
+
+/* Dynamic service/article cards */
+.dynamic-pages-section{
+  padding-top:72px!important;
+  padding-bottom:78px!important;
+  background:#f7faff!important;
+}
+.dynamic-pages-section .dynamic-pages-grid{gap:18px!important}
+.dynamic-pages-section .page-card{
+  border-radius:18px!important;
+  padding:22px!important;
+  box-shadow:0 10px 28px rgba(18,45,90,.06)!important;
+  transition:.25s ease;
+}
+.dynamic-pages-section .page-card:hover{
+  transform:translateY(-5px)!important;
+  box-shadow:0 20px 40px rgba(18,45,90,.11)!important;
+}
+
+/* Contact */
+.contact{
+  padding:76px 24px!important;
+  background:
+    radial-gradient(circle at 100% 0%,rgba(23,105,255,.08),transparent 32%),
+    #f4f8ff!important;
+}
+.contact-inner{
+  max-width:1180px!important;
+  gap:22px!important;
+}
+.contact-card,.map-card{
+  border-radius:20px!important;
+  border-color:#e2e9f3!important;
+  box-shadow:0 14px 35px rgba(18,45,90,.07)!important;
+}
+.contact-card{
+  padding:30px!important;
+}
+.contact-card h2{
+  font-size:30px!important;
+  letter-spacing:-.8px!important;
+}
+.map-card{padding:10px!important}
+.map-card iframe{height:360px!important;border-radius:14px!important}
+
+/* Chatbot — smaller, cleaner, less aggressive */
+.chat-btn{
+  width:56px!important;height:56px!important;
+  right:22px!important;bottom:22px!important;
+  background:linear-gradient(135deg,#1769ff,#3da8ff)!important;
+  box-shadow:0 14px 32px rgba(23,105,255,.25)!important;
+  font-size:25px!important;
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+.chat-btn:hover{
+  transform:translateY(-3px) scale(1.03);
+  box-shadow:0 18px 38px rgba(23,105,255,.32)!important;
+}
+.chat-box{
+  border-radius:22px!important;
+  box-shadow:0 28px 70px rgba(11,31,64,.22)!important;
+}
+
+/* Modals — same behavior, more premium */
+.member-auth-box,.customer-lead-box,.product-modal-box{
+  border-radius:22px!important;
+  box-shadow:0 30px 90px rgba(4,20,45,.28)!important;
+}
+.member-auth-tabs button,
+.member-auth-form input,
+.member-auth-submit{
+  border-radius:12px!important;
+}
+
+/* Keep all forms comfortable on touch devices */
+button,a,input,textarea{ -webkit-tap-highlight-color:transparent }
+
+/* Mobile */
+@media(max-width:900px){
+  .site-header{height:auto!important}
+  .nav{padding:12px 18px!important}
+  .menu{gap:12px!important}
+  .hero{
+    padding:54px 18px 56px!important;
+  }
+  .hero-inner{
+    gap:34px!important;
+  }
+  .hero h1{font-size:46px!important}
+  .services{padding:60px 18px 66px!important}
+  .contact{padding:60px 18px!important}
+}
+@media(max-width:560px){
+  .site-header{box-shadow:0 5px 20px rgba(15,35,70,.07)!important}
+  .nav{padding:10px 12px 8px!important}
+  .brand img{width:50px!important;height:50px!important}
+  .brand-title{font-size:21px!important}
+  .brand-sub{font-size:9px!important}
+  .menu{gap:6px!important}
+  .menu>a{padding:8px 0!important}
+  .booking-nav{padding:9px 10px!important}
+  .apple-seed-ai-float{
+    padding:8px 10px 6px!important;
+    justify-content:flex-end!important;
+  }
+  .apple-seed-ai-float a{
+    font-size:9px!important;
+    padding:9px 12px!important;
+  }
+  .hero{
+    padding:38px 14px 48px!important;
+  }
+  .hero-inner{
+    gap:28px!important;
+  }
+  .shop-photo{
+    border-radius:18px!important;
+  }
+  .hero h1{
+    font-size:38px!important;
+    letter-spacing:-1.8px!important;
+  }
+  .hero .lead{
+    font-size:15px!important;
+  }
+  .trust{
+    grid-template-columns:1fr!important;
+  }
+  .services{
+    padding:50px 14px 58px!important;
+  }
+  .services h2{
+    font-size:28px!important;
+  }
+  .service-card{
+    min-height:132px!important;
+    border-radius:17px!important;
+  }
+  .contact{
+    padding:52px 14px!important;
+  }
+  .map-card iframe{height:300px!important}
+  .chat-btn{
+    width:52px!important;height:52px!important;
+    right:16px!important;bottom:16px!important;
+    font-size:23px!important;
+  }
+}
+</style>
+
 </head>
 
 <body>
