@@ -1393,6 +1393,98 @@ button,a,input,textarea{ -webkit-tap-highlight-color:transparent }
     </div>
 
     <form id="memberHomeLoginForm" class="member-auth-form">
+      .member-reset-modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  background:rgba(15,23,42,.65);
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.member-reset-modal.open{
+  display:flex;
+}
+
+.member-reset-box{
+  position:relative;
+  width:min(430px,100%);
+  background:#fff;
+  border-radius:24px;
+  padding:30px;
+  box-shadow:0 25px 80px rgba(0,0,0,.25);
+}
+
+.member-reset-close{
+  position:absolute;
+  right:16px;
+  top:12px;
+  border:0;
+  background:none;
+  font-size:30px;
+  cursor:pointer;
+}
+
+.member-reset-icon{
+  font-size:42px;
+  margin-bottom:8px;
+}
+
+.member-reset-box h2{
+  margin:0 0 8px;
+}
+
+.member-reset-box p{
+  color:#64748b;
+  line-height:1.6;
+}
+
+.member-reset-form label{
+  display:block;
+  font-weight:700;
+}
+
+.member-reset-form input{
+  width:100%;
+  box-sizing:border-box;
+  margin-top:8px;
+  padding:14px 16px;
+  border:1px solid #dbe3ef;
+  border-radius:12px;
+  font-size:16px;
+}
+
+.member-reset-submit{
+  width:100%;
+  margin-top:16px;
+  padding:14px;
+  border:0;
+  border-radius:12px;
+  background:#1769ff;
+  color:white;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.member-reset-back{
+  width:100%;
+  margin-top:10px;
+  padding:12px;
+  border:0;
+  background:none;
+  color:#1769ff;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.member-reset-status{
+  margin-top:12px;
+  line-height:1.5;
+  font-weight:600;
+}
       <label>Email<input id="memberHomeLoginEmail" type="email" autocomplete="email" required placeholder="email@gmail.com"></label>
       <label>Mật khẩu<input id="memberHomeLoginPassword" type="password" autocomplete="current-password" required placeholder="••••••••"></label>
       <button class="member-auth-submit" type="submit">🔐 Đăng nhập</button>
