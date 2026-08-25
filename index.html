@@ -1604,10 +1604,16 @@ img{-webkit-user-drag:none}
 const btn=document.getElementById("chatBtn"),box=document.getElementById("chatBox");
 const close=document.getElementById("chatClose"),body=document.getElementById("chatBody");
 const form=document.getElementById("chatForm"),input=document.getElementById("chatInput");
+
 btn.onclick=()=>{box.classList.toggle("open");if(box.classList.contains("open"))input.focus()};
 close.onclick=()=>box.classList.remove("open");
 
-function answer(q){
+/*
+ * APPLE SEED AI — STREAMING FRONTEND
+ * Gọi Edge Function appleseed-ai trực tiếp để nhận chữ từng phần.
+ * Không thay đổi giao diện chatbot.
+ */
+function answerFallback(q){
   const raw=q.trim();
   const s=raw.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/đ/g,"d");
   if(!raw) return "Bạn nhập câu hỏi giúp tôi nhé.";
@@ -1652,32 +1658,114 @@ function answer(q){
 
   return "Tôi chưa hiểu rõ câu hỏi. Bạn thử ghi model + lỗi, ví dụ: “iPhone 13 Pro Max mất nguồn”, “iPhone 12 đơ cảm ứng” hoặc “Apple Seed ở đâu?”";
 }
-form.onsubmit=e=>{
- e.preventDefault();
- const q=input.value.trim();
- if(!q)return;
 
- body.insertAdjacentHTML("beforeend",'<div class="msg user"></div>');
- body.lastElementChild.textContent=q;
+async function askAppleSeedAI(message, onDelta){
+  const sb=window.supabaseClient;
+  if(!sb) throw new Error("Chưa khởi tạo Supabase.");
 
- const thinking=document.createElement("div");
- thinking.className="msg bot";
- thinking.textContent="Đang kiểm tra thông tin…";
- body.appendChild(thinking);
- body.scrollTop=body.scrollHeight;
+  const baseUrl=String(sb.supabaseUrl||"").replace(/\/+$/,"");
+  const anonKey=sb.supabaseKey;
 
- input.value="";
- input.disabled=true;
- const sendBtn=form.querySelector("button");
- sendBtn.disabled=true;
+  if(!baseUrl || !anonKey){
+    throw new Error("Thiếu cấu hình Supabase.");
+  }
 
- setTimeout(()=>{
-   thinking.textContent=answer(q);
-   input.disabled=false;
-   sendBtn.disabled=false;
-   input.focus();
-   body.scrollTop=body.scrollHeight;
- },220);
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),60000);
+
+  try{
+    const response=await fetch(baseUrl+"/functions/v1/appleseed-ai",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "apikey":anonKey,
+        "Authorization":"Bearer "+anonKey
+      },
+      body:JSON.stringify({message}),
+      signal:controller.signal
+    });
+
+    if(!response.ok){
+      const raw=await response.text();
+      let msg="Apple Seed AI đang gặp lỗi.";
+      try{
+        const data=JSON.parse(raw);
+        msg=data?.error||msg;
+      }catch(_){}
+      throw new Error(msg);
+    }
+
+    if(!response.body){
+      throw new Error("AI không trả về dữ liệu stream.");
+    }
+
+    const reader=response.body.getReader();
+    const decoder=new TextDecoder("utf-8");
+    let received=false;
+
+    while(true){
+      const {value,done}=await reader.read();
+      if(done) break;
+
+      const chunk=decoder.decode(value,{stream:true});
+      if(chunk){
+        received=true;
+        onDelta(chunk);
+      }
+    }
+
+    const tail=decoder.decode();
+    if(tail){
+      received=true;
+      onDelta(tail);
+    }
+
+    if(!received) throw new Error("AI chưa trả về nội dung.");
+  }finally{
+    clearTimeout(timeout);
+  }
+}
+
+form.onsubmit=async e=>{
+  e.preventDefault();
+  const q=input.value.trim();
+  if(!q)return;
+
+  body.insertAdjacentHTML("beforeend",'<div class="msg user"></div>');
+  body.lastElementChild.textContent=q;
+
+  const thinking=document.createElement("div");
+  thinking.className="msg bot";
+  thinking.textContent="⚡ Đang kết nối Apple Seed AI…";
+  body.appendChild(thinking);
+  body.scrollTop=body.scrollHeight;
+
+  input.value="";
+  input.disabled=true;
+  const sendBtn=form.querySelector("button");
+  sendBtn.disabled=true;
+
+  let answerText="";
+
+  try{
+    await askAppleSeedAI(q,(delta)=>{
+      answerText+=delta;
+      thinking.textContent=answerText;
+      body.scrollTop=body.scrollHeight;
+    });
+  }catch(error){
+    console.error("AppleSeed AI:",error);
+
+    // Nếu AI thật lỗi, giữ chatbot không bị chết:
+    // dùng bộ trả lời cục bộ cũ làm phương án dự phòng.
+    answerText=answerFallback(q);
+    thinking.textContent=answerText;
+  }finally{
+    input.disabled=false;
+    sendBtn.disabled=false;
+    input.focus();
+    body.scrollTop=body.scrollHeight;
+  }
 };
 </script>
 <script>
