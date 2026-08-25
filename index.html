@@ -229,313 +229,239 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
 .chat-head{background:var(--blue);color:#fff;padding:16px 18px;font-weight:850;display:flex;justify-content:space-between;align-items:center}
 .chat-close{border:0;background:transparent;color:#fff;font-size:22px;cursor:pointer}
 .chat-body{flex:1;padding:14px;overflow:auto;background:#f7f9fd}
-/* ===== APPLE SEED ROBOT INTRO =====
-   Robot chào khách khi vào web, di chuyển nhẹ qua màn hình,
-   sau đó bay về đúng nút trợ lý và biến mất.
-*/
+/* ===== APPLE SEED ROBOT FRIEND INTRO ===== */
 .apple-seed-robot-intro{
   position:fixed;
   left:50%;
-  top:46%;
+  top:45%;
+  width:104px;
+  height:128px;
   z-index:30000;
-  width:76px;
-  height:76px;
-  display:grid;
-  place-items:center;
   pointer-events:none;
-  font-size:52px;
-  filter:drop-shadow(0 12px 18px rgba(23,105,255,.25));
+  opacity:1;
   transform:translate(-50%,-50%);
   will-change:left,top,transform,opacity;
+  filter:drop-shadow(0 18px 22px rgba(18,65,145,.24));
 }
-.apple-seed-robot-intro .robot-face{
-  display:block;
-  animation:appleSeedRobotBob .48s ease-in-out infinite alternate;
+
+.apple-seed-robot-intro .robot-character{
+  position:relative;
+  width:104px;
+  height:128px;
+  transform-origin:50% 100%;
+}
+
+/* đầu */
+.apple-seed-robot-intro .robot-head{
+  position:absolute;
+  left:24px;
+  top:5px;
+  width:56px;
+  height:43px;
+  border-radius:16px 16px 14px 14px;
+  background:linear-gradient(180deg,#f8fbff,#dfe9f7);
+  border:3px solid #1769ff;
+  box-shadow:inset 0 -4px 0 rgba(23,105,255,.10);
+}
+
+/* anten */
+.apple-seed-robot-intro .robot-antenna{
+  position:absolute;
+  left:50%;
+  top:-16px;
+  width:3px;
+  height:14px;
+  background:#1769ff;
+  transform:translateX(-50%);
+}
+.apple-seed-robot-intro .robot-antenna:before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:-7px;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#3da8ff;
+  transform:translateX(-50%);
+  box-shadow:0 0 12px rgba(61,168,255,.65);
+}
+
+/* mắt */
+.apple-seed-robot-intro .robot-eye{
+  position:absolute;
+  top:15px;
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:#1769ff;
+  box-shadow:0 0 8px rgba(23,105,255,.45);
+}
+.apple-seed-robot-intro .robot-eye.left{left:13px}
+.apple-seed-robot-intro .robot-eye.right{right:13px}
+
+/* miệng */
+.apple-seed-robot-intro .robot-mouth{
+  position:absolute;
+  left:50%;
+  bottom:8px;
+  width:18px;
+  height:5px;
+  border-radius:99px;
+  background:#1769ff;
+  transform:translateX(-50%);
+}
+
+/* thân */
+.apple-seed-robot-intro .robot-body{
+  position:absolute;
+  left:20px;
+  top:54px;
+  width:64px;
+  height:48px;
+  border-radius:14px;
+  background:linear-gradient(180deg,#ffffff,#e6eef9);
+  border:3px solid #1769ff;
+}
+.apple-seed-robot-intro .robot-body:after{
+  content:"AI";
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  color:#1769ff;
+  font-size:12px;
+  font-weight:1000;
+}
+
+/* tay */
+.apple-seed-robot-intro .robot-arm{
+  position:absolute;
+  top:60px;
+  width:12px;
+  height:39px;
+  border-radius:9px;
+  background:#dce8f7;
+  border:3px solid #1769ff;
+  transform-origin:50% 7px;
+}
+.apple-seed-robot-intro .robot-arm.left{left:7px}
+.apple-seed-robot-intro .robot-arm.right{right:7px}
+
+/* chân */
+.apple-seed-robot-intro .robot-leg{
+  position:absolute;
+  top:99px;
+  width:15px;
+  height:27px;
+  border-radius:8px;
+  background:#dce8f7;
+  border:3px solid #1769ff;
+  transform-origin:50% 4px;
+}
+.apple-seed-robot-intro .robot-leg.left{left:30px}
+.apple-seed-robot-intro .robot-leg.right{right:30px}
+
+/* bóng */
+.apple-seed-robot-intro .robot-shadow{
+  position:absolute;
+  left:50%;
+  bottom:-8px;
+  width:72px;
+  height:12px;
+  border-radius:50%;
+  background:rgba(18,55,110,.14);
+  transform:translateX(-50%);
+}
+
+/* bước đi: chân/tay luân phiên */
+.apple-seed-robot-intro.walking .robot-leg.left{
+  animation:appleSeedRobotLegL .22s ease-in-out infinite alternate;
+}
+.apple-seed-robot-intro.walking .robot-leg.right{
+  animation:appleSeedRobotLegR .22s ease-in-out infinite alternate;
+}
+.apple-seed-robot-intro.walking .robot-arm.left{
+  animation:appleSeedRobotArmL .22s ease-in-out infinite alternate;
+}
+.apple-seed-robot-intro.walking .robot-arm.right{
+  animation:appleSeedRobotArmR .22s ease-in-out infinite alternate;
+}
+.apple-seed-robot-intro.walking .robot-character{
+  animation:appleSeedRobotBodyWalk .22s ease-in-out infinite alternate;
 }
 .apple-seed-robot-intro .robot-greeting{
   position:absolute;
-  left:58px;
-  top:-12px;
+  left:88px;
+  top:-8px;
   white-space:nowrap;
-  padding:8px 12px;
+  padding:9px 13px;
   border-radius:14px;
   background:#fff;
   color:#17315d;
   font-size:13px;
-  font-weight:800;
-  box-shadow:0 8px 24px rgba(23,37,66,.16);
+  font-weight:850;
+  box-shadow:0 10px 25px rgba(23,37,66,.16);
   border:1px solid #e5eaf2;
-  opacity:0;
-  animation:appleSeedRobotGreeting 2.1s ease forwards;
+  animation:appleSeedRobotGreeting 2.2s ease forwards;
 }
-.apple-seed-robot-intro .robot-greeting:after{
-  content:"";
-  position:absolute;
-  left:14px;
-  bottom:-6px;
-  width:11px;
-  height:11px;
-  background:#fff;
-  border-right:1px solid #e5eaf2;
-  border-bottom:1px solid #e5eaf2;
-  transform:rotate(45deg);
+.apple-seed-robot-intro.fly-away .robot-character{
+  animation:appleSeedRobotReturn .65s ease forwards;
 }
 .apple-seed-robot-intro.fly-away{
-  animation:appleSeedRobotFinish .7s ease forwards;
+  animation:appleSeedRobotFade .7s ease forwards;
 }
-@keyframes appleSeedRobotBob{
-  from{transform:translateY(0) rotate(-2deg)}
-  to{transform:translateY(-7px) rotate(2deg)}
+
+@keyframes appleSeedRobotLegL{
+  from{transform:rotate(18deg)}
+  to{transform:rotate(-18deg)}
+}
+@keyframes appleSeedRobotLegR{
+  from{transform:rotate(-18deg)}
+  to{transform:rotate(18deg)}
+}
+@keyframes appleSeedRobotArmL{
+  from{transform:rotate(-22deg)}
+  to{transform:rotate(22deg)}
+}
+@keyframes appleSeedRobotArmR{
+  from{transform:rotate(22deg)}
+  to{transform:rotate(-22deg)}
+}
+@keyframes appleSeedRobotBodyWalk{
+  from{transform:translateY(0) rotate(-1deg)}
+  to{transform:translateY(-5px) rotate(1deg)}
 }
 @keyframes appleSeedRobotGreeting{
-  0%,12%{opacity:0;transform:translateY(7px) scale(.92)}
-  22%,72%{opacity:1;transform:translateY(0) scale(1)}
-  100%{opacity:0;transform:translateY(-3px) scale(.96)}
+  0%,10%{opacity:0;transform:translateY(8px) scale(.92)}
+  20%,72%{opacity:1;transform:translateY(0) scale(1)}
+  100%{opacity:0;transform:translateY(-4px) scale(.96)}
 }
-@keyframes appleSeedRobotFinish{
-  0%{opacity:1;transform:translate(-50%,-50%) scale(1)}
-  100%{opacity:0;transform:translate(-50%,-50%) scale(.25)}
+@keyframes appleSeedRobotReturn{
+  0%{transform:scale(1) rotate(0deg)}
+  65%{transform:scale(.68) rotate(-8deg)}
+  100%{transform:scale(.32) rotate(0deg)}
+}
+@keyframes appleSeedRobotFade{
+  0%{opacity:1}
+  100%{opacity:0}
+}
+@media(max-width:560px){
+  .apple-seed-robot-intro{
+    width:88px;
+    height:110px;
+  }
+  .apple-seed-robot-intro .robot-character{
+    transform:scale(.84);
+    transform-origin:50% 100%;
+  }
+  .apple-seed-robot-intro .robot-greeting{
+    left:68px;
+    font-size:11px;
+  }
 }
 @media(prefers-reduced-motion:reduce){
   .apple-seed-robot-intro{display:none!important}
-}
-
-.msg{max-width:88%;padding:10px 12px;border-radius:12px;margin:7px 0;line-height:1.45;font-size:14px}
-.bot{background:#fff;border:1px solid #e5e9f1}.user{margin-left:auto;background:#1769ff;color:#fff}
-.chat-input{display:flex;gap:8px;padding:10px;border-top:1px solid #e6eaf1}
-.chat-input input{min-width:0;flex:1;border:1px solid #d9dfeb;border-radius:10px;padding:10px 12px;outline:none}
-.chat-input button{border:0;background:var(--blue);color:#fff;border-radius:10px;padding:0 15px;font-weight:800;cursor:pointer}
-.chat-booking{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:7px;
-  margin:10px 0 2px;
-  padding:10px 14px;
-  border-radius:10px;
-  background:var(--blue);
-  color:#fff;
-  text-decoration:none;
-  font-weight:850;
-  font-size:13px;
-  box-shadow:0 6px 16px rgba(23,105,255,.18);
-}
-.chat-booking:hover{filter:brightness(.96)}
-
-
-@media(max-width:900px){
- .nav{height:auto;padding:15px 20px;flex-wrap:wrap}.site-header{height:auto}.brand{min-width:0}
- .menu{gap:16px;flex-wrap:wrap;font-size:14px}.hero{padding-top:38px}
- .hero-inner,.contact-inner{grid-template-columns:1fr;gap:34px}h1{font-size:43px}
- .service-grid{grid-template-columns:repeat(2,1fr)}
-}
-@media(max-width:560px){
- .brand img{width:52px;height:52px}.brand-title{font-size:22px}.menu{width:100%;justify-content:space-between;gap:10px}
- .menu a span:last-child{display:none}.hero{padding:28px 16px}h1{font-size:36px}.lead{font-size:16px}
- .trust{grid-template-columns:1fr}.service-grid{grid-template-columns:1fr}.services,.contact{padding-left:16px;padding-right:16px}
-}
-@media(max-width:560px){
-  .brand img{width:52px;height:52px}.brand-title{font-size:22px}.menu{width:100%;justify-content:space-between;gap:10px}
-  .menu a span:last-child{display:none}.hero{padding:28px 16px}h1{font-size:36px}.lead{font-size:16px}
-  .trust{grid-template-columns:1fr}.service-grid{grid-template-columns:1fr}.services,.contact{padding-left:16px;padding-right:16px}
-}
-
-/* ===== APPLE SEED - TRANG DICH VU DONG ===== */
-.dynamic-pages-section .dynamic-pages-grid{max-width:1160px;margin:0 auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;text-align:left}
-.dynamic-pages-section .page-card{display:block;padding:20px;border:1px solid var(--line);border-radius:14px;background:#fff;box-shadow:0 8px 24px rgba(35,54,91,.08);transition:.18s ease}
-.dynamic-pages-section .page-card:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(35,54,91,.13);border-color:#cfdcff}
-.dynamic-pages-section .page-card h3{margin:0 0 8px;font-size:16px;color:var(--ink);line-height:1.35}
-.dynamic-pages-section .page-card p{margin:0;color:#718096;font-size:13px;line-height:1.55}
-.dynamic-pages-section .page-more{display:inline-block;margin-top:12px;color:var(--blue);font-size:12px;font-weight:850}
-@media(max-width:900px){.dynamic-pages-section .dynamic-pages-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:560px){.dynamic-pages-section .dynamic-pages-grid{grid-template-columns:1fr}}
-
-/* ===== APPLE SEED MEMBER AUTH ===== */
-.member-auth-buttons{display:flex;align-items:center;gap:8px;margin-left:4px}
-.member-auth-btn{border:1px solid #d8e0ef;background:#fff;color:var(--blue);border-radius:9px;padding:9px 12px;font-size:13px;font-weight:850;cursor:pointer;white-space:nowrap}
-.member-auth-btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
-.member-auth-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(15,23,42,.72);z-index:12000}
-.member-auth-modal.open{display:flex}
-.member-auth-box{width:min(520px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:18px;padding:22px;position:relative;box-shadow:0 25px 80px rgba(0,0,0,.25)}
-.member-auth-close{position:absolute;right:12px;top:12px;width:40px;height:40px;border:0;border-radius:50%;background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.15);font-size:24px;cursor:pointer}
-.member-auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:18px 0 14px}
-.member-auth-tabs button{border:1px solid #d9dfeb;background:#fff;border-radius:10px;padding:11px;font-weight:850;color:#52627b;cursor:pointer}
-.member-auth-tabs button.active{background:var(--blue);border-color:var(--blue);color:#fff}
-.member-auth-form{display:grid;gap:12px}
-.member-auth-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.member-auth-form label{font-size:13px;font-weight:800}
-.member-auth-form input{width:100%;margin-top:6px;border:1px solid #d9dfeb;border-radius:10px;padding:12px 13px;outline:none}
-.member-auth-form input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(23,105,255,.10)}
-.member-auth-submit{min-height:46px;border:0;border-radius:10px;background:var(--blue);color:#fff;font-weight:850;cursor:pointer}
-.member-auth-submit:disabled{opacity:.65;cursor:wait}
-.member-auth-note{font-size:12px;line-height:1.5;color:var(--muted)}
-.member-auth-status{display:none;padding:11px 12px;border-radius:10px;font-size:13px;line-height:1.5}
-.member-auth-status.show{display:block}
-.member-auth-status.ok{background:#ecfdf3;color:#16794a}
-.member-auth-status.err{background:#fff1f2;color:#b42318}
-.member-auth-resend{display:none;margin-top:8px;border:0;background:transparent;color:var(--blue);font-weight:800;cursor:pointer;padding:0}
-.member-auth-resend.show{display:inline-block}
-.member-user-pill{display:none;align-items:center;gap:7px;color:var(--blue);font-size:13px;font-weight:850}
-.member-user-pill.show{display:flex}
-.member-logout-btn{border:0;background:transparent;color:#b42318;font-weight:800;cursor:pointer;padding:5px}
-@media(max-width:900px){.member-auth-buttons{width:100%;margin:0}.member-auth-btn{flex:1}.member-user-pill{width:100%;justify-content:center}}
-@media(max-width:560px){.member-auth-grid{grid-template-columns:1fr}.member-auth-box{padding:20px 16px;border-radius:16px}.member-auth-buttons{gap:6px}.member-auth-btn{padding:8px 7px;font-size:12px}}
-
-
-/* ===== APPLE SEED - QUÊN MẬT KHẨU VIP ===== */
-.member-reset-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(15,23,42,.72);z-index:13000}
-.member-reset-modal.open{display:flex}
-.member-reset-box{width:min(470px,100%);background:#fff;border-radius:20px;padding:28px;position:relative;box-shadow:0 30px 90px rgba(0,0,0,.28)}
-.member-reset-close{position:absolute;right:12px;top:12px;width:40px;height:40px;border:0;border-radius:50%;background:#f6f8fc;font-size:24px;cursor:pointer}
-.member-reset-icon{width:58px;height:58px;border-radius:16px;background:#eef4ff;color:var(--blue);display:grid;place-items:center;font-size:28px;margin-bottom:16px}
-.member-reset-box h2{margin:0 48px 8px 0;font-size:25px}
-.member-reset-box p{margin:0 0 20px;color:var(--muted);font-size:14px;line-height:1.6}
-.member-reset-form{display:grid;gap:12px}
-.member-reset-form label{font-size:13px;font-weight:800}
-.member-reset-form input{width:100%;margin-top:6px;border:1px solid #d9dfeb;border-radius:11px;padding:13px;outline:none}
-.member-reset-form input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(23,105,255,.10)}
-.member-reset-submit{min-height:47px;border:0;border-radius:11px;background:var(--blue);color:#fff;font-weight:850;cursor:pointer}
-.member-reset-submit:disabled{opacity:.65;cursor:wait}
-.member-reset-status{display:none;padding:12px;border-radius:11px;font-size:13px;line-height:1.5}
-.member-reset-status.show{display:block}
-.member-reset-status.ok{background:#ecfdf3;color:#16794a}
-.member-reset-status.err{background:#fff1f2;color:#b42318}
-.member-reset-back{border:0;background:transparent;color:var(--blue);font-weight:800;cursor:pointer;padding:4px}
-
-
-/* ===== APPLE SEED SECURITY DETERRENCE ===== */
-html.apple-seed-lock-copy,html.apple-seed-lock-copy body{-webkit-user-select:none!important;user-select:none!important}
-input,textarea,select,[contenteditable="true"]{-webkit-user-select:text!important;user-select:text!important}
-img{-webkit-user-drag:none}
-@media print{body:before{content:"APPLE SEED • NỘI DUNG BẢN QUYỀN • appleseedtravinh.com";position:fixed;top:45%;left:8%;right:8%;text-align:center;font-size:28px;font-weight:900;opacity:.18;z-index:2147483647;transform:rotate(-18deg);pointer-events:none}}
-
-/* ===== APPLE SEED COPYRIGHT / AUTHOR ===== */
-.apple-seed-copyright{
-  width:100%;
-  text-align:center;
-  padding:18px 16px 22px;
-  background:#fff;
-  border-top:1px solid #e7ebf4;
-  color:#61708a;
-  font-size:12px;
-  line-height:1.6;
-  user-select:none!important;
-  -webkit-user-select:none!important;
-}
-.apple-seed-copyright strong{color:#17233d}
-.apple-seed-copyright .copy-warning{display:block;margin-top:4px;color:#b42318;font-weight:850}
-
-/* ===== APPLE SEED VIDEO LIBRARY V1 ===== */
-.video-library{background:#f8faff;padding:54px 24px}.video-library-inner{max-width:1160px;margin:auto}.video-library-head{display:flex;align-items:end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}.video-search{display:flex;gap:8px;flex-wrap:wrap}.video-search input,.video-search select{border:1px solid #d9dfeb;border-radius:10px;padding:11px 12px;background:#fff;min-width:220px;outline:none}.video-search select{min-width:170px}.video-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.video-public-card{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 8px 24px rgba(35,54,91,.07);cursor:pointer}.video-public-thumb{aspect-ratio:16/9;background:#edf2f8;position:relative;overflow:hidden}.video-public-thumb img{width:100%;height:100%;object-fit:cover;display:block}.video-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:54px;height:54px;border-radius:50%;display:grid;place-items:center;background:rgba(23,105,255,.94);color:#fff;font-size:24px;box-shadow:0 8px 22px rgba(23,105,255,.25)}.video-public-info{padding:13px}.video-public-info h3{margin:0 0 7px;font-size:15px;line-height:1.4}.video-public-info p{margin:0;color:#718096;font-size:12px;line-height:1.5}.video-public-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}.video-chip{font-size:10px;font-weight:800;padding:4px 7px;border-radius:999px;background:#eff6ff;color:#175cd3}.video-empty{grid-column:1/-1;text-align:center;color:#718096;padding:30px}.video-add-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;background:var(--blue);color:#fff;border:0;border-radius:10px;padding:11px 15px;font-weight:850;cursor:pointer}.video-modal{position:fixed;inset:0;background:rgba(15,23,42,.78);display:none;align-items:center;justify-content:center;padding:16px;z-index:20000}.video-modal.open{display:flex}.video-modal-box{width:min(980px,100%);max-height:94vh;overflow:auto;background:#fff;border-radius:18px;padding:14px;box-shadow:0 25px 80px rgba(0,0,0,.3);position:relative}.video-modal-close{position:absolute;right:12px;top:12px;width:40px;height:40px;border:0;border-radius:50%;background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.18);font-size:24px;cursor:pointer;z-index:2}.video-player{aspect-ratio:16/9;background:#000;border-radius:12px;overflow:hidden}.video-player iframe{width:100%;height:100%;border:0} .video-modal-info{padding:14px 4px 4px}.video-modal-info h2{margin:0 45px 8px;font-size:23px}.video-modal-info p{color:var(--muted);line-height:1.6}
-.youtube-audio-card{margin:12px 4px 4px;padding:14px;border:1px solid #dbe7f5;border-radius:14px;background:linear-gradient(180deg,#f8fbff,#fff);box-shadow:0 8px 22px rgba(35,54,91,.07)}
-.youtube-audio-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}.youtube-audio-title{font-weight:900;color:var(--ink)}.youtube-audio-badge{font-size:10px;font-weight:900;color:#175cd3;background:#eff6ff;border-radius:999px;padding:5px 8px}
-.youtube-audio-row{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px}.youtube-audio-row input[type=range]{width:100%;accent-color:var(--blue);cursor:pointer}.youtube-volume-value{min-width:48px;text-align:right;font-size:12px;font-weight:850;color:var(--blue)}
-.youtube-audio-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.youtube-audio-actions button{border:1px solid #d7e0ef;background:#fff;color:var(--blue);border-radius:9px;padding:8px 10px;font-size:12px;font-weight:850;cursor:pointer}.youtube-audio-actions button.primary{background:var(--blue);border-color:var(--blue);color:#fff}.youtube-audio-note{margin-top:8px!important;font-size:11px!important;line-height:1.45!important;color:#718096!important}
-.youtube-audio-quality{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:10px;margin-top:10px}.youtube-audio-quality label{font-size:12px;font-weight:850;color:#334155}.youtube-audio-quality select{border:1px solid #d7e0ef;border-radius:9px;background:#fff;color:#1d4ed8;padding:8px 10px;font-weight:800;outline:none;min-width:210px}@media(max-width:560px){.youtube-audio-quality{grid-template-columns:1fr}.youtube-audio-quality select{width:100%;min-width:0}}
-@media(max-width:560px){.youtube-audio-card{margin-left:0;margin-right:0}.youtube-audio-row{grid-template-columns:1fr auto}.youtube-audio-row label{grid-column:1/-1;font-size:12px;font-weight:800}.youtube-audio-actions button{flex:1}}
-.video-submit-modal{position:fixed;inset:0;background:rgba(15,23,42,.72);display:none;align-items:center;justify-content:center;padding:16px;z-index:21000}.video-submit-modal.open{display:flex}.video-submit-box{width:min(620px,100%);max-height:94vh;overflow:auto;background:#fff;border-radius:18px;padding:22px;position:relative}.video-submit-box h2{margin:0 45px 7px 0}.video-submit-form{display:grid;gap:11px}.video-submit-form label{font-size:13px;font-weight:800}.video-submit-form input,.video-submit-form textarea,.video-submit-form select{width:100%;margin-top:6px;border:1px solid #d9dfeb;border-radius:10px;padding:11px 12px;background:#fff;outline:none}.video-submit-form textarea{min-height:100px;resize:vertical}.video-submit-status{display:none;padding:11px 12px;border-radius:10px;font-size:13px;line-height:1.5}.video-submit-status.show{display:block}.video-submit-status.ok{background:#ecfdf3;color:#16794a}.video-submit-status.err{background:#fff1f2;color:#b42318}.video-close{position:absolute;right:12px;top:12px;width:40px;height:40px;border:0;border-radius:50%;background:#f6f8fc;font-size:24px;cursor:pointer}
-@media(max-width:900px){.video-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.video-library{padding-left:16px;padding-right:16px}}
-@media(max-width:560px){.video-grid{grid-template-columns:1fr}.video-search{display:grid;grid-template-columns:1fr}.video-search input,.video-search select{min-width:0;width:100%}.video-library-head{align-items:stretch}.video-add-btn{width:100%}.video-modal-box{padding:10px}.video-modal-info h2{font-size:19px}}
-.apple-seed-youtube-search .video-public-card{cursor:pointer}
-.youtube-result-card .video-public-info h3{font-size:14px}
-.youtube-result-card .video-public-info p{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.youtube-result-card .youtube-channel{font-weight:800;color:#52627b;margin-top:6px}
-.youtube-search-error{padding:12px;border-radius:10px;background:#fff1f2;color:#b42318;font-size:13px}
-.youtube-search-loading{padding:18px;text-align:center;color:#718096}
-
-
-/* ===== AI ENGINEERING CENTER =====
-   Nút nằm thấp trong nội dung trang và cuộn cùng trang.
-   KHÔNG dùng position: fixed.
-*/
-.apple-seed-ai-float{
-  position:absolute;
-  top:760px;
-  right:24px;
-  z-index:19000;
-  display:block!important;
-}
-
-.apple-seed-ai-float a{
-  display:inline-flex;
-  align-items:center;
-  gap:9px;
-  padding:12px 18px;
-  min-height:46px;
-  border-radius:999px;
-  background:linear-gradient(135deg,#176fe5,#3da8ff);
-  color:#fff;
-  text-decoration:none;
-  font-weight:900;
-  font-size:12px;
-  letter-spacing:.02em;
-  box-shadow:0 12px 28px rgba(23,111,229,.24);
-  border:1px solid rgba(255,255,255,.78);
-  backdrop-filter:blur(8px);
-  -webkit-backdrop-filter:blur(8px);
-  transition:transform .2s ease,box-shadow .2s ease,filter .2s ease;
-}
-
-.apple-seed-ai-float a:hover{
-  transform:translateY(-2px);
-  filter:brightness(1.03);
-  box-shadow:0 16px 34px rgba(23,111,229,.30);
-}
-
-@media(max-width:900px){
-  .apple-seed-ai-float{
-    top:700px;
-    right:18px;
-  }
-}
-
-@media(max-width:560px){
-  .apple-seed-ai-float{
-    top:520px;
-    right:12px;
-  }
-
-  .apple-seed-ai-float a{
-    padding:9px 13px;
-    min-height:40px;
-    font-size:10px;
-    gap:6px;
-  }
-}
-.apple-seed-ai-float a{padding:9px 12px;font-size:10px}}
-
-/* ===== TOP YOUTUBE ENGINE ===== */
-.youtube-top-section{padding:22px 24px 10px;background:transparent;}
-.youtube-top-inner{max-width:1240px;margin:0 auto;}
-.youtube-top-section .apple-seed-youtube-search{margin-top:0!important;}
-@media(max-width:560px){
-  .youtube-top-section{padding:16px 12px 10px!important;}
-  .youtube-top-section .apple-seed-youtube-search{padding:16px!important;margin-top:0!important;overflow:visible!important;}
-  .youtube-top-section .apple-seed-youtube-search > div:first-child{display:block!important;}
-  .youtube-top-section .section-kicker{display:block!important;visibility:visible!important;position:relative!important;z-index:2!important;}
-  .youtube-top-section .apple-seed-youtube-search h3{font-size:21px!important;line-height:1.25!important;overflow:visible!important;}
-  .youtube-top-section .apple-seed-youtube-search p{line-height:1.5!important;}
-  .youtube-top-section .apple-seed-youtube-search input{min-width:0!important;width:100%;flex:1 1 100%;}
-  .youtube-top-section .apple-seed-youtube-search button{width:100%;}
-}
-
-
-/* ===== YOUTUBE MODAL MOBILE FIX V2 ===== */
-.video-modal{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-.video-modal-box{position:relative;z-index:1}
-.video-modal-close{
-  position:absolute!important;right:10px!important;top:10px!important;
-  z-index:50!important;pointer-events:auto!important;
-  width:42px!important;height:42px!important;display:grid!important;place-items:center!important;
-  cursor:pointer!important;-webkit-appearance:none!important;appearance:none!important;
-}
-@media(max-width:560px){
-  .video-modal{padding:10px!important;align-items:center!important}
-  .video-modal-box{width:100%!important;max-height:92vh!important;border-radius:18px!important}
-  .video-modal-close{right:8px!important;top:8px!important;width:44px!important;height:44px!important;font-size:28px!important}
-  .video-player{border-radius:12px!important}
-  .video-modal-info{padding:12px!important;max-height:36vh!important;overflow:auto!important}
-  .video-modal-info h2{font-size:20px!important;line-height:1.3!important}
 }
 
 </style>
@@ -1729,7 +1655,7 @@ img{-webkit-user-drag:none}
 const btn=document.getElementById("chatBtn"),box=document.getElementById("chatBox");
 const close=document.getElementById("chatClose"),body=document.getElementById("chatBody");
 const form=document.getElementById("chatForm"),input=document.getElementById("chatInput");
-/* Robot intro: chỉ chạy 1 lần trong mỗi phiên trình duyệt. */
+/* Robot intro: chạy 1 lần mỗi phiên — đi bộ qua trang rồi quay về nút trợ lý. */
 (function appleSeedRobotIntro(){
   try{
     if(sessionStorage.getItem("appleSeedRobotIntroSeen")==="1") return;
@@ -1740,43 +1666,101 @@ const form=document.getElementById("chatForm"),input=document.getElementById("ch
   if(!target) return;
 
   const robot=document.createElement("div");
-  robot.className="apple-seed-robot-intro";
-  robot.innerHTML='<span class="robot-face">🤖</span><span class="robot-greeting">Xin chào 👋</span>';
+  robot.className="apple-seed-robot-intro walking";
+  robot.innerHTML=`
+    <div class="robot-character">
+      <div class="robot-antenna"></div>
+      <div class="robot-head">
+        <span class="robot-eye left"></span>
+        <span class="robot-eye right"></span>
+        <span class="robot-mouth"></span>
+      </div>
+      <div class="robot-arm left"></div>
+      <div class="robot-arm right"></div>
+      <div class="robot-body"></div>
+      <div class="robot-leg left"></div>
+      <div class="robot-leg right"></div>
+      <div class="robot-shadow"></div>
+    </div>
+    <div class="robot-greeting">Xin chào 👋</div>
+  `;
   document.body.appendChild(robot);
 
-  const end=()=>{
-    const r=target.getBoundingClientRect();
-    robot.style.left=(r.left+r.width/2)+"px";
-    robot.style.top=(r.top+r.height/2)+"px";
-    robot.classList.add("fly-away");
-    setTimeout(()=>robot.remove(),720);
-  };
+  // Vị trí xuất phát: giữa trang.
+  robot.style.left=(window.innerWidth*.50)+"px";
+  robot.style.top=(window.innerHeight*.48)+"px";
 
-  // Cho robot "đi/bay" qua vài điểm trên trang rồi quay về nút trợ lý.
+  // Robot đi bộ qua các điểm, mỗi đoạn có độ cong nhẹ.
   const points=[
-    {x:window.innerWidth*.30,y:window.innerHeight*.42,rot:-6,dur:650},
-    {x:window.innerWidth*.58,y:window.innerHeight*.30,rot:7,dur:650},
-    {x:window.innerWidth*.76,y:window.innerHeight*.56,rot:-5,dur:700}
+    {x:window.innerWidth*.28,y:window.innerHeight*.48,dur:800},
+    {x:window.innerWidth*.58,y:window.innerHeight*.36,dur:900},
+    {x:window.innerWidth*.78,y:window.innerHeight*.54,dur:900},
+    {x:window.innerWidth*.66,y:window.innerHeight*.70,dur:850}
   ];
 
-  let i=0;
-  const moveNext=()=>{
-    if(i>=points.length){
-      end();
-      return;
-    }
-    const p=points[i++];
-    robot.animate(
+  const walkTo=(p)=>{
+    return robot.animate(
       [
-        {left:robot.style.left,top:robot.style.top,transform:"translate(-50%,-50%) rotate(0deg) scale(1)"},
-        {left:p.x+"px",top:p.y+"px",transform:"translate(-50%,-50%) rotate("+p.rot+"deg) scale(1.04)"}
+        {left:robot.style.left,top:robot.style.top,transform:"translate(-50%,-50%) scale(1)"},
+        {left:p.x+"px",top:p.y+"px",transform:"translate(-50%,-50%) scale(1.02)"}
       ],
-      {duration:p.dur,easing:"cubic-bezier(.22,.8,.25,1)",fill:"forwards"}
-    ).finished.then(moveNext).catch(moveNext);
+      {
+        duration:p.dur,
+        easing:"cubic-bezier(.18,.78,.25,1)",
+        fill:"forwards"
+      }
+    ).finished;
   };
 
-  // Xuất hiện ở giữa trang trước khi bắt đầu hành trình.
-  setTimeout(moveNext,850);
+  const returnToButton=()=>{
+    const r=target.getBoundingClientRect();
+    robot.classList.remove("walking");
+    robot.classList.add("fly-away");
+
+    // Bay theo đường cong về đúng tâm nút robot.
+    robot.animate(
+      [
+        {
+          left:robot.style.left,
+          top:robot.style.top,
+          transform:"translate(-50%,-50%) scale(1)"
+        },
+        {
+          left:(r.left+r.width*.5-70)+"px",
+          top:(r.top+r.height*.5-120)+"px",
+          transform:"translate(-50%,-50%) scale(.78)"
+        },
+        {
+          left:(r.left+r.width*.5)+"px",
+          top:(r.top+r.height*.5)+"px",
+          transform:"translate(-50%,-50%) scale(.30)"
+        }
+      ],
+      {
+        duration:1100,
+        easing:"cubic-bezier(.22,.75,.18,1)",
+        fill:"forwards"
+      }
+    ).finished.then(()=>{
+      robot.remove();
+    }).catch(()=>robot.remove());
+  };
+
+  (async()=>{
+    try{
+      // Cho khách nhìn thấy robot trước khi bắt đầu đi.
+      await new Promise(resolve=>setTimeout(resolve,900));
+
+      for(const p of points){
+        await walkTo(p);
+      }
+
+      await new Promise(resolve=>setTimeout(resolve,250));
+      returnToButton();
+    }catch(_){
+      robot.remove();
+    }
+  })();
 })();
 
 
