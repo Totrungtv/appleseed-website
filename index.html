@@ -463,6 +463,111 @@ img{-webkit-user-drag:none}
   .video-modal-info h2{font-size:20px!important;line-height:1.3!important}
 }
 
+
+/* ===== APPLE SEED MEMBER PASSWORD UX — ISOLATED ===== */
+.as-password-field{display:block}
+.as-password-wrap{position:relative;display:block}
+.as-password-wrap input{width:100%;padding-right:48px!important;box-sizing:border-box}
+.as-password-toggle{
+  position:absolute!important;right:8px!important;top:50%!important;
+  transform:translateY(-50%)!important;width:36px!important;height:34px!important;
+  min-width:36px!important;padding:0!important;border:0!important;
+  background:transparent!important;color:#51617a!important;cursor:pointer!important;
+  box-shadow:none!important;font-size:17px!important;z-index:2!important;
+}
+.as-password-toggle:hover{color:#1769ff!important;transform:translateY(-50%) scale(1.05)!important}
+.as-password-match{display:block;min-height:18px;margin-top:5px;font-size:12px;font-weight:700}
+.as-password-match.ok{color:#159447}
+.as-password-match.bad{color:#d83a3a}
+
+/* ===== APPLE SEED ROBOT FRIEND — SOFT / PREMIUM ===== */
+#asRobotFriend{
+  position:fixed;left:50%;top:43%;width:68px;height:88px;
+  z-index:99999;pointer-events:none;opacity:0;
+  transform:translate(-50%,-50%);
+  filter:drop-shadow(0 9px 14px rgba(23,105,255,.18));
+}
+#asRobotFriend .asrf-body{position:relative;width:68px;height:88px}
+#asRobotFriend .asrf-head{
+  position:absolute;left:13px;top:5px;width:42px;height:32px;
+  border:2px solid #1769ff;border-radius:12px;
+  background:linear-gradient(#fff,#edf4fb);
+}
+#asRobotFriend .asrf-antenna{
+  position:absolute;left:50%;top:-11px;width:2px;height:10px;
+  background:#1769ff;transform:translateX(-50%);
+}
+#asRobotFriend .asrf-antenna:after{
+  content:"";position:absolute;left:50%;top:-5px;width:7px;height:7px;
+  border-radius:50%;background:#55b5ff;transform:translateX(-50%);
+}
+#asRobotFriend .asrf-eye{
+  position:absolute;top:10px;width:6px;height:6px;border-radius:50%;
+  background:#1769ff;
+}
+#asRobotFriend .asrf-eye.l{left:9px}
+#asRobotFriend .asrf-eye.r{right:9px}
+#asRobotFriend .asrf-mouth{
+  position:absolute;left:50%;bottom:6px;width:13px;height:3px;
+  border-radius:8px;background:#1769ff;transform:translateX(-50%);
+}
+#asRobotFriend .asrf-torso{
+  position:absolute;left:12px;top:41px;width:44px;height:33px;
+  border:2px solid #1769ff;border-radius:11px;
+  background:linear-gradient(#fff,#edf4fb);
+}
+#asRobotFriend .asrf-torso:after{
+  content:"•";position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-54%);font-size:17px;font-weight:900;color:#3da8ff;
+}
+#asRobotFriend .asrf-arm{
+  position:absolute;top:45px;width:8px;height:27px;
+  border:2px solid #1769ff;border-radius:7px;background:#e7f0f9;
+  transform-origin:50% 4px;
+}
+#asRobotFriend .asrf-arm.l{left:3px}
+#asRobotFriend .asrf-arm.r{right:3px}
+#asRobotFriend .asrf-leg{
+  position:absolute;top:73px;width:10px;height:18px;
+  border:2px solid #1769ff;border-radius:7px;background:#e7f0f9;
+  transform-origin:50% 3px;
+}
+#asRobotFriend .asrf-leg.l{left:21px}
+#asRobotFriend .asrf-leg.r{right:21px}
+#asRobotFriend .asrf-shadow{
+  position:absolute;left:50%;bottom:-6px;width:48px;height:7px;
+  border-radius:50%;background:rgba(20,50,100,.11);
+  transform:translateX(-50%);
+}
+#asRobotFriend .asrf-bubble{
+  position:absolute;left:58px;top:-6px;white-space:nowrap;
+  padding:6px 9px;border-radius:10px;background:#fff;color:#17315d;
+  border:1px solid #e5eaf2;box-shadow:0 6px 16px rgba(23,37,66,.12);
+  font-size:11px;font-weight:800;
+}
+#asRobotFriend.asrf-show{animation:asrfShow .42s ease forwards}
+#asRobotFriend.asrf-walk .asrf-leg.l{animation:asrfLegL .20s ease-in-out infinite alternate}
+#asRobotFriend.asrf-walk .asrf-leg.r{animation:asrfLegR .20s ease-in-out infinite alternate}
+#asRobotFriend.asrf-walk .asrf-arm.l{animation:asrfArmL .20s ease-in-out infinite alternate}
+#asRobotFriend.asrf-walk .asrf-arm.r{animation:asrfArmR .20s ease-in-out infinite alternate}
+#asRobotFriend.asrf-walk .asrf-body{animation:asrfBody .20s ease-in-out infinite alternate}
+#asRobotFriend.asrf-fly .asrf-body{animation:asrfFly .65s ease forwards}
+#asRobotFriend.asrf-fly{animation:asrfFade .65s ease forwards}
+@keyframes asrfShow{from{opacity:0;transform:translate(-50%,-50%) scale(.7)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes asrfLegL{from{transform:rotate(14deg)}to{transform:rotate(-14deg)}}
+@keyframes asrfLegR{from{transform:rotate(-14deg)}to{transform:rotate(14deg)}}
+@keyframes asrfArmL{from{transform:rotate(-16deg)}to{transform:rotate(16deg)}}
+@keyframes asrfArmR{from{transform:rotate(16deg)}to{transform:rotate(-16deg)}}
+@keyframes asrfBody{from{transform:translateY(0)}to{transform:translateY(-2px)}}
+@keyframes asrfFly{0%{transform:scale(1)}70%{transform:scale(.62)}100%{transform:scale(.28)}}
+@keyframes asrfFade{from{opacity:1}to{opacity:0}}
+@media(max-width:560px){
+  #asRobotFriend{width:56px;height:74px;top:40%}
+  #asRobotFriend .asrf-body{transform:scale(.82);transform-origin:50% 100%}
+  #asRobotFriend .asrf-bubble{left:50px;font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){#asRobotFriend{display:none!important}}
+
 </style>
 </head>
 
@@ -616,7 +721,19 @@ img{-webkit-user-drag:none}
         <label>Số điện thoại *<input id="memberHomeSignupPhone" required inputmode="tel" autocomplete="tel" placeholder="0898888269"></label>
       </div>
       <label>Email *<input id="memberHomeSignupEmail" type="email" required autocomplete="email" placeholder="email@gmail.com"></label>
-      <label>Mật khẩu *<input id="memberHomeSignupPassword" type="password" minlength="6" required autocomplete="new-password" placeholder="Tối thiểu 6 ký tự"></label>
+      <label class="as-password-field">Mật khẩu *
+        <span class="as-password-wrap">
+          <input id="memberHomeSignupPassword" type="password" minlength="6" required autocomplete="new-password" placeholder="Tối thiểu 6 ký tự">
+          <button type="button" class="as-password-toggle" data-password-target="memberHomeSignupPassword" aria-label="Hiện mật khẩu">👁</button>
+        </span>
+      </label>
+      <label class="as-password-field">Xác nhận mật khẩu *
+        <span class="as-password-wrap">
+          <input id="memberHomeSignupPasswordConfirm" type="password" minlength="6" required autocomplete="new-password" placeholder="Nhập lại mật khẩu">
+          <button type="button" class="as-password-toggle" data-password-target="memberHomeSignupPasswordConfirm" aria-label="Hiện xác nhận mật khẩu">👁</button>
+        </span>
+        <small id="asPasswordMatch" class="as-password-match" aria-live="polite"></small>
+      </label>
       <button class="member-auth-submit" type="submit">✨ Tạo tài khoản thành viên</button>
       <div class="member-auth-note">Sau khi đăng ký, hệ thống sẽ gửi email xác nhận. Hãy mở Gmail và bấm <b>link xác nhận</b> để kích hoạt tài khoản trước khi đăng nhập.</div>
     </form>
@@ -1861,6 +1978,107 @@ form.onsubmit=async e=>{
   console.log('Apple Seed Security V2 loaded.');
 })();
 </script>
+
+<script id="apple-seed-final-ux">
+(function(){
+  "use strict";
+
+  /* Password eye + match validation */
+  document.addEventListener("click",function(e){
+    const btn=e.target.closest(".as-password-toggle");
+    if(!btn)return;
+    const input=document.getElementById(btn.dataset.passwordTarget);
+    if(!input)return;
+    input.type=input.type==="password"?"text":"password";
+    btn.textContent=input.type==="password"?"👁":"🙈";
+    btn.setAttribute("aria-label",input.type==="password"?"Hiện mật khẩu":"Ẩn mật khẩu");
+  });
+
+  const signupForm=document.getElementById("memberHomeSignupForm");
+  const pass=document.getElementById("memberHomeSignupPassword");
+  const confirm=document.getElementById("memberHomeSignupPasswordConfirm");
+  const match=document.getElementById("asPasswordMatch");
+
+  function checkMatch(){
+    if(!pass||!confirm||!match)return true;
+    const a=pass.value,b=confirm.value;
+    if(!b){match.textContent="";match.className="as-password-match";return false}
+    if(a===b){
+      match.textContent="✓ Mật khẩu khớp";
+      match.className="as-password-match ok";
+      return true;
+    }
+    match.textContent="✕ Mật khẩu chưa khớp";
+    match.className="as-password-match bad";
+    return false;
+  }
+  pass?.addEventListener("input",checkMatch);
+  confirm?.addEventListener("input",checkMatch);
+
+  signupForm?.addEventListener("submit",function(e){
+    if(!checkMatch()){
+      e.preventDefault();
+      confirm?.focus();
+      if(match)match.scrollIntoView({block:"nearest"});
+      return false;
+    }
+  },true);
+
+  /* Soft robot friend: one appearance per browser session. */
+  function initRobot(){
+    try{if(sessionStorage.getItem("asrf_final_seen")==="1")return;sessionStorage.setItem("asrf_final_seen","1")}catch(_){}
+    const target=document.getElementById("chatBtn");
+    if(!target||document.getElementById("asRobotFriend"))return;
+
+    const el=document.createElement("div");
+    el.id="asRobotFriend";
+    el.innerHTML=
+      '<div class="asrf-body">'+
+        '<div class="asrf-antenna"></div>'+
+        '<div class="asrf-head"><span class="asrf-eye l"></span><span class="asrf-eye r"></span><span class="asrf-mouth"></span></div>'+
+        '<div class="asrf-arm l"></div><div class="asrf-arm r"></div>'+
+        '<div class="asrf-torso"></div>'+
+        '<div class="asrf-leg l"></div><div class="asrf-leg r"></div>'+
+        '<div class="asrf-shadow"></div>'+
+      '</div>'+
+      '<div class="asrf-bubble">Xin chào 👋</div>';
+    document.body.appendChild(el);
+
+    const vw=innerWidth,vh=innerHeight;
+    el.style.left=(vw*.50)+"px";
+    el.style.top=(vh*.42)+"px";
+    el.classList.add("asrf-show");
+
+    const move=(x,y,d)=>el.animate(
+      [{left:el.style.left,top:el.style.top},{left:x+"px",top:y+"px"}],
+      {duration:d,easing:"cubic-bezier(.2,.75,.25,1)",fill:"forwards"}
+    ).finished.then(()=>{el.style.left=x+"px";el.style.top=y+"px"});
+
+    const home=()=>{
+      const r=target.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
+      el.classList.remove("asrf-walk");el.classList.add("asrf-fly");
+      el.animate(
+        [{left:el.style.left,top:el.style.top},{left:(x-65)+"px",top:(y-95)+"px"},{left:x+"px",top:y+"px"}],
+        {duration:900,easing:"cubic-bezier(.22,.75,.18,1)",fill:"forwards"}
+      ).finished.then(()=>el.remove()).catch(()=>el.remove());
+    };
+
+    setTimeout(()=>{
+      el.classList.add("asrf-walk");
+      move(vw*.32,vh*.40,650)
+      .then(()=>move(vw*.58,vh*.32,700))
+      .then(()=>move(vw*.72,vh*.48,700))
+      .then(()=>move(vw*.64,vh*.60,650))
+      .then(()=>setTimeout(home,180))
+      .catch(()=>el.remove());
+    },500);
+  }
+
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>setTimeout(initRobot,250));
+  else setTimeout(initRobot,250);
+})();
+</script>
+
 </body>
 </html>
 <footer class="apple-seed-copyright" aria-label="Bản quyền Apple Seed">
