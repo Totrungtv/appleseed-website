@@ -295,14 +295,6 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
 .member-auth-form label{font-size:13px;font-weight:800}
 .member-auth-form input{width:100%;margin-top:6px;border:1px solid #d9dfeb;border-radius:10px;padding:12px 13px;outline:none}
 .member-auth-form input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(23,105,255,.10)}
-.member-password-wrap{position:relative;margin-top:6px}
-.member-password-wrap input{margin-top:0;padding-right:50px}
-.member-password-toggle{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:38px;height:36px;border:0;border-radius:8px;background:transparent;color:#61708a;cursor:pointer;font-size:18px;display:grid;place-items:center}
-.member-password-toggle:hover{background:#f1f4ff;color:var(--blue)}
-.member-password-toggle:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
-.member-password-match{min-height:17px;margin-top:5px;font-size:12px;font-weight:750}
-.member-password-match.ok{color:#15803d}
-.member-password-match.err{color:#dc2626}
 .member-auth-submit{min-height:46px;border:0;border-radius:10px;background:var(--blue);color:#fff;font-weight:850;cursor:pointer}
 .member-auth-submit:disabled{opacity:.65;cursor:wait}
 .member-auth-note{font-size:12px;line-height:1.5;color:var(--muted)}
@@ -381,11 +373,61 @@ img{-webkit-user-drag:none}
 .youtube-search-loading{padding:18px;text-align:center;color:#718096}
 
 
-/* ===== AI ENGINEERING CENTER FLOATING BUTTON ===== */
-.apple-seed-ai-float{position:absolute;top:16px;right:18px;z-index:19000;display:block!important}
-.apple-seed-ai-float a{display:inline-flex;align-items:center;gap:8px;padding:11px 16px;border-radius:999px;background:linear-gradient(135deg,#176fe5,#3da8ff);color:#fff;text-decoration:none;font-weight:900;font-size:12px;letter-spacing:.02em;box-shadow:0 10px 26px rgba(23,111,229,.25);border:1px solid rgba(255,255,255,.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-.apple-seed-ai-float a:hover{transform:translateY(-1px);box-shadow:0 13px 30px rgba(23,111,229,.32)}
-@media(max-width:560px){.apple-seed-ai-float{top:10px;right:10px}.apple-seed-ai-float a{padding:9px 12px;font-size:10px}}
+/* ===== AI ENGINEERING CENTER =====
+   Nằm trong luồng trang sau header: không che menu,
+   không fixed, không absolute theo viewport -> cuộn cùng trang.
+*/
+.apple-seed-ai-float{
+  position:relative;
+  z-index:20;
+  display:flex!important;
+  justify-content:flex-end;
+  width:100%;
+  box-sizing:border-box;
+  padding:12px 24px 10px;
+  pointer-events:none;
+}
+
+.apple-seed-ai-float a{
+  pointer-events:auto;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:11px 16px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#176fe5,#3da8ff);
+  color:#fff;
+  text-decoration:none;
+  font-weight:900;
+  font-size:12px;
+  letter-spacing:.02em;
+  box-shadow:0 10px 26px rgba(23,111,229,.25);
+  border:1px solid rgba(255,255,255,.65);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+
+.apple-seed-ai-float a:hover{
+  transform:translateY(-1px);
+  box-shadow:0 13px 30px rgba(23,111,229,.32);
+}
+
+@media(max-width:900px){
+  .apple-seed-ai-float{
+    padding:10px 18px 8px;
+  }
+}
+
+@media(max-width:560px){
+  .apple-seed-ai-float{
+    padding:8px 10px 8px;
+  }
+  .apple-seed-ai-float a{
+    padding:9px 12px;
+    font-size:10px;
+  }
+}
 
 /* ===== TOP YOUTUBE ENGINE ===== */
 .youtube-top-section{padding:22px 24px 10px;background:transparent;}
@@ -425,7 +467,7 @@ img{-webkit-user-drag:none}
 </head>
 
 <body>
-<div id="apple-seed-ai-top" class="apple-seed-ai-float"><a href="./ai-board.html" aria-label="Mở AI Engineering Center">🚀 AI ENGINEERING CENTER</a></div>
+
 
 <header class="site-header">
 <nav class="nav" aria-label="Điều hướng chính">
@@ -451,6 +493,8 @@ img{-webkit-user-drag:none}
 </div>
 </nav>
 </header>
+<div id="apple-seed-ai-top" class="apple-seed-ai-float"><a href="./ai-board.html" aria-label="Mở AI Engineering Center">🚀 AI ENGINEERING CENTER</a></div>
+
 
 <section class="youtube-top-section" id="youtube-engine-top">
   <div class="youtube-top-inner">
@@ -572,19 +616,7 @@ img{-webkit-user-drag:none}
         <label>Số điện thoại *<input id="memberHomeSignupPhone" required inputmode="tel" autocomplete="tel" placeholder="0898888269"></label>
       </div>
       <label>Email *<input id="memberHomeSignupEmail" type="email" required autocomplete="email" placeholder="email@gmail.com"></label>
-      <label>Mật khẩu *
-        <div class="member-password-wrap">
-          <input id="memberHomeSignupPassword" type="password" minlength="6" required autocomplete="new-password" placeholder="Tối thiểu 6 ký tự">
-          <button class="member-password-toggle" type="button" data-password-target="memberHomeSignupPassword" aria-label="Hiện mật khẩu" aria-pressed="false">👁</button>
-        </div>
-      </label>
-      <label>Xác nhận mật khẩu *
-        <div class="member-password-wrap">
-          <input id="memberHomeSignupPasswordConfirm" type="password" minlength="6" required autocomplete="new-password" placeholder="Nhập lại mật khẩu">
-          <button class="member-password-toggle" type="button" data-password-target="memberHomeSignupPasswordConfirm" aria-label="Hiện xác nhận mật khẩu" aria-pressed="false">👁</button>
-        </div>
-        <div id="memberPasswordMatch" class="member-password-match" aria-live="polite"></div>
-      </label>
+      <label>Mật khẩu *<input id="memberHomeSignupPassword" type="password" minlength="6" required autocomplete="new-password" placeholder="Tối thiểu 6 ký tự"></label>
       <button class="member-auth-submit" type="submit">✨ Tạo tài khoản thành viên</button>
       <div class="member-auth-note">Sau khi đăng ký, hệ thống sẽ gửi email xác nhận. Hãy mở Gmail và bấm <b>link xác nhận</b> để kích hoạt tài khoản trước khi đăng nhập.</div>
     </form>
@@ -1556,60 +1588,9 @@ img{-webkit-user-drag:none}
     }
   });
 
-  // Hiện / ẩn mật khẩu cho form đăng ký. Chỉ thay đổi type của input, không đụng dữ liệu Supabase.
-  document.querySelectorAll('.member-password-toggle').forEach(toggle=>{
-    toggle.addEventListener('click',()=>{
-      const targetId=toggle.getAttribute('data-password-target');
-      const field=document.getElementById(targetId);
-      if(!field)return;
-      const showing=field.type==='text';
-      field.type=showing?'password':'text';
-      toggle.textContent=showing?'👁':'🙈';
-      toggle.setAttribute('aria-label',showing?'Hiện mật khẩu':'Ẩn mật khẩu');
-      toggle.setAttribute('aria-pressed',String(!showing));
-    });
-  });
-
-  const signupPassword=document.getElementById('memberHomeSignupPassword');
-  const signupPasswordConfirm=document.getElementById('memberHomeSignupPasswordConfirm');
-  const passwordMatch=document.getElementById('memberPasswordMatch');
-
-  const checkSignupPasswords=()=>{
-    if(!signupPassword || !signupPasswordConfirm || !passwordMatch)return false;
-    const p=signupPassword.value;
-    const c=signupPasswordConfirm.value;
-    passwordMatch.className='member-password-match';
-
-    if(!c){
-      passwordMatch.textContent='';
-      return false;
-    }
-
-    if(p===c){
-      passwordMatch.textContent='✓ Mật khẩu khớp';
-      passwordMatch.classList.add('ok');
-      return true;
-    }
-
-    passwordMatch.textContent='⚠ Hai mật khẩu chưa giống nhau';
-    passwordMatch.classList.add('err');
-    return false;
-  };
-
-  signupPassword?.addEventListener('input',checkSignupPasswords);
-  signupPasswordConfirm?.addEventListener('input',checkSignupPasswords);
-
   signupForm.onsubmit=async e=>{
     e.preventDefault();
     clearStatus();
-
-    // Chặn đăng ký ngay tại trình duyệt nếu hai mật khẩu không giống nhau.
-    if(!checkSignupPasswords()){
-      showStatus('⚠ Vui lòng nhập lại đúng mật khẩu ở ô Xác nhận mật khẩu.');
-      signupPasswordConfirm?.focus();
-      return;
-    }
-
     const b=e.submitter;
     b.disabled=true;
     b.textContent='Đang tạo tài khoản...';
