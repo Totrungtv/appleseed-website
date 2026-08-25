@@ -229,6 +229,77 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
 .chat-head{background:var(--blue);color:#fff;padding:16px 18px;font-weight:850;display:flex;justify-content:space-between;align-items:center}
 .chat-close{border:0;background:transparent;color:#fff;font-size:22px;cursor:pointer}
 .chat-body{flex:1;padding:14px;overflow:auto;background:#f7f9fd}
+/* ===== APPLE SEED ROBOT INTRO =====
+   Robot chào khách khi vào web, di chuyển nhẹ qua màn hình,
+   sau đó bay về đúng nút trợ lý và biến mất.
+*/
+.apple-seed-robot-intro{
+  position:fixed;
+  left:50%;
+  top:46%;
+  z-index:30000;
+  width:76px;
+  height:76px;
+  display:grid;
+  place-items:center;
+  pointer-events:none;
+  font-size:52px;
+  filter:drop-shadow(0 12px 18px rgba(23,105,255,.25));
+  transform:translate(-50%,-50%);
+  will-change:left,top,transform,opacity;
+}
+.apple-seed-robot-intro .robot-face{
+  display:block;
+  animation:appleSeedRobotBob .48s ease-in-out infinite alternate;
+}
+.apple-seed-robot-intro .robot-greeting{
+  position:absolute;
+  left:58px;
+  top:-12px;
+  white-space:nowrap;
+  padding:8px 12px;
+  border-radius:14px;
+  background:#fff;
+  color:#17315d;
+  font-size:13px;
+  font-weight:800;
+  box-shadow:0 8px 24px rgba(23,37,66,.16);
+  border:1px solid #e5eaf2;
+  opacity:0;
+  animation:appleSeedRobotGreeting 2.1s ease forwards;
+}
+.apple-seed-robot-intro .robot-greeting:after{
+  content:"";
+  position:absolute;
+  left:14px;
+  bottom:-6px;
+  width:11px;
+  height:11px;
+  background:#fff;
+  border-right:1px solid #e5eaf2;
+  border-bottom:1px solid #e5eaf2;
+  transform:rotate(45deg);
+}
+.apple-seed-robot-intro.fly-away{
+  animation:appleSeedRobotFinish .7s ease forwards;
+}
+@keyframes appleSeedRobotBob{
+  from{transform:translateY(0) rotate(-2deg)}
+  to{transform:translateY(-7px) rotate(2deg)}
+}
+@keyframes appleSeedRobotGreeting{
+  0%,12%{opacity:0;transform:translateY(7px) scale(.92)}
+  22%,72%{opacity:1;transform:translateY(0) scale(1)}
+  100%{opacity:0;transform:translateY(-3px) scale(.96)}
+}
+@keyframes appleSeedRobotFinish{
+  0%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(.25)}
+}
+@media(prefers-reduced-motion:reduce){
+  .apple-seed-robot-intro{display:none!important}
+}
+
 .msg{max-width:88%;padding:10px 12px;border-radius:12px;margin:7px 0;line-height:1.45;font-size:14px}
 .bot{background:#fff;border:1px solid #e5e9f1}.user{margin-left:auto;background:#1769ff;color:#fff}
 .chat-input{display:flex;gap:8px;padding:10px;border-top:1px solid #e6eaf1}
@@ -373,52 +444,11 @@ img{-webkit-user-drag:none}
 .youtube-search-loading{padding:18px;text-align:center;color:#718096}
 
 
-/* ===== AI ENGINEERING CENTER =====
-   Không fixed: cuộn cùng trang.
-   Hạ xuống dưới header để không đè menu.
-*/
-.apple-seed-ai-float{
-  position:absolute;
-  top:96px;
-  right:18px;
-  z-index:19000;
-  display:block!important;
-}
-
-.apple-seed-ai-float a{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:11px 16px;
-  border-radius:999px;
-  background:linear-gradient(135deg,#176fe5,#3da8ff);
-  color:#fff;
-  text-decoration:none;
-  font-weight:900;
-  font-size:12px;
-  letter-spacing:.02em;
-  box-shadow:0 10px 26px rgba(23,111,229,.25);
-  border:1px solid rgba(255,255,255,.65);
-  backdrop-filter:blur(8px);
-  -webkit-backdrop-filter:blur(8px);
-}
-
-.apple-seed-ai-float a:hover{
-  transform:translateY(-1px);
-  box-shadow:0 13px 30px rgba(23,111,229,.32);
-}
-
-/* Mobile: cũng cuộn theo trang và nằm dưới header */
-@media(max-width:560px){
-  .apple-seed-ai-float{
-    top:230px;
-    right:10px;
-  }
-  .apple-seed-ai-float a{
-    padding:9px 12px;
-    font-size:10px;
-  }
-}
+/* ===== AI ENGINEERING CENTER FLOATING BUTTON ===== */
+.apple-seed-ai-float{position:absolute;top:16px;right:18px;z-index:19000;display:block!important}
+.apple-seed-ai-float a{display:inline-flex;align-items:center;gap:8px;padding:11px 16px;border-radius:999px;background:linear-gradient(135deg,#176fe5,#3da8ff);color:#fff;text-decoration:none;font-weight:900;font-size:12px;letter-spacing:.02em;box-shadow:0 10px 26px rgba(23,111,229,.25);border:1px solid rgba(255,255,255,.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.apple-seed-ai-float a:hover{transform:translateY(-1px);box-shadow:0 13px 30px rgba(23,111,229,.32)}
+@media(max-width:560px){.apple-seed-ai-float{top:10px;right:10px}.apple-seed-ai-float a{padding:9px 12px;font-size:10px}}
 
 /* ===== TOP YOUTUBE ENGINE ===== */
 .youtube-top-section{padding:22px 24px 10px;background:transparent;}
@@ -1645,6 +1675,56 @@ img{-webkit-user-drag:none}
 const btn=document.getElementById("chatBtn"),box=document.getElementById("chatBox");
 const close=document.getElementById("chatClose"),body=document.getElementById("chatBody");
 const form=document.getElementById("chatForm"),input=document.getElementById("chatInput");
+/* Robot intro: chỉ chạy 1 lần trong mỗi phiên trình duyệt. */
+(function appleSeedRobotIntro(){
+  try{
+    if(sessionStorage.getItem("appleSeedRobotIntroSeen")==="1") return;
+    sessionStorage.setItem("appleSeedRobotIntroSeen","1");
+  }catch(_){}
+
+  const target=document.getElementById("chatBtn");
+  if(!target) return;
+
+  const robot=document.createElement("div");
+  robot.className="apple-seed-robot-intro";
+  robot.innerHTML='<span class="robot-face">🤖</span><span class="robot-greeting">Xin chào 👋</span>';
+  document.body.appendChild(robot);
+
+  const end=()=>{
+    const r=target.getBoundingClientRect();
+    robot.style.left=(r.left+r.width/2)+"px";
+    robot.style.top=(r.top+r.height/2)+"px";
+    robot.classList.add("fly-away");
+    setTimeout(()=>robot.remove(),720);
+  };
+
+  // Cho robot "đi/bay" qua vài điểm trên trang rồi quay về nút trợ lý.
+  const points=[
+    {x:window.innerWidth*.30,y:window.innerHeight*.42,rot:-6,dur:650},
+    {x:window.innerWidth*.58,y:window.innerHeight*.30,rot:7,dur:650},
+    {x:window.innerWidth*.76,y:window.innerHeight*.56,rot:-5,dur:700}
+  ];
+
+  let i=0;
+  const moveNext=()=>{
+    if(i>=points.length){
+      end();
+      return;
+    }
+    const p=points[i++];
+    robot.animate(
+      [
+        {left:robot.style.left,top:robot.style.top,transform:"translate(-50%,-50%) rotate(0deg) scale(1)"},
+        {left:p.x+"px",top:p.y+"px",transform:"translate(-50%,-50%) rotate("+p.rot+"deg) scale(1.04)"}
+      ],
+      {duration:p.dur,easing:"cubic-bezier(.22,.8,.25,1)",fill:"forwards"}
+    ).finished.then(moveNext).catch(moveNext);
+  };
+
+  // Xuất hiện ở giữa trang trước khi bắt đầu hành trình.
+  setTimeout(moveNext,850);
+})();
+
 
 btn.onclick=()=>{box.classList.toggle("open");if(box.classList.contains("open"))input.focus()};
 close.onclick=()=>box.classList.remove("open");
