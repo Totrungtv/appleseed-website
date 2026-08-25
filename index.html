@@ -444,11 +444,65 @@ img{-webkit-user-drag:none}
 .youtube-search-loading{padding:18px;text-align:center;color:#718096}
 
 
-/* ===== AI ENGINEERING CENTER FLOATING BUTTON ===== */
-.apple-seed-ai-float{position:absolute;top:16px;right:18px;z-index:19000;display:block!important}
-.apple-seed-ai-float a{display:inline-flex;align-items:center;gap:8px;padding:11px 16px;border-radius:999px;background:linear-gradient(135deg,#176fe5,#3da8ff);color:#fff;text-decoration:none;font-weight:900;font-size:12px;letter-spacing:.02em;box-shadow:0 10px 26px rgba(23,111,229,.25);border:1px solid rgba(255,255,255,.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-.apple-seed-ai-float a:hover{transform:translateY(-1px);box-shadow:0 13px 30px rgba(23,111,229,.32)}
-@media(max-width:560px){.apple-seed-ai-float{top:10px;right:10px}.apple-seed-ai-float a{padding:9px 12px;font-size:10px}}
+/* ===== AI ENGINEERING CENTER =====
+   Nút nằm thấp trong nội dung trang và cuộn cùng trang.
+   KHÔNG dùng position: fixed.
+*/
+.apple-seed-ai-float{
+  position:absolute;
+  top:760px;
+  right:24px;
+  z-index:19000;
+  display:block!important;
+}
+
+.apple-seed-ai-float a{
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  padding:12px 18px;
+  min-height:46px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#176fe5,#3da8ff);
+  color:#fff;
+  text-decoration:none;
+  font-weight:900;
+  font-size:12px;
+  letter-spacing:.02em;
+  box-shadow:0 12px 28px rgba(23,111,229,.24);
+  border:1px solid rgba(255,255,255,.78);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  transition:transform .2s ease,box-shadow .2s ease,filter .2s ease;
+}
+
+.apple-seed-ai-float a:hover{
+  transform:translateY(-2px);
+  filter:brightness(1.03);
+  box-shadow:0 16px 34px rgba(23,111,229,.30);
+}
+
+@media(max-width:900px){
+  .apple-seed-ai-float{
+    top:700px;
+    right:18px;
+  }
+}
+
+@media(max-width:560px){
+  .apple-seed-ai-float{
+    top:520px;
+    right:12px;
+  }
+
+  .apple-seed-ai-float a{
+    padding:9px 13px;
+    min-height:40px;
+    font-size:10px;
+    gap:6px;
+  }
+}
+.apple-seed-ai-float a{padding:9px 12px;font-size:10px}}
 
 /* ===== TOP YOUTUBE ENGINE ===== */
 .youtube-top-section{padding:22px 24px 10px;background:transparent;}
