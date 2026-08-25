@@ -284,135 +284,128 @@ function memberOnAuthStateChange(callback){
    ĐĂNG KÝ
    ========================================================= */
 
-async function memberSignUp(
-  fullName,
-  phone,
-  email,
-  password
-){
+async function memberSignUp(fullName, phone, email, password){
 
   memberCheckSB();
 
-
-  const cleanName =
-    String(
-      fullName || ''
-    ).trim();
-
-
-  const cleanPhone =
-    String(
-      phone || ''
-    ).trim();
-
-
-  const cleanEmail =
-    String(
-      email || ''
-    )
-      .trim()
-      .toLowerCase();
-
-
-  const cleanPassword =
-    String(
-      password || ''
-    );
-
+  const cleanName = String(fullName || '').trim();
+  const cleanPhone = String(phone || '').trim();
+  const cleanEmail = String(email || '').trim().toLowerCase();
+  const cleanPassword = String(password || '');
 
   if(!cleanName){
-
-    throw new Error(
-      'Vui lòng nhập họ và tên.'
-    );
-
+    throw new Error('Vui lòng nhập họ và tên.');
   }
-
 
   if(!cleanPhone){
-
-    throw new Error(
-      'Vui lòng nhập số điện thoại.'
-    );
-
+    throw new Error('Vui lòng nhập số điện thoại.');
   }
-
 
   if(!cleanEmail){
-
-    throw new Error(
-      'Vui lòng nhập email.'
-    );
-
+    throw new Error('Vui lòng nhập email.');
   }
 
+  if(!cleanPassword){
+    throw new Error('Vui lòng nhập mật khẩu.');
+  }
 
   if(cleanPassword.length < 6){
-
-    throw new Error(
-      'Mật khẩu phải có ít nhất 6 ký tự.'
-    );
-
+    throw new Error('Mật khẩu phải có ít nhất 6 ký tự.');
   }
 
+  /*
+    QUAN TRỌNG:
+    Sau khi khách bấm link xác nhận email,
+    Supabase sẽ đưa khách quay về website Apple Seed.
+  */
+  const emailRedirectTo =
+    window.location.origin + '/index.html';
 
-  const result =
-    await memberSB.auth.signUp({
+  console.log(
+    'Apple Seed signup redirect:',
+    emailRedirectTo
+  );
 
-      email:
-        cleanEmail,
+  const result = await memberSB.auth.signUp({
 
-      password:
-        cleanPassword,
+    email: cleanEmail,
 
-      options: {
+    password: cleanPassword,
 
-        data: {
+    options: {
 
-          full_name:
-            cleanName,
+      emailRedirectTo: emailRedirectTo,
 
-          phone:
-            cleanPhone
-
-        }
-
+      data: {
+        full_name: cleanName,
+        phone: cleanPhone
       }
 
-    });
+    }
 
+  });
 
   if(result.error){
 
     console.error(
-      'Apple Seed signup:',
+      'Apple Seed signup error:',
       result.error
     );
 
-    throw result.error;
-  }
-
-
-  /*
-    Nếu Supabase cho session ngay
-    thì tạo profile.
-  */
-
-  if(
-    result.data?.user &&
-    result.data?.session
-  ){
-
-    await memberEnsureProfile(
-      result.data.user,
-      cleanName,
-      cleanPhone
+    throw new Error(
+      result.error.message ||
+      'Không thể tạo tài khoản.'
     );
 
   }
 
+  const user = result.data?.user;
+  const session = result.data?.session;
 
-  return result.data;
+  if(!user){
+
+    throw new Error(
+      'Không tạo được tài khoản.'
+    );
+
+  }
+
+  /*
+    Nếu Supabase đang yêu cầu xác nhận email,
+    session sẽ null.
+  */
+
+  if(session){
+
+    try{
+
+      await memberEnsureProfile(
+        user,
+        cleanName,
+        cleanPhone
+      );
+
+    }catch(error){
+
+      console.warn(
+        'Apple Seed profile:',
+        error
+      );
+
+    }
+
+  }
+
+  return {
+
+    user: user,
+
+    session: session,
+
+    emailConfirmationRequired:
+      !session
+
+  };
 
 }
 
