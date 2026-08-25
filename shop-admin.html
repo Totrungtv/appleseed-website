@@ -56,7 +56,7 @@ h1,h2,h3,p{margin-top:0}.top h1{margin-bottom:5px}.muted{color:#667085;font-size
 
 /* ===== PRICE VISIBILITY ===== */
 .price-cost{color:#b45309;font-weight:800;background:#fff7ed;padding:3px 7px;border-radius:7px;display:inline-block}
-.price-sale{color:#047857;font-weight:800;background:#ecfdf3;padding:3px 7px;border-radius:7px;display:inline-block}
+.price-replacement{color:#7c3aed;font-weight:850}.price-sale{color:#047857;font-weight:800;background:#ecfdf3;padding:3px 7px;border-radius:7px;display:inline-block}
 </style>
 <!-- STABLE GUARD: configuration snapshot + icon picker; website deployment rollback remains backend-controlled. -->
 </head>
@@ -345,7 +345,7 @@ $("refreshWebLeads").onclick=()=>loadWebLeads();
 $("webLeadSearch").oninput=renderWebLeads;
 $("webLeadStatus").onchange=renderWebLeads;
 
-async function loadInventory(){let r=await sb.from("inventory_items").select("*").order("id",{ascending:false});if(r.error){$("inventoryList").innerHTML="<div class='notice'>Chưa có bảng inventory_items. Hãy chạy <b>supabase-shop.sql</b>.</div>";return}let d=r.data||[];$("inventoryList").innerHTML=`<div class="table-wrap"><table><tr><th>ID</th><th>Linh kiện</th><th>Nhóm</th><th>Mã</th><th>Tồn</th><th>Giá nhập</th><th>Giá bán</th><th></th></tr>${d.map(x=>`<tr><td>#${x.id}</td><td>${esc(x.name)}</td><td>${esc(x.category||"Linh kiện khác")}</td><td>${esc(x.sku||"")}</td><td>${x.quantity}</td><td><span class="price-cost">${money(x.cost_price)}</span></td><td><span class="price-sale">${money(x.sale_price)}</span></td><td><button class="btn" onclick='editStock(${JSON.stringify(x).replace(/'/g,"&#39;")})'>Sửa</button> <button class="btn danger" onclick="deleteStock(${x.id})">🗑️ Xóa</button></td></tr>`).join("")}</table></div>`}
+async function loadInventory(){let r=await sb.from("inventory_items").select("*").order("id",{ascending:false});if(r.error){$("inventoryList").innerHTML="<div class='notice'>Chưa có bảng inventory_items. Hãy chạy <b>supabase-shop.sql</b>.</div>";return}let d=r.data||[];$("inventoryList").innerHTML=`<div class="table-wrap"><table><tr><th>ID</th><th>Linh kiện</th><th>Nhóm</th><th>Mã</th><th>Tồn</th><th>Giá nhập</th><th>Giá bán</th><th>Giá thay thế</th><th></th></tr>${d.map(x=>`<tr><td>#${x.id}</td><td>${esc(x.name)}</td><td>${esc(x.category||"Linh kiện khác")}</td><td>${esc(x.sku||"")}</td><td>${x.quantity}</td><td><span class="price-cost">${money(x.cost_price)}</span></td><td><span class="price-sale">${money(x.sale_price)}</span></td><td><span class="price-replacement">${money(x.replacement_price)}</span></td><td><button class="btn" onclick='editStock(${JSON.stringify(x).replace(/'/g,"&#39;")})'>Sửa</button> <button class="btn danger" onclick="deleteStock(${x.id})">🗑️ Xóa</button></td></tr>`).join("")}</table></div>`}
 window.deleteStock=async id=>{
   if(!confirm("XÓA linh kiện kho #"+id+"?")) return;
   let r=await sb.from("inventory_items").delete().eq("id",id);
@@ -353,7 +353,7 @@ window.deleteStock=async id=>{
   closeModal(); loadInventory(); loadDashboard();
 };
 $("newStock").onclick=()=>openStockForm();window.editStock=x=>openStockForm(x);
-function openStockForm(x={}){openModal(x.id?"Sửa linh kiện":"Nhập linh kiện",`<form id="stockForm" class="formgrid"><label>Tên linh kiện<input id="iName" value="${esc(x.name||"")}" required></label><label>Mã SKU<input id="iSku" value="${esc(x.sku||"")}"></label><label>Nhóm linh kiện<select id="iCategory"><option>Màn hình</option><option>Pin</option><option>Mặt kính / lưng</option><option>Camera</option><option>Cổng sạc</option><option>Loa / Mic</option><option>Face ID</option><option>Linh kiện khác</option></select></label><label>Số lượng<input id="iQty" type="number" value="${x.quantity||0}"></label><label>Giá nhập<input id="iCost" type="number" value="${x.cost_price||0}"></label><label>Giá bán<input id="iSale" type="number" value="${x.sale_price||0}"></label><label class="full">Ghi chú<input id="iNote" value="${esc(x.note||"")}"></label><div class="full right"><button class="btn primary">💾 Lưu</button></div></form>`);$("iCategory").value=x.category||"Linh kiện khác";$("stockForm").onsubmit=async e=>{e.preventDefault();let p={name:$("iName").value.trim(),sku:$("iSku").value.trim(),category:$("iCategory").value,quantity:Number($("iQty").value||0),cost_price:Number($("iCost").value||0),sale_price:Number($("iSale").value||0),note:$("iNote").value.trim()};let z=await(x.id?sb.from("inventory_items").update(p).eq("id",x.id):sb.from("inventory_items").insert(p));if(z.error){alert(z.error.message);return}closeModal();loadInventory();loadDashboard()}}
+function openStockForm(x={}){openModal(x.id?"Sửa linh kiện":"Nhập linh kiện",`<form id="stockForm" class="formgrid"><label>Tên linh kiện<input id="iName" value="${esc(x.name||"")}" required></label><label>Mã SKU<input id="iSku" value="${esc(x.sku||"")}"></label><label>Nhóm linh kiện<select id="iCategory"><option>Màn hình</option><option>Pin</option><option>Mặt kính / lưng</option><option>Camera</option><option>Cổng sạc</option><option>Loa / Mic</option><option>Face ID</option><option>Linh kiện khác</option></select></label><label>Số lượng<input id="iQty" type="number" value="${x.quantity||0}"></label><label>Giá nhập<input id="iCost" type="number" value="${x.cost_price||0}"></label><label>Giá bán<input id="iSale" type="number" value="${x.sale_price||0}"></label><label class="full">Ghi chú<input id="iNote" value="${esc(x.note||"")}"></label><div class="full right"><button class="btn primary">💾 Lưu</button></div></form>`);$("iCategory").value=x.category||"Linh kiện khác";$("stockForm").onsubmit=async e=>{e.preventDefault();let p={name:$("iName").value.trim(),sku:$("iSku").value.trim(),category:$("iCategory").value,quantity:Number($("iQty").value||0),cost_price:Number($("iCost").value||0),sale_price:Number($("iSale").value||0),replacement_price:Number($("iReplacement").value||0),note:$("iNote").value.trim()};let z=await(x.id?sb.from("inventory_items").update(p).eq("id",x.id):sb.from("inventory_items").insert(p));if(z.error){alert(z.error.message);return}closeModal();loadInventory();loadDashboard()}}
 async function deleteTransaction(id){
   if(!confirm("Xóa giao dịch này?")) return;
 
@@ -749,7 +749,7 @@ async function loadParts(){
   let d=r.data||[];
   const render=arr=>arr.length?arr.map(x=>`<div class="listitem">
     <div style="margin-bottom:8px"><b>${esc(x.name)}</b>${x.sku?' · <span class="muted">'+esc(x.sku)+'</span>':''}</div>
-    <div class="small muted">${x.quantity||0} cái · Giá nhập <span class="price-cost">${money(x.cost_price)}</span>${x.note?' · '+esc(x.note):''}</div>
+    <div class="small muted">${x.quantity||0} cái · Nhập <span class="price-cost">${money(x.cost_price)}</span> · Bán <span class="price-sale">${money(x.sale_price)}</span> · Thay thế <span class="price-replacement">${money(x.replacement_price)}</span>${x.note?' · '+esc(x.note):''}</div>
     <div class="actions" style="margin-top:10px"><button class="btn" onclick='editPart(${JSON.stringify(x).replace(/'/g,"&#39;")})'>Sửa</button><button class="btn danger" onclick="deletePart(${x.id})">🗑️ Xóa</button></div>
   </div>`).join(""):"<div class='listitem muted'>Chưa có dữ liệu trong trang này.</div>";
   $("partsList").innerHTML=`<div class="listbox"><h3>${esc((partPages.find(p=>p.name===activePartPage)||{}).icon||"🧩")} ${esc(activePartPage)}</h3>${render(d)}</div>`;
@@ -836,7 +836,7 @@ async function restoreStablePartSnapshot(){
     if(current.error)throw current.error;
     const wantedIds=new Set(snap.parts.map(x=>Number(x.id)).filter(Number.isFinite));
     for(const row of snap.parts){
-      const payload={name:row.name||'',sku:row.sku||'',category:row.category||'Linh kiện khác',status:row.status||'in_stock',quantity:Number(row.quantity||0),cost_price:Number(row.cost_price||0),note:row.note||''};
+      const payload={name:row.name||'',sku:row.sku||'',category:row.category||'Linh kiện khác',status:row.status||'in_stock',quantity:Number(row.quantity||0),cost_price:Number(row.cost_price||0),sale_price:Number(row.sale_price||0),replacement_price:Number(row.replacement_price||0),note:row.note||''};
       if(row.id!=null){
         const r=await sb.from('shop_parts').update(payload).eq('id',row.id);
         if(r.error)throw r.error;
@@ -987,6 +987,8 @@ function openPartForm(x={}){
   <label>Phân loại kho<select id="ptStatus"><option value="in_stock">Tồn kho</option><option value="need">Cần nhập</option></select></label>
   <label>Số lượng<input id="ptQty" type="number" min="0" value="${x.quantity||0}"></label>
   <label>Giá nhập<input id="ptCost" type="number" min="0" value="${x.cost_price||0}"></label>
+  <label>Giá bán<input id="ptSale" type="number" min="0" value="${x.sale_price||0}"></label>
+  <label>Giá thay thế<input id="ptReplacement" type="number" min="0" value="${x.replacement_price||0}"></label>
   <label class="full">Ghi chú<input id="ptNote" value="${esc(x.note||"")}"></label>
   <div class="full right"><button class="btn primary">💾 Lưu linh kiện</button></div></form>`);
   $("ptCategory").value=x.category||activePartPage;
@@ -1001,7 +1003,7 @@ function openPartForm(x={}){
   if(x.status)$("ptStatus").value=x.status;
   $("partForm").onsubmit=async e=>{
     e.preventDefault();
-    let q={name:$("ptName").value.trim(),sku:$("ptSku").value.trim(),category:$("ptCategory").value,status:$("ptStatus").value,quantity:Number($("ptQty").value||0),cost_price:Number($("ptCost").value||0),note:$("ptNote").value.trim()};
+    let q={name:$("ptName").value.trim(),sku:$("ptSku").value.trim(),category:$("ptCategory").value,status:$("ptStatus").value,quantity:Number($("ptQty").value||0),cost_price:Number($("ptCost").value||0),sale_price:Number($("ptSale").value||0),replacement_price:Number($("ptReplacement").value||0),note:$("ptNote").value.trim()};
     let z=await(x.id?sb.from("shop_parts").update(q).eq("id",x.id):sb.from("shop_parts").insert(q));
     if(z.error){alert(z.error.message);return}
     activePartPage=q.category;
@@ -1016,11 +1018,11 @@ const GLOBAL_SEARCH_TYPES=[
   {key:'customers',title:'👤 Khách hàng',tab:'customers',table:'customers',fields:['name','phone','address','note'],label:r=>`${r.name||''} · ${r.phone||''}`,meta:r=>r.address||r.note||'',edit:r=>`editCustomer(${JSON.stringify(r).replace(/</g,'\\u003c').replace(/'/g,'&#39;')})`},
   {key:'repairs',title:'🔧 Phiếu sửa chữa',tab:'repairs',table:'repair_orders',fields:['device_model','imei','customer_issue','device_condition','technician','note'],label:r=>`#${r.id} · ${r.device_model||''}`,meta:r=>`${r.imei||''}${r.customer_issue?' · '+r.customer_issue:''}`,edit:r=>`editRepair(${JSON.stringify(r).replace(/</g,'\\u003c').replace(/'/g,'&#39;')})`},
   {key:'webLeads',title:'🌐 Khách từ website',tab:'webLeads',table:'store_customer_leads',fields:['customer_name','phone','product_name','note'],label:r=>`${r.customer_name||''} · ${r.phone||''}`,meta:r=>r.product_name||r.note||'',edit:null},
-  {key:'inventory',title:'📦 Kho',tab:'inventory',table:'inventory_items',fields:['name','sku','category','note'],label:r=>`${r.name||''}${r.sku?' · '+r.sku:''}`,meta:r=>`${r.category||''} · Tồn ${r.quantity??0}`,edit:r=>`editStock(${JSON.stringify(r).replace(/</g,'\\u003c').replace(/'/g,'&#39;')})`},
+  {key:'inventory',title:'📦 Kho',tab:'inventory',table:'inventory_items',fields:['name','sku','category','note'],label:r=>`${r.name||''}${r.sku?' · '+r.sku:''}`,meta:r=>`${r.category||''} · Tồn ${r.quantity??0} · Nhập ${money(r.cost_price)} · Bán ${money(r.sale_price)} · Thay thế ${money(r.replacement_price)}`,edit:r=>`editStock(${JSON.stringify(r).replace(/</g,'\\u003c').replace(/'/g,'&#39;')})`},
   {key:'finance',title:'💰 Thu chi',tab:'finance',table:'store_transactions',fields:['description','payment_method','type'],label:r=>`${r.type==='income'?'THU':'CHI'} · ${r.description||''}`,meta:r=>`${money(r.amount)} · ${r.payment_method||''}`,edit:null},
   {key:'warranty',title:'🛡️ Bảo hành',tab:'warranty',table:'warranty_orders',fields:['warranty_code','device_model','coverage','note'],label:r=>`${r.warranty_code||('#BH'+r.id)} · ${r.device_model||''}`,meta:r=>`${r.coverage||''} · Hết ${r.end_date||''}`,edit:r=>`editWarranty(${JSON.stringify(r).replace(/</g,'\\u003c').replace(/'/g,'&#39;')})`},
   {key:'pans',title:'🛠️ Pan thực tế',tab:'pans',table:'pan_cases',fields:['platform','model','title','symptoms','area','result','fix','note'],label:r=>`${r.model||''} · ${r.title||''}`,meta:r=>`${r.area||''}${r.result?' · '+r.result:''}`,edit:r=>`editPan(${JSON.stringify(r).replace(/</g,'\\u003c').replace(/'/g,'&#39;')})`},
-  {key:'parts',title:'🧩 Linh kiện',tab:'parts',table:'shop_parts',fields:['name','sku','category','note'],label:r=>`${r.name||''}${r.sku?' · '+r.sku:''}`,meta:r=>`${r.category||''} · Tồn ${r.quantity??0} · Giá nhập ${money(r.cost_price)}`,edit:r=>`editPart(${JSON.stringify(r).replace(/</g,'\\u003c').replace(/'/g,'&#39;')})`}
+  {key:'parts',title:'🧩 Linh kiện',tab:'parts',table:'shop_parts',fields:['name','sku','category','note'],label:r=>`${r.name||''}${r.sku?' · '+r.sku:''}`,meta:r=>`${r.category||''} · Tồn ${r.quantity??0} · Nhập ${money(r.cost_price)} · Bán ${money(r.sale_price)} · Thay thế ${money(r.replacement_price)}`,edit:r=>`editPart(${JSON.stringify(r).replace(/</g,'\\u003c').replace(/'/g,'&#39;')})`}
 ];
 window.__globalSearchResults=[];
 function gsClean(v){return String(v??'').replace(/[\\%_*]/g,' ').trim();}
