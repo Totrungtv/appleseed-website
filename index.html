@@ -2794,6 +2794,87 @@ form.onsubmit=async e=>{
 })();
 </script>
 
+
+<!-- APPLE SEED STABLE RELEASE GUARD v1
+     UI-only safety layer. Does not alter existing auth/CMS/AI logic.
+     It shows a customer-safe message during an update failure/rollback.
+-->
+<style id="apple-seed-stable-guard-style">
+  #appleSeedRollbackOverlay{
+    position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+    padding:22px;background:rgba(6,18,38,.88);backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);z-index:2147483646;color:#fff;
+  }
+  #appleSeedRollbackOverlay.show{display:flex}
+  #appleSeedRollbackCard{
+    width:min(560px,100%);padding:30px 26px;border-radius:22px;
+    background:linear-gradient(180deg,#10294b,#0b1c34);
+    border:1px solid rgba(255,255,255,.12);
+    box-shadow:0 30px 90px rgba(0,0,0,.38);text-align:center;
+  }
+  #appleSeedRollbackIcon{font-size:42px;margin-bottom:12px}
+  #appleSeedRollbackTitle{margin:0;font-size:24px;font-weight:900;letter-spacing:-.4px}
+  #appleSeedRollbackText{margin:12px auto 0;max-width:470px;color:rgba(235,243,255,.82);line-height:1.65;font-size:14px}
+  #appleSeedRollbackState{margin-top:18px;font-weight:850;color:#8bc8ff}
+  #appleSeedRollbackDone{display:none;margin-top:18px;padding:10px 12px;border-radius:12px;background:rgba(57,189,120,.12);border:1px solid rgba(57,189,120,.24);color:#b8ffd9;font-weight:850}
+  @media(max-width:560px){
+    #appleSeedRollbackCard{padding:25px 18px}
+    #appleSeedRollbackTitle{font-size:21px}
+  }
+</style>
+<div id="appleSeedRollbackOverlay" aria-live="polite" aria-modal="true" role="alertdialog">
+  <div id="appleSeedRollbackCard">
+    <div id="appleSeedRollbackIcon">⚠️</div>
+    <h2 id="appleSeedRollbackTitle">Apple Seed đang khôi phục hệ thống</h2>
+    <p id="appleSeedRollbackText">
+      Website vừa cập nhật nhưng kiểm tra hệ thống không đạt.
+      Website sẽ quay về bản ổn định gần nhất để đảm bảo hoạt động bình thường.
+    </p>
+    <div id="appleSeedRollbackState">🔄 Đang khôi phục bản ổn định…</div>
+    <div id="appleSeedRollbackDone">✅ Website đã được khôi phục về bản ổn định.</div>
+  </div>
+</div>
+<script>
+(function(){
+  const overlay=document.getElementById('appleSeedRollbackOverlay');
+  const icon=document.getElementById('appleSeedRollbackIcon');
+  const title=document.getElementById('appleSeedRollbackTitle');
+  const text=document.getElementById('appleSeedRollbackText');
+  const state=document.getElementById('appleSeedRollbackState');
+  const done=document.getElementById('appleSeedRollbackDone');
+  if(!overlay) return;
+
+  window.AppleSeedReleaseGuard={
+    showFailure(message){
+      icon.textContent='⚠️';
+      title.textContent='Apple Seed đang gặp sự cố cập nhật';
+      text.textContent=message || 'Website vừa cập nhật nhưng kiểm tra hệ thống không đạt. Website sẽ quay về bản ổn định gần nhất để đảm bảo hoạt động bình thường.';
+      state.textContent='🔄 Đang khôi phục bản ổn định…';
+      done.style.display='none';
+      overlay.classList.add('show');
+      document.documentElement.style.overflow='hidden';
+    },
+    showRollbackStarted(){
+      this.showFailure();
+    },
+    showRestored(versionLabel){
+      icon.textContent='✅';
+      title.textContent='Website đã được khôi phục';
+      text.textContent='Hệ thống đã quay về bản ổn định gần nhất. Các chức năng chính đang được kiểm tra lại.';
+      state.textContent=versionLabel ? ('Bản ổn định: '+versionLabel) : 'Bản ổn định gần nhất';
+      done.style.display='block';
+      setTimeout(()=>{
+        overlay.classList.remove('show');
+        document.documentElement.style.overflow='';
+      },2600);
+    },
+    hide(){
+      overlay.classList.remove('show');
+      document.documentElement.style.overflow='';
+    }
+  };
+})();
+</script>
 </body>
 </html>
 <footer class="apple-seed-copyright" aria-label="Bản quyền Apple Seed">
