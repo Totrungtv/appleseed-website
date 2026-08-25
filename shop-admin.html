@@ -154,11 +154,11 @@ h1,h2,h3,p{margin-top:0}.top h1{margin-bottom:5px}.muted{color:#667085;font-size
 <section id="parts" class="view hidden">
 <div class="panel">
   <div class="parts-toolbar">
-    <div><h2>🧩 Linh kiện</h2><div class="muted">Mỗi nhóm là một trang riêng. Có thể tạo thêm trang quản lý khi cửa hàng phát triển.</div></div>
+    <div><h2>🧩 Linh kiện</h2><div class="muted">📱 iPhone là khu vực chính: chọn tất cả model bên trong để quản lý linh kiện. Các trang khác vẫn giữ riêng theo nhóm linh kiện.</div></div>
     <div class="actions"><button class="btn" id="managePartPages">⚙️ Quản lý trang</button><button class="btn primary" id="newPart">＋ Thêm linh kiện</button></div>
   </div>
   <div id="partsPages" class="parts-pages"></div>
-  <div class="iphone-model-panel">
+  <div class="iphone-model-panel" id="iphoneModelPanel">
     <div class="iphone-model-head">
       <div><div class="iphone-model-title">📱 iPhone</div><div class="iphone-model-sub" id="iphoneModelMapStatus">Tất cả iPhone</div></div>
       <div class="actions">
@@ -167,7 +167,7 @@ h1,h2,h3,p{margin-top:0}.top h1{margin-bottom:5px}.muted{color:#667085;font-size
       </div>
     </div>
     <div class="iphone-model-tools"><input id="iphoneModelSearch" class="iphone-model-search" placeholder="Tìm model: 14 Pro Max, 15 Pro..." /><button class="btn" id="iphoneModelClear" type="button">✕ Bỏ lọc</button></div>
-    <div id="iphoneModelMap" class="iphone-model-map"></div>
+    <div id="iphoneModelMap" class="iphone-model-map"></div><div class="notice" style="margin-top:10px">💡 Bấm <b>Tất cả iPhone</b> để xem toàn bộ linh kiện iPhone. Chọn từng model để lọc đúng model. Dữ liệu không bị xóa khi đổi bộ lọc.</div>
   </div>
   <div id="partsList"></div>
 </div>
@@ -697,7 +697,7 @@ const DEFAULT_PART_PAGES=[
   {name:"Linh kiện khác",icon:"🧩",sort_order:80}
 ];
 let partPages=[];
-let activePartPage="Màn hình";
+let activePartPage="iPhone";
 let partPagesReady=false;
 
 function normalizePartPages(rows){
@@ -740,40 +740,61 @@ async function loadPartPages(){
 function renderPartPages(){
   let el=$("partsPages");
   if(!el)return;
-  el.innerHTML=partPages.map(p=>`<button class="part-page ${p.name===activePartPage?"active":""}" onclick="selectPartPage('${esc(p.name).replace(/'/g,"&#039;")}')">${esc(p.icon||"🧩")} ${esc(p.name)}</button>`).join("")
-    + `<button class="part-page manage" onclick="openPartPageManager()">⚙️ Quản lý trang</button>`;
+  const iphoneBtn=`<button class="part-page ${activePartPage==='iPhone'?"active":""}" onclick="selectPartPage('iPhone')">📱 iPhone</button>`;
+  const categoryBtns=partPages.map(p=>`<button class="part-page ${p.name===activePartPage?"active":""}" onclick="selectPartPage('${esc(p.name).replace(/'/g,"&#039;")}')">${esc(p.icon||"🧩")} ${esc(p.name)}</button>`).join('');
+  el.innerHTML=iphoneBtn+categoryBtns+`<button class="part-page manage" onclick="openPartPageManager()">⚙️ Quản lý trang</button>`;
 }
 window.selectPartPage=async name=>{
   activePartPage=name;
+  activeDeviceModel='';
   renderPartPages();
   await loadParts();
 };
 async function loadParts(){
   let pageErr=await loadPartPages();
-  if(pageErr){
-    if(!$('partsList').innerHTML) $('partsList').innerHTML='<div class="notice">Chưa có bảng <b>shop_part_categories</b>. Đang dùng danh sách trang tạm trên máy này. Muốn đồng bộ trang giữa các máy, chạy file <b>apple-seed-shop-part-pages.sql</b> trong Supabase.</div>';
+  if(pageErr && !$("partsList").innerHTML){
+    $("partsList").innerHTML='<div class="notice">Chưa có bảng <b>shop_part_categories</b>. Đang dùng danh sách trang tạm trên máy này.</div>';
   }
-  if(!partPages.some(x=>x.name===activePartPage)) activePartPage=partPages[0]?.name||'Màn hình';
+  if(activePartPage!=="iPhone" && !partPages.some(x=>x.name===activePartPage)) activePartPage=partPages[0]?.name||'Màn hình';
   renderPartPages();
-  await loadIphoneModels();
-  await renderIphoneModelMap();
+
+  const isIphoneWorkspace=activePartPage==='iPhone';
+  const modelPanel=$("iphoneModelPanel");
+  if(modelPanel) modelPanel.style.display=isIphoneWorkspace?'block':'none';
+
+  if(isIphoneWorkspace){
+    await loadIphoneModels();
+    await renderIphoneModelMap();
+    let q=sb.from('shop_parts').select('*').order('created_at',{ascending:false}).limit(5000);
+    if(activeDeviceModel) q=q.eq('device_model',activeDeviceModel);
+    const r=await q;
+    if(r.error){
+      $('partsList').innerHTML='<div class="notice">Không tải được dữ liệu linh kiện: '+esc(r.error.message||'Lỗi')+'</div>';
+      return;
+    }
+    let d=(r.data||[]).filter(x=>{
+      const m=String(x.device_model||'').trim();
+      return m && m!==UNKNOWN_MODEL_LABEL;
+    });
+    renderPartsList(d, '📱 iPhone', activeDeviceModel||ALL_MODEL_LABEL);
+    return;
+  }
 
   let q=sb.from('shop_parts').select('*').eq('category',activePartPage).order('created_at',{ascending:false}).limit(500);
-  if(activeDeviceModel) q=q.eq('device_model',activeDeviceModel);
   let r=await q;
   if(r.error){
     $('partsList').innerHTML='<div class="notice">Chưa có bảng <b>shop_parts</b>. Hãy chạy lại file <b>supabase-shop.sql</b> trong Supabase.</div>';
     return;
   }
-  let d=r.data||[];
+  renderPartsList(r.data||[], ((partPages.find(p=>p.name===activePartPage)||{}).icon||'🧩')+' '+activePartPage, activePartPage);
+}
+function renderPartsList(d,title,filterLabel){
   const render=arr=>arr.length?arr.map(x=>`<div class="listitem">
-    <div class="model-row"><div><b>${esc(x.name)}</b>${x.sku?' · <span class="muted">'+esc(x.sku)+'</span>':''}${x.device_model?'<span class="model-badge">'+esc(x.device_model)+'</span>':'<span class="model-badge">Chưa gán model</span>'}</div></div>
+    <div class="model-row"><div><b>${esc(x.name)}</b>${x.sku?' · <span class="muted">'+esc(x.sku)+'</span>':''}${x.device_model?'<span class="model-badge">'+esc(x.device_model)+'</span>':''}</div></div>
     <div class="small muted">${x.quantity||0} cái · Nhập <span class="price-cost">${money(x.cost_price)}</span> · Bán <span class="price-sale">${money(x.sale_price)}</span> · Thay thế <span class="price-replacement">${money(x.replacement_price)}</span>${x.note?' · '+esc(x.note):''}</div>
     <div class="actions" style="margin-top:10px"><button class="btn" onclick='editPart(${JSON.stringify(x).replace(/'/g,"&#39;")})'>Sửa</button><button class="btn danger" onclick="deletePart(${x.id})">🗑️ Xóa</button></div>
   </div>`).join(''):'<div class="listitem muted">Chưa có dữ liệu cho bộ lọc này.</div>';
-  const pageTitle=((partPages.find(p=>p.name===activePartPage)||{}).icon||'🧩')+' '+activePartPage;
-  const modelTitle=activeDeviceModel||ALL_MODEL_LABEL;
-  $('partsList').innerHTML=`<div class="listbox"><div class="parts-list-head" style="padding:14px 16px;background:#f8fafc;border-bottom:1px solid #e4e7ec"><h3 style="margin:0">${esc(pageTitle)}</h3><div class="model-meta">Bộ lọc: <b>${esc(modelTitle)}</b> · ${d.length} linh kiện</div></div>${render(d)}</div>`;
+  $('partsList').innerHTML=`<div class="listbox"><div class="parts-list-head" style="padding:14px 16px;background:#f8fafc;border-bottom:1px solid #e4e7ec"><h3 style="margin:0">${esc(title)}</h3><div class="model-meta">Bộ lọc: <b>${esc(filterLabel)}</b> · ${d.length} linh kiện</div></div>${render(d)}</div>`;
 }
 async function loadIphoneModels(){
   try{
@@ -793,15 +814,16 @@ async function renderIphoneModelMap(){
   const r=await sb.from('shop_parts').select('device_model,category').limit(5000);
   const rows=r.error?[]:(r.data||[]);
   const count={};
-  rows.forEach(x=>{const m=x.device_model||UNKNOWN_MODEL_LABEL;count[m]=(count[m]||0)+1;});
+  const known=new Set(models.map(x=>x.name));
+  rows.forEach(x=>{const m=String(x.device_model||'').trim(); if(m && known.has(m)) count[m]=(count[m]||0)+1;});
   window.__iphonePartCounts=count;
   const visible=models.filter(x=>!search||x.name.toLowerCase().includes(search));
-  const allCount=rows.length;
+  const allCount=rows.filter(x=>{const m=String(x.device_model||'').trim(); return m && known.has(m);}).length;
   root.innerHTML=`<div class="iphone-model-btn ${activeDeviceModel===''?'active':''}" data-model="">📱 ${ALL_MODEL_LABEL}<small>${allCount} linh kiện</small></div>`+
     visible.map(x=>`<div class="iphone-model-btn ${activeDeviceModel===x.name?'active':''}" data-model="${esc(x.name)}">${esc(x.name)}<small>${count[x.name]||0} linh kiện</small></div>`).join('')+
     `<div class="iphone-model-btn ${activeDeviceModel===UNKNOWN_MODEL_LABEL?'active':''}" data-model="${esc(UNKNOWN_MODEL_LABEL)}">🧩 ${UNKNOWN_MODEL_LABEL}<small>${count[UNKNOWN_MODEL_LABEL]||0} linh kiện</small></div>`;
   root.querySelectorAll('.iphone-model-btn').forEach(btn=>btn.onclick=async()=>{activeDeviceModel=btn.dataset.model||'';await renderIphoneModelMap();await loadParts();});
-  const t=$('iphoneModelMapStatus');if(t)t.textContent=`${activeDeviceModel||ALL_MODEL_LABEL} · ${rows.length} linh kiện toàn hệ thống`;
+  const t=$('iphoneModelMapStatus');if(t)t.textContent=`${activeDeviceModel||ALL_MODEL_LABEL} · ${activeDeviceModel?count[activeDeviceModel]||0:allCount} linh kiện`;
 }
 async function openIphoneModelForm(){
   openModal('＋ Thêm mẫu iPhone mới',`<form id="iphoneModelForm" class="formgrid">
@@ -947,7 +969,7 @@ async function restoreStablePartSnapshot(){
     }
     partPages=snap.pages.map(x=>({...x}));
     localStorage.setItem('appleSeedPartPages',JSON.stringify(partPages));
-    activePartPage=partPages[0]?.name||'Màn hình';
+    activePartPage='iPhone';
     await loadPartPages();
     await loadParts();
     updateStableGuard();
@@ -1087,7 +1109,7 @@ function openPartForm(x={}){
   <label>Giá thay thế<input id="ptReplacement" type="number" min="0" value="${x.replacement_price||0}"></label>
   <label class="full">Ghi chú<input id="ptNote" value="${esc(x.note||'')}"></label>
   <div class="full right"><button class="btn primary">💾 Lưu linh kiện</button></div></form>`);
-  $('ptCategory').value=x.category||activePartPage;
+  $('ptCategory').value=x.category||(partPages[0]?.name||'Màn hình');
   $('ptModel').value=x.device_model||activeDeviceModel||'';
   const makePartSku=()=>{
     const prefix=String($('ptCategory').value||'PK').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z0-9]/g,'').slice(0,3).toUpperCase()||'PK';
@@ -1104,7 +1126,7 @@ function openPartForm(x={}){
     let q={name:$('ptName').value.trim(),sku:$('ptSku').value.trim(),category:$('ptCategory').value,device_model:$('ptModel').value||UNKNOWN_MODEL_LABEL,status:$('ptStatus').value,quantity:Number($('ptQty').value||0),cost_price:Number($('ptCost').value||0),sale_price:Number($('ptSale').value||0),replacement_price:Number($('ptReplacement').value||0),note:$('ptNote').value.trim()};
     let z=await(x.id?sb.from('shop_parts').update(q).eq('id',x.id):sb.from('shop_parts').insert(q));
     if(z.error){alert('Không lưu được linh kiện: '+z.error.message);return}
-    activePartPage=q.category; activeDeviceModel=q.device_model===UNKNOWN_MODEL_LABEL?'':q.device_model;
+    activePartPage = activePartPage==='iPhone' ? 'iPhone' : q.category; activeDeviceModel=q.device_model===UNKNOWN_MODEL_LABEL?'':q.device_model;
     closeModal();await loadParts();loadDashboard();
     await saveStablePartSnapshot(x.id?'Stable sau khi sửa linh kiện':'Stable sau khi thêm linh kiện');
     updateStableGuard();
