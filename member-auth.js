@@ -117,12 +117,6 @@ async function memberEnsureProfile(
       ''
     ).trim();
 
-  /*
-    Lấy profile cũ trước.
-    Không ghi phone rỗng vào customer_members
-    vì bảng đang có CHECK phone_required.
-  */
-
   let existingProfile = null;
 
   try{
@@ -162,25 +156,11 @@ async function memberEnsureProfile(
 
   }
 
-
-  /*
-    Ưu tiên:
-    1. phone truyền vào
-    2. phone metadata
-    3. phone profile cũ
-  */
-
   const finalPhone =
     mobile ||
     String(
       existingProfile?.phone || ''
     ).trim();
-
-
-  /*
-    Chưa có số điện thoại:
-    không upsert để tránh lỗi CHECK.
-  */
 
   if(!finalPhone){
 
@@ -190,7 +170,6 @@ async function memberEnsureProfile(
 
     return existingProfile || null;
   }
-
 
   const payload = {
 
@@ -215,7 +194,6 @@ async function memberEnsureProfile(
 
   };
 
-
   const result =
     await memberSB
       .from('customer_members')
@@ -227,12 +205,7 @@ async function memberEnsureProfile(
         }
       );
 
-
   if(result.error){
-
-    /*
-      Profile lỗi không được làm hỏng đăng nhập.
-    */
 
     console.warn(
       'Apple Seed customer_members:',
@@ -241,7 +214,6 @@ async function memberEnsureProfile(
 
     return null;
   }
-
 
   return result.data;
 }
@@ -284,14 +256,26 @@ function memberOnAuthStateChange(callback){
    ĐĂNG KÝ
    ========================================================= */
 
-async function memberSignUp(fullName, phone, email, password){
+async function memberSignUp(
+  fullName,
+  phone,
+  email,
+  password
+){
 
   memberCheckSB();
 
-  const cleanName = String(fullName || '').trim();
-  const cleanPhone = String(phone || '').trim();
-  const cleanEmail = String(email || '').trim().toLowerCase();
-  const cleanPassword = String(password || '');
+  const cleanName =
+    String(fullName || '').trim();
+
+  const cleanPhone =
+    String(phone || '').trim();
+
+  const cleanEmail =
+    String(email || '').trim().toLowerCase();
+
+  const cleanPassword =
+    String(password || '');
 
   if(!cleanName){
     throw new Error('Vui lòng nhập họ và tên.');
@@ -305,62 +289,73 @@ async function memberSignUp(fullName, phone, email, password){
     throw new Error('Vui lòng nhập email.');
   }
 
-  if(!cleanPassword){
-    throw new Error('Vui lòng nhập mật khẩu.');
-  }
-
   if(cleanPassword.length < 6){
     throw new Error('Mật khẩu phải có ít nhất 6 ký tự.');
   }
 
-  /*
-    QUAN TRỌNG:
-    Sau khi khách bấm link xác nhận email,
-    Supabase sẽ đưa khách quay về website Apple Seed.
-  */
   const emailRedirectTo =
     window.location.origin + '/index.html';
 
-  console.log(
-    'Apple Seed signup redirect:',
-    emailRedirectTo
-  );
+  const result =
+    await memberSB.auth.signUp({
 
-  const result = await memberSB.auth.signUp({
+      email:
+        cleanEmail,
 
-    email: cleanEmail,
+      password:
+        cleanPassword,
 
-    password: cleanPassword,
+      options: {
 
-    options: {
+        emailRedirectTo:
+          emailRedirectTo,
 
-      emailRedirectTo: emailRedirectTo,
+        data: {
 
-      data: {
-        full_name: cleanName,
-        phone: cleanPhone
+          full_name:
+            cleanName,
+
+          phone:
+            cleanPhone
+
+        }
+
       }
 
-    }
-
-  });
+    });
 
   if(result.error){
 
     console.error(
-      'Apple Seed signup error:',
+      'Apple Seed signup:',
       result.error
     );
 
-    throw new Error(
-      result.error.message ||
-      'Không thể tạo tài khoản.'
-    );
+    const msg =
+      String(
+        result.error.message || ''
+      ).toLowerCase();
 
+    if(
+      msg.includes('user already registered') ||
+      msg.includes('already registered') ||
+      msg.includes('email already')
+    ){
+
+      throw new Error(
+        'Tài khoản này đã đăng ký trước đó. Vui lòng đăng nhập hoặc chọn Quên mật khẩu nếu bạn quên mật khẩu.'
+      );
+
+    }
+
+    throw result.error;
   }
 
-  const user = result.data?.user;
-  const session = result.data?.session;
+  const user =
+    result.data?.user || null;
+
+  const session =
+    result.data?.session || null;
 
   if(!user){
 
@@ -371,36 +366,36 @@ async function memberSignUp(fullName, phone, email, password){
   }
 
   /*
-    Nếu Supabase đang yêu cầu xác nhận email,
-    session sẽ null.
+    Supabase có thể không trả lỗi khi email đã tồn tại.
+    Khi đó identities thường rỗng.
   */
+
+  if(
+    Array.isArray(user.identities) &&
+    user.identities.length === 0
+  ){
+
+    throw new Error(
+      'Tài khoản này đã đăng ký trước đó. Vui lòng đăng nhập hoặc chọn Quên mật khẩu nếu bạn quên mật khẩu.'
+    );
+
+  }
 
   if(session){
 
-    try{
-
-      await memberEnsureProfile(
-        user,
-        cleanName,
-        cleanPhone
-      );
-
-    }catch(error){
-
-      console.warn(
-        'Apple Seed profile:',
-        error
-      );
-
-    }
+    await memberEnsureProfile(
+      user,
+      cleanName,
+      cleanPhone
+    );
 
   }
 
   return {
 
-    user: user,
+    user,
 
-    session: session,
+    session,
 
     emailConfirmationRequired:
       !session
@@ -421,7 +416,6 @@ async function memberSignIn(
 
   memberCheckSB();
 
-
   const cleanEmail =
     String(
       email || ''
@@ -429,12 +423,10 @@ async function memberSignIn(
       .trim()
       .toLowerCase();
 
-
   const cleanPassword =
     String(
       password || ''
     );
-
 
   if(!cleanEmail){
 
@@ -444,7 +436,6 @@ async function memberSignIn(
 
   }
 
-
   if(!cleanPassword){
 
     throw new Error(
@@ -452,7 +443,6 @@ async function memberSignIn(
     );
 
   }
-
 
   const result =
     await memberSB.auth.signInWithPassword({
@@ -465,7 +455,6 @@ async function memberSignIn(
 
     });
 
-
   if(result.error){
 
     console.error(
@@ -474,15 +463,10 @@ async function memberSignIn(
     );
 
     throw result.error;
+
   }
 
-
   if(result.data?.user){
-
-    /*
-      Không bắt đăng nhập nhập lại
-      họ tên / số điện thoại.
-    */
 
     await memberEnsureProfile(
       result.data.user
@@ -490,26 +474,23 @@ async function memberSignIn(
 
   }
 
-
   return result.data;
 
 }
 
 
 /* =========================================================
-   ĐĂNG XUẤT - FIX
+   ĐĂNG XUẤT
    ========================================================= */
 
 async function memberLogout(){
 
   memberCheckSB();
 
-
   try{
 
     const result =
       await memberSB.auth.signOut();
-
 
     if(result.error){
 
@@ -519,12 +500,8 @@ async function memberLogout(){
       );
 
       throw result.error;
+
     }
-
-
-    /*
-      Xóa session phụ nếu có.
-    */
 
     try{
 
@@ -540,14 +517,6 @@ async function memberLogout(){
       );
 
     }
-
-
-    /*
-      QUAN TRỌNG:
-      Booking page đang đọc session lúc load.
-      Sau logout reload trang để UI chắc chắn
-      chuyển về trạng thái chưa đăng nhập.
-    */
 
     window.location.reload();
 
@@ -577,14 +546,12 @@ async function memberForgotPassword(
 
   memberCheckSB();
 
-
   const cleanEmail =
     String(
       email || ''
     )
       .trim()
       .toLowerCase();
-
 
   if(!cleanEmail){
 
@@ -594,17 +561,14 @@ async function memberForgotPassword(
 
   }
 
-
   const redirectUrl =
     window.location.origin +
     '/reset-password.html';
-
 
   console.log(
     'Apple Seed reset password:',
     redirectUrl
   );
-
 
   const result =
     await memberSB.auth
@@ -619,7 +583,6 @@ async function memberForgotPassword(
 
       );
 
-
   if(result.error){
 
     console.error(
@@ -628,8 +591,8 @@ async function memberForgotPassword(
     );
 
     throw result.error;
-  }
 
+  }
 
   return true;
 
@@ -646,12 +609,10 @@ async function memberUpdatePassword(
 
   memberCheckSB();
 
-
   const cleanPassword =
     String(
       newPassword || ''
     );
-
 
   if(!cleanPassword){
 
@@ -661,7 +622,6 @@ async function memberUpdatePassword(
 
   }
 
-
   if(cleanPassword.length < 6){
 
     throw new Error(
@@ -669,7 +629,6 @@ async function memberUpdatePassword(
     );
 
   }
-
 
   const result =
     await memberSB.auth.updateUser({
@@ -679,7 +638,6 @@ async function memberUpdatePassword(
 
     });
 
-
   if(result.error){
 
     console.error(
@@ -688,8 +646,8 @@ async function memberUpdatePassword(
     );
 
     throw result.error;
-  }
 
+  }
 
   return result.data?.user || null;
 
@@ -706,14 +664,12 @@ async function memberResendSignupEmail(
 
   memberCheckSB();
 
-
   const cleanEmail =
     String(
       email || ''
     )
       .trim()
       .toLowerCase();
-
 
   if(!cleanEmail){
 
@@ -722,7 +678,6 @@ async function memberResendSignupEmail(
     );
 
   }
-
 
   const result =
     await memberSB.auth.resend({
@@ -736,12 +691,12 @@ async function memberResendSignupEmail(
       options: {
 
         emailRedirectTo:
-          window.location.origin
+          window.location.origin +
+          '/index.html'
 
       }
 
     });
-
 
   if(result.error){
 
@@ -751,8 +706,8 @@ async function memberResendSignupEmail(
     );
 
     throw result.error;
-  }
 
+  }
 
   return true;
 
@@ -769,14 +724,12 @@ async function memberResendConfirmation(
 
   memberCheckSB();
 
-
   const cleanEmail =
     String(
       email || ''
     )
       .trim()
       .toLowerCase();
-
 
   if(!cleanEmail){
 
@@ -785,7 +738,6 @@ async function memberResendConfirmation(
     );
 
   }
-
 
   const result =
     await memberSB.auth.resend({
@@ -798,7 +750,6 @@ async function memberResendConfirmation(
 
     });
 
-
   if(result.error){
 
     console.error(
@@ -807,8 +758,8 @@ async function memberResendConfirmation(
     );
 
     throw result.error;
-  }
 
+  }
 
   return true;
 
@@ -823,10 +774,8 @@ async function memberRefreshSession(){
 
   memberCheckSB();
 
-
   const result =
     await memberSB.auth.refreshSession();
-
 
   if(result.error){
 
@@ -836,8 +785,8 @@ async function memberRefreshSession(){
     );
 
     return null;
-  }
 
+  }
 
   return result.data?.session || null;
 
@@ -853,7 +802,6 @@ function memberListenAuthState(
 ){
 
   memberCheckSB();
-
 
   return memberSB.auth.onAuthStateChange(
 
