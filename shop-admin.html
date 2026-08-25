@@ -22,6 +22,7 @@ h1,h2,h3,p{margin-top:0}.top h1{margin-bottom:5px}.muted{color:#667085;font-size
 .stable-guard strong{display:block;color:#12325b;margin-bottom:3px}.stable-guard small{color:#475467}.stable-guard .guard-actions{display:flex;gap:8px;flex-wrap:wrap}.stable-ok{color:#067647;font-weight:800}.stable-warn{color:#b54708;font-weight:800}
 .icon-picker{display:grid;grid-template-columns:repeat(8,minmax(42px,1fr));gap:7px;margin-top:8px}.icon-choice{border:1px solid #d0d5dd;background:#fff;border-radius:10px;padding:9px 6px;font-size:20px;cursor:pointer;text-align:center;line-height:1}.icon-choice:hover,.icon-choice.active{border-color:#2563eb;background:#eff6ff;box-shadow:0 0 0 2px rgba(37,99,235,.12)}
 .icon-preview{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:14px;color:#475467}.icon-preview span{font-size:24px}
+.code-row{display:flex;gap:8px;align-items:flex-end}.code-row>label{flex:1}.code-gen{white-space:nowrap;height:42px}
 @media(max-width:700px){.icon-picker{grid-template-columns:repeat(5,minmax(42px,1fr))}}
 
 .lead-new{background:#eff6ff;color:#1d4ed8}.lead-contacted{background:#fff7ed;color:#c2410c}.lead-visited{background:#ecfdf3;color:#047857}.lead-completed{background:#dcfce7;color:#166534}.lead-cancelled{background:#fef2f2;color:#b91c1c}.lead-phone{color:#1769ff;font-weight:850;white-space:nowrap}.lead-note{white-space:pre-wrap;max-width:300px}.lead-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}.lead-toolbar input,.lead-toolbar select{max-width:260px}.lead-count{font-size:13px;color:#667085;margin-bottom:12px}
@@ -62,7 +63,7 @@ h1,h2,h3,p{margin-top:0}.top h1{margin-bottom:5px}.muted{color:#667085;font-size
 <div id="app" class="wrap hidden">
 <div class="stable-guard" id="stableGuard">
   <div><strong>🛡️ Stable Guard</strong><small id="stableGuardText">Bản quản lý hiện tại được bảo vệ. Trước thay đổi cấu hình linh kiện, hệ thống sẽ lưu mốc ổn định của trang.</small></div>
-  <div class="guard-actions"><span id="stableGuardStatus" class="stable-ok">✅ Stable</span><button class="btn" id="restorePartsStable" type="button">↩️ Khôi phục cấu hình linh kiện</button></div>
+  <div class="guard-actions"><span id="stableGuardStatus" class="stable-ok">✅ Stable</span><button class="btn" id="commitPartsStable" type="button">✅ Chốt Stable hiện tại</button><button class="btn" id="restorePartsStable" type="button">↩️ Khôi phục bản Stable</button></div>
 </div>
 <div class="top">
 <div><h1>🏪 Quản lý cửa hàng Apple Seed</h1><div class="muted" id="user"></div></div>
@@ -447,7 +448,7 @@ function openWarrantyForm(x={}){
  let today=x.start_date||new Date().toISOString().slice(0,10),end=x.end_date||new Date(Date.now()+30*86400000).toISOString().slice(0,10);
  openModal(x.id?"Sửa phiếu bảo hành #"+x.id:"Tạo phiếu bảo hành",`<form id="warrantyForm" class="formgrid">
  <label>Khách hàng ID<input id="wCustomer" type="number" value="${x.customer_id||''}" required></label><label>Phiếu sửa ID<input id="wRepair" type="number" value="${x.repair_order_id||''}"></label>
- <label>Model máy<input id="wModel" value="${esc(x.device_model||'')}" required></label><label>Mã bảo hành<input id="wCode" value="${esc(x.warranty_code||'')}" placeholder="BH-2026-0001"></label>
+ <label>Model máy<input id="wModel" value="${esc(x.device_model||'')}" required></label><div class="code-row"><label>Mã bảo hành<input id="wCode" value="${esc(x.warranty_code||'')}" placeholder="BH-2026-0001"></label><button type="button" class="btn code-gen" id="genWarrantyCode">🎲 Tạo mã</button></div>
  <label>Ngày bắt đầu<input id="wStart" type="date" value="${today}" required></label><label>Ngày hết hạn<input id="wEnd" type="date" value="${end}" required></label>
  <label class="full">Nội dung bảo hành<textarea id="wCoverage">${esc(x.coverage||'')}</textarea></label>
  <label>Trạng thái<select id="wStatus"><option value="active">Đang bảo hành</option><option value="closed">Đã đóng</option></select></label>
@@ -741,40 +742,121 @@ $("newPart").onclick=()=>openPartForm();
 $("managePartPages").onclick=()=>openPartPageManager();
 window.editPart=x=>openPartForm(x);
 window.deletePart=async id=>{
-  if(!confirm("XÓA linh kiện #"+id+"?")) return;
+  if(!confirm("XÓA linh kiện #"+id+"?\n\nBản Stable hiện tại sẽ giữ dữ liệu trước khi xóa để có thể khôi phục nếu bấm nhầm.")) return;
+  await saveStablePartSnapshot('Stable trước khi xóa linh kiện');
   let r=await sb.from("shop_parts").delete().eq("id",id);
   if(r.error){alert("Không xóa được: "+r.error.message);return}
-  closeModal(); loadParts(); loadDashboard();
+  closeModal(); await loadParts(); loadDashboard();
+  setStableStatus('Đang giữ bản Stable trước lần xóa','warn');
+  document.getElementById('stableGuardText').textContent='Linh kiện vừa xóa chưa được chốt thành Stable mới. Có thể bấm Khôi phục bản Stable để hoàn tác.';
 };
-const STABLE_PART_KEY='appleSeedStablePartPages_v1';
-function saveStablePartSnapshot(){
-  try{localStorage.setItem(STABLE_PART_KEY,JSON.stringify({savedAt:new Date().toISOString(),pages:partPages}));return true}catch(e){console.error('Stable snapshot error',e);return false}
+const STABLE_PART_KEY='appleSeedStablePartPages_v2';
+function setStableStatus(text, kind='ok'){
+  const el=document.getElementById('stableGuardStatus');
+  if(!el)return;
+  el.textContent=kind==='warn'?'⚠️ '+text:(kind==='busy'?'⏳ '+text:'✅ '+text);
+  el.className=kind==='warn'?'stable-warn':(kind==='busy'?'stable-ok':'stable-ok');
+}
+async function fetchPartsForStable(){
+  try{
+    const r=await sb.from('shop_parts').select('*').order('id',{ascending:true}).limit(5000);
+    return r.error?[]:(r.data||[]);
+  }catch(e){return []}
+}
+async function saveStablePartSnapshot(label='Stable tự động'){
+  try{
+    const parts=await fetchPartsForStable();
+    const pages=partPages.map(x=>({...x}));
+    localStorage.setItem(STABLE_PART_KEY,JSON.stringify({
+      version:2,savedAt:new Date().toISOString(),label,pages,parts
+    }));
+    updateStableGuard();
+    return true;
+  }catch(e){console.error('Stable snapshot error',e);return false}
 }
 function getStablePartSnapshot(){try{return JSON.parse(localStorage.getItem(STABLE_PART_KEY)||'null')}catch(e){return null}}
+async function ensureStableSnapshot(){
+  const snap=getStablePartSnapshot();
+  if(snap?.pages?.length && Array.isArray(snap.parts))return;
+  await saveStablePartSnapshot('Stable đầu tiên');
+}
 function updateStableGuard(){
   const t=document.getElementById('stableGuardText'), s=document.getElementById('stableGuardStatus');
   const snap=getStablePartSnapshot();
-  if(snap){const d=new Date(snap.savedAt);t.textContent='Stable cấu hình linh kiện gần nhất: '+d.toLocaleString('vi-VN')+'. Có thể khôi phục cấu hình trang.';s.textContent='✅ Stable đã lưu'}
-  else{saveStablePartSnapshot();t.textContent='Đã tạo mốc Stable đầu tiên cho cấu hình linh kiện trên trình duyệt này.';s.textContent='✅ Stable #1'}
+  if(snap){
+    const d=new Date(snap.savedAt);
+    t.textContent=`Stable gần nhất: ${d.toLocaleString('vi-VN')} · ${snap.parts?.length||0} linh kiện · ${snap.pages?.length||0} trang. Thêm/sửa thành công sẽ tự chốt Stable mới.`;
+    s.textContent='✅ Stable đã lưu'; s.className='stable-ok';
+  }else{
+    t.textContent='Chưa có mốc Stable. Hệ thống sẽ tự tạo khi tải dữ liệu linh kiện.';
+    s.textContent='⚠️ Chưa có Stable'; s.className='stable-warn';
+  }
 }
 async function restoreStablePartSnapshot(){
   const snap=getStablePartSnapshot();
-  if(!snap?.pages?.length){alert('Chưa có bản Stable để khôi phục.');return}
-  if(!confirm('Khôi phục cấu hình trang linh kiện về mốc Stable gần nhất?\n\nDữ liệu linh kiện sẽ không bị xóa; chỉ cấu hình trang/biểu tượng được đưa về mốc đã lưu.'))return;
-  const old=partPages;
+  if(!snap?.pages?.length || !Array.isArray(snap.parts)){alert('Chưa có bản Stable đầy đủ để khôi phục.');return}
+  if(!confirm(`Khôi phục toàn bộ bảng LINH KIỆN về bản Stable gần nhất?\n\n• ${snap.parts.length} linh kiện\n• ${snap.pages.length} trang\n• ${new Date(snap.savedAt).toLocaleString('vi-VN')}\n\nCác thay đổi SAU mốc này sẽ bị đưa về bản Stable.`))return;
+  const oldPages=partPages.map(x=>({...x}));
   try{
-    // Restore browser-local state immediately. For DB-backed categories, update existing/new rows conservatively.
-    if(Array.isArray(snap.pages)){
-      partPages=snap.pages.map(x=>({...x}));
-      localStorage.setItem('appleSeedPartPages',JSON.stringify(partPages));
-      activePartPage=partPages[0]?.name||'Màn hình';
-      await loadParts();
-      alert('✅ Đã khôi phục mốc Stable trên trình duyệt này.');
+    setStableStatus('Đang khôi phục…','busy');
+    // Restore category metadata conservatively.
+    const dbCats=await sb.from('shop_part_categories').select('*').order('id',{ascending:true});
+    if(!dbCats.error){
+      for(const p of snap.pages){
+        if(String(p.id||'').startsWith('local-'))continue;
+        const r=await sb.from('shop_part_categories').update({name:p.name,icon:p.icon||'🧩',sort_order:Number(p.sort_order)||0,active:p.active!==false}).eq('id',p.id);
+        if(r.error)throw r.error;
+      }
+      for(const p of snap.pages.filter(x=>String(x.id||'').startsWith('local-'))){
+        const exists=(dbCats.data||[]).some(c=>c.name===p.name);
+        if(!exists){
+          const r=await sb.from('shop_part_categories').insert({name:p.name,icon:p.icon||'🧩',sort_order:Number(p.sort_order)||0,active:true});
+          if(r.error)console.warn('Category restore insert:',r.error);
+        }
+      }
     }
-  }catch(e){partPages=old;alert('Không thể khôi phục Stable: '+(e?.message||e))}
+    // Restore shop_parts. Keep the same IDs where possible; re-create missing rows.
+    const current=await sb.from('shop_parts').select('*').order('id',{ascending:true}).limit(5000);
+    if(current.error)throw current.error;
+    const wantedIds=new Set(snap.parts.map(x=>Number(x.id)).filter(Number.isFinite));
+    for(const row of snap.parts){
+      const payload={name:row.name||'',sku:row.sku||'',category:row.category||'Linh kiện khác',status:row.status||'in_stock',quantity:Number(row.quantity||0),cost_price:Number(row.cost_price||0),note:row.note||''};
+      if(row.id!=null){
+        const r=await sb.from('shop_parts').update(payload).eq('id',row.id);
+        if(r.error)throw r.error;
+      }else{
+        const r=await sb.from('shop_parts').insert(payload);
+        if(r.error)throw r.error;
+      }
+    }
+    for(const row of (current.data||[])){
+      if(row.id!=null && !wantedIds.has(Number(row.id))){
+        const r=await sb.from('shop_parts').delete().eq('id',row.id);
+        if(r.error)throw r.error;
+      }
+    }
+    partPages=snap.pages.map(x=>({...x}));
+    localStorage.setItem('appleSeedPartPages',JSON.stringify(partPages));
+    activePartPage=partPages[0]?.name||'Màn hình';
+    await loadPartPages();
+    await loadParts();
+    updateStableGuard();
+    alert('✅ Đã khôi phục bảng linh kiện về bản Stable.\n\nDữ liệu trong mốc Stable đã được phục hồi.');
+  }catch(e){
+    partPages=oldPages;
+    setStableStatus('Khôi phục thất bại','warn');
+    alert('❌ Không thể khôi phục Stable: '+(e?.message||e));
+    updateStableGuard();
+  }
 }
-
+async function commitCurrentPartsStable(){
+  const ok=await saveStablePartSnapshot('Stable chốt thủ công');
+  if(ok)alert('✅ Đã chốt toàn bộ dữ liệu linh kiện hiện tại thành bản Stable mới.');
+  else alert('❌ Không lưu được bản Stable.');
+}
 document.getElementById('restorePartsStable')?.addEventListener('click',restoreStablePartSnapshot);
+document.getElementById('commitPartsStable')?.addEventListener('click',commitCurrentPartsStable);
+
 async function openPartPageManager(){
   await loadPartPages();
   let rows=partPages.map((p,i)=>`<div class="listitem" style="display:flex;align-items:center;justify-content:space-between;gap:10px">
@@ -818,12 +900,14 @@ window.openNewPartPageForm=()=>{
       partPages.push({id:"local-"+Date.now(),name,icon,sort_order:sort,active:true});
       localStorage.setItem("appleSeedPartPages",JSON.stringify(partPages));
       activePartPage=name;
-      closeModal(); loadParts();
+      closeModal(); await loadParts();
+      await saveStablePartSnapshot('Stable sau khi tạo trang');
       alert("Đã tạo trang trên trình duyệt này. Muốn đồng bộ trang giữa các thiết bị, chạy apple-seed-shop-part-pages.sql trong Supabase.");
       return;
     }
     activePartPage=name;
-    closeModal(); loadParts();
+    closeModal(); await loadParts();
+    await saveStablePartSnapshot('Stable sau khi tạo trang');
   };
 };
 window.renamePartPage=async p=>{
@@ -855,7 +939,8 @@ window.renamePartPage=async p=>{
       localStorage.setItem("appleSeedPartPages",JSON.stringify(partPages));
     }
     activePartPage=newName;
-    closeModal(); loadParts();
+    closeModal(); await loadParts();
+    await saveStablePartSnapshot('Stable sau khi đổi tên trang');
   };
 };
 window.deletePartPage=async(id,name)=>{
@@ -873,13 +958,15 @@ window.deletePartPage=async(id,name)=>{
     localStorage.setItem("appleSeedPartPages",JSON.stringify(partPages));
   }
   activePartPage=fallback.name;
-  closeModal(); loadParts();
+  closeModal(); await loadParts();
+  setStableStatus('Đang giữ bản Stable trước lần xóa trang','warn');
+  document.getElementById('stableGuardText').textContent='Trang vừa xóa chưa được chốt thành Stable mới. Có thể bấm Khôi phục bản Stable để hoàn tác.';
 };
 function openPartForm(x={}){
   let opts=partPages.map(p=>`<option value="${esc(p.name)}">${esc(p.icon||"🧩")} ${esc(p.name)}</option>`).join("");
   openModal(x.id?"Sửa linh kiện":"Thêm linh kiện",`<form id="partForm" class="formgrid">
   <label>Tên linh kiện<input id="ptName" value="${esc(x.name||"")}" required></label>
-  <label>Mã / SKU<input id="ptSku" value="${esc(x.sku||"")}"></label>
+  <div class="code-row"><label>Mã / SKU<input id="ptSku" value="${esc(x.sku||"")}" placeholder="AS-CS-260825-AB12"></label><button type="button" class="btn code-gen" id="genPartSku">🎲 Tạo mã</button></div>
   <label>Nhóm / Trang<select id="ptCategory">${opts}</select></label>
   <label>Phân loại kho<select id="ptStatus"><option value="in_stock">Tồn kho</option><option value="need">Cần nhập</option></select></label>
   <label>Số lượng<input id="ptQty" type="number" min="0" value="${x.quantity||0}"></label>
@@ -887,6 +974,14 @@ function openPartForm(x={}){
   <label class="full">Ghi chú<input id="ptNote" value="${esc(x.note||"")}"></label>
   <div class="full right"><button class="btn primary">💾 Lưu linh kiện</button></div></form>`);
   $("ptCategory").value=x.category||activePartPage;
+  const makePartSku=()=>{
+    const prefix=String($("ptCategory").value||'PK').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z0-9]/g,'').slice(0,3).toUpperCase()||'PK';
+    const d=new Date(), stamp=String(d.getFullYear()).slice(-2)+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
+    const rand=Math.random().toString(36).slice(2,6).toUpperCase();
+    $("ptSku").value=`AS-${prefix}-${stamp}-${rand}`;
+  };
+  $("genPartSku")?.addEventListener('click',makePartSku);
+  if(!x.id && !$("ptSku").value)makePartSku();
   if(x.status)$("ptStatus").value=x.status;
   $("partForm").onsubmit=async e=>{
     e.preventDefault();
@@ -899,6 +994,7 @@ function openPartForm(x={}){
 }
 
 updateStableGuard();
+ensureStableSnapshot().then(updateStableGuard);
 auth();
 </script>
 </body>
