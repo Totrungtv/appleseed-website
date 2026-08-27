@@ -348,6 +348,7 @@ body.member-guest .member-gate{
   <span><b>Nếu chỉ có một dòng lỗi</b> (ví dụ: <code>panic 0x20000 compass</code>) thì cứ dán nguyên dòng đó. AI sẽ dựa vào model máy + panic + số đo để phân tích.</span>
   <span><b>🧩 Mã lỗi dạng số / Sensor Array:</b> Nếu bạn thấy một <b>con số tự nhiên</b> trong log/tài liệu mà không biết đó là mã gì, <b>cứ nhập nguyên con số</b>. Bạn <b>không cần biết HEX, không cần tự đổi và không cần tự tra mã</b>. AI Board sẽ tự nhận diện mã, tự quy đổi sang HEX và tự đối chiếu theo <b>model iPhone + PANIC LOG + dữ liệu kỹ thuật + ảnh</b>.</span>
   <span><b>Ví dụ:</b> chỉ cần nhập <code>524288</code> hoặc dán nguyên đoạn log có chứa <code>524288</code>. Sau đó gửi kèm <b>ảnh main / schematic / boardview</b>. AI sẽ tự xử lý <code>524288 → 0x80000</code> và đưa kết quả/nhận định dựa trên bằng chứng có trong ca.</span>
+  <span><b>⚡ Muốn AI phân tích nhanh:</b> hãy ghi <code>Hãy giúp tôi phân tích tấm ảnh phía dưới</code> và chọn ảnh main / schematic / boardview. AI sẽ ưu tiên đọc hình ảnh, đối chiếu với model máy và các dữ liệu bạn đã nhập để đưa ra hướng phân tích.</span>
 </div>
 <textarea id="panic" placeholder="Ví dụ: panic 0x20000 compass&#10;Hoặc chỉ cần nhập mã số tự nhiên, ví dụ: 524288&#10;&#10;Hoặc dán toàn bộ nội dung file panic-full... vào đây.">panic 0x20000 compass</textarea>
 </div>
