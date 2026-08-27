@@ -211,12 +211,12 @@ body.member-guest .top .pill{display:none}
 <div class="field"><label>Diode / Resistance</label><input placeholder="Giá trị đo"></div>
 <div class="field"><label>I2C / SDA / SCL</label><input placeholder="Địa chỉ / tình trạng"></div>
 </div>
-<div class="drop">📷<br><strong>Thả ảnh main / schematic / boardview</strong><br><span class="muted">Bước sau nối Supabase Storage</span></div>
+<div class="drop" id="boardImageDrop">📷<br><strong>Chọn ảnh main / schematic / boardview</strong><br><span class="muted">JPG / PNG / WEBP • ảnh sẽ được gửi cùng ca phân tích</span><input id="boardImage" type="file" accept="image/jpeg,image/png,image/webp" style="margin-top:10px"></div>
 <div class="actions"><button class="btn primary" id="analyze">⚡ PHÂN TÍCH AI</button></div><div id="result" class="result">Chưa phân tích.</div></div>
 
 <div class="card"><h2>🧠 AI Diagnosis</h2><div class="muted">Evidence-first • không kết luận khi thiếu dữ liệu.</div>
 <div class="result"><strong>Case Intelligence</strong><div class="case"><b>iPhone 14 Pro Max · 0x20000 · Compass</b><div class="muted">Ưu tiên compass/sensor + I2C. Cần đo và đối chiếu board tốt.</div><span class="pill">I2C</span><span class="pill">PANIC</span></div></div>
-<h2 style="margin-top:22px">📐 Schematic Intelligence</h2><div class="fields"><div class="field"><label>Tài liệu</label><select><option>Schematic</option><option>Boardview / ZXW</option><option>Pinout</option><option>Ảnh main</option></select></div><div class="field"><label>Vùng / linh kiện</label><input placeholder="U5200 / I2C compass / PP_VDD"></div></div><div class="actions"><button class="btn primary">📐 ANALYZE SCHEMATIC</button></div></div>
+<h2 style="margin-top:22px">📐 Schematic Intelligence</h2><div class="fields"><div class="field"><label>Tài liệu</label><select><option>Schematic</option><option>Boardview / ZXW</option><option>Pinout</option><option>Ảnh main</option></select></div><div class="field"><label>Vùng / linh kiện</label><input placeholder="U5200 / I2C compass / PP_VDD"></div></div><div class="actions"><button class="btn primary" id="analyzeSchematic" type="button">📐 ANALYZE SCHEMATIC</button></div><div id="schematicResult" class="result">Chưa phân tích schematic.</div></div>
 </section>
 
 <section class="card"><div class="kicker">LIBRARY</div><h2>📚 Schematic Library</h2><div class="muted">Kho sơ đồ theo từng model iPhone.</div>
@@ -422,8 +422,70 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
 </script>
 
 <script>
-document.getElementById('analyze').onclick=()=>document.getElementById('result').innerHTML='<b>🔎 Phân tích sơ bộ</b><p>PANIC 0x20000 + compass → ưu tiên cụm compass/sensor và I2C. Chưa kết luận linh kiện.</p><span class="pill">Power</span><span class="pill">SDA/SCL</span><span class="pill">Board comparison</span>';
-document.getElementById('upload').onclick=()=>{const f=document.getElementById('file').files[0];document.getElementById('uploadStatus').textContent=f?'Đã chọn: '+f.name+' — giao diện sẵn sàng nối Storage thật.':'Chưa chọn file.'};
+/* ===== APPLE SEED AI BOARD REAL ANALYSIS =====
+   Không còn kết quả hard-code. Mọi phân tích gọi Edge Function appleseed-ai.
+*/
+(()=> {
+  const $=id=>document.getElementById(id);
+  const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  async function token(){
+    if(!window.supabaseClient) throw new Error('Chưa kết nối Supabase.');
+    const {data,error}=await window.supabaseClient.auth.getSession();
+    if(error) throw error;
+    if(!data?.session?.access_token) throw new Error('Phiên thành viên đã hết hạn. Hãy đăng nhập lại.');
+    return data.session.access_token;
+  }
+  async function image(){
+    const f=$('boardImage')?.files?.[0];
+    if(!f)return null;
+    if(f.size>8*1024*1024)throw new Error('Ảnh quá lớn. Vui lòng chọn ảnh dưới 8 MB.');
+    if(!/^image\/(jpeg|png|webp)$/i.test(f.type))throw new Error('Chỉ hỗ trợ JPG, PNG hoặc WEBP.');
+    return await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(new Error('Không đọc được ảnh.'));r.readAsDataURL(f)});
+  }
+  async function callAI(message,img=null){
+    const t=await token(), controller=new AbortController(), timer=setTimeout(()=>controller.abort(),60000);
+    try{
+      const response=await fetch(window.SUPABASE_URL+'/functions/v1/appleseed-ai',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','apikey':window.SUPABASE_ANON_KEY,'Authorization':'Bearer '+t},
+        body:JSON.stringify({message,source:'ai-board',mode:'member_board_diagnosis',image_data:img,page:location.pathname}),
+        signal:controller.signal
+      });
+      const raw=await response.text(); let data=null; try{data=raw?JSON.parse(raw):null}catch{data=raw}
+      if(!response.ok)throw new Error((data&&typeof data==='object'&&(data.error||data.message))||'AI server lỗi HTTP '+response.status);
+      const reply=(typeof data==='string'?data:(data?.reply||data?.message||data?.content||data?.answer||'')).trim();
+      if(!reply)throw new Error('AI không trả về nội dung.');
+      return reply;
+    }finally{clearTimeout(timer)}
+  }
+  $('analyze').onclick=async()=>{
+    const btn=$('analyze'), result=$('result');
+    const selects=document.querySelectorAll('.grid .card:first-child select');
+    const inputs=[...document.querySelectorAll('.grid .card:first-child input')];
+    const device=selects[0]?.value||'', fault=selects[1]?.value||'', panic=$('panic')?.value.trim()||'';
+    const boot=inputs[0]?.value.trim()||'',vbat=inputs[1]?.value.trim()||'',diode=inputs[2]?.value.trim()||'',i2c=inputs[3]?.value.trim()||'';
+    if(!panic&&!boot&&!vbat&&!diode&&!i2c){result.innerHTML='<b>⚠️ Thiếu dữ liệu</b><p>Nhập PANIC log hoặc ít nhất một giá trị đo trước khi phân tích.</p>';return}
+    btn.disabled=true;btn.textContent='⏳ AI đang phân tích...';result.innerHTML='<b>⏳ Đang phân tích ca kỹ thuật…</b><p class="muted">Đang gửi dữ liệu đến AI backend.</p>';
+    try{
+      const reply=await callAI(['Phân tích ca sửa chữa iPhone theo nguyên tắc evidence-first.','Thiết bị: '+device,'Loại lỗi: '+fault,'PANIC LOG: '+panic,'Boot current: '+boot,'Vbat / nguồn: '+vbat,'Diode / Resistance: '+diode,'I2C / SDA / SCL: '+i2c,'Trả lời tiếng Việt. Tách rõ dữ kiện, nhận định có cơ sở, dữ liệu còn thiếu, phép đo tiếp theo và thứ tự ưu tiên. Không bịa linh kiện/đường mạch. Nếu có ảnh, chỉ mô tả những gì thực sự nhìn thấy.'].join('\n'),await image());
+      result.innerHTML='<b>🧠 Kết quả AI</b><div style="white-space:pre-wrap;line-height:1.65;margin-top:8px">'+esc(reply)+'</div>';
+    }catch(e){console.error('AI Board:',e);result.innerHTML='<b>⚠️ Phân tích chưa chạy được</b><p>'+esc(e?.name==='AbortError'?'AI phản hồi quá lâu, hãy thử lại.':(e?.message||String(e)))+'</p>'}
+    finally{btn.disabled=false;btn.textContent='⚡ PHÂN TÍCH AI'}
+  };
+  $('analyzeSchematic').onclick=async()=>{
+    const btn=$('analyzeSchematic'),result=$('schematicResult');
+    const card=document.querySelectorAll('.grid .card')[1], selects=card?.querySelectorAll('select'), zone=card?.querySelector('input')?.value.trim()||'',doc=selects?.[0]?.value||'Schematic',panic=$('panic')?.value.trim()||'';
+    if(!zone&&!panic){result.innerHTML='<b>⚠️ Thiếu dữ liệu</b><p>Nhập vùng/linh kiện hoặc PANIC log trước.</p>';return}
+    btn.disabled=true;btn.textContent='⏳ Đang phân tích...';result.innerHTML='<b>⏳ AI đang đọc yêu cầu schematic…</b>';
+    try{
+      const reply=await callAI(['Phân tích yêu cầu schematic/boardview cho ca sửa iPhone.','Loại tài liệu: '+doc,'Vùng / linh kiện: '+zone,'PANIC LOG: '+panic,'Nêu vùng cần kiểm tra, tín hiệu/rail liên quan nếu có bằng chứng, phép đo nên làm và điều kiện kết luận. Không bịa reference designator hoặc net name chưa được cung cấp.'].join('\n'),await image());
+      result.innerHTML='<b>📐 Kết quả Schematic Intelligence</b><div style="white-space:pre-wrap;line-height:1.65;margin-top:8px">'+esc(reply)+'</div>';
+    }catch(e){console.error('Schematic AI:',e);result.innerHTML='<b>⚠️ Schematic chưa phân tích được</b><p>'+esc(e?.name==='AbortError'?'AI phản hồi quá lâu, hãy thử lại.':(e?.message||String(e)))+'</p>'}
+    finally{btn.disabled=false;btn.textContent='📐 ANALYZE SCHEMATIC'}
+  };
+  $('upload').onclick=()=>{const f=$('file').files?.[0];$('uploadStatus').textContent=f?'📎 Đã chọn '+f.name+'. Muốn AI phân tích ảnh, chọn ảnh ở ô “main / schematic / boardview” phía trên.':'Chưa chọn file.'};
+  $('boardImage')?.addEventListener('change',()=>{const f=$('boardImage').files?.[0],drop=$('boardImageDrop');if(drop)drop.querySelector('.muted').textContent=f?'📎 '+f.name+' • sẵn sàng gửi cùng ca phân tích':'JPG / PNG / WEBP • ảnh sẽ được gửi cùng ca phân tích'});
+})();
 </script>
 <script>
 /* ===== APPLE SEED MEMBER ACCESS =====
