@@ -70,7 +70,7 @@ h1,h2,h3,p{margin-top:0}.top h1{margin-bottom:5px}.muted{color:#667085;font-size
 <div id="app" class="wrap hidden">
 <div class="stable-guard" id="stableGuard">
   <div><strong>🛡️ Stable Guard</strong><small id="stableGuardText">Bản quản lý hiện tại được bảo vệ. Trước thay đổi cấu hình linh kiện, hệ thống sẽ lưu mốc ổn định của trang.</small></div>
-  <div class="guard-actions"><span id="stableGuardStatus" class="stable-ok">✅ Stable</span><button class="btn" id="commitPartsStable" type="button">✅ Chốt Stable hiện tại</button><button class="btn" id="restorePartsStable" type="button">↩️ Khôi phục bản Stable</button></div>
+  <div class="guard-actions"><span id="stableGuardStatus" class="stable-ok">✅ Stable</span><button class="btn" id="commitPartsStable" type="button">✅ Chốt Stable hiện tại</button><button class="btn" id="restorePartsStable" type="button">↩️ Khôi phục bản Stable</button><button class="btn" id="stableHistory" type="button">🕘 Lịch sử Stable</button></div>
 </div>
 <div class="top">
 <div><h1>🏪 Quản lý cửa hàng Apple Seed</h1><div class="muted" id="user"></div></div>
@@ -1063,6 +1063,7 @@ async function commitCurrentWebsiteStable(){
 }
 
 document.getElementById('restorePartsStable')?.addEventListener('click',requestWebsiteStableRollback);
+document.getElementById('stableHistory')?.addEventListener('click',showWebsiteStableHistory);
 document.getElementById('commitPartsStable')?.addEventListener('click',commitCurrentWebsiteStable);
 
 async function openPartPageManager(){
