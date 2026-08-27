@@ -378,9 +378,9 @@ async function checkSession(){
       10000
     );
     const profile=profileResult?.data;
-    if(profileResult?.error || !profile || !["admin","staff"].includes(profile.role)){
+    if(profileResult?.error || !profile || profile.role !== "admin"){
       await sb.auth.signOut();
-      $("loginStatus").textContent="Tài khoản không có quyền quản trị (Admin/Staff).";
+      $("loginStatus").textContent="Khu vực này chỉ dành cho tài khoản ADMIN chính.";
       return false;
     }
 
