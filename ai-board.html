@@ -124,6 +124,18 @@ body.member-guest .member-gate{
 }
 
 </style>
+
+<style>
+/* ===== APPLE SEED COIN BILLING MODAL ===== */
+.coin-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(7,17,30,.72);z-index:100000}
+.coin-modal.open{display:flex}
+.coin-modal-box{width:min(460px,100%);background:#fff;border:1px solid #cfe2f7;border-radius:22px;padding:24px;box-shadow:0 28px 90px rgba(0,0,0,.28);text-align:center}
+.coin-modal-icon{font-size:42px}.coin-modal-box h2{margin:8px 0}.coin-modal-box p{color:#647b98;line-height:1.6;margin:8px 0}
+.coin-modal-balance{margin:16px 0;padding:13px;border-radius:13px;background:#f5faff;border:1px solid #d5e8fb;color:#145ca8;font-weight:850}
+.coin-modal-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:16px}
+.coin-modal-close{border:0;background:#edf3f8;color:#294764}
+</style>
+
 </head>
 <body class="member-guest"><main class="wrap">
 <header class="top"><div><div class="kicker">APPLE SEED • ENGINEERING LAB</div><h1>AI Board Intelligence</h1><div class="muted">YouTube miễn phí • Các công cụ kỹ thuật dành cho thành viên Apple Seed</div></div></header>
@@ -499,6 +511,19 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
     if(!/^image\/(jpeg|png|webp)$/i.test(f.type))throw new Error('Chỉ hỗ trợ JPG, PNG hoặc WEBP.');
     return await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(new Error('Không đọc được ảnh.'));r.readAsDataURL(f)});
   }
+  function showCoinModal(cost,balance){
+    const modal=$('coinModal'), msg=$('coinModalMessage'), bal=$('coinModalBalance');
+    if(!modal)return;
+    const c=Number(cost||0);
+    const b=Number(balance||0);
+    if(msg)msg.textContent=`Phân tích này cần ${c} Coin. Số dư hiện tại không đủ để tiếp tục.`;
+    if(bal)bal.textContent=`Số dư hiện tại: ${b.toLocaleString('vi-VN')} Coin`;
+    modal.classList.add('open');
+  }
+  function closeCoinModal(){ $('coinModal')?.classList.remove('open'); }
+  $('coinModalClose')?.addEventListener('click',closeCoinModal);
+  $('coinModal')?.addEventListener('click',e=>{if(e.target?.id==='coinModal')closeCoinModal();});
+
   async function callAI(message,img=null,inputId='boardImage'){
     const client=window.supabaseClient;
     if(!client) throw new Error('Chưa kết nối Supabase.');
@@ -561,17 +586,27 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
           notes:message,
           mime_type:file.type,
           source:'ai-board',
-          page:location.pathname
+          page:location.pathname,
+          action:inputId==='schematicImage'?'schematic_analysis':'ai_analysis'
         }),
         signal:controller.signal
       });
       const raw=await response.text();
       let data=null;
       try{data=raw?JSON.parse(raw):null}catch{data=raw}
-      if(!response.ok) throw new Error((data&&typeof data==='object'&&(data.error||data.message))||'AI server lỗi HTTP '+response.status);
+      if(!response.ok){
+        const err=new Error((data&&typeof data==='object'&&(data.error||data.message))||'AI server lỗi HTTP '+response.status);
+        err.code=data?.code||'';
+        err.balance=data?.balance??0;
+        err.cost=data?.cost??0;
+        throw err;
+      }
       const reply=(typeof data==='string'?data:(data?.analysis||data?.reply||data?.message||data?.content||data?.answer||'')).trim();
       if(!reply) throw new Error('AI không trả về nội dung.');
-      return reply;
+      const billing={cost:Number(data?.cost||0),balance:Number(data?.balance||0)};
+      const balanceEl=$('memberAccountCoins');
+      if(balanceEl && Number.isFinite(billing.balance)) balanceEl.textContent=billing.balance.toLocaleString('vi-VN')+' Coin';
+      return {reply,billing};
     }finally{clearTimeout(timer)}
   }
   $('analyze').onclick=async()=>{
@@ -583,9 +618,15 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
     if(!panic&&!boot&&!vbat&&!diode&&!i2c){result.innerHTML='<b>⚠️ Thiếu dữ liệu</b><p>Nhập PANIC log hoặc ít nhất một giá trị đo trước khi phân tích.</p>';return}
     btn.disabled=true;btn.textContent='⏳ AI đang phân tích...';result.innerHTML='<b>⏳ Đang phân tích ca kỹ thuật…</b><p class="muted">Đang gửi dữ liệu đến AI backend.</p>';
     try{
-      const reply=await callAI(['Phân tích ca sửa chữa iPhone theo nguyên tắc evidence-first.','Thiết bị: '+device,'Loại lỗi: '+fault,'PANIC LOG: '+panic,'Boot current: '+boot,'Vbat / nguồn: '+vbat,'Diode / Resistance: '+diode,'I2C / SDA / SCL: '+i2c,'Trả lời tiếng Việt. Tách rõ dữ kiện, nhận định có cơ sở, dữ liệu còn thiếu, phép đo tiếp theo và thứ tự ưu tiên. Không bịa linh kiện/đường mạch. Nếu có ảnh, chỉ mô tả những gì thực sự nhìn thấy.'].join('\n'),await image('boardImage'),'boardImage');
-      result.innerHTML='<b>🧠 Kết quả AI</b><div style="white-space:pre-wrap;line-height:1.65;margin-top:8px">'+esc(reply)+'</div>';
-    }catch(e){console.error('AI Board:',e);result.innerHTML='<b>⚠️ Phân tích chưa chạy được</b><p>'+esc(e?.name==='AbortError'?'AI phản hồi quá lâu, hãy thử lại.':(e?.message||String(e)))+'</p>'}
+      const ai=await callAI(['Phân tích ca sửa chữa iPhone theo nguyên tắc evidence-first.','Thiết bị: '+device,'Loại lỗi: '+fault,'PANIC LOG: '+panic,'Boot current: '+boot,'Vbat / nguồn: '+vbat,'Diode / Resistance: '+diode,'I2C / SDA / SCL: '+i2c,'Trả lời tiếng Việt. Tách rõ dữ kiện, nhận định có cơ sở, dữ liệu còn thiếu, phép đo tiếp theo và thứ tự ưu tiên. Không bịa linh kiện/đường mạch. Nếu có ảnh, chỉ mô tả những gì thực sự nhìn thấy.'].join('\n'),await image('boardImage'),'boardImage');
+      const reply=ai.reply;
+      const bill=ai.billing;
+      result.innerHTML='<b>🧠 Kết quả AI</b><div style="white-space:pre-wrap;line-height:1.65;margin-top:8px">'+esc(reply)+'</div><div class="muted" style="margin-top:10px">🪙 Đã trừ '+bill.cost+' Coin • Còn lại '+bill.balance+' Coin</div>';
+    }catch(e){
+      console.error('AI Board:',e);
+      if(e?.code==='INSUFFICIENT_COINS') showCoinModal(e.cost,e.balance);
+      result.innerHTML='<b>⚠️ Phân tích chưa chạy được</b><p>'+esc(e?.name==='AbortError'?'AI phản hồi quá lâu, hãy thử lại.':(e?.message||String(e)))+'</p>'
+    }
     finally{btn.disabled=false;btn.textContent='⚡ PHÂN TÍCH AI'}
   };
   const schematicBtn = $('analyzeSchematic');
@@ -595,9 +636,15 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
     if(!zone&&!panic){result.innerHTML='<b>⚠️ Thiếu dữ liệu</b><p>Nhập vùng/linh kiện hoặc PANIC log trước.</p>';return}
     btn.disabled=true;btn.textContent='⏳ Đang phân tích...';result.innerHTML='<b>⏳ AI đang đọc yêu cầu schematic…</b>';
     try{
-      const reply=await callAI(['Phân tích yêu cầu schematic/boardview cho ca sửa iPhone.','Loại tài liệu: '+doc,'Vùng / linh kiện: '+zone,'PANIC LOG: '+panic,'Nêu vùng cần kiểm tra, tín hiệu/rail liên quan nếu có bằng chứng, phép đo nên làm và điều kiện kết luận. Không bịa reference designator hoặc net name chưa được cung cấp.'].join('\n'),await image('schematicImage'),'schematicImage');
-      result.innerHTML='<b>📐 Kết quả Schematic Intelligence</b><div style="white-space:pre-wrap;line-height:1.65;margin-top:8px">'+esc(reply)+'</div>';
-    }catch(e){console.error('Schematic AI:',e);result.innerHTML='<b>⚠️ Schematic chưa phân tích được</b><p>'+esc(e?.name==='AbortError'?'AI phản hồi quá lâu, hãy thử lại.':(e?.message||String(e)))+'</p>'}
+      const ai=await callAI(['Phân tích yêu cầu schematic/boardview cho ca sửa iPhone.','Loại tài liệu: '+doc,'Vùng / linh kiện: '+zone,'PANIC LOG: '+panic,'Nêu vùng cần kiểm tra, tín hiệu/rail liên quan nếu có bằng chứng, phép đo nên làm và điều kiện kết luận. Không bịa reference designator hoặc net name chưa được cung cấp.'].join('\n'),await image('schematicImage'),'schematicImage');
+      const reply=ai.reply;
+      const bill=ai.billing;
+      result.innerHTML='<b>📐 Kết quả Schematic Intelligence</b><div style="white-space:pre-wrap;line-height:1.65;margin-top:8px">'+esc(reply)+'</div><div class="muted" style="margin-top:10px">🪙 Đã trừ '+bill.cost+' Coin • Còn lại '+bill.balance+' Coin</div>';
+    }catch(e){
+      console.error('Schematic AI:',e);
+      if(e?.code==='INSUFFICIENT_COINS') showCoinModal(e.cost,e.balance);
+      result.innerHTML='<b>⚠️ Schematic chưa phân tích được</b><p>'+esc(e?.name==='AbortError'?'AI phản hồi quá lâu, hãy thử lại.':(e?.message||String(e)))+'</p>'
+    }
     finally{btn.disabled=false;btn.textContent='📐 ANALYZE SCHEMATIC'}
   });
   const schematicInput=$('schematicImage');
@@ -693,4 +740,18 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
   }
 })();
 </script>
+
+<div class="coin-modal" id="coinModal" role="dialog" aria-modal="true" aria-labelledby="coinModalTitle">
+  <div class="coin-modal-box">
+    <div class="coin-modal-icon">🪙</div>
+    <h2 id="coinModalTitle">Bạn đã hết Coin</h2>
+    <p id="coinModalMessage">Tính năng AI này cần Coin để tiếp tục phân tích.</p>
+    <div class="coin-modal-balance" id="coinModalBalance">Số dư: 0 Coin</div>
+    <div class="coin-modal-actions">
+      <a class="btn primary" href="member-wallet.html">💳 Nạp Coin ngay</a>
+      <button class="btn coin-modal-close" id="coinModalClose" type="button">Để sau</button>
+    </div>
+  </div>
+</div>
+
 </body></html>
