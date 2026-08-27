@@ -62,7 +62,7 @@ function getImage(item){const x=item.thumbnail||item.enclosure?.link||item.enclo
 function card(item){
  const title=esc(item.title), desc=esc(cleanDesc(item.description||item.content)), source=esc(item.source||'Tin tức'), date=item.pubDate?new Date(item.pubDate).toLocaleString('vi-VN',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'Mới cập nhật'; const image=getImage(item);
  const data=encodeURIComponent(JSON.stringify({title:item.title,description:item.description||item.content,link:item.link,source:item.source||'Nguồn tin',date:item.pubDate}));
- return '<article class="news" data-item="'+data+'">'+(image?'<div class="news-media"><img src="'+esc(image)+'" alt="" loading="lazy" referrerpolicy="no-referrer"></div>':'')+'<div class="source">'+source+'</div><h3>'+title+'</h3><p>'+desc+'</p><span class="time">'+date+'</span></article>';
+ return '<article class="news" data-item="'+data+'">'+(image?'<div class="news-media"><img src="'+esc(image)+'" data-original-src="'+esc(image)+'" alt="" loading="lazy" referrerpolicy="no-referrer"></div>':'')+'<div class="source">'+source+'</div><h3>'+title+'</h3><p>'+desc+'</p><span class="time">'+date+'</span></article>';
 }
 async function loadSection(id,feeds){
  const el=document.getElementById(id);el.innerHTML='<div class="empty"><span class="spinner"></span> Đang cập nhật…</div>';
@@ -119,6 +119,14 @@ const YOUTUBE_VIDEOS={
  'iPhone games':{id:'-etoRi1t2co',title:'Apple • iPhone'},
  'PC gaming Việt Nam':{id:'Cso5M9gp2kA',title:'Video giải trí'}
 };
+document.addEventListener('error',e=>{
+ const img=e.target;
+ if(img.tagName!=='IMG'||img.dataset.proxyTried==='1') return;
+ const src=img.dataset.originalSrc||img.src;
+ if(!src||src.startsWith('data:')) return;
+ img.dataset.proxyTried='1';
+ img.src='https://images.weserv.nl/?url='+encodeURIComponent(src);
+},{capture:true});
 document.addEventListener('click',e=>{
  const n=e.target.closest('.news');if(n){try{openReader(JSON.parse(decodeURIComponent(n.dataset.item)))}catch(x){}}
  const close=e.target.closest('[data-close]');if(close){document.getElementById('reader').classList.remove('open');document.body.classList.remove('modal-open')}
