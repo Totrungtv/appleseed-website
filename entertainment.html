@@ -152,7 +152,23 @@ async function fetchWithTimeout(url,options={}){
 const esc=s=>String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 const strip=s=>{const d=document.createElement('div');d.innerHTML=s||'';return d.textContent||d.innerText||''};
 function cleanDesc(s){return strip(s).replace(/\s+/g,' ').trim().slice(0,220)}
-function getImages(item){\n const out=[];\n const add=v=>{if(!v)return;let x=String(v).trim();if(x.startsWith('//'))x='https:'+x;if(x.startsWith('http://'))x='https://'+x.slice(7);if(/^https:\/\//i.test(x)&&!out.includes(x))out.push(x)};\n add(item.thumbnail);add(item.enclosure?.link);add(item.enclosure?.url);\n const raw=String(item.content||'')+'\\n'+String(item.description||'');\n const re=/(?:src|data-src|data-original)=[\\\"']([^\\\"']+)[\\\"']/gi;let m;\n while((m=re.exec(raw))!==null)add(m[1]);\n return out.slice(0,8);\n}\nfunction imageProxyUrl(url,variant=0){const u=String(url||'').trim();if(!u)return '';const safe=u.startsWith('http://')?'https://'+u.slice(7):u;if(variant===0)return 'https://images.weserv.nl/?url='+encodeURIComponent(safe);if(variant===1)return 'https://wsrv.nl/?url='+encodeURIComponent(safe);return safe;}\nfunction card(item){
+function getImages(item){
+ const out=[];
+ const add=v=>{if(!v)return;let x=String(v).trim();if(x.startsWith('//'))x='https:'+x;if(x.startsWith('http://'))x='https://'+x.slice(7);if(/^https:\/\//i.test(x)&&!out.includes(x))out.push(x)};
+ add(item.thumbnail);add(item.enclosure?.link);add(item.enclosure?.url);
+ const raw=String(item.content||'')+'\\n'+String(item.description||'');
+ const re=/(?:src|data-src|data-original)=[\"']([^\"']+)[\"']/gi;let m;
+ while((m=re.exec(raw))!==null)add(m[1]);
+ return out.slice(0,8);
+}
+function imageProxyUrl(url,variant=0){
+ const u=String(url||'').trim();if(!u)return '';
+ const safe=u.startsWith('http://')?'https://'+u.slice(7):u;
+ if(variant===0)return 'https://images.weserv.nl/?url='+encodeURIComponent(safe);
+ if(variant===1)return 'https://wsrv.nl/?url='+encodeURIComponent(safe);
+ return safe;
+}
+function card(item){
  const title=esc(item.title), desc=esc(cleanDesc(item.description||item.content)), source=esc(item.source||'Tin tức'), date=item.pubDate?new Date(item.pubDate).toLocaleString('vi-VN',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'Mới cập nhật'; const images=getImages(item);
  const image=images[0]||'';
  const candidates=encodeURIComponent(JSON.stringify(images));
