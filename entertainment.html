@@ -58,11 +58,24 @@ let ALL_NEWS=[];
 const esc=s=>String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 const strip=s=>{const d=document.createElement('div');d.innerHTML=s||'';return d.textContent||d.innerText||''};
 function cleanDesc(s){return strip(s).replace(/\s+/g,' ').trim().slice(0,220)}
-function getImage(item){const x=item.thumbnail||item.enclosure?.link||item.enclosure?.url||'';if(x)return x;const raw=item.content||item.description||'';const m=raw.match(/<img[^>]+src=[\"']([^\"']+)/i);return m?m[1]:''}
+function getImages(item){
+ const out=[];
+ const add=v=>{if(!v)return;const x=String(v).trim();if(/^https?:\\/\\//i.test(x)&&!out.includes(x))out.push(x)};
+ add(item.thumbnail);
+ add(item.enclosure?.link);
+ add(item.enclosure?.url);
+ const raw=String(item.content||'')+'\\n'+String(item.description||'');
+ const re=/(?:src|data-src|data-original)=[\\\"']([^\\\"']+)[\\\"']/gi;
+ let m;
+ while((m=re.exec(raw))!==null) add(m[1]);
+ return out.slice(0,6);
+}
 function card(item){
- const title=esc(item.title), desc=esc(cleanDesc(item.description||item.content)), source=esc(item.source||'Tin tức'), date=item.pubDate?new Date(item.pubDate).toLocaleString('vi-VN',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'Mới cập nhật'; const image=getImage(item);
+ const title=esc(item.title), desc=esc(cleanDesc(item.description||item.content)), source=esc(item.source||'Tin tức'), date=item.pubDate?new Date(item.pubDate).toLocaleString('vi-VN',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'Mới cập nhật'; const images=getImages(item);
+ const image=images[0]||'';
+ const candidates=encodeURIComponent(JSON.stringify(images));
  const data=encodeURIComponent(JSON.stringify({title:item.title,description:item.description||item.content,link:item.link,source:item.source||'Nguồn tin',date:item.pubDate}));
- return '<article class="news" data-item="'+data+'">'+(image?'<div class="news-media"><img src="'+esc(image)+'" data-original-src="'+esc(image)+'" alt="" loading="lazy" referrerpolicy="no-referrer"></div>':'')+'<div class="source">'+source+'</div><h3>'+title+'</h3><p>'+desc+'</p><span class="time">'+date+'</span></article>';
+ return '<article class="news" data-item="'+data+'">'+(image?'<div class="news-media"><img src="'+esc(image)+'" data-original-src="'+esc(image)+'" data-image-candidates="'+candidates+'" data-image-index="0" data-proxy-tried="0" alt="" loading="lazy" referrerpolicy="no-referrer"></div>':'')+'<div class="source">'+source+'</div><h3>'+title+'</h3><p>'+desc+'</p><span class="time">'+date+'</span></article>';
 }
 async function loadSection(id,feeds){
  const el=document.getElementById(id);el.innerHTML='<div class="empty"><span class="spinner"></span> Đang cập nhật…</div>';
@@ -151,11 +164,25 @@ const YOUTUBE_VIDEOS={
 };
 document.addEventListener('error',e=>{
  const img=e.target;
- if(img.tagName!=='IMG'||img.dataset.proxyTried==='1') return;
- const src=img.dataset.originalSrc||img.src;
- if(!src||src.startsWith('data:')) return;
- img.dataset.proxyTried='1';
- img.src='https://images.weserv.nl/?url='+encodeURIComponent(src);
+ if(img.tagName!=='IMG') return;
+ let candidates=[];
+ try{candidates=JSON.parse(decodeURIComponent(img.dataset.imageCandidates||'[]'));}catch(_){}
+ if(!candidates.length) return;
+ let idx=Number(img.dataset.imageIndex||0);
+ const proxied=img.dataset.proxyTried==='1';
+ if(!proxied){
+   img.dataset.proxyTried='1';
+   img.src='https://images.weserv.nl/?url='+encodeURIComponent(candidates[idx]);
+   return;
+ }
+ if(idx+1<candidates.length){
+   idx++;
+   img.dataset.imageIndex=String(idx);
+   img.dataset.proxyTried='0';
+   img.src=candidates[idx];
+   return;
+ }
+ img.style.display='none';
 },{capture:true});
 document.addEventListener('click',e=>{
  const n=e.target.closest('.news');if(n){try{openReader(JSON.parse(decodeURIComponent(n.dataset.item)))}catch(x){}}
