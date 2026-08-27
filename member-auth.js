@@ -389,6 +389,12 @@ async function memberSignUp(
       cleanPhone
     );
 
+    try{
+      await memberSB.rpc('apple_seed_member_touch');
+    }catch(error){
+      console.warn('Apple Seed member touch:', error);
+    }
+
   }
 
   return {
@@ -471,6 +477,12 @@ async function memberSignIn(
     await memberEnsureProfile(
       result.data.user
     );
+
+    try{
+      await memberSB.rpc('apple_seed_member_touch');
+    }catch(error){
+      console.warn('Apple Seed member touch:', error);
+    }
 
   }
 
