@@ -32,6 +32,13 @@ main{max-width:1320px;margin:auto;padding:34px 22px 65px}.section{margin-bottom:
 .yt-search-status{margin-top:12px;padding:10px 12px;border-radius:10px;background:#f7f9fc;color:var(--muted);font-size:11px;line-height:1.5}
 @media(max-width:700px){.yt-results{grid-template-columns:1fr}}
 
+.tiktok-appbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 14px;padding:10px;border:1px solid #e3e9f2;border-radius:16px;background:rgba(255,255,255,.92);box-shadow:0 8px 24px rgba(20,35,70,.06)}
+.tiktok-nav,.tiktok-login,.tiktok-open{appearance:none;border:1px solid #e0e7f1;background:#fff;color:#16233f;border-radius:10px;padding:9px 13px;font-weight:800;font-size:12px;text-decoration:none;cursor:pointer}
+.tiktok-nav.active{background:#111827;color:#fff;border-color:#111827}
+.tiktok-login{margin-left:auto;color:#111827}
+.tiktok-open{background:#2563eb;color:#fff;border-color:#2563eb}
+.tiktok-login-note{margin-top:12px;padding:11px 13px;border-radius:12px;background:#f7f9fc;border:1px solid #e2e8f0;color:#64748b;font-size:11px;line-height:1.55}
+@media(max-width:700px){.tiktok-login{margin-left:0}}
 .reader-frame-wrap{height:100%;min-height:70vh;background:#f7f9fc;position:relative}
 .reader-frame{width:100%;height:100%;min-height:70vh;border:0;display:block;background:#fff}
 .reader-frame-loading{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:13px;background:#fff;z-index:1;pointer-events:none}
@@ -48,7 +55,41 @@ main{max-width:1320px;margin:auto;padding:34px 22px 65px}.section{margin-bottom:
 <section class="hero"><div class="hero-in"><div class="eyebrow">APPLE SEED • ALL-IN-ONE</div><h1>🎬 Giải trí ngay trên Apple Seed</h1><p>Tin mới, công nghệ, thể thao, video, âm nhạc và giải trí — khách chỉ cần ở lại website Apple Seed, không phải chạy qua hàng loạt trang khác.</p></div></section>
 <div class="searchbar"><form class="searchbox" id="searchForm"><input id="searchInput" type="search" placeholder="🔎 Tìm tin tức, iPhone, AI, thể thao, game..." autocomplete="off"><button type="submit">Tìm kiếm</button></form><div id="searchResults" class="search-results"></div></div><div class="tabs"><div class="tabbar"><a class="active" href="#tin">📰 Tin mới</a><a href="#congnghe">📱 Công nghệ</a><a href="#thethao">⚽ Thể thao</a><a href="#video">▶️ Video</a><a href="#youtube">▶️ YouTube</a><a href="#tiktok">🎵 TikTok</a><a href="#amnhac">🎧 Âm nhạc</a><a href="#giaitri">🎬 Giải trí</a><a href="#game">🎮 Game</a></div></div>
 <main>
-<section class="section" id="youtube"><div class="head"><div><h2>▶️ YouTube</h2><p>Xem video YouTube bằng trình phát nhúng chính thức, ngay trong Apple Seed.</p></div></div><div class="social-grid"><div class="panel"><div class="social-player"><iframe id="youtubeFrame" title="YouTube trên Apple Seed" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div></div><div class="panel"><h3>🔎 Kho video YouTube</h3><p>Chọn chủ đề để phát video mẫu trong khung bên trái. Apple Seed không tải lại hoặc lưu video YouTube.</p><div class="social-cards"><button class="social-card" data-social-youtube="công nghệ iPhone Việt Nam"><b>📱 iPhone & Công nghệ</b><span>Video công nghệ</span></button><button class="social-card" data-social-youtube="thể thao Việt Nam"><b>⚽ Thể thao</b><span>Highlights & thể thao</span></button><button class="social-card" data-social-youtube="nhạc Việt Nam"><b>🎵 Âm nhạc</b><span>MV & V-pop</span></button><button class="social-card" data-social-youtube="lofi music"><b>🌙 Lofi</b><span>Study & chill</span></button></div><div class="social-search"><input id="youtubeSearch" type="search" placeholder="Tìm trong kho video hoặc dán link YouTube..."><button id="youtubeSearchBtn" type="button" onclick="window.appleSeedYoutubeSearch && window.appleSeedYoutubeSearch();">Tìm / Xem</button></div><div id="youtubeSearchResults"></div><div class="social-note">Apple Seed không tải, cào hoặc lưu video YouTube. Từ khóa được gửi tới bộ máy YouTube Search ở server; kết quả trả về thumbnail, tiêu đề và kênh. Bấm video để phát bằng trình phát YouTube chính thức ngay trong Apple Seed. API key YouTube không nằm trong mã frontend.</div></div></div></section><section class="section" id="tiktok"><div class="head"><div><h2>🎵 TikTok</h2><p>Nhúng video TikTok công khai bằng trình phát chính thức, không tải lại video về Apple Seed.</p></div></div><div class="social-grid"><div class="panel"><div class="social-player"><iframe id="tiktokFrame" title="TikTok trên Apple Seed" allow="fullscreen"></iframe></div></div><div class="panel"><h3>📌 Xem TikTok ngay trên web</h3><p>Dán URL video TikTok công khai vào đây. Apple Seed chỉ lấy ID bài đăng để gọi trình phát TikTok chính thức.</p><div class="social-search"><input id="tiktokUrl" type="url" placeholder="https://www.tiktok.com/@.../video/..."><button id="tiktokLoad" type="button">Xem</button></div><div class="social-note">Không tải, lưu hay sao chép video TikTok. Đây là iframe player chính thức của TikTok.</div><div class="chips"><button class="chip" data-tiktok-id="6718335390845095173">▶ Video TikTok mẫu</button></div></div></div></section><section class="section" id="tin"><div class="head"><div><h2>📰 Tin mới</h2><p>Nội dung được lấy từ RSS và hiển thị bằng giao diện Apple Seed.</p></div><button class="refresh" id="refresh">↻ Cập nhật</button></div><div id="newsGrid" class="news-grid"><div class="empty"><span class="spinner"></span> Đang tải tin mới…</div></div></section>
+<section class="section" id="youtube"><div class="head"><div><h2>▶️ YouTube</h2><p>Xem video YouTube bằng trình phát nhúng chính thức, ngay trong Apple Seed.</p></div></div><div class="social-grid"><div class="panel"><div class="social-player"><iframe id="youtubeFrame" title="YouTube trên Apple Seed" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div></div><div class="panel"><h3>🔎 Kho video YouTube</h3><p>Chọn chủ đề để phát video mẫu trong khung bên trái. Apple Seed không tải lại hoặc lưu video YouTube.</p><div class="social-cards"><button class="social-card" data-social-youtube="công nghệ iPhone Việt Nam"><b>📱 iPhone & Công nghệ</b><span>Video công nghệ</span></button><button class="social-card" data-social-youtube="thể thao Việt Nam"><b>⚽ Thể thao</b><span>Highlights & thể thao</span></button><button class="social-card" data-social-youtube="nhạc Việt Nam"><b>🎵 Âm nhạc</b><span>MV & V-pop</span></button><button class="social-card" data-social-youtube="lofi music"><b>🌙 Lofi</b><span>Study & chill</span></button></div><div class="social-search"><input id="youtubeSearch" type="search" placeholder="Tìm trong kho video hoặc dán link YouTube..."><button id="youtubeSearchBtn" type="button" onclick="window.appleSeedYoutubeSearch && window.appleSeedYoutubeSearch();">Tìm / Xem</button></div><div id="youtubeSearchResults"></div><div class="social-note">Apple Seed không tải, cào hoặc lưu video YouTube. Từ khóa được gửi tới bộ máy YouTube Search ở server; kết quả trả về thumbnail, tiêu đề và kênh. Bấm video để phát bằng trình phát YouTube chính thức ngay trong Apple Seed. API key YouTube không nằm trong mã frontend.</div></div></div></section><section class="section" id="tiktok">
+<div class="head">
+  <div><h2>🎵 TikTok</h2><p>Trải nghiệm TikTok ngay trong Apple Seed với trình phát chính thức và khu điều hướng kiểu ứng dụng.</p></div>
+</div>
+<div class="tiktok-appbar" role="navigation" aria-label="Điều hướng TikTok">
+  <button type="button" class="tiktok-nav active" data-tiktok-action="home">🏠 Trang chủ</button>
+  <button type="button" class="tiktok-nav" data-tiktok-action="explore">🔎 Khám phá</button>
+  <a class="tiktok-nav" href="https://www.tiktok.com/" target="_blank" rel="noopener">🎵 TikTok</a>
+  <a class="tiktok-login" href="https://www.tiktok.com/login" target="_blank" rel="noopener">🔐 Đăng nhập TikTok</a>
+  <a class="tiktok-open" href="https://www.tiktok.com/" target="_blank" rel="noopener">Mở TikTok ↗</a>
+</div>
+<div class="social-grid">
+  <div class="panel">
+    <div class="social-player">
+      <iframe id="tiktokFrame" title="TikTok trên Apple Seed" allow="fullscreen; autoplay" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>📌 Xem TikTok ngay trên Apple Seed</h3>
+    <p>Dán URL video TikTok công khai. Apple Seed chỉ lấy ID để phát bằng trình phát chính thức của TikTok.</p>
+    <div class="social-search">
+      <input id="tiktokUrl" type="url" placeholder="https://www.tiktok.com/@.../video/..." autocomplete="url">
+      <button id="tiktokLoad" type="button">Xem</button>
+    </div>
+    <div class="chips">
+      <button class="chip" data-tiktok-id="6718335390845095173">▶ Video TikTok mẫu</button>
+      <a class="chip" href="https://www.tiktok.com/explore" target="_blank" rel="noopener">🔎 Khám phá TikTok</a>
+    </div>
+    <div class="tiktok-login-note">
+      <strong>🔐 Đăng nhập:</strong> TikTok không cho phép Apple Seed giả lập hoặc nhúng trang đăng nhập của TikTok trong iframe. Nút <b>Đăng nhập TikTok</b> mở trang đăng nhập chính thức của TikTok, nên tài khoản và mật khẩu vẫn được bảo vệ bởi TikTok.
+    </div>
+    <div class="social-note">Không tải, lưu hay sao chép video TikTok. Apple Seed chỉ nhúng trình phát chính thức và không vượt cơ chế bảo mật của TikTok.</div>
+  </div>
+</div>
+</section><section class="section" id="tin"><div class="head"><div><h2>📰 Tin mới</h2><p>Nội dung được lấy từ RSS và hiển thị bằng giao diện Apple Seed.</p></div><button class="refresh" id="refresh">↻ Cập nhật</button></div><div id="newsGrid" class="news-grid"><div class="empty"><span class="spinner"></span> Đang tải tin mới…</div></div></section>
 <section class="section" id="congnghe"><div class="head"><div><h2>📱 Công nghệ</h2><p>Tập trung vào Apple, điện thoại, AI và xu hướng công nghệ.</p></div></div><div id="techGrid" class="news-grid"><div class="empty">Đang tải…</div></div></section>
 <section class="section" id="thethao"><div class="head"><div><h2>⚽ Thể thao</h2><p>Tin thể thao cập nhật nhanh.</p></div></div><div id="sportGrid" class="news-grid"><div class="empty">Đang tải…</div></div></section>
 <section class="section" id="video"><div class="head"><div><h2>▶️ Video</h2><p>Video YouTube mở và phát trong chính giao diện Apple Seed.</p></div></div><div class="video-grid">
@@ -365,6 +406,12 @@ bindYoutubeSearch();
 
 
 
+document.querySelectorAll('[data-tiktok-action]').forEach(btn=>btn.addEventListener('click',()=>{
+  document.querySelectorAll('.tiktok-nav[data-tiktok-action]').forEach(x=>x.classList.remove('active'));
+  btn.classList.add('active');
+  if(btn.dataset.tiktokAction==='explore') window.open('https://www.tiktok.com/explore','_blank','noopener');
+  else window.open('https://www.tiktok.com/','_blank','noopener');
+}));
 function tiktokPlayerUrl(id){
  return 'https://www.tiktok.com/player/v1/'+encodeURIComponent(id)+'?controls=1&description=1&music_info=1&rel=1';
 }
