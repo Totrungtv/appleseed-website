@@ -1,0 +1,3 @@
+-- Applied to Supabase migration: apple_seed_admin_security_hardening_2026_08_27
+-- Purpose: Admin-only CMS/site settings and protected profile roles.
+-- Full migration is recorded in Supabase migration history.
