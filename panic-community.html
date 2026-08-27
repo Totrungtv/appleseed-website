@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Apple Seed • PANIC Community</title>
+<title>Apple Seed • PANIC Community Forum</title>
 <style>
 :root{--blue:#1769ff;--ink:#10233f;--muted:#647b98;--line:#d5e5f5;--bg:#f3f8ff}
 *{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--ink);background:linear-gradient(135deg,#f7fbff,#edf6ff)}
@@ -12,12 +12,12 @@
 <body>
 <main class="wrap">
 <header class="top">
-<div><div class="kicker">APPLE SEED • COMMUNITY</div><h1>🚨 PANIC Control Center</h1><div class="muted">Ca thực tế của anh em thợ • dữ liệu gốc → thảo luận → xác minh → Knowledge Base.</div></div>
-<div class="top-actions"><a class="btn secondary" href="ai-board.html">🔬 AI Board</a><a class="btn primary" href="panic-community.html">💬 Mở PANIC Community</a></div>
+<div><div class="kicker">APPLE SEED • COMMUNITY</div><h1>💬 PANIC Community Forum</h1><div class="muted">Diễn đàn kỹ thuật của anh em thợ • ca thực tế → thảo luận → xác minh → Knowledge Base.</div></div>
+<div class="top-actions"><a class="btn secondary" href="panic-center.html">🚨 PANIC Control Center</a><button class="btn primary" id="newCase" type="button">＋ Đăng ca PANIC</button></div>
 </header>
 
 <section class="card">
-<div class="kicker">TECHNICIAN NETWORK</div><h2 style="margin:5px 0">Các ca đang thảo luận</h2><div class="muted">Khu vực điều hướng ca thực tế. Muốn đăng ca mới, vào <a href="panic-community.html" style="color:#1769ff;font-weight:800">PANIC Community</a> — đây là nơi duy nhất để đăng ca.</div>
+<div class="kicker">PANIC COMMUNITY</div><h2 style="margin:5px 0">Diễn đàn ca thực tế</h2><div class="muted">Nơi anh em thợ đăng ca, xem ảnh thực tế, phân tích log và trao đổi giải pháp. <b>Đăng ca PANIC chỉ có tại đây.</b></div>
 <div class="toolbar"><input id="search" placeholder="🔎 Tìm model, PANIC, IC, triệu chứng..."><select id="model"><option value="">Tất cả model</option></select><select id="status"><option value="">Tất cả trạng thái</option><option value="open">Đang xử lý</option><option value="solved">Đã xử lý</option><option value="verified">Đã xác minh</option></select><button class="btn secondary" id="refresh" type="button">↻ Làm mới</button></div>
 <div id="list" class="case-list"><div class="empty">Đang tải ca thực tế...</div></div>
 </section>
