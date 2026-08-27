@@ -33,11 +33,10 @@ main{max-width:1320px;margin:auto;padding:34px 22px 65px}.section{margin-bottom:
 <section class="section" id="tin"><div class="head"><div><h2>📰 Tin mới</h2><p>Nội dung được lấy từ RSS và hiển thị bằng giao diện Apple Seed.</p></div><button class="refresh" id="refresh">↻ Cập nhật</button></div><div id="newsGrid" class="news-grid"><div class="empty"><span class="spinner"></span> Đang tải tin mới…</div></div></section>
 <section class="section" id="congnghe"><div class="head"><div><h2>📱 Công nghệ</h2><p>Tập trung vào Apple, điện thoại, AI và xu hướng công nghệ.</p></div></div><div id="techGrid" class="news-grid"><div class="empty">Đang tải…</div></div></section>
 <section class="section" id="thethao"><div class="head"><div><h2>⚽ Thể thao</h2><p>Tin thể thao cập nhật nhanh.</p></div></div><div id="sportGrid" class="news-grid"><div class="empty">Đang tải…</div></div></section>
-<section class="section" id="video"><div class="head"><div><h2>▶️ YouTube ngay trên Apple Seed</h2><p>Video dùng trình phát nhúng chính thức của YouTube — không tải lại trang, không mở tab mới.</p></div></div>
-<div class="video-grid">
-<article class="video"><div class="thumb">▶️</div><div class="video-body"><h3>iPhone 17 • Apple</h3><p>Video chính thức từ kênh Apple Việt Nam.</p><button data-youtube-id="-etoRi1t2co" data-youtube-title="iPhone 17 • Chống trầy xước tốt hơn • Apple">Xem ngay</button></div></article>
-<article class="video"><div class="thumb">⚽</div><div class="video-body"><h3>Thể thao Việt Nam</h3><p>Video bóng đá Việt Nam được phép nhúng.</p><button data-youtube-id="Cso5M9gp2kA" data-youtube-title="Bóng đá Việt Nam • Highlights">Xem ngay</button></div></article>
-<article class="video"><div class="thumb">🎙️</div><div class="video-body"><h3>Podcast / Công nghệ</h3><p>Video podcast công nghệ từ YouTube.</p><button data-youtube-id="nNwvzxP2xpw" data-youtube-title="The Vergecast • Apple & công nghệ">Xem ngay</button></div></article>
+<section class="section" id="video"><div class="head"><div><h2>▶️ Video</h2><p>Video YouTube mở và phát trong chính giao diện Apple Seed.</p></div></div><div class="video-grid">
+<article class="video"><div class="thumb">▶</div><div class="video-body"><h3>Công nghệ & iPhone</h3><p>Tìm video công nghệ mới nhất trên YouTube.</p><button data-youtube="công nghệ iPhone Việt Nam">Xem trong Apple Seed</button></div></article>
+<article class="video"><div class="thumb">⚽</div><div class="video-body"><h3>Thể thao</h3><p>Tìm video thể thao và highlights.</p><button data-youtube="thể thao Việt Nam">Xem trong Apple Seed</button></div></article>
+<article class="video"><div class="thumb">🎵</div><div class="video-body"><h3>Âm nhạc</h3><p>Tìm MV và nội dung âm nhạc.</p><button data-youtube="nhạc Việt Nam">Xem trong Apple Seed</button></div></article>
 </div></section>
 <section class="section" id="amnhac"><div class="head"><div><h2>🎧 Âm nhạc & Podcast</h2><p>Mở nội dung hỗ trợ phát trực tiếp trong website.</p></div></div><div class="live"><div class="panel"><h3>🎵 YouTube Music</h3><p>Tra cứu và nghe nội dung YouTube Music từ giao diện Apple Seed.</p><div class="chips"><button class="chip" data-youtube="nhạc Việt Nam">Nhạc Việt</button><button class="chip" data-youtube="lofi music">Lofi</button><button class="chip" data-youtube="podcast Việt Nam">Podcast</button></div></div><div class="panel"><h3>🟢 Spotify</h3><p>Spotify có thể mở trình phát nhúng đối với nội dung cho phép embed.</p><div class="chips"><a class="chip" href="https://open.spotify.com/embed">Mở trình phát Spotify</a></div></div></div></section>
 <section class="section" id="giaitri"><div class="head"><div><h2>🎬 Giải trí</h2><p>Phim, show, người nổi tiếng và nội dung đời sống.</p></div></div><div id="entGrid" class="news-grid"><div class="empty">Đang tải…</div></div></section>
@@ -46,7 +45,7 @@ main{max-width:1320px;margin:auto;padding:34px 22px 65px}.section{margin-bottom:
 <footer class="footer">Apple Seed Entertainment Center · <strong>Tô Thanh Trung – Apple Seed</strong> · <a href="./index.html">Trang chính</a></footer>
 
 <div id="reader" aria-hidden="true"><div class="reader-bg" data-close></div><section class="reader-box"><header class="reader-head"><div><div class="reader-title" id="rSource">Apple Seed</div><div class="reader-source" id="rUrl"></div></div><button class="close" data-close>✕ Đóng</button></header><article class="reader-content"><div class="label" id="rLabel"></div><h1 id="rTitle"></h1><div class="meta" id="rMeta"></div><div class="body" id="rBody"></div><div class="related-video" id="relatedVideo"><div class="related-video-head"><div><h3>▶️ Video liên quan</h3><p id="relatedVideoDesc">Video từ YouTube được phát bằng trình phát nhúng chính thức.</p></div><button id="relatedVideoBtn">Xem video</button></div><iframe class="mini-frame" id="relatedVideoFrame" title="Video liên quan" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div><div class="reader-actions"><a id="rOriginal" href="#" target="_blank" rel="noopener">Đọc nguồn gốc ↗</a><button data-close>← Quay lại tin</button></div></article></section></div>
-<div id="player"><div class="player-head"><strong id="pTitle">Apple Seed Video</strong><button class="close" id="pClose">✕ Đóng</button></div><div class="player-frame"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen id="pFrame" title="Apple Seed Video" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div></div>
+<div id="player"><div class="player-head"><strong id="pTitle">Apple Seed Video</strong><button class="close" id="pClose">✕ Đóng</button></div><div class="player-frame"><iframe id="pFrame" title="Apple Seed Video" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div></div>
 <script>
 const FEEDS={
 news:[['VnExpress','https://vnexpress.net/rss/tin-moi-nhat.rss'],['Tuổi Trẻ','https://tuoitre.vn/rss/tin-moi-nhat.rss']],
@@ -142,13 +141,13 @@ function setupRelatedVideo(item){
 }
 const YOUTUBE_VIDEOS={
  'công nghệ iPhone Việt Nam':{id:'-etoRi1t2co',title:'iPhone 17 • Apple Việt Nam'},
- 'thể thao Việt Nam':{id:'Cso5M9gp2kA',title:'Highlights bóng đá Việt Nam'},
- 'nhạc Việt Nam':{id:'nNwvzxP2xpw',title:'YouTube • Podcast / công nghệ'},
- 'lofi music':{id:'nNwvzxP2xpw',title:'YouTube • Podcast / công nghệ'},
- 'podcast Việt Nam':{id:'nNwvzxP2xpw',title:'The Vergecast'},
- 'game Việt Nam esports':{id:'Cso5M9gp2kA',title:'Video thể thao'},
+ 'thể thao Việt Nam':{id:'Cso5M9gp2kA',title:'Highlights bóng đá Việt Nam • NEXT SPORTS'},
+ 'nhạc Việt Nam':{id:'TYaAUBYEWuY',title:'Top bài hát Vpop 2026'},
+ 'lofi music':{id:'GrKvW6Dcrco',title:'Lofi • Study, Sleep & Chill 2026'},
+ 'podcast Việt Nam':{id:'nNwvzxP2xpw',title:'Podcast • The Vergecast'},
+ 'game Việt Nam esports':{id:'Cso5M9gp2kA',title:'Esports & thể thao'},
  'iPhone games':{id:'-etoRi1t2co',title:'Apple • iPhone'},
- 'PC gaming Việt Nam':{id:'Cso5M9gp2kA',title:'Video thể thao'}
+ 'PC gaming Việt Nam':{id:'Cso5M9gp2kA',title:'Video giải trí'}
 };
 document.addEventListener('error',e=>{
  const img=e.target;
@@ -161,19 +160,11 @@ document.addEventListener('error',e=>{
 document.addEventListener('click',e=>{
  const n=e.target.closest('.news');if(n){try{openReader(JSON.parse(decodeURIComponent(n.dataset.item)))}catch(x){}}
  const close=e.target.closest('[data-close]');if(close){document.getElementById('reader').classList.remove('open');document.body.classList.remove('modal-open')}
- const y=e.target.closest('[data-youtube-id]');if(y){
-   const id=String(y.dataset.youtubeId||'').replace(/[^a-zA-Z0-9_-]/g,'');
-   if(!id) return;
-   document.getElementById('pTitle').textContent='YouTube • '+(y.dataset.youtubeTitle||'Video');
-   document.getElementById('pFrame').src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&rel=0&modestbranding=1&playsinline=1';
-   document.getElementById('player').style.display='block';document.body.classList.add('modal-open');
-   return;
- }
  const y=e.target.closest('[data-youtube]');if(y){
    const q=y.dataset.youtube, v=YOUTUBE_VIDEOS[q];
-   if(!v) return;
-   document.getElementById('pTitle').textContent='YouTube • '+v.title;
-   document.getElementById('pFrame').src='https://www.youtube-nocookie.com/embed/'+v.id+'?autoplay=1&rel=0&modestbranding=1&playsinline=1';
+   document.getElementById('pTitle').textContent='YouTube • '+(v?v.title:q);
+   if(v) document.getElementById('pFrame').src='https://www.youtube-nocookie.com/embed/'+v.id+'?autoplay=1&rel=0&modestbranding=1&playsinline=1';
+   else document.getElementById('pFrame').src='https://www.youtube-nocookie.com/embed/-etoRi1t2co?autoplay=1&rel=0&playsinline=1';
    document.getElementById('player').style.display='block';document.body.classList.add('modal-open');
  }
 });
