@@ -67,10 +67,23 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
   .youtube-player-title{max-height:24vh!important;overflow:auto!important}
 }
 
+
+/* ===== MEMBER GATE: AI BOARD ===== */
+.member-gate{margin-top:18px;background:#fff;border:1px solid #cfe2f7;border-radius:20px;padding:26px;text-align:center;box-shadow:0 18px 55px #1e50821a}
+.member-gate-icon{font-size:34px}.member-gate h2{margin:8px 0 7px}.member-gate p{margin:0 auto;max-width:720px;color:#647b98;line-height:1.6}.member-gate-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:16px}
+.member-gate a{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+/* Chỉ mở YouTube cho khách; toàn bộ công cụ AI/Board/Library/Community yêu cầu Member. */
+body.member-guest .repair-video-library,
+body.member-guest .youtube-submit,
+body.member-guest .grid,
+body.member-guest main > .card{display:none!important}
+body.member-guest .member-gate{display:block}
+body.member-guest .top .pill{display:none}
+@media(max-width:560px){.member-gate{padding:20px 16px}}
 </style>
 </head>
-<body><main class="wrap">
-<header class="top"><div><div class="kicker">APPLE SEED • ENGINEERING LAB</div><h1>AI Board Intelligence</h1><div class="muted">PANIC • Schematic • Boardview • Measurement • Case Intelligence</div></div><div><span class="pill">🪙 1,250 COIN</span><span class="pill">● AI ONLINE</span></div></header>
+<body class="member-guest"><main class="wrap">
+<header class="top"><div><div class="kicker">APPLE SEED • ENGINEERING LAB</div><h1>AI Board Intelligence</h1><div class="muted">YouTube miễn phí • Các công cụ kỹ thuật dành cho thành viên Apple Seed</div></div></header>
 
 
 
@@ -94,6 +107,13 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
     <input id="youtubeDirectUrl" placeholder="Hoặc dán link YouTube để xem trực tiếp..." aria-label="YouTube URL">
     <button class="btn secondary" id="youtubeOpenUrl" type="button">▶️ Xem link</button>
   </div>
+</section>
+
+<section class="member-gate" id="member-gate">
+  <div class="member-gate-icon">🔐</div>
+  <h2>Đăng ký thành viên để sử dụng toàn bộ tính năng</h2>
+  <p>Apple Seed mở khu vực YouTube để mọi người xem miễn phí. Các tính năng AI Board, chẩn đoán PANIC, schematic, boardview, thư viện sửa chữa và cộng đồng kỹ thuật chỉ dành cho thành viên.</p>
+  <div class="member-gate-actions"><a class="btn primary" href="index.html">👤 Đăng ký / Đăng nhập thành viên</a></div>
 </section>
 
 <section class="repair-video-library" id="repair-video-library">
