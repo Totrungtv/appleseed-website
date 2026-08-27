@@ -93,10 +93,26 @@ async function openReader(item){
    body.innerHTML=item.description||item.content||'<p>Không tải được toàn bộ bài viết từ nguồn. Pa có thể bấm “Đọc nguồn gốc” để xem bản gốc.</p>';
  }
 }
+const YOUTUBE_VIDEOS={
+ 'công nghệ iPhone Việt Nam':{id:'-etoRi1t2co',title:'iPhone 17 • Apple Việt Nam'},
+ 'thể thao Việt Nam':{id:'Cso5M9gp2kA',title:'Highlights bóng đá Việt Nam • NEXT SPORTS'},
+ 'nhạc Việt Nam':{id:'TYaAUBYEWuY',title:'Top bài hát Vpop 2026'},
+ 'lofi music':{id:'GrKvW6Dcrco',title:'Lofi • Study, Sleep & Chill 2026'},
+ 'podcast Việt Nam':{id:'nNwvzxP2xpw',title:'Podcast • The Vergecast'},
+ 'game Việt Nam esports':{id:'Cso5M9gp2kA',title:'Esports & thể thao'},
+ 'iPhone games':{id:'-etoRi1t2co',title:'Apple • iPhone'},
+ 'PC gaming Việt Nam':{id:'Cso5M9gp2kA',title:'Video giải trí'}
+};
 document.addEventListener('click',e=>{
  const n=e.target.closest('.news');if(n){try{openReader(JSON.parse(decodeURIComponent(n.dataset.item)))}catch(x){}}
  const close=e.target.closest('[data-close]');if(close){document.getElementById('reader').classList.remove('open');document.body.classList.remove('modal-open')}
- const y=e.target.closest('[data-youtube]');if(y){const q=y.dataset.youtube;document.getElementById('pTitle').textContent='YouTube • '+q;document.getElementById('pFrame').src='https://www.youtube.com/embed?listType=search&list='+encodeURIComponent(q);document.getElementById('player').style.display='block';document.body.classList.add('modal-open')}
+ const y=e.target.closest('[data-youtube]');if(y){
+   const q=y.dataset.youtube, v=YOUTUBE_VIDEOS[q];
+   document.getElementById('pTitle').textContent='YouTube • '+(v?v.title:q);
+   if(v) document.getElementById('pFrame').src='https://www.youtube-nocookie.com/embed/'+v.id+'?autoplay=1&rel=0&modestbranding=1&playsinline=1';
+   else document.getElementById('pFrame').src='https://www.youtube-nocookie.com/embed/-etoRi1t2co?autoplay=1&rel=0&playsinline=1';
+   document.getElementById('player').style.display='block';document.body.classList.add('modal-open');
+ }
 });
 document.getElementById('pClose').onclick=()=>{document.getElementById('pFrame').src='about:blank';document.getElementById('player').style.display='none';document.body.classList.remove('modal-open')};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('#reader.open').forEach(x=>x.classList.remove('open'));document.getElementById('pClose').click();document.body.classList.remove('modal-open')}});
