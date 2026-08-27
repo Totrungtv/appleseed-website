@@ -49,6 +49,20 @@ main{max-width:1320px;margin:auto;padding:34px 22px 65px}.section{margin-bottom:
 .reader-frame-wrap.loaded .reader-frame-loading{display:none}
 .reader-fallback{display:none;margin:12px 0;padding:11px 13px;border:1px solid #e0e7f1;border-radius:10px;background:#fff;color:var(--muted);font-size:11px;line-height:1.5}
 .reader-fallback a{color:var(--blue);font-weight:900;text-decoration:underline}
+/* News hub: nhiều bài nhưng vẫn gọn như một ứng dụng tin tức */
+.news-secondary{margin-top:14px;padding:12px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 24px rgba(25,45,80,.05)}
+.news-secondary-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 10px}
+.news-secondary-head b{font-size:12px}.news-secondary-head span{font-size:10px;color:var(--muted)}
+.news-rail{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;padding:2px 2px 5px;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.news-mini{flex:0 0 245px;scroll-snap-align:start;display:grid;grid-template-columns:82px 1fr;gap:10px;align-items:center;padding:8px;border:1px solid #e3e9f2;border-radius:12px;background:#f9fbfe;cursor:pointer;text-align:left;transition:.16s}
+.news-mini:hover{transform:translateY(-2px);border-color:#bfd2ff;background:#fff;box-shadow:0 8px 18px rgba(25,45,80,.08)}
+.news-mini-media{width:82px;height:62px;border-radius:9px;overflow:hidden;background:linear-gradient(135deg,#07152e,#1769ff)}
+.news-mini-media img{width:100%;height:100%;object-fit:cover;display:block}
+.news-mini-source{font-size:8px;color:var(--blue);font-weight:950;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.news-mini-title{margin-top:4px;font-size:11px;font-weight:900;line-height:1.35;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.news-mini-time{margin-top:4px;font-size:8px;color:#98a4b6}
+.search-results{position:relative;z-index:10}.search-results .news-grid{margin-top:10px}
+@media(max-width:560px){.news-secondary{padding:10px}.news-mini{flex-basis:225px}.searchbar{margin-top:16px}.search-results{margin-top:8px}}
 </style>
 </head>
 <body>
@@ -92,9 +106,9 @@ main{max-width:1320px;margin:auto;padding:34px 22px 65px}.section{margin-bottom:
     <div class="social-note">Không tải, lưu hay sao chép video TikTok. Apple Seed chỉ nhúng trình phát chính thức và không vượt cơ chế bảo mật của TikTok.</div>
   </div>
 </div>
-</section><section class="section" id="tin"><div class="head"><div><h2>📰 Tin mới</h2><p>Nội dung được lấy từ RSS và hiển thị bằng giao diện Apple Seed.</p></div><button class="refresh" id="refresh">↻ Cập nhật</button></div><div id="newsGrid" class="news-grid"><div class="empty"><span class="spinner"></span> Đang tải tin mới…</div></div></section>
-<section class="section" id="congnghe"><div class="head"><div><h2>📱 Công nghệ</h2><p>Tập trung vào Apple, điện thoại, AI và xu hướng công nghệ.</p></div></div><div id="techGrid" class="news-grid"><div class="empty">Đang tải…</div></div></section>
-<section class="section" id="thethao"><div class="head"><div><h2>⚽ Thể thao</h2><p>Tin thể thao cập nhật nhanh.</p></div></div><div id="sportGrid" class="news-grid"><div class="empty">Đang tải…</div></div></section>
+</section><section class="section" id="tin"><div class="head"><div><h2>📰 Tin mới</h2><p>Nội dung được lấy từ RSS và hiển thị bằng giao diện Apple Seed.</p></div><button class="refresh" id="refresh">↻ Cập nhật</button></div><div id="newsGrid" class="news-grid"><div class="empty"><span class="spinner"></span> Đang tải tin mới…</div></div><div id="newsSecondary" class="news-secondary"></div></section>
+<section class="section" id="congnghe"><div class="head"><div><h2>📱 Công nghệ</h2><p>Tập trung vào Apple, điện thoại, AI và xu hướng công nghệ.</p></div></div><div id="techGrid" class="news-grid"><div class="empty">Đang tải…</div></div><div id="techSecondary" class="news-secondary"></div></section>
+<section class="section" id="thethao"><div class="head"><div><h2>⚽ Thể thao</h2><p>Tin thể thao cập nhật nhanh.</p></div></div><div id="sportGrid" class="news-grid"><div class="empty">Đang tải…</div></div><div id="sportSecondary" class="news-secondary"></div></section>
 <section class="section" id="video"><div class="head"><div><h2>▶️ Video</h2><p>Video YouTube mở và phát trong chính giao diện Apple Seed.</p></div></div><div class="video-grid">
 <article class="video"><div class="thumb">▶</div><div class="video-body"><h3>Công nghệ & iPhone</h3><p>Tìm video công nghệ mới nhất trên YouTube.</p><button data-youtube="công nghệ iPhone Việt Nam">Xem trong Apple Seed</button></div></article>
 <article class="video"><div class="thumb">⚽</div><div class="video-body"><h3>Thể thao</h3><p>Tìm video thể thao và highlights.</p><button data-youtube="thể thao Việt Nam">Xem trong Apple Seed</button></div></article>
@@ -103,7 +117,7 @@ main{max-width:1320px;margin:auto;padding:34px 22px 65px}.section{margin-bottom:
 
 
 <section class="section" id="amnhac"><div class="head"><div><h2>🎧 Âm nhạc & Podcast</h2><p>Mở nội dung hỗ trợ phát trực tiếp trong website.</p></div></div><div class="live"><div class="panel"><h3>🎵 YouTube Music</h3><p>Tra cứu và nghe nội dung YouTube Music từ giao diện Apple Seed.</p><div class="chips"><button class="chip" data-youtube="nhạc Việt Nam">Nhạc Việt</button><button class="chip" data-youtube="lofi music">Lofi</button><button class="chip" data-youtube="podcast Việt Nam">Podcast</button></div></div><div class="panel"><h3>🟢 Spotify</h3><p>Spotify có thể mở trình phát nhúng đối với nội dung cho phép embed.</p><div class="chips"><a class="chip" href="https://open.spotify.com/embed">Mở trình phát Spotify</a></div></div></div></section>
-<section class="section" id="giaitri"><div class="head"><div><h2>🎬 Giải trí</h2><p>Phim, show, người nổi tiếng và nội dung đời sống.</p></div></div><div id="entGrid" class="news-grid"><div class="empty">Đang tải…</div></div></section>
+<section class="section" id="giaitri"><div class="head"><div><h2>🎬 Giải trí</h2><p>Phim, show, người nổi tiếng và nội dung đời sống.</p></div></div><div id="entGrid" class="news-grid"><div class="empty">Đang tải…</div></div><div id="entSecondary" class="news-secondary"></div></section>
 <section class="section" id="game"><div class="head"><div><h2>🎮 Game</h2><p>Không rời Apple Seed khi khám phá nội dung game.</p></div></div><div class="live"><div class="panel"><h3>🕹️ Game & esports</h3><p>Cập nhật tin game từ các nguồn tin công khai và mở video ngay trong Apple Seed.</p><div class="chips"><button class="chip" data-youtube="game Việt Nam esports">Esports</button><button class="chip" data-youtube="iPhone games">Game mobile</button><button class="chip" data-youtube="PC gaming Việt Nam">PC Gaming</button></div></div><div class="panel"><h3>🔒 Mô hình an toàn</h3><p>Apple Seed chỉ hiển thị nội dung từ nguồn công khai; không sao chép tài khoản, nội dung trả phí hoặc vượt cơ chế bảo mật của website khác.</p></div></div></section>
 </main>
 <footer class="footer">Apple Seed Entertainment Center · <strong>Tô Thanh Trung – Apple Seed</strong> · <a href="./index.html">Trang chính</a></footer>
@@ -151,8 +165,26 @@ function card(item){
  const data=encodeURIComponent(JSON.stringify({title:item.title,description:item.description||item.content,link:item.link,source:item.source||'Nguồn tin',date:item.pubDate}));
  return '<article class="news" data-item="'+data+'">'+(image?'<div class="news-media"><img src="'+esc(image)+'" data-original-src="'+esc(image)+'" data-image-candidates="'+candidates+'" data-image-index="0" data-proxy-tried="0" alt="" loading="lazy" referrerpolicy="no-referrer"></div>':'')+'<div class="source">'+source+'</div><h3>'+title+'</h3><p>'+desc+'</p><span class="time">'+date+'</span></article>';
 }
+function miniCard(item){
+ const title=esc(item.title),source=esc(item.source||'Tin tức'),date=item.pubDate?new Date(item.pubDate).toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit'}):'';
+ const images=getImages(item),image=images[0]||'',candidates=encodeURIComponent(JSON.stringify(images));
+ const data=encodeURIComponent(JSON.stringify({title:item.title,description:item.description||item.content,link:item.link,source:item.source||'Nguồn tin',date:item.pubDate}));
+ return '<button type="button" class="news-mini" data-item="'+data+'">'+
+   '<span class="news-mini-media">'+(image?'<img src="'+esc(image)+'" data-image-candidates="'+candidates+'" data-image-index="0" data-proxy-tried="0" alt="" loading="lazy" referrerpolicy="no-referrer">':'')+'</span>'+
+   '<span><span class="news-mini-source">'+source+'</span><span class="news-mini-title">'+title+'</span><span class="news-mini-time">'+date+'</span></span>'+
+ '</button>';
+}
+function renderNewsSecondary(id,items){
+ const box=document.getElementById(id);
+ if(!box)return;
+ const more=items.slice(4,14);
+ if(!more.length){box.innerHTML='';return;}
+ box.innerHTML='<div class="news-secondary-head"><b>🗂️ Xem thêm nhiều bài</b><span>Vuốt ngang để khám phá · chạm bài để đọc</span></div><div class="news-rail">'+more.map(miniCard).join('')+'</div>';
+}
 async function loadSection(id,feeds){
- const el=document.getElementById(id);el.innerHTML='<div class="empty"><span class="spinner"></span> Đang cập nhật…</div>';
+ const el=document.getElementById(id), secondary=document.getElementById(id.replace('Grid','Secondary'));
+ el.innerHTML='<div class="empty"><span class="spinner"></span> Đang cập nhật…</div>';
+ if(secondary)secondary.innerHTML='';
  try{
   const all=[];
   for(const [source,url] of feeds){
@@ -160,12 +192,19 @@ async function loadSection(id,feeds){
  const res=await fetchWithTimeout(PROXY+encodeURIComponent(url),{cache:'no-store'});
  if(!res.ok) throw new Error('RSS '+res.status);
  const j=await res.json();
- (j.items||[]).slice(0,6).forEach(x=>all.push({...x,source}));
+ (j.items||[]).slice(0,10).forEach(x=>all.push({...x,source}));
  }catch(e){}
   }
-  all.sort((a,b)=>new Date(b.pubDate)-new Date(a.pubDate)); ALL_NEWS=[...ALL_NEWS.filter(x=>!all.some(y=>y.link&&x.link===y.link)),...all];
-  el.innerHTML=all.length?all.slice(0,8).map(card).join(''):'<div class="empty">Chưa lấy được RSS lúc này. Pa thử bấm ↻ Cập nhật lại nhé.</div>';
- }catch(e){el.innerHTML='<div class="empty">Không tải được tin lúc này.</div>'}
+  const seen=new Set();
+  all.sort((a,b)=>new Date(b.pubDate)-new Date(a.pubDate));
+  const unique=all.filter(x=>{const k=x.link||x.title;if(!k||seen.has(k))return false;seen.add(k);return true;});
+  ALL_NEWS=[...ALL_NEWS.filter(x=>!unique.some(y=>y.link&&x.link===y.link)),...unique];
+  el.innerHTML=unique.length?unique.slice(0,4).map(card).join(''):'<div class="empty">Chưa lấy được RSS lúc này. Pa thử bấm ↻ Cập nhật lại nhé.</div>';
+  renderNewsSecondary(id.replace('Grid','Secondary'),unique);
+ }catch(e){
+  el.innerHTML='<div class="empty">Không tải được tin lúc này.</div>';
+  if(secondary)secondary.innerHTML='';
+ }
 }
 function renderReaderMarkdown(text){
  let s=String(text||'').replace(/\r/g,'');
@@ -486,15 +525,26 @@ async function refreshAll(){
   loadSection('entGrid',FEEDS.ent)
  ]);
 }
+let searchTimer=null;
 function renderSearch(){
- const q=document.getElementById('searchInput').value.trim().toLowerCase(), box=document.getElementById('searchResults');
+ const input=document.getElementById('searchInput'), box=document.getElementById('searchResults');
+ const q=input.value.trim().toLowerCase();
  if(!q){box.innerHTML='';return}
- const found=ALL_NEWS.filter(x=>(x.title+' '+strip(x.description||x.content||'')+' '+x.source).toLowerCase().includes(q)).sort((a,b)=>new Date(b.pubDate)-new Date(a.pubDate)).slice(0,12);
- box.innerHTML='<div class="head"><div><h2>🔎 Kết quả tìm kiếm</h2><p>'+found.length+' tin phù hợp đang có trong Apple Seed.</p></div></div>'+(found.length?'<div class="news-grid">'+found.map(card).join('')+'</div>':'<div class="empty">Không tìm thấy tin phù hợp. Pa thử từ khóa khác nhé.</div>');
- box.scrollIntoView({behavior:'smooth',block:'start'});
+ const terms=q.split(/\s+/).filter(Boolean);
+ const found=ALL_NEWS.filter(x=>{
+   const hay=(x.title+' '+strip(x.description||x.content||'')+' '+x.source).toLowerCase();
+   return terms.every(t=>hay.includes(t));
+ }).sort((a,b)=>new Date(b.pubDate)-new Date(a.pubDate)).slice(0,12);
+ box.innerHTML='<div class="head"><div><h2>🔎 Kết quả tìm kiếm</h2><p>'+found.length+' tin phù hợp đang có trong Apple Seed.</p></div></div>'+(found.length?'<div class="news-grid">'+found.map(card).join('')+'</div>':'<div class="empty">Không tìm thấy trong các nguồn đã tải. Pa thử từ khóa khác hoặc bấm Cập nhật.</div>');
+ /* Không scroll tự động: giữ nguyên vị trí và con trỏ để tìm kiếm không còn nhảy tùm lum. */
 }
-document.getElementById('searchForm').addEventListener('submit',e=>{e.preventDefault();renderSearch()});
-document.getElementById('searchInput').addEventListener('input',()=>{if(document.getElementById('searchInput').value.trim().length>=2)renderSearch()});
+document.getElementById('searchForm').addEventListener('submit',e=>{e.preventDefault();renderSearch();document.getElementById('searchInput').focus()});
+document.getElementById('searchInput').addEventListener('input',()=>{
+ clearTimeout(searchTimer);
+ const value=document.getElementById('searchInput').value.trim();
+ if(value.length<2){document.getElementById('searchResults').innerHTML='';return;}
+ searchTimer=setTimeout(renderSearch,220);
+});
 document.getElementById('refresh').onclick=async()=>{
  ALL_NEWS=[];
  await refreshAll();
