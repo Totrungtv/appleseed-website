@@ -31,6 +31,13 @@ main{max-width:1320px;margin:auto;padding:34px 22px 65px}.section{margin-bottom:
 .yt-result-date{margin-top:3px;font-size:9px;color:#98a4b6}
 .yt-search-status{margin-top:12px;padding:10px 12px;border-radius:10px;background:#f7f9fc;color:var(--muted);font-size:11px;line-height:1.5}
 @media(max-width:700px){.yt-results{grid-template-columns:1fr}}
+
+.reader-frame-wrap{height:100%;min-height:70vh;background:#f7f9fc;position:relative}
+.reader-frame{width:100%;height:100%;min-height:70vh;border:0;display:block;background:#fff}
+.reader-frame-loading{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:13px;background:#fff;z-index:1;pointer-events:none}
+.reader-frame-wrap.loaded .reader-frame-loading{display:none}
+.reader-fallback{display:none;margin:12px 0;padding:11px 13px;border:1px solid #e0e7f1;border-radius:10px;background:#fff;color:var(--muted);font-size:11px;line-height:1.5}
+.reader-fallback a{color:var(--blue);font-weight:900;text-decoration:underline}
 </style>
 </head>
 <body>
@@ -147,24 +154,41 @@ function formatInline(s){
 }
 async function openReader(item){
  const reader=document.getElementById('reader');
+ const body=document.getElementById('rBody');
+ const sourceUrl=String(item.link||'').trim();
  document.getElementById('rSource').textContent=item.source||'Apple Seed';
- document.getElementById('rUrl').textContent=item.link||'';
+ document.getElementById('rUrl').textContent=sourceUrl;
  document.getElementById('rLabel').textContent='APPLE SEED • TIN MỚI';
  document.getElementById('rTitle').textContent=item.title||'';
  document.getElementById('rMeta').textContent=item.date?new Date(item.date).toLocaleString('vi-VN'):'';
- const body=document.getElementById('rBody');
- body.innerHTML='<div class="empty"><span class="spinner"></span> Đang tải toàn bộ bài viết…</div>';
- document.getElementById('rOriginal').href=item.link||'#'; setupRelatedVideo(item);
- reader.classList.add('open');reader.setAttribute('aria-hidden','false');document.body.classList.add('modal-open');
- try{
-   const res=await fetch('https://r.jina.ai/'+item.link,{cache:'no-store',headers:{'Accept':'text/plain'}});
-   if(!res.ok) throw new Error('reader '+res.status);
-   const text=await res.text();
-   body.innerHTML=renderReaderMarkdown(text);
- }catch(err){
-   // Không chèn HTML thô từ nguồn ngoài: tránh XSS và không còn hiện nguyên Markdown.
-   body.innerHTML=renderReaderMarkdown(item.description||item.content||'') || '<p>Không tải được nội dung bài viết từ nguồn. Pa có thể bấm “Đọc nguồn gốc” để xem bản gốc.</p>';
+ document.getElementById('rOriginal').href=sourceUrl||'#';
+ setupRelatedVideo(item);
+ reader.classList.add('open');
+ reader.setAttribute('aria-hidden','false');
+ document.body.classList.add('modal-open');
+
+ if(!sourceUrl){
+   body.innerHTML='<div class="empty">Bài viết không có địa chỉ nguồn hợp lệ.</div>';
+   return;
  }
+
+ const safe=esc(sourceUrl);
+ body.innerHTML=
+   '<div class="reader-frame-wrap" id="readerFrameWrap">'+
+     '<div class="reader-frame-loading"><span class="spinner"></span>&nbsp; Đang mở bài viết gốc…</div>'+
+     '<iframe class="reader-frame" id="readerFrame" title="Bài viết gốc" src="'+safe+'" loading="eager" referrerpolicy="strict-origin-when-cross-origin" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"></iframe>'+
+   '</div>'+
+   '<div class="reader-fallback" id="readerFallback">Nếu nguồn báo không cho phép nhúng trong iframe, Apple Seed sẽ không vượt qua cơ chế bảo mật của họ. Ông có thể bấm <a href="'+safe+'" target="_blank" rel="noopener noreferrer">Mở bài gốc trong tab trình duyệt</a>.</div>';
+
+ const frame=document.getElementById('readerFrame');
+ const wrap=document.getElementById('readerFrameWrap');
+ const fallback=document.getElementById('readerFallback');
+ frame.addEventListener('load',()=>{
+   wrap.classList.add('loaded');
+   // Một số website gửi trang chặn iframe bằng CSP/X-Frame-Options.
+   // Không đọc/chèn DOM cross-origin; chỉ cung cấp đường dẫn nguồn hợp lệ.
+   setTimeout(()=>{fallback.style.display='block';},1200);
+ },{once:true});
 }
 function relatedVideoFor(title){
  const t=String(title||'').toLowerCase();
