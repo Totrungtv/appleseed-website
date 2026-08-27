@@ -1323,6 +1323,28 @@ button,a,input,textarea{ -webkit-tap-highlight-color:transparent }
 <style id="apple-seed-home-quick-links">
 .home-tools{background:#f6f8fc;border-top:1px solid #edf1f7;padding:28px 16px 40px}.home-tools-inner{max-width:1240px;margin:0 auto}.home-tools-heading{margin-bottom:14px}.home-tools-heading h2{margin:0;font-size:24px;line-height:1.15;letter-spacing:-.5px}.home-tools-heading p{margin:6px 0 0;color:#718096;font-size:13px}.home-quick-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.home-quick-card{min-height:74px;padding:14px 16px;display:flex;align-items:center;gap:12px;border:1px solid #e1e7f0;border-radius:16px;background:#fff;color:#17233d;box-shadow:0 7px 20px rgba(35,54,91,.05);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}.home-quick-card:hover{transform:translateY(-2px);border-color:#ccd9f5;box-shadow:0 12px 28px rgba(35,54,91,.09)}.home-quick-icon{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;font-size:22px;flex:none}.home-quick-ai .home-quick-icon{background:#eef5ff}.home-quick-entertainment .home-quick-icon{background:#f3efff}.home-quick-copy{display:grid;gap:3px;min-width:0}.home-quick-copy strong{font-size:15px}.home-quick-copy small{color:#718096;font-size:11px;line-height:1.35}.home-quick-arrow{margin-left:auto;color:#1769ff;font-size:20px;font-weight:800}@media(max-width:600px){.home-tools{padding:22px 12px 30px}.home-tools-heading h2{font-size:21px}.home-tools-heading p{font-size:12px}.home-quick-links{grid-template-columns:1fr;gap:10px}.home-quick-card{min-height:64px;padding:11px 13px;border-radius:14px}.home-quick-icon{width:40px;height:40px;border-radius:11px;font-size:20px}.home-quick-copy strong{font-size:14px}}
 </style>
+<style id="apple-seed-inline-member-signup">
+#appleSeedInlineMember{display:none;margin:28px auto 0;max-width:1180px;padding:26px;border:1px solid #d7e6fb;border-radius:24px;background:linear-gradient(135deg,#f5faff,#fff);box-shadow:0 18px 50px rgba(27,91,160,.12);scroll-margin-top:95px}
+#appleSeedInlineMember.open{display:block}
+.apple-inline-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(420px,520px);gap:30px;align-items:stretch}
+.apple-inline-benefits{padding:22px 12px 22px 8px}
+.apple-inline-kicker{font-size:11px;font-weight:900;letter-spacing:2.6px;color:#1769ff;margin-bottom:10px}
+.apple-inline-benefits h3{margin:0 0 10px;color:#10213f;font-size:28px;line-height:1.15}
+.apple-inline-benefits>p{margin:0 0 22px;color:#637692;line-height:1.65}
+.apple-inline-list{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.apple-inline-item{padding:14px;border:1px solid #dce9f8;border-radius:14px;background:#fff}
+.apple-inline-item strong{display:block;color:#17345d;font-size:14px;margin-bottom:4px}
+.apple-inline-item span{color:#6c7d96;font-size:12px;line-height:1.45}
+.apple-inline-security{margin-top:18px;padding:13px 15px;border-radius:13px;background:#eef6ff;color:#55708f;font-size:12px}
+#appleSeedInlineMember .member-auth-box{width:100%;max-height:none;padding:26px;border-radius:20px;box-shadow:0 15px 38px rgba(23,65,115,.12);border:1px solid #e0e9f5}
+#appleSeedInlineMember .member-auth-close{display:flex;align-items:center;justify-content:center;background:#f4f8fd;box-shadow:none;color:#526b88}
+#appleSeedInlineMember .member-auth-tabs{margin-top:20px}
+#appleSeedInlineMember .member-auth-submit{background:linear-gradient(135deg,#1769ff,#358cff);box-shadow:0 9px 20px rgba(23,105,255,.16)}
+.apple-inline-close{display:block;margin:18px auto 0;border:0;background:transparent;color:#1769ff;font-weight:850;cursor:pointer;padding:7px 12px}
+body.apple-inline-member-open{overflow-anchor:none}
+@media(max-width:900px){.apple-inline-grid{grid-template-columns:1fr}.apple-inline-benefits{padding:6px 2px}.apple-inline-list{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){#appleSeedInlineMember{margin:20px 12px 0;padding:14px;border-radius:18px}.apple-inline-list{grid-template-columns:1fr}.apple-inline-benefits h3{font-size:23px}#appleSeedInlineMember .member-auth-box{padding:20px 16px}}
+</style>
 </head>
 
 <body>
@@ -2964,6 +2986,68 @@ form.onsubmit=async e=>{
     </div>
   </div>
 </footer>
+<script id="apple-seed-inline-member-signup-js">
+(function(){
+  function init(){
+    const root=document.getElementById('homeRenderer');
+    const modal=document.getElementById('memberAuthModal');
+    const box=document.querySelector('#memberAuthModal .member-auth-box');
+    if(!root||!modal||!box)return;
+    if(document.getElementById('appleSeedInlineMember'))return;
+    const panel=document.createElement('section');
+    panel.id='appleSeedInlineMember';
+    panel.setAttribute('aria-label','Đăng ký thành viên Apple Seed');
+    panel.innerHTML=`<div class="apple-inline-grid">
+      <div class="apple-inline-benefits">
+        <div class="apple-inline-kicker">APPLE SEED • MEMBER</div>
+        <h3>Thành viên Apple Seed được gì?</h3>
+        <p>Đăng ký ngay trên trang này để mở khóa các tiện ích dành cho Member.</p>
+        <div class="apple-inline-list">
+          <div class="apple-inline-item"><strong>🤖 AI Board</strong><span>Phân tích PANIC và hỗ trợ kỹ thuật.</span></div>
+          <div class="apple-inline-item"><strong>🎬 Video kỹ thuật</strong><span>Truy cập khu vực nội dung dành cho thành viên.</span></div>
+          <div class="apple-inline-item"><strong>📐 Schematic</strong><span>Tra cứu tài liệu và boardview theo quyền.</span></div>
+          <div class="apple-inline-item"><strong>💬 Cộng đồng</strong><span>Trao đổi và kết nối với Member.</span></div>
+        </div>
+        <div class="apple-inline-security">🔒 Thông tin tài khoản được bảo vệ và chỉ dùng cho mục đích xác thực thành viên.</div>
+      </div>
+      <div class="apple-inline-form"></div>
+    </div>
+    <button class="apple-inline-close" type="button" aria-label="Đóng bảng đăng ký">← Đóng bảng đăng ký</button>`;
+    const gate=root.querySelector('section')||root.lastElementChild;
+    (gate?.parentNode||root).insertBefore(panel,gate?.nextSibling||null);
+    const host=panel.querySelector('.apple-inline-form');
+    host.appendChild(box);
+    modal.setAttribute('aria-hidden','true');
+    modal.style.display='none';
+    const close=panel.querySelector('.apple-inline-close');
+    function hide(){
+      modal.style.display='';
+      modal.removeAttribute('aria-hidden');
+      modal.appendChild(box);
+      panel.classList.remove('open');
+      document.body.classList.remove('apple-inline-member-open');
+    }
+    box.querySelector('#memberAuthClose')?.addEventListener('click',hide);
+    close.addEventListener('click',hide);
+    function openSignup(){
+      panel.classList.add('open');
+      document.body.classList.add('apple-inline-member-open');
+      document.getElementById('memberHomeTabSignup')?.click();
+      setTimeout(()=>panel.scrollIntoView({behavior:'smooth',block:'start'}),20);
+    }
+    root.addEventListener('click',function(e){
+      const target=e.target.closest('button,a');
+      if(!target||!root.contains(target))return;
+      const label=(target.textContent||'').trim().replace(/\s+/g,' ');
+      if(/đăng ký/i.test(label) && !target.closest('#appleSeedInlineMember')){e.preventDefault();openSignup();}
+    });
+    window.appleSeedOpenInlineSignup=openSignup;
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+  const observer=new MutationObserver(()=>init());
+  observer.observe(document.getElementById('homeRenderer')||document.body,{childList:true,subtree:true});
+})();
+</script>
 </body>
 </html>
 
