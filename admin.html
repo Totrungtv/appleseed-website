@@ -356,121 +356,83 @@ function esc(v=""){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt
 
 function previewMainImage(url){const box=$("productMainImagePreview");if(!box)return;box.innerHTML=url?`<img src="${esc(url)}" alt="Ảnh sản phẩm">`:"";}
 async function uploadMainProductImage(file){if(!file)return;if(!file.type.startsWith("image/")){status("File phải là ảnh.",true);return}if(file.size>8*1024*1024){status("Ảnh chính tối đa 8MB.",true);return}if(!sb?.storage){status("Chưa kết nối Supabase Storage.",true);return}status("Đang tải ảnh chính...");try{const oldPath=$("productImagePath").value.trim();const safe=file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,"-"),path=`products-main/${Date.now()}-${Math.random().toString(36).slice(2,8)}-${safe}`;const r=await sb.storage.from("site-images").upload(path,file,{cacheControl:"31536000",upsert:false,contentType:file.type});if(r.error)throw r.error;const url=sb.storage.from("site-images").getPublicUrl(path).data.publicUrl;$("productImage").value=url;$("productImagePath").value=path;previewMainImage(url);if(oldPath&&oldPath!==path)await sb.storage.from("site-images").remove([oldPath]);status("Đã tải ảnh chính.");}catch(err){status("Upload ảnh lỗi: "+(err?.message||err),true)}}
-async function checkSession(){
-  if(!sb){ $("loginStatus").textContent="Không tìm thấy supabase-config.js."; return; }
-  const {data:{session}}=await sb.auth.getSession();
-  if(!session)return;
-  const {data:profile,error:profileError}=await sb.from('profiles').select('role').eq('id',session.user.id).maybeSingle();
-  if(profileError || !profile || !['admin','staff'].includes(profile.role)){
-    await sb.auth.signOut();
-    $("loginStatus").textContent="Tài khoản không có quyền quản trị (Admin/Staff).";
-    return;
-  }
-  $("userEmail").textContent=(session.user.email||'')+' · '+profile.role.toUpperCase();
-  show($("loginView"),false); show($("app"),true); await refreshAll(); await loadVideoAdmin();
+function withTimeout(promise, ms=12000){
+  return Promise.race([
+    promise,
+    new Promise((_,reject)=>setTimeout(()=>reject(new Error("Thao tác quá thời gian chờ ("+Math.round(ms/1000)+"s).")),ms))
+  ]);
 }
+
+async function checkSession(){
+  if(!sb){
+    $("loginStatus").textContent="Không tìm thấy supabase-config.js.";
+    return false;
+  }
+  try{
+    const sessionResult=await withTimeout(sb.auth.getSession(),10000);
+    const session=sessionResult?.data?.session;
+    if(!session)return false;
+
+    const profileResult=await withTimeout(
+      sb.from("profiles").select("role").eq("id",session.user.id).maybeSingle(),
+      10000
+    );
+    const profile=profileResult?.data;
+    if(profileResult?.error || !profile || !["admin","staff"].includes(profile.role)){
+      await sb.auth.signOut();
+      $("loginStatus").textContent="Tài khoản không có quyền quản trị (Admin/Staff).";
+      return false;
+    }
+
+    $("userEmail").textContent=(session.user.email||"")+" · "+profile.role.toUpperCase();
+    show($("loginView"),false);
+    show($("app"),true);
+
+    Promise.allSettled([
+      withTimeout(refreshAll(),12000),
+      withTimeout(loadVideoAdmin(),12000)
+    ]).then(results=>{
+      const failed=results.filter(x=>x.status==="rejected");
+      if(failed.length){
+        status("⚠️ Admin đã vào được. Một số dữ liệu tải nền chưa xong; hãy bấm Làm mới hoặc kiểm tra module báo lỗi.",true);
+      }
+    });
+
+    return true;
+  }catch(err){
+    console.error("AppleSeed admin session error:",err);
+    $("loginStatus").textContent="Không thể hoàn tất đăng nhập: "+(err?.message||String(err));
+    return false;
+  }
+}
+
 $("loginBtn").onclick=async()=>{
   const btn=$("loginBtn"), msg=$("loginStatus");
-  btn.disabled=true; btn.textContent="Đang đăng nhập..."; msg.textContent="";
+  btn.disabled=true;
+  btn.textContent="Đang đăng nhập...";
+  msg.textContent="";
   try{
     if(!sb) throw new Error("Không kết nối được Supabase. Kiểm tra supabase-config.js.");
-    const email=$("loginEmail").value.trim(), password=$("loginPassword").value;
+    const email=$("loginEmail").value.trim();
+    const password=$("loginPassword").value;
     if(!email || !password) throw new Error("Vui lòng nhập email và mật khẩu.");
-    const {error}=await sb.auth.signInWithPassword({email,password});
-    if(error) throw error;
-    await 
 
-/* ===== APPLE SEED VIDEO ADMIN V1 ===== */
-function extractYouTubeId(value){
-  try{
-    const raw=String(value||'').trim();
-    if(!raw)return '';
-    const u=new URL(raw);
-    const host=u.hostname.replace(/^www\./,'').toLowerCase();
-    if(host==='youtu.be') return (u.pathname.split('/').filter(Boolean)[0]||'').slice(0,20);
-    if(host.endsWith('youtube.com')){
-      if(u.searchParams.get('v')) return u.searchParams.get('v').slice(0,20);
-      const parts=u.pathname.split('/').filter(Boolean);
-      const i=parts.findIndex(x=>['shorts','embed','live'].includes(x));
-      if(i>=0 && parts[i+1]) return parts[i+1].slice(0,20);
+    const result=await withTimeout(
+      sb.auth.signInWithPassword({email,password}),
+      15000
+    );
+    if(result?.error) throw result.error;
+
+    const ok=await checkSession();
+    if(!ok && $("app").classList.contains("hidden")){
+      throw new Error($("loginStatus").textContent||"Không thể mở trang quản trị.");
     }
-  }catch(e){}
-  return '';
-}
-function youtubeThumb(id){return id?`https://i.ytimg.com/vi/${encodeURIComponent(id)}/hqdefault.jpg`:'';}
-function videoStatusLabel(v){return ({pending:'⏳ Chờ duyệt',published:'🟢 Đã xuất bản',hidden:'⚪ Đang ẩn',rejected:'🔴 Từ chối',deleted:'🗑️ Đã xóa'})[v]||v||'';}
-function videoStatusClass(v){return v==='pending'?'pending':v==='hidden'?'hidden':v==='rejected'?'rejected':'';}
-function videoFormReset(){
-  $('videoForm').reset();$('videoId').value='';$('videoStatus').value='published';$('videoPreview').style.display='none';$('videoThumb').src='';$('videoParsedId').textContent='';
-  show($('videoForm'),true);$('videoYoutubeUrl').focus();
-}
-function updateVideoPreview(){
-  const id=extractYouTubeId($('videoYoutubeUrl').value);const box=$('videoPreview');
-  if(!id){box.style.display='none';return false;}
-  $('videoThumb').src=youtubeThumb(id);$('videoParsedId').textContent='YouTube ID: '+id;box.style.display='block';return true;
-}
-async function loadVideoCategories(){
-  const {data,error}=await sb.from('video_categories').select('id,name,icon,is_active,sort_order').eq('is_active',true).order('sort_order',{ascending:true}).order('id',{ascending:true});
-  if(error){status('Không tải được danh mục video: '+error.message,true);return;}
-  $('videoCategory').innerHTML=(data||[]).map(x=>`<option value="${x.id}">${esc((x.icon||'🎬')+' '+x.name)}</option>`).join('');
-}
-async function loadVideos(){
-  const {data,error}=await sb.from('apple_seed_videos').select('id,youtube_url,youtube_id,title,description,thumbnail_url,category_id,device_model,fault_type,tags_text,author_user_id,status,is_featured,created_at,published_at,video_categories(name,icon)').order('created_at',{ascending:false});
-  if(error){$('videoList').innerHTML=`<p class="small">Không tải được video: ${esc(error.message)}</p>`;return;}
-  const rows=data||[];const pending=rows.filter(x=>x.status==='pending').length;const published=rows.filter(x=>x.status==='published').length;
-  $('videoStats').textContent=`Tổng ${rows.length} video · ${pending} chờ duyệt · ${published} đang xuất bản`;
-  $('videoList').innerHTML=rows.map(v=>{
-    const thumb=v.thumbnail_url||youtubeThumb(v.youtube_id);const cat=v.video_categories?.name||'Chưa phân loại';
-    return `<article class="video-card">
-      <img src="${esc(thumb)}" alt="${esc(v.title)}" loading="lazy" onerror="this.src='${esc(youtubeThumb(v.youtube_id))}'">
-      <div><h3>${esc(v.title)}</h3>
-      <div class="video-meta"><span class="video-badge ${videoStatusClass(v.status)}">${esc(videoStatusLabel(v.status))}</span><span class="video-badge">${esc(cat)}</span>${v.device_model?`<span class="video-badge">📱 ${esc(v.device_model)}</span>`:''}</div>
-      <p>${esc(v.description||'')}</p><div class="small">${esc(v.fault_type||'')} ${v.tags_text?' · '+esc(v.tags_text):''}</div>
-      <div class="video-actions">
-        <button class="btn2 edit" type="button" onclick="editAppleSeedVideo(${v.id})">Sửa</button>
-        ${v.status==='pending'?`<button class="btn2" type="button" onclick="setAppleSeedVideoStatus(${v.id},'published')">✅ Duyệt</button>`:''}
-        ${v.status==='published'?`<button class="btn2" type="button" onclick="setAppleSeedVideoStatus(${v.id},'hidden')">Ẩn</button>`:`<button class="btn2" type="button" onclick="setAppleSeedVideoStatus(${v.id},'published')">Hiện</button>`}
-        <a class="btn2" href="${esc(v.youtube_url)}" target="_blank" rel="noopener">YouTube ↗</a>
-        <button class="btn2 danger" type="button" onclick="deleteAppleSeedVideo(${v.id})">Xóa</button>
-      </div></div></article>`;
-  }).join('')||'<p class="small">Chưa có video. Bấm “Thêm video” để tạo video đầu tiên.</p>';
-}
-window.editAppleSeedVideo=async id=>{
-  const {data,error}=await sb.from('apple_seed_videos').select('*').eq('id',id).single();
-  if(error){status('Không đọc được video: '+error.message,true);return;}
-  $('videoId').value=data.id;$('videoYoutubeUrl').value=data.youtube_url||'';$('videoTitle').value=data.title||'';$('videoCategory').value=data.category_id||'';$('videoStatus').value=data.status||'pending';$('videoModel').value=data.device_model||'';$('videoFault').value=data.fault_type||'';$('videoTags').value=data.tags_text||'';$('videoDescription').value=data.description||'';updateVideoPreview();show($('videoForm'),true);window.scrollTo({top:$('videoAdminPanel').offsetTop-20,behavior:'smooth'});
-};
-window.setAppleSeedVideoStatus=async(id,next)=>{
-  const payload={status:next,updated_at:new Date().toISOString(),published_at:next==='published'?new Date().toISOString():null};
-  const {error}=await sb.from('apple_seed_videos').update(payload).eq('id',id);if(error){status('Đổi trạng thái lỗi: '+error.message,true);return}status('Đã cập nhật video.');await loadVideos();
-};
-window.deleteAppleSeedVideo=async id=>{
-  if(!confirm('Xóa video này khỏi thư viện Apple Seed?'))return;
-  const {error}=await sb.from('apple_seed_videos').update({status:'deleted',updated_at:new Date().toISOString()}).eq('id',id);
-  if(error){status('Xóa video lỗi: '+error.message,true);return}status('Đã đưa video vào trạng thái đã xóa.');await loadVideos();
-};
-$('addVideoBtn').onclick=()=>videoFormReset();
-$('cancelVideoBtn').onclick=()=>show($('videoForm'),false);
-$('videoYoutubeUrl').addEventListener('input',updateVideoPreview);
-$('fetchYoutubeBtn').onclick=async()=>{
-  const url=$('videoYoutubeUrl').value.trim();const id=extractYouTubeId(url);if(!id){alert('Link YouTube chưa hợp lệ.');return}updateVideoPreview();
-  try{const r=await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`);if(!r.ok)throw new Error('YouTube không trả thông tin oEmbed');const d=await r.json();if(!$('videoTitle').value.trim())$('videoTitle').value=d.title||'';status('Đã lấy thông tin YouTube.');}catch(e){status('Đã nhận Video ID nhưng không lấy được tiêu đề tự động. Pa nhập tiêu đề thủ công.',true)}
-};
-$('saveVideoBtn').onclick=async e=>{
-  e.preventDefault();
-  const url=$('videoYoutubeUrl').value.trim(),id=extractYouTubeId(url),title=$('videoTitle').value.trim();
-  if(!id||!title){alert('Cần link YouTube hợp lệ và tiêu đề.');return}
-  const payload={youtube_url:url,youtube_id:id,title,description:$('videoDescription').value.trim(),thumbnail_url:youtubeThumb(id),category_id:Number($('videoCategory').value)||null,device_model:$('videoModel').value.trim(),fault_type:$('videoFault').value.trim(),tags_text:$('videoTags').value.trim(),status:$('videoStatus').value,updated_at:new Date().toISOString(),published_at:$('videoStatus').value==='published'?new Date().toISOString():null};
-  const existingId=Number($('videoId').value||0);let r=existingId?await sb.from('apple_seed_videos').update(payload).eq('id',existingId):await sb.from('apple_seed_videos').insert({...payload,author_user_id:(await sb.auth.getUser()).data.user?.id||null});
-  if(r.error){status('Lưu video lỗi: '+r.error.message,true);return}show($('videoForm'),false);status('✅ Đã lưu video.');await loadVideos();
-};
-async function loadVideoAdmin(){await loadVideoCategories();await loadVideos();}
-
-checkSession();
   }catch(err){
-    msg.textContent="Lỗi đăng nhập: "+(err?.message || String(err));
+    console.error("APPLESEED ADMIN LOGIN ERROR:",err);
+    msg.textContent="Lỗi đăng nhập: "+(err?.message||String(err));
   }finally{
-    btn.disabled=false; btn.textContent="Đăng nhập";
+    btn.disabled=false;
+    btn.textContent="Đăng nhập";
   }
 };
 $("logoutBtn").onclick=async()=>{await sb.auth.signOut();location.reload();};
