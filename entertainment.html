@@ -167,6 +167,8 @@ function setupRelatedVideo(item){
  frame.style.display='none';frame.src='about:blank';btn.textContent='▶ Xem video';
  btn.onclick=()=>{frame.src='https://www.youtube.com/embed/'+v.id+'?rel=1&playsinline=1';frame.style.display='block';btn.textContent='↻ Phát lại';};
 }
+const YOUTUBE_HOST='https://www.youtube-nocookie.com/embed/';
+const YOUTUBE_SEARCH_HOST='https://www.youtube.com/results?search_query=';
 const YOUTUBE_VIDEOS={
  'công nghệ iPhone Việt Nam':{id:'-etoRi1t2co',title:'iPhone 17 • Apple Việt Nam'},
  'thể thao Việt Nam':{id:'13lbcOEtk7M',title:'ASEAN Cup 2026 • Đội tuyển Việt Nam'},
@@ -190,7 +192,9 @@ function youtubeIdFromUrl(raw){
 }
 function playYoutube(id,title){
  const frame=document.getElementById('youtubeFrame');
- frame.src='https://www.youtube.com/embed/'+encodeURIComponent(id)+'?rel=0&modestbranding=1&playsinline=1';
+ const safeId=String(id||'').trim();
+ if(!/^[A-Za-z0-9_-]{11}$/.test(safeId)) return;
+ frame.src=YOUTUBE_HOST+safeId+'?rel=0&playsinline=1';
  frame.title=title||'YouTube trên Apple Seed';
  document.getElementById('pTitle').textContent='YouTube • '+(title||'Apple Seed');
  document.getElementById('youtube').scrollIntoView({behavior:'smooth',block:'start'});
@@ -246,9 +250,9 @@ function playSocialYoutube(key){
 document.querySelectorAll('[data-social-youtube]').forEach(btn=>btn.addEventListener('click',()=>playSocialYoutube(btn.dataset.socialYoutube)));
 function normalizeSearchText(s){
  return String(s||'').toLowerCase()
-   .normalize('NFD').replace(/[\\u0300-\\u036f]/g,'')
-   .replace(/[^a-z0-9\\s_-]/g,' ')
-   .replace(/\\s+/g,' ').trim();
+   .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+   .replace(/[^a-z0-9\s_-]/g,' ')
+   .replace(/\s+/g,' ').trim();
 }
 function renderYoutubeSearch(){
  const raw=document.getElementById('youtubeSearch').value.trim();
@@ -261,14 +265,19 @@ function renderYoutubeSearch(){
    document.getElementById('youtubeDirectBtn').onclick=()=>playYoutube(directId,'Video YouTube');
    return;
  }
- const found=YOUTUBE_CATALOG.filter(v=>normalizeSearchText(v.title+' '+v.keys).includes(q));
- box.innerHTML=found.length?found.map((v,i)=>'<button class="chip yt-result" data-yt-index="'+i+'">▶ '+esc(v.title)+'</button>').join(''):'<span class="social-note">Chưa có video phù hợp trong kho. Pa dán link YouTube (youtube.com/watch hoặc youtu.be) để xem ngay.</span>';
+ const found=YOUTUBE_CATALOG.filter(v=>{
+ const hay=normalizeSearchText(v.title+' '+v.keys);
+ return q.split(' ').every(word=>hay.includes(word));
+ });
+ box.innerHTML=found.length
+ ?found.map((v,i)=>'<button type="button" class="chip yt-result" data-yt-index="'+i+'">▶ '+esc(v.title)+'</button>').join('')
+ :'<span class="social-note">Kho hiện chưa có video đúng từ khóa. Bạn có thể <a href="'+YOUTUBE_SEARCH_HOST+encodeURIComponent(raw)+'" target="_blank" rel="noopener">tìm trực tiếp trên YouTube</a>, hoặc dán link video YouTube vào ô trên để phát hợp lệ bằng trình phát YouTube.</span>';
  box.querySelectorAll('.yt-result').forEach((b,i)=>b.onclick=()=>playYoutubeEntry(found[i]));
 }
 document.getElementById('youtubeSearchBtn').onclick=renderYoutubeSearch;
-document.getElementById('youtubeSearchBtn').addEventListener('click',renderYoutubeSearch);
 document.getElementById('youtubeSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();renderYoutubeSearch();}});
-document.getElementById('youtubeSearch').addEventListener('input',e=>{e.target.setCustomValidity(''); if(e.target.value.trim().length>=2)renderYoutubeSearch();});
+document.getElementById('youtubeSearch').addEventListener('input',e=>{e.target.setCustomValidity('');});
+
 
 
 function tiktokPlayerUrl(id){
@@ -277,6 +286,8 @@ function tiktokPlayerUrl(id){
 function loadTikTok(id){
  const frame=document.getElementById('tiktokFrame');
  frame.src=tiktokPlayerUrl(id);
+ frame.setAttribute('allow','fullscreen; autoplay');
+ frame.setAttribute('referrerpolicy','strict-origin-when-cross-origin');
 }
 document.querySelectorAll('[data-tiktok-id]').forEach(btn=>btn.addEventListener('click',()=>loadTikTok(btn.dataset.tiktokId)));
 document.getElementById('tiktokLoad').onclick=()=>{
