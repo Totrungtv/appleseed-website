@@ -553,7 +553,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
   schematicDrop?.addEventListener('drop',e=>{
     const f=e.dataTransfer?.files?.[0];
     if(!f)return;
-    if(!/^image\\/(jpeg|png|webp)$/i.test(f.type)){alert('Chỉ hỗ trợ JPG, PNG hoặc WEBP.');return;}
+    if(!/^image\/(jpeg|png|webp)$/i.test(f.type)){alert('Chỉ hỗ trợ JPG, PNG hoặc WEBP.');return;}
     try{const dt=new DataTransfer();dt.items.add(f);schematicInput.files=dt.files;schematicInput.dispatchEvent(new Event('change',{bubbles:true}));}catch(err){console.warn('Không gán được file kéo thả:',err);}
   });
   $('upload').onclick=()=>{const f=$('file').files?.[0];$('uploadStatus').textContent=f?'📎 Đã chọn '+f.name+'. Muốn AI phân tích ảnh, chọn ảnh ở ô “main / schematic / boardview” phía trên.':'Chưa chọn file.'};
