@@ -916,7 +916,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
   window.appleSeedRefreshChatUnread=refreshUnread;
 })();
 </script>
-<script>(function(){const btn=document.getElementById('appleSeedMemberChatBtn');if(!btn)return;btn.addEventListener('click',function(){const w=window.open('member-chat.html','appleSeedMemberChat','width=1180,height=760,resizable=yes,scrollbars=yes');if(w)w.focus()})})();</script>
+<script>(function(){const btn=document.getElementById('appleSeedMemberChatBtn');if(!btn)return;btn.addEventListener('click',function(){if(window.matchMedia('(max-width:700px)').matches){window.location.href='member-chat.html';return}const w=window.open('member-chat.html','appleSeedMemberChat','width=1180,height=760,resizable=yes,scrollbars=yes');if(w)w.focus()})})();</script>
 <script>
 /* ===== PANIC LIVE DATA PREVIEW =====
    Dữ liệu thực tế nằm ngay cạnh PANIC LOG để người sửa dễ kiểm tra dữ liệu trước khi gửi AI.
