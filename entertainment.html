@@ -152,31 +152,19 @@ async function fetchWithTimeout(url,options={}){
 const esc=s=>String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 const strip=s=>{const d=document.createElement('div');d.innerHTML=s||'';return d.textContent||d.innerText||''};
 function cleanDesc(s){return strip(s).replace(/\s+/g,' ').trim().slice(0,220)}
-function getImages(item){
- const out=[];
- const add=v=>{if(!v)return;const x=String(v).trim();if(/^https?:\/\//i.test(x)&&!out.includes(x))out.push(x)};
- add(item.thumbnail);
- add(item.enclosure?.link);
- add(item.enclosure?.url);
- const raw=String(item.content||'')+'\\n'+String(item.description||'');
- const re=/(?:src|data-src|data-original)=[\\\"']([^\\\"']+)[\\\"']/gi;
- let m;
- while((m=re.exec(raw))!==null) add(m[1]);
- return out.slice(0,6);
-}
-function card(item){
+function getImages(item){\n const out=[];\n const add=v=>{if(!v)return;let x=String(v).trim();if(x.startsWith('//'))x='https:'+x;if(x.startsWith('http://'))x='https://'+x.slice(7);if(/^https:\/\//i.test(x)&&!out.includes(x))out.push(x)};\n add(item.thumbnail);add(item.enclosure?.link);add(item.enclosure?.url);\n const raw=String(item.content||'')+'\\n'+String(item.description||'');\n const re=/(?:src|data-src|data-original)=[\\\"']([^\\\"']+)[\\\"']/gi;let m;\n while((m=re.exec(raw))!==null)add(m[1]);\n return out.slice(0,8);\n}\nfunction imageProxyUrl(url,variant=0){const u=String(url||'').trim();if(!u)return '';const safe=u.startsWith('http://')?'https://'+u.slice(7):u;if(variant===0)return 'https://images.weserv.nl/?url='+encodeURIComponent(safe);if(variant===1)return 'https://wsrv.nl/?url='+encodeURIComponent(safe);return safe;}\nfunction card(item){
  const title=esc(item.title), desc=esc(cleanDesc(item.description||item.content)), source=esc(item.source||'Tin tức'), date=item.pubDate?new Date(item.pubDate).toLocaleString('vi-VN',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'Mới cập nhật'; const images=getImages(item);
  const image=images[0]||'';
  const candidates=encodeURIComponent(JSON.stringify(images));
  const data=encodeURIComponent(JSON.stringify({title:item.title,description:item.description||item.content,link:item.link,source:item.source||'Nguồn tin',date:item.pubDate}));
- return '<article class="news" data-item="'+data+'">'+(image?'<div class="news-media"><img src="'+esc(image)+'" data-original-src="'+esc(image)+'" data-image-candidates="'+candidates+'" data-image-index="0" data-proxy-tried="0" alt="" loading="lazy" referrerpolicy="no-referrer"></div>':'')+'<div class="source">'+source+'</div><h3>'+title+'</h3><p>'+desc+'</p><span class="time">'+date+'</span></article>';
+ return '<article class="news" data-item="'+data+'">'+(image?'<div class="news-media"><img src="'+esc(imageProxyUrl(image,0))+'" data-original-src="'+esc(imageProxyUrl(image,0))+'" data-image-candidates="'+candidates+'" data-image-index="0" data-image-variant="0" alt="" loading="lazy" referrerpolicy="no-referrer"></div>':'')+'<div class="source">'+source+'</div><h3>'+title+'</h3><p>'+desc+'</p><span class="time">'+date+'</span></article>';
 }
 function miniCard(item){
  const title=esc(item.title),source=esc(item.source||'Tin tức'),date=item.pubDate?new Date(item.pubDate).toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit'}):'';
  const images=getImages(item),image=images[0]||'',candidates=encodeURIComponent(JSON.stringify(images));
  const data=encodeURIComponent(JSON.stringify({title:item.title,description:item.description||item.content,link:item.link,source:item.source||'Nguồn tin',date:item.pubDate}));
  return '<button type="button" class="news-mini" data-item="'+data+'">'+
-   '<span class="news-mini-media">'+(image?'<img src="'+esc(image)+'" data-image-candidates="'+candidates+'" data-image-index="0" data-proxy-tried="0" alt="" loading="lazy" referrerpolicy="no-referrer">':'')+'</span>'+
+   '<span class="news-mini-media">'+(image?'<img src="'+esc(imageProxyUrl(image,0))+'" data-image-candidates="'+candidates+'" data-image-index="0" data-image-variant="0" alt="" loading="lazy" referrerpolicy="no-referrer">':'')+'</span>'+
    '<span><span class="news-mini-source">'+source+'</span><span class="news-mini-title">'+title+'</span><span class="news-mini-time">'+date+'</span></span>'+
  '</button>';
 }
@@ -346,28 +334,7 @@ function playYoutube(id,title){
 }
 function playYoutubeEntry(v){playYoutube(v.id,v.title);}
 
-document.addEventListener('error',e=>{
- const img=e.target;
- if(img.tagName!=='IMG') return;
- let candidates=[];
- try{candidates=JSON.parse(decodeURIComponent(img.dataset.imageCandidates||'[]'));}catch(_){}
- if(!candidates.length) return;
- let idx=Number(img.dataset.imageIndex||0);
- const proxied=img.dataset.proxyTried==='1';
- if(!proxied){
-   img.dataset.proxyTried='1';
-   img.src='https://images.weserv.nl/?url='+encodeURIComponent(candidates[idx]);
-   return;
- }
- if(idx+1<candidates.length){
-   idx++;
-   img.dataset.imageIndex=String(idx);
-   img.dataset.proxyTried='0';
-   img.src=candidates[idx];
-   return;
- }
- img.style.display='none';
-},{capture:true});
+document.addEventListener('error',e=>{\n const img=e.target;if(!(img instanceof HTMLImageElement))return;\n let candidates=[];try{candidates=JSON.parse(decodeURIComponent(img.dataset.imageCandidates||'[]'));}catch(_){}\n if(!candidates.length)return;\n let idx=Number(img.dataset.imageIndex||0),variant=Number(img.dataset.imageVariant||0);\n if(variant<2){variant++;img.dataset.imageVariant=String(variant);img.src=imageProxyUrl(candidates[idx],variant);return;}\n if(idx+1<candidates.length){idx++;img.dataset.imageIndex=String(idx);img.dataset.imageVariant='0';img.src=imageProxyUrl(candidates[idx],0);return;}\n img.removeAttribute('src');img.style.display='none';\n},{capture:true});
 document.addEventListener('click',e=>{
  const n=e.target.closest('.news, .news-mini');
  if(n){
