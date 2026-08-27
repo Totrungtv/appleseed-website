@@ -27,7 +27,19 @@ main{max-width:1280px;margin:0 auto;padding:42px 24px 70px}.section{margin-botto
 @media(max-width:900px){.quick-grid{grid-template-columns:repeat(3,1fr)}.news-grid,.media-grid{grid-template-columns:repeat(2,1fr)}.live{grid-template-columns:1fr}.hero h1{font-size:39px}}
 @media(max-width:560px){.nav{padding:9px 14px}.brand img{width:44px;height:44px}.brand b{font-size:19px}.back{font-size:12px;padding:9px}.hero{padding:44px 16px}.hero h1{font-size:34px}.hero p{font-size:15px}.quick{padding:0 12px}.quick-grid{grid-template-columns:repeat(3,1fr);gap:7px}.quick a{padding:11px 4px;font-size:10px}.quick span{font-size:20px}.quick a:nth-child(n+4){display:none}main{padding:34px 14px 55px}.news-grid,.media-grid{grid-template-columns:1fr}.head h2{font-size:22px}.live-buttons{grid-template-columns:1fr}}
 </style>
-</head>
+<style id="apple-seed-site-viewer">
+body.viewer-open{overflow:hidden}
+#siteViewer{display:none;position:fixed;inset:0;z-index:9999}
+#siteViewer.open{display:block}
+.viewer-backdrop{position:absolute;inset:0;background:rgba(4,12,28,.68);backdrop-filter:blur(4px)}
+.viewer-panel{position:absolute;inset:3vh 3vw;background:#fff;border-radius:18px;overflow:hidden;display:grid;grid-template-rows:auto 1fr auto;box-shadow:0 25px 80px rgba(0,0,0,.3)}
+.viewer-head{min-height:58px;padding:10px 14px 10px 18px;display:flex;align-items:center;justify-content:space-between;gap:15px;border-bottom:1px solid #e4eaf3;background:#fff}
+.viewer-head strong{display:block;font-size:16px;color:#13213b}.viewer-head small{display:block;color:#71809a;font-size:10px;margin-top:3px;max-width:70vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.viewer-head button{border:1px solid #d7dfeb;background:#f7f9fc;border-radius:10px;padding:9px 13px;font-weight:850;cursor:pointer}
+.viewer-body{min-height:0;background:#f2f5fa}.viewer-body iframe{display:block;width:100%;height:100%;min-height:70vh;border:0;background:#fff}
+.viewer-foot{min-height:42px;padding:9px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid #e4eaf3;font-size:11px;color:#697991;background:#fff}.viewer-foot a{color:#1769ff;font-weight:850}
+@media(max-width:560px){.viewer-panel{inset:0;border-radius:0}.viewer-head{padding:9px 10px}.viewer-body iframe{min-height:calc(100vh - 105px)}.viewer-foot{font-size:10px}.viewer-foot span{display:none}}
+</style></head>
 <body>
 <header class="top"><nav class="nav">
 <a class="brand" href="./index.html"><img src="logo.png" alt="Apple Seed"><div><b>Apple Seed</b><small>GIẢI TRÍ & TIN TỨC</small></div></a>
@@ -43,33 +55,60 @@ main{max-width:1280px;margin:0 auto;padding:42px 24px 70px}.section{margin-botto
 </div></div>
 <main>
 <section class="section" id="tin"><div class="head"><div><h2>📰 Báo trực tuyến</h2><p>Mở trực tiếp trang báo/chuyên mục chính thức.</p></div></div>
-<div class="source-links"><a target="_blank" rel="noopener" href="https://vnexpress.net/">VnExpress</a><a target="_blank" rel="noopener" href="https://tuoitre.vn/">Tuổi Trẻ</a><a target="_blank" rel="noopener" href="https://thanhnien.vn/">Thanh Niên</a><a target="_blank" rel="noopener" href="https://dantri.com.vn/">Dân Trí</a><a target="_blank" rel="noopener" href="https://vnexpress.net/rss">RSS VnExpress</a><a target="_blank" rel="noopener" href="https://tuoitre.vn/rss.htm">RSS Tuổi Trẻ</a></div>
-<div class="news-grid" style="margin-top:14px"><a class="news" target="_blank" rel="noopener" href="https://vnexpress.net/thoi-su"><div class="ico">🇻🇳</div><h3>Thời sự</h3><p>Tin Việt Nam và các sự kiện đáng chú ý.</p><span class="go">Xem VnExpress →</span></a><a class="news" target="_blank" rel="noopener" href="https://vnexpress.net/khoa-hoc-cong-nghe"><div class="ico">📱</div><h3>Công nghệ</h3><p>Điện thoại, AI, internet và sản phẩm công nghệ.</p><span class="go">Xem chuyên mục →</span></a><a class="news" target="_blank" rel="noopener" href="https://vnexpress.net/giai-tri"><div class="ico">🎬</div><h3>Giải trí</h3><p>Điện ảnh, âm nhạc, người nổi tiếng và đời sống.</p><span class="go">Xem giải trí →</span></a><a class="news" target="_blank" rel="noopener" href="https://vnexpress.net/the-thao"><div class="ico">⚽</div><h3>Thể thao</h3><p>Bóng đá, tennis, esports và tin thể thao mới.</p><span class="go">Xem thể thao →</span></a></div></section>
+<div class="source-links"><a href="https://vnexpress.net/">VnExpress</a><a href="https://tuoitre.vn/">Tuổi Trẻ</a><a href="https://thanhnien.vn/">Thanh Niên</a><a href="https://dantri.com.vn/">Dân Trí</a><a href="https://vnexpress.net/rss">RSS VnExpress</a><a href="https://tuoitre.vn/rss.htm">RSS Tuổi Trẻ</a></div>
+<div class="news-grid" style="margin-top:14px"><a class="news" href="https://vnexpress.net/thoi-su"><div class="ico">🇻🇳</div><h3>Thời sự</h3><p>Tin Việt Nam và các sự kiện đáng chú ý.</p><span class="go">Xem VnExpress →</span></a><a class="news" href="https://vnexpress.net/khoa-hoc-cong-nghe"><div class="ico">📱</div><h3>Công nghệ</h3><p>Điện thoại, AI, internet và sản phẩm công nghệ.</p><span class="go">Xem chuyên mục →</span></a><a class="news" href="https://vnexpress.net/giai-tri"><div class="ico">🎬</div><h3>Giải trí</h3><p>Điện ảnh, âm nhạc, người nổi tiếng và đời sống.</p><span class="go">Xem giải trí →</span></a><a class="news" href="https://vnexpress.net/the-thao"><div class="ico">⚽</div><h3>Thể thao</h3><p>Bóng đá, tennis, esports và tin thể thao mới.</p><span class="go">Xem thể thao →</span></a></div></section>
 <section class="section" id="cong-nghe"><div class="head"><div><h2>📱 Công nghệ & Apple</h2><p>Ưu tiên nội dung phù hợp khách hàng Apple Seed.</p></div></div><div class="news-grid">
-<a class="news" target="_blank" rel="noopener" href="https://www.apple.com/vn/newsroom/"><div class="ico"></div><h3>Apple Newsroom</h3><p>Tin và thông báo chính thức từ Apple.</p><span class="go">Mở Apple →</span></a>
-<a class="news" target="_blank" rel="noopener" href="https://vnexpress.net/khoa-hoc-cong-nghe"><div class="ico">🤖</div><h3>AI & công nghệ</h3><p>AI, thiết bị mới, phần mềm và xu hướng số.</p><span class="go">Đọc tin →</span></a>
-<a class="news" target="_blank" rel="noopener" href="https://tuoitre.vn/cong-nghe.htm"><div class="ico">💻</div><h3>Tuổi Trẻ Công nghệ</h3><p>Tin công nghệ và đời sống số.</p><span class="go">Mở chuyên mục →</span></a>
-<a class="news" target="_blank" rel="noopener" href="https://vnexpress.net/vne-go"><div class="ico">✨</div><h3>VnE-GO</h3><p>Video tin tức, giải trí và phong cách sống.</p><span class="go">Xem video →</span></a></div></section>
+<a class="news" href="https://www.apple.com/vn/newsroom/"><div class="ico"></div><h3>Apple Newsroom</h3><p>Tin và thông báo chính thức từ Apple.</p><span class="go">Mở Apple →</span></a>
+<a class="news" href="https://vnexpress.net/khoa-hoc-cong-nghe"><div class="ico">🤖</div><h3>AI & công nghệ</h3><p>AI, thiết bị mới, phần mềm và xu hướng số.</p><span class="go">Đọc tin →</span></a>
+<a class="news" href="https://tuoitre.vn/cong-nghe.htm"><div class="ico">💻</div><h3>Tuổi Trẻ Công nghệ</h3><p>Tin công nghệ và đời sống số.</p><span class="go">Mở chuyên mục →</span></a>
+<a class="news" href="https://vnexpress.net/vne-go"><div class="ico">✨</div><h3>VnE-GO</h3><p>Video tin tức, giải trí và phong cách sống.</p><span class="go">Xem video →</span></a></div></section>
 <section class="section" id="video"><div class="head"><div><h2>▶️ Video giải trí</h2><p>Mở nhanh các nền tảng video phổ biến.</p></div></div><div class="media-grid">
-<div class="media"><div class="media-top">▶️</div><div class="media-body"><h3>YouTube</h3><p>Video sửa chữa, công nghệ, giải trí, âm nhạc và Shorts.</p><a target="_blank" rel="noopener" href="https://www.youtube.com/">Mở YouTube →</a></div></div>
-<div class="media"><div class="media-top">🎞️</div><div class="media-body"><h3>YouTube Music</h3><p>Nghe nhạc và playlist trực tuyến.</p><a target="_blank" rel="noopener" href="https://music.youtube.com/">Mở YouTube Music →</a></div></div>
-<div class="media"><div class="media-top">🎵</div><div class="media-body"><h3>TikTok</h3><p>Video ngắn và nội dung giải trí.</p><a target="_blank" rel="noopener" href="https://www.tiktok.com/">Mở TikTok →</a></div></div>
-<div class="media"><div class="media-top">🎬</div><div class="media-body"><h3>VnExpress Video</h3><p>Tin nhanh, thể thao và giải trí bằng video.</p><a target="_blank" rel="noopener" href="https://video.vnexpress.net/">Xem video →</a></div></div></div></section>
+<div class="media"><div class="media-top">▶️</div><div class="media-body"><h3>YouTube</h3><p>Video sửa chữa, công nghệ, giải trí, âm nhạc và Shorts.</p><a href="https://www.youtube.com/">Mở YouTube →</a></div></div>
+<div class="media"><div class="media-top">🎞️</div><div class="media-body"><h3>YouTube Music</h3><p>Nghe nhạc và playlist trực tuyến.</p><a href="https://music.youtube.com/">Mở YouTube Music →</a></div></div>
+<div class="media"><div class="media-top">🎵</div><div class="media-body"><h3>TikTok</h3><p>Video ngắn và nội dung giải trí.</p><a href="https://www.tiktok.com/">Mở TikTok →</a></div></div>
+<div class="media"><div class="media-top">🎬</div><div class="media-body"><h3>VnExpress Video</h3><p>Tin nhanh, thể thao và giải trí bằng video.</p><a href="https://video.vnexpress.net/">Xem video →</a></div></div></div></section>
 <section class="section" id="am-thanh"><div class="head"><div><h2>🎧 Podcast & âm thanh</h2><p>Nghe trực tuyến khi chờ sửa máy.</p></div></div><div class="media-grid">
-<div class="media"><div class="media-top">🟢</div><div class="media-body"><h3>Spotify</h3><p>Nhạc, podcast, album và playlist.</p><a target="_blank" rel="noopener" href="https://open.spotify.com/">Mở Spotify →</a></div></div>
-<div class="media"><div class="media-top">🎙️</div><div class="media-body"><h3>Podcast VnExpress</h3><p>Các chương trình podcast và nội dung âm thanh.</p><a target="_blank" rel="noopener" href="https://vnexpress.net/podcast">Nghe podcast →</a></div></div>
-<div class="media"><div class="media-top">🎧</div><div class="media-body"><h3>Apple Podcasts</h3><p>Khám phá chương trình podcast.</p><a target="_blank" rel="noopener" href="https://podcasts.apple.com/vn/">Mở Apple Podcasts →</a></div></div>
-<div class="media"><div class="media-top">📻</div><div class="media-body"><h3>Radio</h3><p>Kênh âm thanh và chương trình trực tuyến.</p><a target="_blank" rel="noopener" href="https://www.vov.vn/">Mở VOV →</a></div></div></div></section>
+<div class="media"><div class="media-top">🟢</div><div class="media-body"><h3>Spotify</h3><p>Nhạc, podcast, album và playlist.</p><a href="https://open.spotify.com/">Mở Spotify →</a></div></div>
+<div class="media"><div class="media-top">🎙️</div><div class="media-body"><h3>Podcast VnExpress</h3><p>Các chương trình podcast và nội dung âm thanh.</p><a href="https://vnexpress.net/podcast">Nghe podcast →</a></div></div>
+<div class="media"><div class="media-top">🎧</div><div class="media-body"><h3>Apple Podcasts</h3><p>Khám phá chương trình podcast.</p><a href="https://podcasts.apple.com/vn/">Mở Apple Podcasts →</a></div></div>
+<div class="media"><div class="media-top">📻</div><div class="media-body"><h3>Radio</h3><p>Kênh âm thanh và chương trình trực tuyến.</p><a href="https://www.vov.vn/">Mở VOV →</a></div></div></div></section>
 <section class="section" id="the-thao"><div class="head"><div><h2>⚽ Thể thao</h2><p>Theo dõi bóng đá và các môn thể thao.</p></div></div><div class="live">
-<div class="live-card"><h3>🔥 Tin thể thao</h3><p>Apple Seed ưu tiên mở nguồn chính thức để người dùng đọc tin đầy đủ, thay vì sao chép nội dung báo về website.</p><div class="live-buttons"><a target="_blank" rel="noopener" href="https://vnexpress.net/the-thao">VnExpress Thể thao</a><a target="_blank" rel="noopener" href="https://tuoitre.vn/the-thao.htm">Tuổi Trẻ Thể thao</a></div></div>
-<div class="live-card"><h3>🏆 Video thể thao</h3><p>Xem video, highlights và nội dung thể thao trực tuyến.</p><div class="live-buttons"><a target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=the+thao+viet+nam">YouTube</a><a target="_blank" rel="noopener" href="https://vnexpress.net/the-thao">VnExpress</a></div></div></div></section>
+<div class="live-card"><h3>🔥 Tin thể thao</h3><p>Apple Seed ưu tiên mở nguồn chính thức để người dùng đọc tin đầy đủ, thay vì sao chép nội dung báo về website.</p><div class="live-buttons"><a href="https://vnexpress.net/the-thao">VnExpress Thể thao</a><a href="https://tuoitre.vn/the-thao.htm">Tuổi Trẻ Thể thao</a></div></div>
+<div class="live-card"><h3>🏆 Video thể thao</h3><p>Xem video, highlights và nội dung thể thao trực tuyến.</p><div class="live-buttons"><a href="https://www.youtube.com/results?search_query=the+thao+viet+nam">YouTube</a><a href="https://vnexpress.net/the-thao">VnExpress</a></div></div></div></section>
 <section class="section" id="apps"><div class="head"><div><h2>🎮 Ứng dụng giải trí</h2><p>Mở nhanh các nền tảng phổ biến.</p></div></div><div class="media-grid">
-<div class="media"><div class="media-top">🎮</div><div class="media-body"><h3>Steam</h3><p>Cửa hàng game và cộng đồng PC.</p><a target="_blank" rel="noopener" href="https://store.steampowered.com/">Mở Steam →</a></div></div>
-<div class="media"><div class="media-top">🎮</div><div class="media-body"><h3>Xbox</h3><p>Game, cộng đồng và nội dung giải trí.</p><a target="_blank" rel="noopener" href="https://www.xbox.com/">Mở Xbox →</a></div></div>
-<div class="media"><div class="media-top">🍿</div><div class="media-body"><h3>Netflix</h3><p>Phim và chương trình truyền hình trực tuyến.</p><a target="_blank" rel="noopener" href="https://www.netflix.com/">Mở Netflix →</a></div></div>
-<div class="media"><div class="media-top">📺</div><div class="media-body"><h3>FPT Play</h3><p>Truyền hình và giải trí trực tuyến tại Việt Nam.</p><a target="_blank" rel="noopener" href="https://fptplay.vn/">Mở FPT Play →</a></div></div></div></section>
+<div class="media"><div class="media-top">🎮</div><div class="media-body"><h3>Steam</h3><p>Cửa hàng game và cộng đồng PC.</p><a href="https://store.steampowered.com/">Mở Steam →</a></div></div>
+<div class="media"><div class="media-top">🎮</div><div class="media-body"><h3>Xbox</h3><p>Game, cộng đồng và nội dung giải trí.</p><a href="https://www.xbox.com/">Mở Xbox →</a></div></div>
+<div class="media"><div class="media-top">🍿</div><div class="media-body"><h3>Netflix</h3><p>Phim và chương trình truyền hình trực tuyến.</p><a href="https://www.netflix.com/">Mở Netflix →</a></div></div>
+<div class="media"><div class="media-top">📺</div><div class="media-body"><h3>FPT Play</h3><p>Truyền hình và giải trí trực tuyến tại Việt Nam.</p><a href="https://fptplay.vn/">Mở FPT Play →</a></div></div></div></section>
 <div class="notice">💡 <strong>Apple Seed sẽ không sao chép nguyên bài báo.</strong> Trang này ưu tiên liên kết tới nguồn chính thức và RSS của các báo.</div>
 </main>
 <footer class="footer">Website được viết và phát triển bởi <strong>Tô Thanh Trung – Apple Seed</strong> · <a href="./index.html">Về trang chính</a></footer>
-</body>
+<div id="siteViewer" aria-hidden="true">
+<div class="viewer-backdrop" data-close-viewer></div>
+<section class="viewer-panel" role="dialog" aria-modal="true" aria-label="Nội dung trực tuyến">
+<div class="viewer-head"><div><strong id="viewerTitle">Apple Seed</strong><small id="viewerUrl"></small></div><button id="viewerClose" type="button">✕ Đóng</button></div>
+<div class="viewer-body"><iframe id="viewerFrame" title="Nội dung trực tuyến" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+<div class="viewer-foot"><span>Nội dung được hiển thị từ trang nguồn.</span><a id="viewerSource" href="#" target="_self" rel="noopener">Mở nguồn trong trang này →</a></div>
+</section>
+</div>
+<script>
+(function(){
+const viewer=document.getElementById('siteViewer'), frame=document.getElementById('viewerFrame'),
+title=document.getElementById('viewerTitle'), url=document.getElementById('viewerUrl'), source=document.getElementById('viewerSource');
+function openViewer(a){
+ const href=a.href;
+ if(!href || href.startsWith(location.origin) || href.startsWith('javascript:')) return;
+ title.textContent=(a.textContent||'Nội dung trực tuyến').trim()||'Nội dung trực tuyến';
+ url.textContent=href.replace(/^https?:\/\//,'').replace(/\/$/,'');
+ source.href=href;
+ frame.src=href;
+ viewer.classList.add('open'); viewer.setAttribute('aria-hidden','false'); document.body.classList.add('viewer-open');
+}
+function closeViewer(){frame.src='about:blank';viewer.classList.remove('open');viewer.setAttribute('aria-hidden','true');document.body.classList.remove('viewer-open')}
+document.querySelectorAll('a[href^="http"]').forEach(a=>a.addEventListener('click',function(e){e.preventDefault();openViewer(a)}));
+document.getElementById('viewerClose').addEventListener('click',closeViewer);
+viewer.querySelector('[data-close-viewer]').addEventListener('click',closeViewer);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&viewer.classList.contains('open'))closeViewer()});
+})();
+</script></body>
 </html>
