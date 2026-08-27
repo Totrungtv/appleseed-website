@@ -264,12 +264,47 @@ function imageProxyUrl(url,variant=0){
  if(variant===2)return 'https://wsrv.nl/?url='+encodeURIComponent(safe);
  return safe;
 }
+/* Apple Seed image engine: RSS images are often hotlink-protected.
+   Try reliable HTTPS image proxies first, then alternate source images,
+   and finally leave the branded gradient instead of a broken-image icon. */
+function installImageFallbacks(){
+ if(window.__appleSeedImageEngineInstalled)return;
+ window.__appleSeedImageEngineInstalled=true;
+ document.addEventListener('error',function(e){
+   const img=e.target;
+   if(!(img instanceof HTMLImageElement)||!img.dataset.imageCandidates)return;
+   let list=[];
+   try{list=JSON.parse(decodeURIComponent(img.dataset.imageCandidates)||'[]')}catch(_){}
+   const current=Number(img.dataset.imageIndex||0);
+   const variant=Number(img.dataset.imageVariant||1);
+   const source=list[current]||img.dataset.originalSrc||'';
+   if(variant===1){
+     img.dataset.imageVariant='2';
+     img.src=imageProxyUrl(source,2);
+     return;
+   }
+   if(variant===2 && current+1<list.length){
+     img.dataset.imageIndex=String(current+1);
+     img.dataset.imageVariant='1';
+     img.src=imageProxyUrl(list[current+1],1);
+     return;
+   }
+   if(variant===2 && source){
+     img.dataset.imageVariant='0';
+     img.src=imageProxyUrl(source,0);
+     return;
+   }
+   img.removeAttribute('src');
+   img.classList.add('image-unavailable');
+ },true);
+}
+installImageFallbacks();
 function card(item){
  const title=esc(item.title), desc=esc(cleanDesc(item.description||item.content)), source=esc(item.source||'Tin tức'), date=item.pubDate?new Date(item.pubDate).toLocaleString('vi-VN',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'Mới cập nhật'; const images=getImages(item);
  const image=images[0]||'';
  const candidates=encodeURIComponent(JSON.stringify(images));
  const data=encodeURIComponent(JSON.stringify({title:item.title,description:item.description||item.content,link:item.link,source:item.source||'Nguồn tin',date:item.pubDate}));
- return '<article class="news" data-item="'+data+'">'+(image?'<div class="news-media"><img src="'+esc(imageProxyUrl(image,0))+'" data-original-src="'+esc(imageProxyUrl(image,0))+'" data-image-candidates="'+candidates+'" data-image-index="0" data-image-variant="0" alt="" loading="lazy" referrerpolicy="no-referrer"></div>':'')+'<div class="source">'+source+'</div><h3>'+title+'</h3><p>'+desc+'</p><span class="time">'+date+'</span></article>';
+ return '<article class="news" data-item="'+data+'">'+(image?'<div class="news-media"><img src="'+esc(imageProxyUrl(image,1))+'" data-original-src="'+esc(imageProxyUrl(image,1))+'" data-image-candidates="'+candidates+'" data-image-index="0" data-image-variant="0" alt="" loading="lazy" referrerpolicy="no-referrer"></div>':'')+'<div class="source">'+source+'</div><h3>'+title+'</h3><p>'+desc+'</p><span class="time">'+date+'</span></article>';
 }
 function miniCard(item){
  const title=esc(item.title),source=esc(item.source||'Tin tức'),date=item.pubDate?new Date(item.pubDate).toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit'}):'';
