@@ -529,7 +529,8 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
     }catch(e){console.error('AI Board:',e);result.innerHTML='<b>⚠️ Phân tích chưa chạy được</b><p>'+esc(e?.name==='AbortError'?'AI phản hồi quá lâu, hãy thử lại.':(e?.message||String(e)))+'</p>'}
     finally{btn.disabled=false;btn.textContent='⚡ PHÂN TÍCH AI'}
   };
-  $('analyzeSchematic').onclick=async()=>{
+  const schematicBtn = $('analyzeSchematic');
+  if (schematicBtn) schematicBtn.addEventListener('click', async ()=>{
     const btn=$('analyzeSchematic'),result=$('schematicResult');
     const card=document.querySelectorAll('.grid .card')[1], selects=card?.querySelectorAll('select'), zone=card?.querySelector('input')?.value.trim()||'',doc=selects?.[0]?.value||'Schematic',panic=$('panic')?.value.trim()||'';
     if(!zone&&!panic){result.innerHTML='<b>⚠️ Thiếu dữ liệu</b><p>Nhập vùng/linh kiện hoặc PANIC log trước.</p>';return}
@@ -539,7 +540,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
       result.innerHTML='<b>📐 Kết quả Schematic Intelligence</b><div style="white-space:pre-wrap;line-height:1.65;margin-top:8px">'+esc(reply)+'</div>';
     }catch(e){console.error('Schematic AI:',e);result.innerHTML='<b>⚠️ Schematic chưa phân tích được</b><p>'+esc(e?.name==='AbortError'?'AI phản hồi quá lâu, hãy thử lại.':(e?.message||String(e)))+'</p>'}
     finally{btn.disabled=false;btn.textContent='📐 ANALYZE SCHEMATIC'}
-  };
+  });
   const schematicInput=$('schematicImage');
   const schematicDrop=$('schematicImageDrop');
   schematicInput?.addEventListener('change',()=>{
