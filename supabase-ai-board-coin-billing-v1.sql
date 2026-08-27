@@ -85,7 +85,7 @@ begin
   insert into public.member_coin_ledger
     (user_id,delta,balance_after,transaction_type,note,created_by)
   values
-    (uid,-cost,new_balance,'ai_board_usage',
+    (uid,-cost,new_balance,'usage',
      format('%s: -%s Coin',action_label,cost),uid);
 
   return jsonb_build_object(
