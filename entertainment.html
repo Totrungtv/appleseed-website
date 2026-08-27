@@ -696,12 +696,14 @@ document.getElementById('searchInput').addEventListener('input',()=>{
  searchTimer=setTimeout(renderSearch,220);
 });
 document.getElementById('refresh').onclick=async()=>{
- ALL_NEWS=[];
- await refreshAll();
- renderSearch();
- // Refresh keeps the currently selected players; if the main player was empty, restore a verified video.
- if(!document.getElementById('youtubeFrame').src || document.getElementById('youtubeFrame').src==='about:blank'){
-   playYoutube(YOUTUBE_CATALOG[0].id,YOUTUBE_CATALOG[0].title);
+ const btn=document.getElementById('refresh');
+ if(btn) { btn.disabled=true; btn.textContent='↻ Đang cập nhật…'; }
+ try{
+   ALL_NEWS=[];
+   await refreshAll();
+   renderSearch();
+ }finally{
+   if(btn) { btn.disabled=false; btn.textContent='↻ Cập nhật'; }
  }
 };
 
