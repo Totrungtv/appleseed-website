@@ -255,6 +255,7 @@ body.member-guest .top .pill{display:none}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
+<script src="member-auth.js"></script>
 <script>
 (()=>{
   const q=id=>document.getElementById(id);
@@ -423,5 +424,47 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
 <script>
 document.getElementById('analyze').onclick=()=>document.getElementById('result').innerHTML='<b>🔎 Phân tích sơ bộ</b><p>PANIC 0x20000 + compass → ưu tiên cụm compass/sensor và I2C. Chưa kết luận linh kiện.</p><span class="pill">Power</span><span class="pill">SDA/SCL</span><span class="pill">Board comparison</span>';
 document.getElementById('upload').onclick=()=>{const f=document.getElementById('file').files[0];document.getElementById('uploadStatus').textContent=f?'Đã chọn: '+f.name+' — giao diện sẵn sàng nối Storage thật.':'Chưa chọn file.'};
+</script>
+<script>
+/* ===== APPLE SEED MEMBER ACCESS =====
+   YouTube luôn miễn phí.
+   Sau khi đăng nhập thành công, mở lại toàn bộ AI Board / Diagnostic / Library.
+*/
+(async function initAppleSeedMemberAccess(){
+  const applyMemberState = (session) => {
+    const loggedIn = !!session?.user;
+    document.body.classList.toggle('member-guest', !loggedIn);
+    document.body.classList.toggle('member-authenticated', loggedIn);
+
+    const gate = document.getElementById('member-gate');
+    if (gate) gate.style.display = loggedIn ? 'none' : '';
+
+    const policy = document.getElementById('member-policy');
+    if (policy) policy.style.display = loggedIn ? 'none' : '';
+
+    if (loggedIn) {
+      const user = session.user;
+      const name = user.user_metadata?.full_name || user.email || 'Thành viên';
+      const header = document.querySelector('.top .muted');
+      if (header) header.textContent = 'Xin chào ' + name + ' • Toàn bộ công cụ kỹ thuật dành cho thành viên.';
+    }
+  };
+
+  try {
+    if (!window.supabaseClient) throw new Error('Supabase client chưa sẵn sàng.');
+
+    const { data, error } = await window.supabaseClient.auth.getSession();
+    if (error) throw error;
+    applyMemberState(data?.session || null);
+
+    window.supabaseClient.auth.onAuthStateChange((_event, session) => {
+      applyMemberState(session || null);
+    });
+  } catch (error) {
+    console.error('Apple Seed member access:', error);
+    /* Fail closed: không có session thì vẫn chỉ cho YouTube. */
+    applyMemberState(null);
+  }
+})();
 </script>
 </body></html>
