@@ -75,6 +75,35 @@ async function loadSection(id,feeds){
   el.innerHTML=all.length?all.slice(0,8).map(card).join(''):'<div class="empty">Chưa lấy được RSS lúc này. Pa thử bấm ↻ Cập nhật lại nhé.</div>';
  }catch(e){el.innerHTML='<div class="empty">Không tải được tin lúc này.</div>'}
 }
+function renderReaderMarkdown(text){
+ let s=String(text||'').replace(/\r/g,'');
+ const marker=s.indexOf('Markdown Content:');
+ if(marker>=0) s=s.slice(marker+'Markdown Content:'.length).trim();
+ const lines=s.split('\n');
+ let html='',para=[],list=false;
+ const flush=()=>{if(!para.length)return;const p=para.join(' ').trim();if(p)html+='<p>'+formatInline(p)+'</p>';para=[];};
+ const closeList=()=>{if(list){html+='</ul>';list=false;}};
+ for(let line of lines){
+  line=line.trim();
+  if(!line){flush();closeList();continue;}
+  if(/^#{2,6}\s+/.test(line)){flush();closeList();const m=line.match(/^(#{2,6})\s+(.+)/);const n=Math.min(6,m[1].length);html+='<h'+n+'>'+formatInline(m[2])+'</h'+n+'>';continue;}
+  if(/^[-*+]\s+/.test(line)){flush();if(!list){html+='<ul>';list=true;}html+='<li>'+formatInline(line.replace(/^[-*+]\s+/,''))+'</li>';continue;}
+  if(/^>\s?/.test(line)){flush();closeList();html+='<blockquote>'+formatInline(line.replace(/^>\s?/,''))+'</blockquote>';continue;}
+  if(/^Title:\s|^URL Source:\s|^Published Time:\s/.test(line))continue;
+  para.push(line);
+ }
+ flush();closeList();
+ return html||'<p>Không có nội dung để hiển thị.</p>';
+}
+function formatInline(s){
+ let out=esc(s);
+ out=out.replace(/!\[([^\]]*)\]\((https?:\/\/[^\s)]+)(?:\s+[^)]*)?\)/gi,'<img src="$2" alt="$1" loading="lazy" referrerpolicy="no-referrer">');
+ out=out.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/gi,'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+ out=out.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+ out=out.replace(/__([^_]+)__/g,'<strong>$1</strong>');
+ out=out.replace(/\*([^*]+)\*/g,'<em>$1</em>');
+ return out;
+}
 async function openReader(item){
  const reader=document.getElementById('reader');
  document.getElementById('rSource').textContent=item.source||'Apple Seed';
@@ -90,7 +119,7 @@ async function openReader(item){
    const res=await fetch('https://r.jina.ai/'+item.link,{cache:'no-store'});
    if(!res.ok) throw new Error('reader '+res.status);
    const text=await res.text();
-   body.innerHTML='<div>'+text.replace(/\n\n/g,'</p><p>').replace(/\n/g,'<br>')+'</div>';
+   body.innerHTML=renderReaderMarkdown(text);
  }catch(err){
    body.innerHTML=item.description||item.content||'<p>Không tải được toàn bộ bài viết từ nguồn. Pa có thể bấm “Đọc nguồn gốc” để xem bản gốc.</p>';
  }
