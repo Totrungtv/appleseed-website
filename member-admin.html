@@ -73,6 +73,15 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui
   <div class="note-box"><b>⚠️ Lưu ý:</b> Đây là bảng giá nội bộ hiện tại, <b>không tự động quyết định số Coin</b>. Khi thành viên chuyển khoản, Admin phải đối chiếu giao dịch thực tế rồi mới cộng Coin. Nếu ông đổi giá sau này, chỉ sửa bảng này và thông tin hướng dẫn tương ứng; không sửa Ledger cũ.</div>
 </section>
 
+
+<section class="panel">
+  <div class="section-title"><h2>⚙️ Cấu hình giá AI Board</h2><span class="muted">Đổi số Coin/lần dùng ngay tại đây — không cần sửa code.</span></div>
+  <div class="price-grid" id="aiPriceGrid"></div>
+  <div class="policy-note" style="margin-top:14px">
+    <strong>🔐 Giá được áp dụng ở server:</strong> thay đổi tại đây sẽ có hiệu lực cho các lần phân tích AI tiếp theo. Số Coin đã trừ trong Ledger cũ không thay đổi.
+  </div>
+</section>
+
 <section class="panel">
   <div class="section-title"><h2>🛠️ Sổ tay vận hành & xử lý khi công cụ ngừng hoạt động</h2><span class="muted">Ghi chú phát triển Apple Seed</span></div>
   <div class="ops-grid">
@@ -167,6 +176,30 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui
  $('creditCoins').value=''; $('creditNote').value='';
  await load();
 }
+
+async function loadAiPrices(){
+  const grid=$('aiPriceGrid'); if(!grid)return;
+  const {data,error}=await sb.rpc('apple_seed_ai_board_coin_prices');
+  if(error){grid.innerHTML='<div class="note-box">Không tải được cấu hình giá AI: '+esc(error.message)+'</div>';return}
+  const items=[
+    {key:'ai_analysis',fallback:'AI Board Diagnosis'},
+    {key:'schematic_analysis',fallback:'Schematic Intelligence'}
+  ];
+  grid.innerHTML=items.map(x=>{
+    const v=data?.[x.key]||{};
+    return '<div class="price"><b>'+esc(v.label||x.fallback)+'</b><strong><input id="price-'+x.key+'" type="number" min="0" step="1" value="'+Number(v.cost??0)+'" style="width:110px;padding:6px;border:1px solid #cfd9e6;border-radius:8px;font-size:20px;font-weight:800"> <span style="display:inline;color:var(--blue);font-size:18px">Coin</span></strong><span>Coin mỗi lần phân tích</span><button class="btn primary" style="margin-top:10px" onclick="saveAiPrice(\''+x.key+'\')">💾 Lưu giá</button></div>';
+  }).join('');
+}
+window.saveAiPrice=async key=>{
+  const input=$('price-'+key), cost=Number(input?.value);
+  if(!Number.isInteger(cost)||cost<0){msg('Giá Coin phải là số nguyên từ 0 trở lên.',true);return}
+  if(!confirm('Đổi giá '+key+' thành '+cost.toLocaleString('vi-VN')+' Coin/lần?'))return;
+  const {data,error}=await sb.rpc('apple_seed_admin_set_ai_board_coin_price',{p_action:key,p_cost:cost});
+  if(error){msg('Không đổi được giá AI: '+error.message,true);return}
+  msg('✅ Đã cập nhật giá '+(data?.label||key)+': '+cost.toLocaleString('vi-VN')+' Coin/lần.');
+  await loadAiPrices();
+};
+
 function fillCreditMembers(){
  const sel=$('creditMember'), current=sel.value;
  sel.innerHTML='<option value="">— Chọn thành viên —</option>'+members.map(m=>'<option value="'+esc(m.user_id)+'">'+esc(m.full_name||'Chưa có tên')+' · '+esc(m.email||'')+' · '+money(m.coins)+' Coin</option>').join('');
@@ -175,7 +208,7 @@ function fillCreditMembers(){
 $('refresh').onclick=load;$('creditBtn').onclick=quickCredit;let timer; $('search').oninput=()=>{clearTimeout(timer);timer=setTimeout(load,300)};
  $('logout').onclick=async()=>{await sb.auth.signOut();location.reload()};
  $('loginBtn').onclick=async()=>{const {error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error){$('loginMsg').textContent=error.message;return}await boot()};
- async function boot(){if(!(await isAdmin())){await sb.auth.signOut();$('loginMsg').textContent='Tài khoản này không có quyền Admin.';return}$('login').style.display='none';$('app').style.display='block';await load()}
+ async function boot(){if(!(await isAdmin())){await sb.auth.signOut();$('loginMsg').textContent='Tài khoản này không có quyền Admin.';return}$('login').style.display='none';$('app').style.display='block';await load();await loadAiPrices()}
  sb.auth.getSession().then(async r=>{if(r.data.session)await boot()});
  window.openMember=openMember;
 })();
