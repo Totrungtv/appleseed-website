@@ -104,3 +104,97 @@ $$;
 
 grant execute on function public.stable_guard_claim_request(text) to anon, authenticated;
 grant execute on function public.stable_guard_complete_request(uuid,text,text,text,text) to anon, authenticated;
+
+
+-- Worker authentication hardening
+create table if not exists public.stable_guard_worker (
+  id boolean primary key default true check (id),
+  token_hash text not null,
+  updated_at timestamptz not null default now()
+);
+alter table public.stable_guard_worker enable row level security;
+
+-- The token hash is installed separately in the live database and must never be committed in plaintext.
+-- GitHub Actions uses the STABLE_GUARD_WORKER_TOKEN repository secret.
+-- Do not add the plaintext worker token to this SQL file.
+
+drop function if exists public.stable_guard_claim_request(text);
+drop function if exists public.stable_guard_complete_request(uuid,text,text,text,text);
+
+create or replace function public.stable_guard_claim_request(p_worker_token text)
+returns table (request_id uuid, snapshot_id bigint, repository text, branch text, commit_sha text, label text)
+language plpgsql security definer set search_path = public
+as $$
+begin
+  if not exists (
+    select 1 from public.stable_guard_worker
+    where id=true
+      and token_hash=encode(digest(coalesce(p_worker_token,''),'sha256'),'hex')
+  ) then
+    raise exception 'Unauthorized worker';
+  end if;
+
+  return query
+  with picked as (
+    select r.id
+    from public.stable_guard_requests r
+    where r.status='pending'
+    order by r.requested_at asc
+    for update skip locked
+    limit 1
+  ),
+  claimed as (
+    update public.stable_guard_requests r
+    set status='processing',
+        message=case when r.message='' then 'Claimed by github-actions' else r.message end
+    from picked
+    where r.id=picked.id
+    returning r.id,r.snapshot_id
+  )
+  select c.id,s.id,s.repository,s.branch,s.commit_sha,s.label
+  from claimed c
+  join public.stable_guard_snapshots s on s.id=c.snapshot_id;
+end;
+$$;
+
+create or replace function public.stable_guard_complete_request(
+  p_worker_token text,
+  p_request_id uuid,
+  p_status text,
+  p_result_commit_sha text default null,
+  p_message text default '',
+  p_error_message text default ''
+)
+returns boolean
+language plpgsql security definer set search_path = public
+as $$
+begin
+  if not exists (
+    select 1 from public.stable_guard_worker
+    where id=true
+      and token_hash=encode(digest(coalesce(p_worker_token,''),'sha256'),'hex')
+  ) then
+    raise exception 'Unauthorized worker';
+  end if;
+
+  if p_status not in ('succeeded','failed','cancelled') then
+    raise exception 'Invalid stable guard status';
+  end if;
+
+  update public.stable_guard_requests
+  set status=p_status,
+      processed_at=now(),
+      result_commit_sha=p_result_commit_sha,
+      message=coalesce(p_message,''),
+      error_message=coalesce(p_error_message,'')
+  where id=p_request_id
+    and status='processing';
+
+  return found;
+end;
+$$;
+
+grant execute on function public.stable_guard_claim_request(text) to anon;
+grant execute on function public.stable_guard_complete_request(text,uuid,text,text,text,text) to anon;
+revoke execute on function public.stable_guard_claim_request(text) from authenticated;
+revoke execute on function public.stable_guard_complete_request(text,uuid,text,text,text,text) from authenticated;
