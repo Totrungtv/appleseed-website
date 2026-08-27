@@ -350,7 +350,15 @@ function playYoutube(id,title){
 }
 function playYoutubeEntry(v){playYoutube(v.id,v.title);}
 
-document.addEventListener('error',e=>{\n const img=e.target;if(!(img instanceof HTMLImageElement))return;\n let candidates=[];try{candidates=JSON.parse(decodeURIComponent(img.dataset.imageCandidates||'[]'));}catch(_){}\n if(!candidates.length)return;\n let idx=Number(img.dataset.imageIndex||0),variant=Number(img.dataset.imageVariant||0);\n if(variant<2){variant++;img.dataset.imageVariant=String(variant);img.src=imageProxyUrl(candidates[idx],variant);return;}\n if(idx+1<candidates.length){idx++;img.dataset.imageIndex=String(idx);img.dataset.imageVariant='0';img.src=imageProxyUrl(candidates[idx],0);return;}\n img.removeAttribute('src');img.style.display='none';\n},{capture:true});
+document.addEventListener('error',e=>{
+ const img=e.target;if(!(img instanceof HTMLImageElement))return;
+ let candidates=[];try{candidates=JSON.parse(decodeURIComponent(img.dataset.imageCandidates||'[]'));}catch(_){}
+ if(!candidates.length)return;
+ let idx=Number(img.dataset.imageIndex||0),variant=Number(img.dataset.imageVariant||0);
+ if(variant<2){variant++;img.dataset.imageVariant=String(variant);img.src=imageProxyUrl(candidates[idx],variant);return;}
+ if(idx+1<candidates.length){idx++;img.dataset.imageIndex=String(idx);img.dataset.imageVariant='0';img.src=imageProxyUrl(candidates[idx],0);return;}
+ img.removeAttribute('src');img.style.display='none';
+},{capture:true});
 document.addEventListener('click',e=>{
  const n=e.target.closest('.news, .news-mini');
  if(n){
