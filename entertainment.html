@@ -176,9 +176,9 @@ async function openReader(item){
  body.innerHTML=
    '<div class="reader-frame-wrap" id="readerFrameWrap">'+
      '<div class="reader-frame-loading"><span class="spinner"></span>&nbsp; Đang mở bài viết gốc…</div>'+
-     '<iframe class="reader-frame" id="readerFrame" title="Bài viết gốc" src="'+safe+'" loading="eager" referrerpolicy="strict-origin-when-cross-origin" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"></iframe>'+
+     '<iframe class="reader-frame" id="readerFrame" title="Bài viết gốc" src="'+safe+'" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; fullscreen; picture-in-picture; encrypted-media"></iframe>'+
    '</div>'+
-   '<div class="reader-fallback" id="readerFallback">Nếu nguồn báo không cho phép nhúng trong iframe, Apple Seed sẽ không vượt qua cơ chế bảo mật của họ. Ông có thể bấm <a href="'+safe+'" target="_blank" rel="noopener noreferrer">Mở bài gốc trong tab trình duyệt</a>.</div>';
+   '<div class="reader-fallback" id="readerFallback">Apple Seed đang hiển thị nguyên trang nguồn trong khung đọc. Nếu nguồn báo tự chặn iframe hoặc tài nguyên hình ảnh/video không cho phép nhúng, Apple Seed không can thiệp vượt bảo mật của nguồn. Ông có thể bấm <a href="'+safe+'" target="_blank" rel="noopener noreferrer">Mở bài gốc trong tab trình duyệt</a>.</div>';
 
  const frame=document.getElementById('readerFrame');
  const wrap=document.getElementById('readerFrameWrap');
