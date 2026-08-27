@@ -56,6 +56,8 @@ main{max-width:1320px;margin:auto;padding:34px 22px 65px}.section{margin-bottom:
 .news-rail{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;padding:2px 2px 5px;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
 .news-mini{flex:0 0 245px;scroll-snap-align:start;display:grid;grid-template-columns:82px 1fr;gap:10px;align-items:center;padding:8px;border:1px solid #e3e9f2;border-radius:12px;background:#f9fbfe;cursor:pointer;text-align:left;transition:.16s}
 .news-mini:hover{transform:translateY(-2px);border-color:#bfd2ff;background:#fff;box-shadow:0 8px 18px rgba(25,45,80,.08)}
+.news-mini:active{transform:scale(.985)}
+.news-mini:focus-visible{outline:3px solid #c9d9ff;outline-offset:2px}
 .news-mini-media{width:82px;height:62px;border-radius:9px;overflow:hidden;background:linear-gradient(135deg,#07152e,#1769ff)}
 .news-mini-media img{width:100%;height:100%;object-fit:cover;display:block}
 .news-mini-source{font-size:8px;color:var(--blue);font-weight:950;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -363,9 +365,16 @@ document.addEventListener('error',e=>{
  img.style.display='none';
 },{capture:true});
 document.addEventListener('click',e=>{
- const n=e.target.closest('.news');if(n){try{openReader(JSON.parse(decodeURIComponent(n.dataset.item)))}catch(x){}}
+ const n=e.target.closest('.news, .news-mini');
+ if(n){
+   e.preventDefault();
+   try{openReader(JSON.parse(decodeURIComponent(n.dataset.item)))}catch(x){console.error('Apple Seed reader:',x)}
+   return;
+ }
  const close=e.target.closest('[data-close]');if(close){document.getElementById('reader').classList.remove('open');document.body.classList.remove('modal-open')}
  const y=e.target.closest('[data-youtube]');if(y){
+   e.preventDefault();
+   e.stopPropagation();
    const q=y.dataset.youtube, v=YOUTUBE_VIDEOS[q];
    document.getElementById('pTitle').textContent='YouTube • '+(v?v.title:q);
    if(v) document.getElementById('pFrame').src='https://www.youtube.com/embed/'+v.id+'?rel=0&modestbranding=1&playsinline=1';
