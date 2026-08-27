@@ -211,7 +211,7 @@ body.member-guest .member-gate{
     </div>
     <div class="account-wallet-action">
       <a class="btn primary" href="member-wallet.html">💳 Nạp Coin</a>
-      <button class="btn secondary" type="button" id="appleSeedMemberChatBtn">💬 Chat</button>
+      <button class="btn secondary member-chat-btn" type="button" id="appleSeedMemberChatBtn"><span>💬 Chat</span><span class="chat-notification" id="memberChatNotification" hidden aria-label="Tin nhắn mới">🔔<b id="memberChatUnreadCount">0</b></span></button>
       <span class="account-wallet-hint">Nạp Coin và trò chuyện với Member</span>
     </div>
     <div class="account-details">
@@ -878,7 +878,45 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
   </div>
 </div>
 
-<style>#appleSeedMemberChatBtn{border:1px solid #a9cdf8;background:#fff;color:#1769ff}#appleSeedMemberChatBtn:hover{background:#eef6ff}</style><script>(function(){const btn=document.getElementById('appleSeedMemberChatBtn');if(!btn)return;btn.addEventListener('click',function(){const w=window.open('member-chat.html','appleSeedMemberChat','width=1180,height=760,resizable=yes,scrollbars=yes');if(w)w.focus()})})();</script>
+<style>
+#appleSeedMemberChatBtn{border:1px solid #a9cdf8;background:#fff;color:#1769ff;display:inline-flex;align-items:center;gap:8px}
+#appleSeedMemberChatBtn:hover{background:#eef6ff}
+.chat-notification{display:inline-flex;align-items:center;gap:3px;color:#d92d20;font-size:14px;font-weight:900}
+.chat-notification b{min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:#d92d20;color:#fff;font-size:10px;line-height:17px;text-align:center}
+</style>
+<script>
+(function(){
+  const btn=document.getElementById('appleSeedMemberChatBtn');
+  const badge=document.getElementById('memberChatNotification');
+  const count=document.getElementById('memberChatUnreadCount');
+  if(!btn||!badge||!count)return;
+  let timer=null;
+  async function refreshUnread(){
+    try{
+      const sb=window.supabaseClient;
+      if(!sb){badge.hidden=true;return}
+      const sessionResult=await sb.auth.getSession();
+      const uid=sessionResult?.data?.session?.user?.id;
+      if(!uid){badge.hidden=true;return}
+      const partResult=await sb.from('chat_participants').select('conversation_id,last_read_at').eq('user_id',uid);
+      if(partResult.error||!partResult.data?.length){badge.hidden=true;return}
+      const ids=partResult.data.map(x=>x.conversation_id);
+      const readAt=Object.fromEntries(partResult.data.map(x=>[x.conversation_id,x.last_read_at]));
+      const msgResult=await sb.from('chat_messages').select('conversation_id,created_at,sender_id').in('conversation_id',ids).neq('sender_id',uid).order('created_at',{ascending:false}).limit(500);
+      if(msgResult.error){badge.hidden=true;return}
+      const unread=(msgResult.data||[]).filter(m=>!readAt[m.conversation_id]||new Date(m.created_at)>new Date(readAt[m.conversation_id])).length;
+      badge.hidden=unread===0;
+      count.textContent=unread>99?'99+':String(unread);
+    }catch(_){badge.hidden=true}
+  }
+  function start(){refreshUnread();if(timer)clearInterval(timer);timer=setInterval(refreshUnread,10000)}
+  btn.addEventListener('click',()=>setTimeout(refreshUnread,1200));
+  window.addEventListener('focus',refreshUnread);
+  start();
+  window.appleSeedRefreshChatUnread=refreshUnread;
+})();
+</script>
+<script>(function(){const btn=document.getElementById('appleSeedMemberChatBtn');if(!btn)return;btn.addEventListener('click',function(){const w=window.open('member-chat.html','appleSeedMemberChat','width=1180,height=760,resizable=yes,scrollbars=yes'});if(w)w.focus()})})();</script>
 <script>
 /* ===== PANIC LIVE DATA PREVIEW =====
    Dữ liệu thực tế nằm ngay cạnh PANIC LOG để người sửa dễ kiểm tra dữ liệu trước khi gửi AI.
