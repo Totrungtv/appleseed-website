@@ -144,7 +144,12 @@ body.member-guest .member-gate{
 .device-hint{font-size:11px;color:#647b98;margin-top:5px}
 .device-field select:focus{border-color:#278cf0;box-shadow:0 0 0 3px #278cf01a;outline:0}
 </style>
-</head>
+<style>
+.panic-help-label{font-size:11px;font-weight:700;color:#278cf0;margin-left:5px}
+.panic-guide{margin:7px 0 9px;padding:10px 12px;border:1px solid #cfe3fb;border-radius:10px;background:#f5f9ff;color:#5e7592;font-size:11px;line-height:1.55;display:flex;flex-direction:column;gap:3px}
+.panic-guide strong{color:#17345c;font-size:12px}
+.panic-guide code{background:#eaf3ff;padding:1px 4px;border-radius:4px;color:#1769ff}
+</style></head>
 <body class="member-guest"><main class="wrap">
 <header class="top"><div><div class="kicker">APPLE SEED • ENGINEERING LAB</div><h1>AI Board Intelligence</h1><div class="muted">YouTube miễn phí • Các công cụ kỹ thuật dành cho thành viên Apple Seed</div></div></header>
 
@@ -334,7 +339,16 @@ body.member-guest .member-gate{
 <div class="device-hint">📱 Chọn đúng model để AI đối chiếu PANIC, power sequence, I2C, RFFE và dữ liệu board tương ứng.</div>
 </div>
 <div class="field"><label>Loại lỗi</label><select><option>PANIC / Kernel</option><option>Boot / No Power</option><option>Baseband</option><option>Face ID</option><option>I2C / Sensor</option></select></div>
-<div class="field full"><label>PANIC LOG</label><textarea id="panic">panic 0x20000 compass</textarea></div>
+<div class="field full">
+<label>PANIC LOG <span class="panic-help-label">• Không biết lấy ở đâu? Xem hướng dẫn bên dưới</span></label>
+<div class="panic-guide">
+  <strong>📋 PANIC LOG dùng để làm gì?</strong>
+  <span>Dán <b>nguyên văn panic log</b> của máy vào đây. Bạn không cần tự giải mã.</span>
+  <span><b>Cách lấy trên iPhone:</b> Cài đặt → Quyền riêng tư &amp; Bảo mật → Phân tích &amp; Cải tiến → Dữ liệu phân tích → mở file <b>panic-full...</b> hoặc file có chữ <b>panic</b> → <b>Chia sẻ / Sao chép</b> rồi dán toàn bộ nội dung vào ô này.</span>
+  <span><b>Nếu chỉ có một dòng lỗi</b> (ví dụ: <code>panic 0x20000 compass</code>) thì cứ dán nguyên dòng đó. AI sẽ dựa vào model máy + panic + số đo để phân tích.</span>
+</div>
+<textarea id="panic" placeholder="Ví dụ: panic 0x20000 compass&#10;&#10;Hoặc dán toàn bộ nội dung file panic-full... vào đây.">panic 0x20000 compass</textarea>
+</div>
 <div class="field"><label>Boot current</label><input placeholder="0.080A → 0.000A"></div>
 <div class="field"><label>Vbat / nguồn</label><input placeholder="4.20V"></div>
 <div class="field"><label>Diode / Resistance</label><input placeholder="Giá trị đo"></div>
