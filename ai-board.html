@@ -136,7 +136,15 @@ body.member-guest .member-gate{
 .coin-modal-close{border:0;background:#edf3f8;color:#294764}
 </style>
 
-\n<style> .ai-parallel-result{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}.ai-real-data,.ai-analysis{padding:14px;border:1px solid #cfe2f7;border-radius:13px}.ai-real-data{background:#fff}.ai-analysis{background:#f5faff}@media(max-width:800px){.ai-parallel-result{grid-template-columns:1fr}} </style>\n</head>
+\n<style> .ai-parallel-result{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}.ai-real-data,.ai-analysis{padding:14px;border:1px solid #cfe2f7;border-radius:13px}.ai-real-data{background:#fff}.ai-analysis{background:#f5faff}@media(max-width:800px){.ai-parallel-result{grid-template-columns:1fr}} </style>\n
+<style>
+.device-field{grid-column:1/-1}
+.device-field select{font-size:15px;font-weight:700;min-height:48px}
+.device-count{font-size:11px;font-weight:800;color:#278cf0;margin-left:5px}
+.device-hint{font-size:11px;color:#647b98;margin-top:5px}
+.device-field select:focus{border-color:#278cf0;box-shadow:0 0 0 3px #278cf01a;outline:0}
+</style>
+</head>
 <body class="member-guest"><main class="wrap">
 <header class="top"><div><div class="kicker">APPLE SEED • ENGINEERING LAB</div><h1>AI Board Intelligence</h1><div class="muted">YouTube miễn phí • Các công cụ kỹ thuật dành cho thành viên Apple Seed</div></div></header>
 
@@ -278,7 +286,52 @@ body.member-guest .member-gate{
 <section class="grid">
 <div class="card"><h2>🧪 Diagnostic Workspace</h2><div class="muted">Tạo ca kỹ thuật và chuẩn bị dữ liệu cho AI.</div>
 <div class="fields">
-<div class="field"><label>Thiết bị</label><select><option>iPhone 14 Pro Max</option><option>iPhone 15 Pro Max</option><option>iPhone 13 Pro Max</option></select></div>
+<div class="field full device-field">
+<label>Thiết bị <span class="device-count">• Đầy đủ dòng iPhone</span></label>
+<select id="deviceModel">
+  <option value="">Chọn thiết bị</option>
+  <optgroup label="iPhone 5 Series">
+    <option>iPhone 5</option><option>iPhone 5c</option><option>iPhone 5s</option>
+  </optgroup>
+  <optgroup label="iPhone 6 Series">
+    <option>iPhone 6</option><option>iPhone 6 Plus</option><option>iPhone 6s</option><option>iPhone 6s Plus</option>
+  </optgroup>
+  <optgroup label="iPhone 7 Series">
+    <option>iPhone 7</option><option>iPhone 7 Plus</option>
+  </optgroup>
+  <optgroup label="iPhone 8 Series">
+    <option>iPhone 8</option><option>iPhone 8 Plus</option>
+  </optgroup>
+  <optgroup label="iPhone X Series">
+    <option>iPhone X</option><option>iPhone XR</option><option>iPhone XS</option><option>iPhone XS Max</option>
+  </optgroup>
+  <optgroup label="iPhone 11 Series">
+    <option>iPhone 11</option><option>iPhone 11 Pro</option><option>iPhone 11 Pro Max</option>
+  </optgroup>
+  <optgroup label="iPhone 12 Series">
+    <option>iPhone 12 mini</option><option>iPhone 12</option><option>iPhone 12 Pro</option><option>iPhone 12 Pro Max</option>
+  </optgroup>
+  <optgroup label="iPhone 13 Series">
+    <option>iPhone 13 mini</option><option>iPhone 13</option><option>iPhone 13 Pro</option><option>iPhone 13 Pro Max</option>
+  </optgroup>
+  <optgroup label="iPhone 14 Series">
+    <option>iPhone 14</option><option>iPhone 14 Plus</option><option>iPhone 14 Pro</option><option>iPhone 14 Pro Max</option>
+  </optgroup>
+  <optgroup label="iPhone 15 Series">
+    <option>iPhone 15</option><option>iPhone 15 Plus</option><option>iPhone 15 Pro</option><option>iPhone 15 Pro Max</option>
+  </optgroup>
+  <optgroup label="iPhone 16 Series">
+    <option>iPhone 16</option><option>iPhone 16 Plus</option><option>iPhone 16 Pro</option><option>iPhone 16 Pro Max</option><option>iPhone 16e</option>
+  </optgroup>
+  <optgroup label="iPhone 17 Series">
+    <option>iPhone 17</option><option>iPhone 17 Air</option><option>iPhone 17 Pro</option><option>iPhone 17 Pro Max</option><option>iPhone 17e</option>
+  </optgroup>
+  <optgroup label="iPhone SE">
+    <option>iPhone SE (1st generation)</option><option>iPhone SE (2nd generation)</option><option>iPhone SE (3rd generation)</option>
+  </optgroup>
+</select>
+<div class="device-hint">📱 Chọn đúng model để AI đối chiếu PANIC, power sequence, I2C, RFFE và dữ liệu board tương ứng.</div>
+</div>
 <div class="field"><label>Loại lỗi</label><select><option>PANIC / Kernel</option><option>Boot / No Power</option><option>Baseband</option><option>Face ID</option><option>I2C / Sensor</option></select></div>
 <div class="field full"><label>PANIC LOG</label><textarea id="panic">panic 0x20000 compass</textarea></div>
 <div class="field"><label>Boot current</label><input placeholder="0.080A → 0.000A"></div>
