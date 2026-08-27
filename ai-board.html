@@ -102,6 +102,27 @@ body.member-guest .member-policy{display:block}
 body.member-guest .member-gate{display:block}
 body.member-guest .top .pill{display:none}
 @media(max-width:560px){.member-gate{padding:20px 16px}}
+
+/* APPLE SEED MEMBER GATE VISIBILITY FIX v1
+   Chỉ hiện Member Gate khi chưa đăng nhập.
+   Khi đã đăng nhập: ẩn TẤT CẢ gate, kể cả gate bị trùng ID.
+*/
+body.member-authenticated .member-gate{
+  display:none !important;
+  visibility:hidden !important;
+  height:0 !important;
+  min-height:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+}
+body.member-guest .member-gate{
+  display:block !important;
+  visibility:visible !important;
+  height:auto !important;
+  overflow:visible !important;
+}
+
 </style>
 </head>
 <body class="member-guest"><main class="wrap">
