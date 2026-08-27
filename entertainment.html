@@ -36,7 +36,7 @@ body.viewer-open{overflow:hidden}
 .viewer-head{min-height:58px;padding:10px 14px 10px 18px;display:flex;align-items:center;justify-content:space-between;gap:15px;border-bottom:1px solid #e4eaf3;background:#fff}
 .viewer-head strong{display:block;font-size:16px;color:#13213b}.viewer-head small{display:block;color:#71809a;font-size:10px;margin-top:3px;max-width:70vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .viewer-head button{border:1px solid #d7dfeb;background:#f7f9fc;border-radius:10px;padding:9px 13px;font-weight:850;cursor:pointer}
-.viewer-body{min-height:0;background:#f2f5fa}.viewer-body iframe{display:block;width:100%;height:100%;min-height:70vh;border:0;background:#fff}
+.viewer-body{position:relative;min-height:0;background:#f2f5fa}.viewer-body iframe{position:relative;z-index:2;display:block;width:100%;height:100%;min-height:70vh;border:0;background:#fff}.viewer-state{position:absolute;inset:0;z-index:1;display:grid;place-content:center;text-align:center;padding:30px;color:#60708a;background:#f7f9fd}.viewer-state strong{display:block;color:#17243b;font-size:18px}.viewer-state p{max-width:620px;line-height:1.6;font-size:13px;margin:10px auto 16px}.viewer-state a{display:inline-block;color:#1769ff;font-weight:900}.viewer-state.blocked{z-index:4}.state-icon{font-size:42px;margin-bottom:10px}
 .viewer-foot{min-height:42px;padding:9px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid #e4eaf3;font-size:11px;color:#697991;background:#fff}.viewer-foot a{color:#1769ff;font-weight:850}
 @media(max-width:560px){.viewer-panel{inset:0;border-radius:0}.viewer-head{padding:9px 10px}.viewer-body iframe{min-height:calc(100vh - 105px)}.viewer-foot{font-size:10px}.viewer-foot span{display:none}}
 </style></head>
@@ -87,7 +87,16 @@ body.viewer-open{overflow:hidden}
 <div class="viewer-backdrop" data-close-viewer></div>
 <section class="viewer-panel" role="dialog" aria-modal="true" aria-label="Nội dung trực tuyến">
 <div class="viewer-head"><div><strong id="viewerTitle">Apple Seed</strong><small id="viewerUrl"></small></div><button id="viewerClose" type="button">✕ Đóng</button></div>
-<div class="viewer-body"><iframe id="viewerFrame" title="Nội dung trực tuyến" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+<div class="viewer-body">
+  <div id="viewerLoading" class="viewer-state">Đang tải nội dung…</div>
+  <iframe id="viewerFrame" title="Nội dung trực tuyến" loading="eager" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+  <div id="viewerBlocked" class="viewer-state blocked" hidden>
+    <div class="state-icon">🌐</div>
+    <strong>Trang này không cho phép hiển thị bên trong khung</strong>
+    <p>Một số website như báo điện tử, Netflix, TikTok… chủ động chặn việc nhúng bằng iframe. Apple Seed không thể vượt qua cơ chế bảo mật này từ một website tĩnh.</p>
+    <a id="viewerBlockedLink" href="#" target="_self" rel="noopener">Mở nội dung ngay trong cửa sổ này →</a>
+  </div>
+</div>
 <div class="viewer-foot"><span>Nội dung được hiển thị từ trang nguồn.</span><a id="viewerSource" href="#" target="_self" rel="noopener">Mở nguồn trong trang này →</a></div>
 </section>
 </div>
@@ -95,16 +104,36 @@ body.viewer-open{overflow:hidden}
 (function(){
 const viewer=document.getElementById('siteViewer'), frame=document.getElementById('viewerFrame'),
 title=document.getElementById('viewerTitle'), url=document.getElementById('viewerUrl'), source=document.getElementById('viewerSource');
+const loading=document.getElementById('viewerLoading'), blocked=document.getElementById('viewerBlocked'), blockedLink=document.getElementById('viewerBlockedLink');
+let failTimer;
+const EMBED_OK=['youtube.com','www.youtube.com','youtube-nocookie.com','www.youtube-nocookie.com','open.spotify.com'];
+const KNOWN_BLOCKED=['vnexpress.net','tuoitre.vn','thanhnien.vn','dantri.com.vn','vov.vn','apple.com','tiktok.com','netflix.com','fptplay.vn','steampowered.com','xbox.com','podcasts.apple.com'];
+function embedUrl(href){
+ try{
+  const u=new URL(href);
+  if((u.hostname==='www.youtube.com'||u.hostname==='youtube.com')&&u.pathname==='/') return 'https://www.youtube.com/embed?listType=search&list='+encodeURIComponent(u.searchParams.get('search_query')||'');
+  if(u.hostname==='open.spotify.com') return href.replace('open.spotify.com/','open.spotify.com/embed/');
+ }catch(e){}
+ return href;
+}
 function openViewer(a){
  const href=a.href;
  if(!href || href.startsWith(location.origin) || href.startsWith('javascript:')) return;
  title.textContent=(a.textContent||'Nội dung trực tuyến').trim()||'Nội dung trực tuyến';
  url.textContent=href.replace(/^https?:\/\//,'').replace(/\/$/,'');
- source.href=href;
- frame.src=href;
+ source.href=href; blockedLink.href=href;
+ blocked.hidden=true; loading.style.display='grid'; frame.style.visibility='hidden';
  viewer.classList.add('open'); viewer.setAttribute('aria-hidden','false'); document.body.classList.add('viewer-open');
+ clearTimeout(failTimer);
+ let host=''; try{host=new URL(href).hostname.replace(/^www\./,'')}catch(e){}
+ if(KNOWN_BLOCKED.some(d=>host===d||host.endsWith('.'+d))){
+   loading.style.display='none'; blocked.hidden=false; return;
+ }
+ frame.onload=function(){clearTimeout(failTimer);loading.style.display='none';frame.style.visibility='visible'};
+ frame.src=embedUrl(href);
+ failTimer=setTimeout(function(){loading.style.display='none';frame.style.visibility='hidden';blocked.hidden=false},5000);
 }
-function closeViewer(){frame.src='about:blank';viewer.classList.remove('open');viewer.setAttribute('aria-hidden','true');document.body.classList.remove('viewer-open')}
+function closeViewer(){clearTimeout(failTimer);frame.src='about:blank';frame.style.visibility='visible';loading.style.display='grid';blocked.hidden=true;viewer.classList.remove('open');viewer.setAttribute('aria-hidden','true');document.body.classList.remove('viewer-open')}
 document.querySelectorAll('a[href^="http"]').forEach(a=>a.addEventListener('click',function(e){e.preventDefault();openViewer(a)}));
 document.getElementById('viewerClose').addEventListener('click',closeViewer);
 viewer.querySelector('[data-close-viewer]').addEventListener('click',closeViewer);
