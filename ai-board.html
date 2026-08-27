@@ -179,7 +179,8 @@ body.member-guest .member-gate{
     </div>
     <div class="account-wallet-action">
       <a class="btn primary" href="member-wallet.html">💳 Nạp Coin</a>
-      <span class="account-wallet-hint">Nạp Coin và xem lịch sử giao dịch</span>
+      <button class="btn secondary" type="button" id="appleSeedMemberChatBtn">💬 Chat</button>
+      <span class="account-wallet-hint">Nạp Coin và trò chuyện với Member</span>
     </div>
     <div class="account-details">
       <div><span>Trạng thái</span><b id="memberAccountStatus">—</b></div>
@@ -760,4 +761,5 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
   </div>
 </div>
 
+<style>#appleSeedMemberChatBtn{border:1px solid #a9cdf8;background:#fff;color:#1769ff}#appleSeedMemberChatBtn:hover{background:#eef6ff}</style><script>(function(){const btn=document.getElementById('appleSeedMemberChatBtn');if(!btn)return;btn.addEventListener('click',function(){const w=window.open('member-chat.html','appleSeedMemberChat','width=1180,height=760,resizable=yes,scrollbars=yes');if(w)w.focus()})})();</script>
 </body></html>
