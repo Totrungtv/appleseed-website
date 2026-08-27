@@ -435,7 +435,7 @@ $("loginBtn").onclick=async()=>{
     btn.textContent="Đăng nhập";
   }
 };
-$("logoutBtn").onclick=async()=>{await sb.auth.signOut();location.reload();};$("logoutBtn").onclick=async()=>{await sb.auth.signOut();location.reload();};
+$("logoutBtn").onclick=async()=>{await sb.auth.signOut();location.reload();};
 
 async function refreshAll(){await loadProducts();await loadPages();await loadNavItems();await loadHomeSections();await loadTheme();await loadPaymentAndOrders()}
 
