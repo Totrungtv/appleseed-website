@@ -24,14 +24,14 @@ jobs:
       - name: Process pending Stable rollback
         env:
           SUPABASE_URL: https://nuismqcjyutqigdydfkg.supabase.co
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_ANON_KEY: sb_publishable_Z3pTEseMEeoiGU9dYJ1NwQ_Ko7li9Sz
           STABLE_GUARD_WORKER_TOKEN: ${{ secrets.STABLE_GUARD_WORKER_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
 
-          if [[ -z "${SUPABASE_ANON_KEY}" || -z "${STABLE_GUARD_WORKER_TOKEN}" ]]; then
-            echo "Missing SUPABASE_ANON_KEY or STABLE_GUARD_WORKER_TOKEN repository secret."
+          if [[ -z "${STABLE_GUARD_WORKER_TOKEN}" ]]; then
+            echo "Missing STABLE_GUARD_WORKER_TOKEN repository secret."
             exit 1
           fi
 
