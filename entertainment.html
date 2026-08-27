@@ -82,6 +82,11 @@ main{max-width:1320px;margin:auto;padding:34px 22px 65px}.section{margin-bottom:
   .tabbar a{padding:10px 12px;font-size:12px}
 }
 </style>
+<style id="apple-seed-news-image-stability">
+.news-media{background:#edf3fb}
+.news-media img{background:#edf3fb}
+.news-media img.image-unavailable{display:none}
+</style>
 </head>
 <body>
 <header class="top"><nav class="nav">
@@ -319,7 +324,7 @@ function card(item){
  const image=images[0]||'';
  const candidates=encodeURIComponent(JSON.stringify(images));
  const data=encodeURIComponent(JSON.stringify({title:item.title,description:item.description||item.content,link:item.link,source:item.source||'Nguồn tin',date:item.pubDate}));
- return '<article class="news" data-item="'+data+'">'+(image?'<div class="news-media"><img src="'+esc(imageProxyUrl(image,1))+'" data-original-src="'+esc(imageProxyUrl(image,1))+'" data-image-candidates="'+candidates+'" data-image-index="0" data-image-variant="0" alt="" loading="lazy" referrerpolicy="no-referrer"></div>':'')+'<div class="source">'+source+'</div><h3>'+title+'</h3><p>'+desc+'</p><span class="time">'+date+'</span></article>';
+ return '<article class="news" data-item="'+data+'">'+(image?'<div class="news-media"><img src="'+esc(imageProxyUrl(image,0))+'" data-original-src="'+esc(imageProxyUrl(image,0))+'" data-image-candidates="'+candidates+'" data-image-index="0" data-image-variant="0" alt="" loading="lazy" referrerpolicy="no-referrer"></div>':'')+'<div class="source">'+source+'</div><h3>'+title+'</h3><p>'+desc+'</p><span class="time">'+date+'</span></article>';
 }
 function miniCard(item){
  const title=esc(item.title),source=esc(item.source||'Tin tức'),date=item.pubDate?new Date(item.pubDate).toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit'}):'';
