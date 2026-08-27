@@ -39,7 +39,7 @@ main{max-width:1320px;margin:auto;padding:34px 22px 65px}.section{margin-bottom:
 .tiktok-open{background:#2563eb;color:#fff;border-color:#2563eb}
 .tiktok-login-note{margin-top:12px;padding:11px 13px;border-radius:12px;background:#f7f9fc;border:1px solid #e2e8f0;color:#64748b;font-size:11px;line-height:1.55}
 @media(max-width:700px){.tiktok-login{margin-left:0}}
-.reader-frame-wrap{height:100%;min-height:70vh;background:#f7f9fc;position:relative}
+.reader-loading{min-height:260px;display:grid;place-items:center;text-align:center;color:var(--muted);gap:10px}.reader-loading strong{display:block;color:#24324d;font-size:16px}.reader-loading small{display:block;margin-top:5px}.reader-article{max-width:1180px;font-size:17px;line-height:1.85;color:#29364e}.reader-article p{margin:0 0 18px}.reader-article h2,.reader-article h3{line-height:1.3;margin:28px 0 12px;color:#16233f}.reader-article img{display:block;max-width:100%;height:auto;margin:20px auto;border-radius:12px}.reader-article a{color:#1769ff}.reader-source-card{max-width:1180px;margin-top:24px;padding:12px 14px;border:1px solid #e0e7f1;border-radius:12px;background:#f7f9fc;display:flex;justify-content:space-between;gap:12px;align-items:center;font-size:11px;color:var(--muted)}.reader-source-card a{color:#1769ff;font-weight:900;text-decoration:none}.reader-image-error{padding:10px;border-radius:10px;background:#f7f9fc;color:#7b8799;text-align:center;font-size:11px}.reader-error{max-width:720px;margin:50px auto;text-align:center;padding:35px 25px;border:1px solid #e0e7f1;border-radius:18px;background:#f8fafc}.reader-error-icon{font-size:38px}.reader-error h3{margin:12px 0 8px;color:#16233f}.reader-error p{color:var(--muted);font-size:13px;line-height:1.65}.reader-error-btn{display:inline-block;margin-top:10px;background:#1769ff;color:#fff!important;padding:11px 15px;border-radius:10px;text-decoration:none;font-weight:900}@media(max-width:560px){.reader-source-card{flex-direction:column;align-items:flex-start}.reader-article{font-size:16px}}.reader-frame-wrap{height:100%;min-height:70vh;background:#f7f9fc;position:relative}
 .reader-frame{width:100%;height:100%;min-height:70vh;border:0;display:block;background:#fff}
 .reader-frame-loading{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:13px;background:#fff;z-index:1;pointer-events:none}
 .reader-frame-wrap.loaded .reader-frame-loading{display:none}
@@ -207,29 +207,28 @@ async function openReader(item){
  reader.classList.add('open');
  reader.setAttribute('aria-hidden','false');
  document.body.classList.add('modal-open');
-
- if(!sourceUrl){
-   body.innerHTML='<div class="empty">Bài viết không có địa chỉ nguồn hợp lệ.</div>';
-   return;
+ if(!sourceUrl){body.innerHTML='<div class="empty">Bài viết không có địa chỉ nguồn hợp lệ.</div>';return;}
+ body.innerHTML='<div class="reader-loading"><span class="spinner"></span><div><strong>Đang tải bài viết…</strong><small>Apple Seed đang lấy phần nội dung từ nguồn được phép.</small></div></div>';
+ try{
+   const api='https://nuismqcjyutqigdydfkg.supabase.co/functions/v1/article-reader?url='+encodeURIComponent(sourceUrl);
+   const res=await fetch(api,{headers:{'Accept':'application/json'}});
+   const data=await res.json().catch(()=>null);
+   if(!res.ok || !data?.ok) throw new Error(data?.error||'Không thể đọc bài viết');
+   if(data.title) document.getElementById('rTitle').textContent=data.title;
+   if(data.source) document.getElementById('rSource').textContent=data.source;
+   if(data.time) document.getElementById('rMeta').textContent=data.time;
+   body.innerHTML='<div class="reader-article">'+data.html+'</div><div class="reader-source-card"><span>📖 Nội dung được đọc từ nguồn báo</span><a href="'+esc(sourceUrl)+'" target="_blank" rel="noopener noreferrer">Mở bài gốc ↗</a></div>';
+   body.querySelectorAll('img').forEach(img=>{
+     img.addEventListener('error',()=>{
+       img.style.display='none';
+       const n=document.createElement('div');n.className='reader-image-error';
+       n.textContent='Ảnh gốc không cho phép hiển thị trong Apple Seed · mở bài gốc để xem';
+       img.parentNode?.insertBefore(n,img);
+     },{once:true});
+   });
+ }catch(err){
+   body.innerHTML='<div class="reader-error"><div class="reader-error-icon">📰</div><h3>Không thể đọc nội dung trực tiếp</h3><p>Nguồn báo đang chặn truy cập tự động hoặc bài viết không thể trích xuất an toàn. Apple Seed không vượt cơ chế bảo mật của nguồn.</p><a class="reader-error-btn" href="'+esc(sourceUrl)+'" target="_blank" rel="noopener noreferrer">Mở bài gốc trong trình duyệt ↗</a></div>';
  }
-
- const safe=esc(sourceUrl); /* reader-proxy-ready */
- body.innerHTML=
-   '<div class="reader-frame-wrap" id="readerFrameWrap">'+
-     '<div class="reader-frame-loading"><span class="spinner"></span>&nbsp; Đang mở bài viết gốc…</div>'+
-     '<iframe class="reader-frame" id="readerFrame" title="Bài viết gốc" src="'+safe+'" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; fullscreen; picture-in-picture; encrypted-media"></iframe>'+
-   '</div>'+
-   '<div class="reader-fallback" id="readerFallback">Apple Seed đang hiển thị nguyên trang nguồn trong khung đọc. Nếu nguồn báo tự chặn iframe hoặc tài nguyên hình ảnh/video không cho phép nhúng, Apple Seed không can thiệp vượt bảo mật của nguồn. Ông có thể bấm <a href="'+safe+'" target="_blank" rel="noopener noreferrer">Mở bài gốc trong tab trình duyệt</a>.</div>';
-
- const frame=document.getElementById('readerFrame');
- const wrap=document.getElementById('readerFrameWrap');
- const fallback=document.getElementById('readerFallback');
- frame.addEventListener('load',()=>{
-   wrap.classList.add('loaded');
-   // Một số website gửi trang chặn iframe bằng CSP/X-Frame-Options.
-   // Không đọc/chèn DOM cross-origin; chỉ cung cấp đường dẫn nguồn hợp lệ.
-   setTimeout(()=>{fallback.style.display='block';},1200);
- },{once:true});
 }
 function relatedVideoFor(title){
  const t=String(title||'').toLowerCase();
