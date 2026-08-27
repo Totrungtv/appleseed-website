@@ -512,7 +512,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
       ? 'Bạn chưa chọn ảnh schematic/boardview.'
       : 'Bạn chưa chọn ảnh main / schematic / boardview.');
     if(file.size>8*1024*1024) throw new Error('Ảnh quá lớn. Vui lòng chọn ảnh dưới 8 MB.');
-    if(!/^image\\/(jpeg|png|webp)$/i.test(file.type)) throw new Error('Chỉ hỗ trợ JPG, PNG hoặc WEBP.');
+    if(!/^image\/(jpeg|png|webp)$/i.test(file.type)) throw new Error('Chỉ hỗ trợ JPG, PNG hoặc WEBP.');
 
     const safe=file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,'-');
     const path=`pan-ai/${session.user.id}/${Date.now()}-${Math.random().toString(36).slice(2,8)}-${safe}`;
