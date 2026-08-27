@@ -22,7 +22,7 @@ main{max-width:1320px;margin:auto;padding:34px 22px 65px}.section{margin-bottom:
 @media(max-width:560px){.nav{padding:8px 13px}.hero{padding:38px 14px 60px}.hero h1{font-size:32px}.hero p{font-size:14px}.tabs{padding:0 10px}.tabbar{border-radius:13px}.tabbar a{padding:9px 11px}.news-grid,.video-grid{grid-template-columns:1fr}main{padding:28px 13px 50px}.head h2{font-size:21px}.reader-box{inset:0;border-radius:0}.reader-content{padding:25px 17px}.reader-content h1{font-size:27px}}
 
 
-.youtube-placeholder{position:absolute;inset:0;display:grid;place-items:center;overflow:hidden;background:#07152e;cursor:pointer}.youtube-placeholder img{width:100%;height:100%;object-fit:cover;display:block}.youtube-placeholder-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;color:#fff;background:linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.62));padding:20px}.youtube-placeholder-overlay span{font-size:11px;opacity:.9}.youtube-play{width:62px;height:44px;border-radius:12px;background:#ff0033;color:#fff;display:grid;place-items:center;font-size:23px;box-shadow:0 8px 25px rgba(0,0,0,.28)}.social-player{position:relative}.social-player iframe{position:relative;z-index:2;opacity:0;transition:opacity .2s}.social-player iframe.ready{opacity:1}.social-player.youtube-loading:after{content:'Đang kết nối YouTube…';position:absolute;z-index:3;left:50%;top:50%;transform:translate(-50%,-50%);padding:9px 12px;border-radius:10px;background:rgba(0,0,0,.72);color:#fff;font-size:11px;pointer-events:none}.youtube-fallback{position:absolute;z-index:4;inset:20px;display:none;place-items:center;text-align:center;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:rgba(7,21,46,.96);color:#fff;padding:25px}.youtube-fallback a{display:inline-block;margin-top:10px;background:#1769ff;color:#fff;padding:9px 12px;border-radius:9px;font-weight:900;font-size:11px}
+.youtube-placeholder{position:absolute;inset:0;z-index:3;display:grid;place-items:center;overflow:hidden;background:#07152e;cursor:pointer}.youtube-placeholder.hidden{display:none}.youtube-placeholder img{width:100%;height:100%;object-fit:cover;display:block}.youtube-placeholder-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;color:#fff;background:linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.62));padding:20px}.youtube-placeholder-overlay span{font-size:11px;opacity:.9}.youtube-play{width:62px;height:44px;border-radius:12px;background:#ff0033;color:#fff;display:grid;place-items:center;font-size:23px;box-shadow:0 8px 25px rgba(0,0,0,.28)}.social-player{position:relative}.social-player iframe{position:relative;z-index:2;opacity:0;pointer-events:none;transition:opacity .2s}.social-player iframe.ready{opacity:1}.social-player.playing iframe{pointer-events:auto;opacity:1}.social-player.youtube-loading:after{content:'Đang kết nối YouTube…';position:absolute;z-index:3;left:50%;top:50%;transform:translate(-50%,-50%);padding:9px 12px;border-radius:10px;background:rgba(0,0,0,.72);color:#fff;font-size:11px;pointer-events:none}.youtube-fallback{position:absolute;z-index:4;inset:20px;display:none;place-items:center;text-align:center;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:rgba(7,21,46,.96);color:#fff;padding:25px}.youtube-fallback a{display:inline-block;margin-top:10px;background:#1769ff;color:#fff;padding:9px 12px;border-radius:9px;font-weight:900;font-size:11px}
 
 .yt-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
 .yt-result-card{border:1px solid #e0e7f1;background:#fff;border-radius:12px;overflow:hidden;text-align:left;cursor:pointer;padding:0;transition:.16s;box-shadow:0 4px 14px rgba(25,45,80,.05)}
@@ -516,6 +516,21 @@ const SOCIAL_YOUTUBE={
  'nhạc Việt Nam':YOUTUBE_CATALOG[3],
  'lofi music':YOUTUBE_CATALOG[3]
 };
+async function playInlineYoutube(id,title){
+ const stage=document.getElementById('youtubeStage');
+ const frame=document.getElementById('youtubeFrame');
+ const placeholder=document.getElementById('youtubePlaceholder');
+ const titleEl=document.getElementById('youtubePlaceholderTitle');
+ if(!stage||!frame)return;
+ const safeId=String(id||'').trim();
+ if(!/^[A-Za-z0-9_-]{11}$/.test(safeId))return;
+ if(titleEl)titleEl.textContent=title||'YouTube • Apple Seed';
+ stage.classList.add('playing');
+ placeholder?.classList.add('hidden');
+ frame.classList.remove('ready');
+ frame.src='https://www.youtube-nocookie.com/embed/'+encodeURIComponent(safeId)+'?autoplay=1&rel=0&playsinline=1';
+ frame.onload=()=>frame.classList.add('ready');
+}
 async function playSocialYoutube(key){
  const input=document.getElementById('youtubeSearch');
  if(!input)return;
@@ -545,7 +560,7 @@ async function renderYoutubeSearch(){
  if(directId){
    box.innerHTML='<div class="yt-search-status">🔗 Đã nhận link YouTube. Bấm nút bên dưới để phát ngay trong Apple Seed.</div><button type="button" class="chip" id="youtubeDirectBtn">▶ Xem video YouTube này</button>';
    const direct=document.getElementById('youtubeDirectBtn');
-   if(direct)direct.onclick=()=>playYoutube(directId,'Video YouTube');
+   if(direct)direct.onclick=()=>playInlineYoutube(directId,'Video YouTube');
    return;
  }
  if(!window.supabaseClient){
@@ -579,7 +594,7 @@ async function renderYoutubeSearch(){
    box.querySelectorAll('[data-yt-api-index]').forEach(card=>{
      card.addEventListener('click',()=>{
        const v=items[Number(card.dataset.ytApiIndex)];
-       if(v?.videoId)playYoutube(v.videoId,v.title||'YouTube');
+       if(v?.videoId)playInlineYoutube(v.videoId,v.title||'YouTube');
      });
    });
  }catch(err){
@@ -694,7 +709,7 @@ document.getElementById('refresh').onclick=async()=>{
 // The player opens only after the user chooses a video, like the working YouTube engine on index.html.
 refreshAll();
 document.getElementById('youtubePlaceholder')?.addEventListener('click',()=>{
-  playYoutube('aqz-KE-bpKQ','YouTube video mẫu • phát trực tiếp trong Apple Seed');
+  playInlineYoutube('-etoRi1t2co','iPhone 17 • Apple Việt Nam');
 });
 </script>
 </body></html>
