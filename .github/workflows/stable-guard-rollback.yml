@@ -1,0 +1,94 @@
+name: Stable Guard Rollback
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: stable-guard-rollback
+  cancel-in-progress: false
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Process pending Stable rollback
+        env:
+          SUPABASE_URL: https://nuismqcjyutqigdydfkg.supabase.co
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          STABLE_GUARD_WORKER_TOKEN: ${{ secrets.STABLE_GUARD_WORKER_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ -z "${SUPABASE_ANON_KEY}" || -z "${STABLE_GUARD_WORKER_TOKEN}" ]]; then
+            echo "Missing SUPABASE_ANON_KEY or STABLE_GUARD_WORKER_TOKEN repository secret."
+            exit 1
+          fi
+
+          claim_response="$(curl -fsS "${SUPABASE_URL}/rest/v1/rpc/stable_guard_claim_request"             -H "apikey: ${SUPABASE_ANON_KEY}"             -H "Authorization: Bearer ${SUPABASE_ANON_KEY}"             -H "Content-Type: application/json"             -H "Accept: application/json"             -d "$(jq -nc --arg token "${STABLE_GUARD_WORKER_TOKEN}" '{p_worker_token:$token}')")"
+
+          request_id="$(jq -r '.[0].request_id // empty' <<<"${claim_response}")"
+          stable_sha="$(jq -r '.[0].commit_sha // empty' <<<"${claim_response}")"
+          stable_label="$(jq -r '.[0].label // "Stable"' <<<"${claim_response}")"
+
+          if [[ -z "${request_id}" ]]; then
+            echo "No pending Stable rollback request."
+            exit 0
+          fi
+
+          complete() {
+            local status="$1"
+            local result_sha="${2:-}"
+            local message="${3:-}"
+            local error_message="${4:-}"
+            curl -fsS "${SUPABASE_URL}/rest/v1/rpc/stable_guard_complete_request"               -H "apikey: ${SUPABASE_ANON_KEY}"               -H "Authorization: Bearer ${SUPABASE_ANON_KEY}"               -H "Content-Type: application/json"               -H "Accept: application/json"               -d "$(jq -nc                 --arg token "${STABLE_GUARD_WORKER_TOKEN}"                 --arg rid "${request_id}"                 --arg status "${status}"                 --arg sha "${result_sha}"                 --arg msg "${message}"                 --arg err "${error_message}"                 '{p_worker_token:$token,p_request_id:$rid,p_status:$status,p_result_commit_sha:$sha,p_message:$msg,p_error_message:$err}')"
+          }
+
+          if ! git cat-file -e "${stable_sha}^{commit}" 2>/dev/null; then
+            git fetch origin "${stable_sha}" --depth=1
+          fi
+
+          if ! git cat-file -e "${stable_sha}^{commit}" 2>/dev/null; then
+            complete failed "" "Stable commit not found" "Commit ${stable_sha} is unavailable."
+            exit 1
+          fi
+
+          if ! git merge-base --is-ancestor "${stable_sha}" HEAD; then
+            complete failed "" "Rollback refused" "Stable commit is not an ancestor of current main; manual review required."
+            exit 1
+          fi
+
+          current_sha="$(git rev-parse HEAD)"
+
+          if [[ "${current_sha}" == "${stable_sha}" ]]; then
+            complete succeeded "${current_sha}" "Website already matches ${stable_label}."
+            exit 0
+          fi
+
+          echo "Rolling website back from ${current_sha} to ${stable_sha} (${stable_label})."
+
+          git diff --binary "${stable_sha}..${current_sha}" | git apply -R --index
+          git clean -fd
+
+          if git diff --cached --quiet; then
+            complete succeeded "${stable_sha}" "No content changes were required; website already matches Stable."
+            exit 0
+          fi
+
+          git config user.name "Apple Seed Stable Guard"
+          git config user.email "0898888269tv@gmail.com"
+          git commit -m "Stable Guard rollback to ${stable_sha} [skip ci]"
+          result_sha="$(git rev-parse HEAD)"
+          git push origin HEAD:main
+
+          complete succeeded "${result_sha}" "Website restored to Stable ${stable_sha}. Data tables were not rolled back."
