@@ -1290,7 +1290,35 @@ button,a,input,textarea{ -webkit-tap-highlight-color:transparent }
 .entertainment-home-btn{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;padding:13px 20px;border-radius:14px;text-decoration:none;font-weight:800;background:#7c3aed;color:#fff;box-shadow:0 8px 18px rgba(124,58,237,.22)}
 .entertainment-home-btn:hover{transform:translateY(-1px)}
 @media(max-width:700px){.entertainment-home-inner{flex-direction:column;align-items:stretch}.entertainment-home-btn{width:100%}}
-</style></head>
+</style><style id="apple-seed-home-clean-layout">
+.home-tools{background:#f6f8fc;border-top:1px solid #edf1f7;padding:28px 16px 42px}
+.home-tools-inner{max-width:1240px;margin:0 auto}
+.home-tools-heading{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:12px}
+.home-tools-heading h2{margin:0;font-size:25px;line-height:1.15;letter-spacing:-.6px}
+.home-tools-heading p{margin:6px 0 0;color:#718096;font-size:13px}
+.home-tools-ai{display:inline-flex;align-items:center;gap:7px;padding:10px 14px;border:1px solid #d7e4ff;border-radius:999px;background:#fff;color:#1769ff;font-size:12px;font-weight:850;white-space:nowrap;box-shadow:0 5px 16px rgba(35,54,91,.06)}
+.youtube-top-section{padding:0!important;background:transparent!important}
+.youtube-top-inner{max-width:none!important}
+.youtube-top-section .apple-seed-youtube-search{margin:0!important;padding:20px!important;border:1px solid #e3e9f3!important;border-radius:16px!important;background:#fff!important;box-shadow:0 8px 24px rgba(35,54,91,.06)!important}
+.youtube-search-copy .section-kicker{margin-bottom:5px}
+.youtube-search-copy h3{margin:0;font-size:21px;line-height:1.25;letter-spacing:-.3px}
+.youtube-search-copy p{margin:6px 0 0;color:#718096;font-size:12px;line-height:1.5}
+.youtube-search-form{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;margin-top:15px}
+.youtube-search-form input{width:100%;min-width:0;border:1px solid #d9dfeb;border-radius:10px;padding:12px 13px;outline:none;background:#fff}
+.youtube-search-form input:focus{border-color:#1769ff;box-shadow:0 0 0 3px rgba(23,105,255,.1)}
+.youtube-search-form .video-add-btn{min-height:46px;border:0;border-radius:10px;padding:0 18px;background:#1769ff;color:#fff;font-weight:850;cursor:pointer}
+.youtube-search-status{margin-top:9px;color:#718096;font-size:12px}
+.home-entertainment{margin-top:12px;min-height:64px;padding:12px 16px;display:flex;align-items:center;gap:12px;border:1px solid #e1e7f0;border-radius:15px;background:#fff;color:#17233d;box-shadow:0 7px 20px rgba(35,54,91,.05);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+.home-entertainment:hover{transform:translateY(-2px);border-color:#ccd9f5;box-shadow:0 12px 28px rgba(35,54,91,.09)}
+.home-entertainment-icon{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;background:#f1edff;font-size:21px;flex:none}
+.home-entertainment-copy{display:grid;gap:2px;min-width:0}
+.home-entertainment-copy strong{font-size:14px}
+.home-entertainment-copy small{color:#718096;font-size:11px}
+.home-entertainment-arrow{margin-left:auto;color:#1769ff;font-size:20px;font-weight:800}
+@media(max-width:700px){.home-tools{padding:22px 12px 30px}.home-tools-heading{align-items:flex-start}.home-tools-heading h2{font-size:21px}.home-tools-heading p{font-size:12px}.home-tools-ai{padding:8px 11px;font-size:11px}.youtube-top-section .apple-seed-youtube-search{padding:16px!important;border-radius:14px!important}.youtube-search-copy h3{font-size:20px}.youtube-search-form{grid-template-columns:1fr}.youtube-search-form .video-add-btn{width:100%}.home-entertainment{min-height:58px;padding:10px 12px}}
+@media(max-width:420px){.home-tools-heading{display:block}.home-tools-ai{margin-top:10px}}
+</style>
+</head>
 
 <body>
 
@@ -1321,41 +1349,45 @@ button,a,input,textarea{ -webkit-tap-highlight-color:transparent }
 </div>
 </nav>
 </header>
-<section class="entertainment-home-hero" aria-label="Apple Seed Entertainment Center">
-  <div class="entertainment-home-inner">
-    <div>
-      <div class="section-kicker">APPLE SEED ENTERTAINMENT CENTER</div>
-      <h2>🎬 Khu giải trí của Apple Seed</h2>
-      <p>Tin tức, video, YouTube, TikTok, âm nhạc và nội dung giải trí — tất cả trong một trang.</p>
+<main id="homeRenderer"><div class="hero" style="padding:70px 24px"><div style="max-width:1240px;margin:auto">Đang tải Apple Seed...</div></div></main>
+
+<section class="home-tools" aria-label="Công cụ Apple Seed">
+  <div class="home-tools-inner">
+    <div class="home-tools-heading">
+      <div>
+        <div class="section-kicker">APPLE SEED TOOLS</div>
+        <h2>Công cụ hỗ trợ sửa chữa</h2>
+        <p>Tìm video kỹ thuật và truy cập AI Engineering khi cần.</p>
+      </div>
+      <a class="home-tools-ai" href="./ai-board.html" aria-label="Mở AI Engineering Center">🤖 AI Engineering</a>
     </div>
-    <a class="entertainment-home-btn" href="./entertainment.html">MỞ TRUNG TÂM GIẢI TRÍ →</a>
-  </div>
-</section>
-
-<div id="apple-seed-ai-top" class="apple-seed-ai-float"><a href="./ai-board.html" aria-label="Mở AI Engineering Center">🚀 AI ENGINEERING CENTER</a></div>
-
-
-<section class="youtube-top-section" id="youtube-engine-top">
-  <div class="youtube-top-inner">
-    <div class="apple-seed-youtube-search" id="appleSeedYoutubeSearch" style="margin-top:22px;padding:18px;border:1px solid #dbe7f5;border-radius:16px;background:#fff;box-shadow:0 8px 24px rgba(35,54,91,.06)">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
-        <div>
-          <div class="section-kicker" style="margin-bottom:5px">YOUTUBE ENGINE</div>
-          <h3 style="margin:0;font-size:20px">🔎 Tìm video YouTube ngay trên Apple Seed</h3>
-          <p style="margin:6px 0 0;color:#718096;font-size:12px">Tìm video sửa chữa trên YouTube và xem trực tiếp trong web. Apple Seed chỉ lưu liên kết/video ID, không tải file video về máy chủ.</p>
+    <section class="youtube-top-section" id="youtube-engine-top" aria-label="YouTube Engine">
+      <div class="youtube-top-inner">
+        <div class="apple-seed-youtube-search" id="appleSeedYoutubeSearch">
+          <div class="youtube-search-copy">
+            <div class="section-kicker">YOUTUBE ENGINE</div>
+            <h3>🔎 Tìm video sửa chữa</h3>
+            <p>Tìm video kỹ thuật trên YouTube và xem trực tiếp trên Apple Seed.</p>
+          </div>
+          <div class="youtube-search-form">
+            <input id="youtubeSearchInput" type="search" placeholder="Ví dụ: iPhone 14 Pro Max panic 0x20000" aria-label="Tìm video YouTube">
+            <button id="youtubeSearchBtn" type="button" class="video-add-btn">Tìm YouTube →</button>
+          </div>
+          <div id="youtubeSearchStatus" class="youtube-search-status"></div>
+          <div id="youtubeSearchGrid" class="video-grid"></div>
         </div>
       </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
-        <input id="youtubeSearchInput" type="search" placeholder="Ví dụ: iPhone 14 Pro Max panic 0x20000" style="flex:1;min-width:240px;border:1px solid #d9dfeb;border-radius:10px;padding:12px 13px;outline:none">
-        <button id="youtubeSearchBtn" type="button" class="video-add-btn">🔎 Tìm YouTube</button>
-      </div>
-      <div id="youtubeSearchStatus" style="margin-top:10px;color:#718096;font-size:12px"></div>
-      <div id="youtubeSearchGrid" class="video-grid" style="margin-top:14px"></div>
-    </div>
+    </section>
+    <a class="home-entertainment" href="./entertainment.html" aria-label="Mở Apple Seed Entertainment Center">
+      <span class="home-entertainment-icon">🎬</span>
+      <span class="home-entertainment-copy">
+        <strong>Apple Seed Entertainment</strong>
+        <small>Tin tức · YouTube · TikTok · Âm nhạc</small>
+      </span>
+      <span class="home-entertainment-arrow">→</span>
+    </a>
   </div>
 </section>
-
-<main id="homeRenderer"><div class="hero" style="padding:70px 24px"><div style="max-width:1240px;margin:auto">Đang tải Apple Seed...</div></div></main>
 
 
 
