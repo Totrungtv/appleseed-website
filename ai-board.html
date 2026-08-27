@@ -72,11 +72,20 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
 .member-gate{margin-top:18px;background:#fff;border:1px solid #cfe2f7;border-radius:20px;padding:26px;text-align:center;box-shadow:0 18px 55px #1e50821a}
 .member-gate-icon{font-size:34px}.member-gate h2{margin:8px 0 7px}.member-gate p{margin:0 auto;max-width:720px;color:#647b98;line-height:1.6}.member-gate-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:16px}
 .member-gate a{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+.member-policy{margin-top:18px;background:#fff;border:1px solid #cfe2f7;border-radius:20px;padding:20px;box-shadow:0 18px 55px #1e50821a}
+.member-policy-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap}
+.member-policy h2{margin:0 0 6px}.member-policy-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:15px}
+.member-policy-item{padding:15px;border:1px solid #d5e5f5;border-radius:14px;background:#f8fbff}
+.member-policy-item h3{margin:0 0 7px;font-size:15px}.member-policy-item p{margin:0;color:#647b98;line-height:1.55;font-size:13px}
+.member-policy-note{margin-top:14px;padding:14px 16px;border-radius:13px;background:#eef7ff;border:1px solid #c5e1ff;color:#145ca8;font-weight:750;line-height:1.55}
+@media(max-width:700px){.member-policy-grid{grid-template-columns:1fr}}
+
 /* Chỉ mở YouTube cho khách; toàn bộ công cụ AI/Board/Library/Community yêu cầu Member. */
 body.member-guest .repair-video-library,
 body.member-guest .youtube-submit,
 body.member-guest .grid,
 body.member-guest main > .card{display:none!important}
+body.member-guest .member-policy{display:block}
 body.member-guest .member-gate{display:block}
 body.member-guest .top .pill{display:none}
 @media(max-width:560px){.member-gate{padding:20px 16px}}
@@ -107,6 +116,21 @@ body.member-guest .top .pill{display:none}
     <input id="youtubeDirectUrl" placeholder="Hoặc dán link YouTube để xem trực tiếp..." aria-label="YouTube URL">
     <button class="btn secondary" id="youtubeOpenUrl" type="button">▶️ Xem link</button>
   </div>
+</section>
+
+<section class="member-policy" id="member-policy" aria-label="Nội quy thành viên và chính sách Coin">
+  <div class="member-policy-head"><div><div class="kicker">APPLE SEED • MEMBER POLICY</div><h2>📜 Nội quy thành viên & chính sách Coin</h2><div class="muted">Thông tin chuẩn để thành viên hiểu rõ quyền sử dụng và quy trình nạp Coin.</div></div><span class="pill">🎁 +150 Coin khi đăng ký</span></div>
+  <div class="member-policy-grid">
+    <article class="member-policy-item"><h3>🆓 1. Đăng ký miễn phí</h3><p>Tạo tài khoản thành viên Apple Seed là <b>miễn phí</b>. Không thu phí khi đăng ký tài khoản.</p></article>
+    <article class="member-policy-item"><h3>🎁 2. Coin khởi tạo</h3><p>Mỗi tài khoản thành viên mới được tặng <b>150 Coin một lần</b> ngay khi hệ thống tạo tài khoản thành công.</p></article>
+    <article class="member-policy-item"><h3>⏱️ 3. Thời gian dùng thử</h3><p>Tài khoản mới có thời gian Trial theo cấu hình hệ thống. Hết Trial, các tính năng yêu cầu quyền sử dụng sẽ cần Coin/gói phù hợp.</p></article>
+    <article class="member-policy-item"><h3>🚫 4. Không tạo nhiều tài khoản để nhận thưởng</h3><p>Không lợi dụng đăng ký nhiều tài khoản để nhận Coin khởi tạo. Apple Seed có quyền kiểm tra và xử lý tài khoản có dấu hiệu lạm dụng.</p></article>
+    <article class="member-policy-item"><h3>💳 5. Nạp Coin</h3><p>Thành viên chuyển khoản theo hướng dẫn và gửi thông tin/ảnh xác nhận. Admin chỉ cộng Coin sau khi <b>đối chiếu giao dịch thực tế</b>.</p></article>
+    <article class="member-policy-item"><h3>🧾 6. Minh bạch giao dịch</h3><p>Coin thưởng và Coin nạp được ghi nhận trong lịch sử giao dịch để Admin kiểm tra và đối soát về sau.</p></article>
+    <article class="member-policy-item"><h3>🛡️ 7. An toàn tài khoản</h3><p>Không chia sẻ mật khẩu, không giả mạo chứng từ và không sử dụng công cụ nhằm vượt giới hạn hoặc cơ chế bảo vệ của Apple Seed/dịch vụ bên thứ ba.</p></article>
+    <article class="member-policy-item"><h3>🛠️ 8. Khi tính năng gặp sự cố</h3><p>Không để thành viên tự xử lý bằng cách vượt cơ chế bảo vệ. Admin ghi nhận lỗi, chuyển sang phương án dự phòng hoặc thông báo rõ tính năng đang bảo trì, sau đó mới sửa và kiểm thử.</p></article>
+  </div>
+  <div class="member-policy-note">📌 Quy tắc Coin khởi tạo: <b>ĐĂNG KÝ MIỄN PHÍ → TÀI KHOẢN MỚI → +150 COIN MỘT LẦN → GHI LEDGER.</b></div>
 </section>
 
 <section class="member-gate" id="member-gate">
