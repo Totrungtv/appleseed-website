@@ -70,7 +70,7 @@ const strip=s=>{const d=document.createElement('div');d.innerHTML=s||'';return d
 function cleanDesc(s){return strip(s).replace(/\s+/g,' ').trim().slice(0,220)}
 function getImages(item){
  const out=[];
- const add=v=>{if(!v)return;const x=String(v).trim();if(/^https?:\\/\\//i.test(x)&&!out.includes(x))out.push(x)};
+ const add=v=>{if(!v)return;const x=String(v).trim();if(/^https?:\/\//i.test(x)&&!out.includes(x))out.push(x)};
  add(item.thumbnail);
  add(item.enclosure?.link);
  add(item.enclosure?.url);
@@ -187,7 +187,7 @@ const YOUTUBE_CATALOG=[
 ];
 function youtubeIdFromUrl(raw){
  const s=String(raw||'').trim();
- const m=s.match(/(?:youtube\\.com\/(?:watch\\?v=|shorts\/|embed\/)|youtu\\.be\/)([A-Za-z0-9_-]{11})/i);
+ const m=s.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/i);
  return m?m[1]:null;
 }
 function playYoutube(id,title){
