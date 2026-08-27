@@ -3048,7 +3048,48 @@ form.onsubmit=async e=>{
   observer.observe(document.getElementById('homeRenderer')||document.body,{childList:true,subtree:true});
 })();
 </script>
-</body>
-</html>
 
+<script>
+<!-- APPLE-SEED MOBILE MEMBER AUTH FALLBACK -->
+(function(){
+  function initAppleSeedMobileMemberAuth(){
+    const loginBtn=document.getElementById('memberHomeLoginBtn');
+    const signupBtn=document.getElementById('memberHomeSignupBtn');
+    const modal=document.getElementById('memberAuthModal');
+    const loginForm=document.getElementById('memberHomeLoginForm');
+    const signupForm=document.getElementById('memberHomeSignupForm');
+    const loginTab=document.getElementById('memberHomeTabLogin');
+    const signupTab=document.getElementById('memberHomeTabSignup');
+    if(!loginBtn||!signupBtn||!modal)return;
 
+    const show=(signup)=>{
+      modal.classList.add('open');
+      modal.style.display='flex';
+      if(loginForm)loginForm.style.display=signup?'none':'grid';
+      if(signupForm)signupForm.style.display=signup?'grid':'none';
+      loginTab?.classList.toggle('active',!signup);
+      signupTab?.classList.toggle('active',signup);
+      document.body.style.overflow='hidden';
+      const target=signup?document.getElementById('memberHomeSignupName'):document.getElementById('memberHomeLoginEmail');
+      setTimeout(()=>target?.focus(),80);
+    };
+
+    if(!loginBtn.dataset.appleSeedMobileAuthBound){
+      loginBtn.dataset.appleSeedMobileAuthBound='1';
+      loginBtn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();show(false)},true);
+      loginBtn.addEventListener('touchend',e=>{e.preventDefault();e.stopPropagation();show(false)},{capture:true,passive:false});
+    }
+    if(!signupBtn.dataset.appleSeedMobileAuthBound){
+      signupBtn.dataset.appleSeedMobileAuthBound='1';
+      signupBtn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();show(true)},true);
+      signupBtn.addEventListener('touchend',e=>{e.preventDefault();e.stopPropagation();show(true)},{capture:true,passive:false});
+    }
+
+    modal.addEventListener('click',e=>{if(e.target===modal){modal.classList.remove('open');modal.style.display='none';document.body.style.overflow=''}},true);
+    window.addEventListener('pageshow',()=>{modal.classList.remove('open');modal.style.display='none';document.body.style.overflow=''});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initAppleSeedMobileMemberAuth,{once:true});
+  else initAppleSeedMobileMemberAuth();
+})();
+</script>
+</body></html>
