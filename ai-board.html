@@ -435,8 +435,8 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
     if(!data?.session?.access_token) throw new Error('Phiên thành viên đã hết hạn. Hãy đăng nhập lại.');
     return data.session.access_token;
   }
-  async function image(){
-    const f=$('boardImage')?.files?.[0];
+  async function image(inputId='boardImage'){
+    const f=$(inputId)?.files?.[0];
     if(!f)return null;
     if(f.size>8*1024*1024)throw new Error('Ảnh quá lớn. Vui lòng chọn ảnh dưới 8 MB.');
     if(!/^image\/(jpeg|png|webp)$/i.test(f.type))throw new Error('Chỉ hỗ trợ JPG, PNG hoặc WEBP.');
@@ -478,11 +478,26 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
     if(!zone&&!panic){result.innerHTML='<b>⚠️ Thiếu dữ liệu</b><p>Nhập vùng/linh kiện hoặc PANIC log trước.</p>';return}
     btn.disabled=true;btn.textContent='⏳ Đang phân tích...';result.innerHTML='<b>⏳ AI đang đọc yêu cầu schematic…</b>';
     try{
-      const reply=await callAI(['Phân tích yêu cầu schematic/boardview cho ca sửa iPhone.','Loại tài liệu: '+doc,'Vùng / linh kiện: '+zone,'PANIC LOG: '+panic,'Nêu vùng cần kiểm tra, tín hiệu/rail liên quan nếu có bằng chứng, phép đo nên làm và điều kiện kết luận. Không bịa reference designator hoặc net name chưa được cung cấp.'].join('\n'),await image());
+      const reply=await callAI(['Phân tích yêu cầu schematic/boardview cho ca sửa iPhone.','Loại tài liệu: '+doc,'Vùng / linh kiện: '+zone,'PANIC LOG: '+panic,'Nêu vùng cần kiểm tra, tín hiệu/rail liên quan nếu có bằng chứng, phép đo nên làm và điều kiện kết luận. Không bịa reference designator hoặc net name chưa được cung cấp.'].join('\n'),await image('schematicImage'));
       result.innerHTML='<b>📐 Kết quả Schematic Intelligence</b><div style="white-space:pre-wrap;line-height:1.65;margin-top:8px">'+esc(reply)+'</div>';
     }catch(e){console.error('Schematic AI:',e);result.innerHTML='<b>⚠️ Schematic chưa phân tích được</b><p>'+esc(e?.name==='AbortError'?'AI phản hồi quá lâu, hãy thử lại.':(e?.message||String(e)))+'</p>'}
     finally{btn.disabled=false;btn.textContent='📐 ANALYZE SCHEMATIC'}
   };
+  const schematicInput=$('schematicImage');
+  const schematicDrop=$('schematicImageDrop');
+  schematicInput?.addEventListener('change',()=>{
+    const f=schematicInput.files?.[0];
+    const hint=$('schematicImageHint');
+    if(hint) hint.textContent=f?'📎 '+f.name+' • sẵn sàng gửi cùng lần phân tích schematic':'JPG / PNG / WEBP • ảnh này sẽ được gửi riêng cho Schematic Intelligence';
+  });
+  ['dragenter','dragover'].forEach(ev=>schematicDrop?.addEventListener(ev,e=>{e.preventDefault();schematicDrop.classList.add('dragover')}));
+  ['dragleave','drop'].forEach(ev=>schematicDrop?.addEventListener(ev,e=>{e.preventDefault();schematicDrop.classList.remove('dragover')}));
+  schematicDrop?.addEventListener('drop',e=>{
+    const f=e.dataTransfer?.files?.[0];
+    if(!f)return;
+    if(!/^image\\/(jpeg|png|webp)$/i.test(f.type)){alert('Chỉ hỗ trợ JPG, PNG hoặc WEBP.');return;}
+    try{const dt=new DataTransfer();dt.items.add(f);schematicInput.files=dt.files;schematicInput.dispatchEvent(new Event('change',{bubbles:true}));}catch(err){console.warn('Không gán được file kéo thả:',err);}
+  });
   $('upload').onclick=()=>{const f=$('file').files?.[0];$('uploadStatus').textContent=f?'📎 Đã chọn '+f.name+'. Muốn AI phân tích ảnh, chọn ảnh ở ô “main / schematic / boardview” phía trên.':'Chưa chọn file.'};
   $('boardImage')?.addEventListener('change',()=>{const f=$('boardImage').files?.[0],drop=$('boardImageDrop');if(drop)drop.querySelector('.muted').textContent=f?'📎 '+f.name+' • sẵn sàng gửi cùng ca phân tích':'JPG / PNG / WEBP • ảnh sẽ được gửi cùng ca phân tích'});
 })();
