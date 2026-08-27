@@ -1,4 +1,7 @@
 -- Apple Seed Stable Guard: website-wide code rollback
+-- Requires pgcrypto for worker-token hashing.
+create extension if not exists pgcrypto with schema extensions;
+
 -- Migration name: stable_guard_website_rollback
 
 create table if not exists public.stable_guard_snapshots (
@@ -63,8 +66,8 @@ with check (exists (select 1 from public.profiles p where p.id = auth.uid() and 
 
 create or replace function public.stable_guard_claim_request(p_worker text default 'github-actions')
 returns table (request_id uuid, snapshot_id bigint, repository text, branch text, commit_sha text, label text)
-language plpgsql security definer set search_path = public
-as $$
+language plpgsql security definer set search_path = public, extensions
+as $
 begin
   return query
   with picked as (
