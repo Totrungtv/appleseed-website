@@ -16,7 +16,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui
 .member-row{display:grid;grid-template-columns:2fr 1.1fr .8fr 1.2fr 1.5fr;gap:10px;align-items:center;border-top:1px solid var(--line);padding:14px 0}.member-row:first-child{border-top:0}.member-name{font-weight:850}.badge{display:inline-flex;padding:4px 8px;border-radius:999px;background:#eef5ff;color:#175cd3;font-size:11px;font-weight:850}.badge.pending{background:#fff7ed;color:#c2410c}.badge.active{background:#ecfdf3;color:#067647}.badge.suspended{background:#fff1f2;color:#b42318}.coins{font-weight:900;color:#1769ff}
 .empty{padding:30px;text-align:center;color:var(--muted)}
 .modal{position:fixed;inset:0;background:rgba(7,18,35,.55);display:none;align-items:center;justify-content:center;padding:18px;z-index:1000}.modal.open{display:flex}.box{width:min(1050px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:18px;padding:20px}.box-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.detail{border:1px solid var(--line);border-radius:12px;padding:11px;background:#f9fbfe}.detail strong{display:block;margin-bottom:4px}.section{margin-top:18px}.payment{border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:10px}.payment-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.proof{max-width:260px;max-height:260px;border-radius:10px;border:1px solid var(--line);display:block;margin-top:8px}.credit{display:grid;grid-template-columns:160px 1fr auto;gap:8px;margin-top:10px}.credit input{padding:10px;border:1px solid #cfd9e6;border-radius:9px;font:inherit}
-.login{max-width:430px;margin:80px auto}.login input{width:100%;box-sizing:border-box;padding:11px;border:1px solid #cfd9e6;border-radius:10px;margin:6px 0 12px}
+.section-title{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}.section-title h2{margin:0;font-size:20px}.quick-credit{display:grid;grid-template-columns:1.4fr .7fr 1.6fr auto;gap:9px}.quick-credit select,.quick-credit input{min-width:0;padding:11px;border:1px solid #cfd9e6;border-radius:10px;font:inherit;background:#fff}.price-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.price{border:1px solid var(--line);border-radius:13px;padding:14px;background:#f9fbfe}.price b,.price strong,.price span{display:block}.price strong{font-size:21px;color:var(--blue);margin:5px 0}.price span{font-size:12px;color:var(--muted)}.note-box,.runbook{margin-top:12px;padding:12px 14px;border-radius:12px;background:#fff8e8;border:1px solid #f3dfae;color:#6b4f00;font-size:13px;line-height:1.55}.ops-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.ops-card{border:1px solid var(--line);border-radius:13px;padding:14px;background:#f9fbfe}.ops-card h3{margin:0 0 7px;font-size:15px}.ops-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.55}.runbook{background:#eff8ff;border-color:#bfdbfe;color:#175cd3}.runbook span{font-weight:800}@media(max-width:1000px){.quick-credit{grid-template-columns:1fr 1fr}.price-grid{grid-template-columns:1fr 1fr}.ops-grid{grid-template-columns:1fr 1fr}}@media(max-width:650px){.quick-credit,.price-grid,.ops-grid{grid-template-columns:1fr}}\n.login{max-width:430px;margin:80px auto}.login input{width:100%;box-sizing:border-box;padding:11px;border:1px solid #cfd9e6;border-radius:10px;margin:6px 0 12px}
 @media(max-width:900px){.member-row{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr 1fr}.toolbar{grid-template-columns:1fr}.detail-grid,.payment-grid{grid-template-columns:1fr}.credit{grid-template-columns:1fr}}
 </style>
 </head>
@@ -37,6 +37,40 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui
   </div>
 
   <div id="status" class="panel" style="display:none"></div>
+  <section class="panel">
+  <div class="section-title"><h2>🪙 Nạp Coin nhanh cho thành viên</h2><span class="muted">Chỉ Admin mới thấy và thực hiện được.</span></div>
+  <div class="quick-credit">
+    <select id="creditMember"><option value="">— Chọn thành viên —</option></select>
+    <input id="creditCoins" type="number" min="1" step="1" placeholder="Số Coin muốn cộng">
+    <input id="creditNote" placeholder="Ghi chú, ví dụ: Nạp tiền mặt / đã kiểm tra chuyển khoản">
+    <button class="btn primary" id="creditBtn">➕ Cộng Coin</button>
+  </div>
+  <div id="creditHint" class="muted" style="margin-top:8px">Chọn thành viên, nhập Coin và ghi chú. Giao dịch sẽ được ghi vào Ledger.</div>
+</section>
+
+<section class="panel">
+  <div class="section-title"><h2>💰 Bảng giá Coin nội bộ</h2><span class="muted">Bảng tham khảo để Admin xử lý nạp tiền thống nhất.</span></div>
+  <div class="price-grid">
+    <div class="price"><b>10.000 ₫</b><strong>100 Coin</strong><span>Gói cơ bản</span></div>
+    <div class="price"><b>50.000 ₫</b><strong>550 Coin</strong><span>Ưu đãi</span></div>
+    <div class="price"><b>100.000 ₫</b><strong>1.200 Coin</strong><span>Ưu đãi</span></div>
+    <div class="price"><b>200.000 ₫</b><strong>2.500 Coin</strong><span>Ưu đãi</span></div>
+  </div>
+  <div class="note-box"><b>⚠️ Lưu ý:</b> Đây là bảng giá nội bộ hiện tại, <b>không tự động quyết định số Coin</b>. Khi thành viên chuyển khoản, Admin phải đối chiếu giao dịch thực tế rồi mới cộng Coin. Nếu ông đổi giá sau này, chỉ sửa bảng này và thông tin hướng dẫn tương ứng; không sửa Ledger cũ.</div>
+</section>
+
+<section class="panel">
+  <div class="section-title"><h2>🛠️ Sổ tay vận hành & xử lý khi công cụ ngừng hoạt động</h2><span class="muted">Ghi chú phát triển Apple Seed</span></div>
+  <div class="ops-grid">
+    <div class="ops-card"><h3>1. Tool/API bị ngừng</h3><p>Không cố vượt bảo mật, không proxy lách chặn, không tải lại nội dung trái phép. Kiểm tra Console → Network → mã lỗi → trạng thái API/provider.</p></div>
+    <div class="ops-card"><h3>2. Video YouTube/TikTok lỗi</h3><p>Ưu tiên trình phát chính thức hoặc chuyển người dùng sang trang chính thức. Nếu nguồn không cho embed thì hiện thông báo rõ ràng thay vì để khung đen hoặc spinner vô hạn.</p></div>
+    <div class="ops-card"><h3>3. Đọc báo lỗi</h3><p>Nếu website nguồn chặn iframe, giữ nguyên URL nguồn và cho mở trong tab/trình duyệt mới. Không cố vượt X-Frame-Options/CSP.</p></div>
+    <div class="ops-card"><h3>4. Thanh toán</h3><p>Chưa xác minh tiền vào tài khoản thì <b>không cộng Coin</b>. Ảnh chuyển khoản chỉ là chứng từ tham khảo; đối chiếu giao dịch ngân hàng trước khi duyệt.</p></div>
+    <div class="ops-card"><h3>5. Khi sửa code</h3><p>Không sửa production mù. Kiểm tra code hiện tại → thay đổi nhỏ → test → kiểm tra Console/Network → commit riêng → giữ khả năng rollback.</p></div>
+    <div class="ops-card"><h3>6. Khi tính năng hỏng</h3><p>Ưu tiên fallback an toàn: ẩn tính năng lỗi hoặc chuyển sang nguồn chính thức. Tuyệt đối không để trang hiển thị một khu vực lỗi làm người dùng tưởng Apple Seed bị hỏng toàn bộ.</p></div>
+  </div>
+  <div class="runbook"><b>📌 Quy trình ghi nhớ:</b> <span>PHÁT HIỆN → GHI LỖI → XÁC ĐỊNH NGUỒN → FALLBACK → FIX → TEST → COMMIT → THEO DÕI.</span></div>
+</section>
   <section class="panel">
     <div class="toolbar"><input id="search" placeholder="🔎 Tìm theo email, tên hoặc số điện thoại..."><button class="btn primary" id="refresh">↻ Cập nhật</button></div>
     <div class="stats">
@@ -73,6 +107,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui
    const {data,error}=await sb.rpc('apple_seed_admin_member_list',{p_search:$('search').value.trim()||null,p_limit:300,p_offset:0});
    if(error){msg('Không tải được danh sách thành viên: '+error.message,true);return}
    members=data||[];
+   fillCreditMembers();
    $('total').textContent=members.length;
    $('trial').textContent=members.filter(x=>x.account_status==='trial').length;
    $('active').textContent=members.filter(x=>x.account_status==='active').length;
@@ -105,7 +140,25 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui
  window.rejectPayment=async pid=>{const reason=prompt('Lý do từ chối:','Chưa xác minh được giao dịch');if(reason===null)return;const {error}=await sb.from('member_payment_requests').update({status:'rejected',rejection_reason:reason,reviewed_at:new Date().toISOString()}).eq('id',pid).eq('status','pending');if(error){msg('Từ chối lỗi: '+error.message,true);return}msg('Đã từ chối yêu cầu nạp.');await load()};
  function close(){ $('modal').classList.remove('open') }
  $('close').onclick=close;$('modal').addEventListener('click',e=>{if(e.target===$('modal'))close()});
- $('refresh').onclick=load;let timer; $('search').oninput=()=>{clearTimeout(timer);timer=setTimeout(load,300)};
+ async function quickCredit(){
+ const uid=$('creditMember').value, coins=Number($('creditCoins').value||0), note=$('creditNote').value.trim()||'Admin nạp Coin trực tiếp';
+ if(!uid){msg('Hãy chọn thành viên trước.',true);return}
+ if(!Number.isInteger(coins)||coins<=0){msg('Số Coin phải là số nguyên dương.',true);return}
+ if(!confirm('Cộng '+coins.toLocaleString('vi-VN')+' Coin cho tài khoản này?'))return;
+ $('creditBtn').disabled=true;
+ const {data,error}=await sb.rpc('apple_seed_admin_credit_coins',{p_user_id:uid,p_delta:coins,p_note:note,p_payment_request_id:null});
+ $('creditBtn').disabled=false;
+ if(error){msg('Cộng Coin lỗi: '+error.message,true);return}
+ msg('✅ Đã cộng '+coins.toLocaleString('vi-VN')+' Coin. Số dư mới: '+Number(data).toLocaleString('vi-VN')+' Coin.');
+ $('creditCoins').value=''; $('creditNote').value='';
+ await load();
+}
+function fillCreditMembers(){
+ const sel=$('creditMember'), current=sel.value;
+ sel.innerHTML='<option value="">— Chọn thành viên —</option>'+members.map(m=>'<option value="'+esc(m.user_id)+'">'+esc(m.full_name||'Chưa có tên')+' · '+esc(m.email||'')+' · '+money(m.coins)+' Coin</option>').join('');
+ if(members.some(m=>m.user_id===current))sel.value=current;
+}
+$('refresh').onclick=load;$('creditBtn').onclick=quickCredit;let timer; $('search').oninput=()=>{clearTimeout(timer);timer=setTimeout(load,300)};
  $('logout').onclick=async()=>{await sb.auth.signOut();location.reload()};
  $('loginBtn').onclick=async()=>{const {error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error){$('loginMsg').textContent=error.message;return}await boot()};
  async function boot(){if(!(await isAdmin())){await sb.auth.signOut();$('loginMsg').textContent='Tài khoản này không có quyền Admin.';return}$('login').style.display='none';$('app').style.display='block';await load()}
