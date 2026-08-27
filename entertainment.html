@@ -21,6 +21,9 @@ main{max-width:1320px;margin:auto;padding:34px 22px 65px}.section{margin-bottom:
 @media(max-width:900px){.news-grid{grid-template-columns:repeat(2,1fr)}.live{grid-template-columns:1fr}.video-grid{grid-template-columns:1fr 1fr}.hero h1{font-size:38px}}
 @media(max-width:560px){.nav{padding:8px 13px}.hero{padding:38px 14px 60px}.hero h1{font-size:32px}.hero p{font-size:14px}.tabs{padding:0 10px}.tabbar{border-radius:13px}.tabbar a{padding:9px 11px}.news-grid,.video-grid{grid-template-columns:1fr}main{padding:28px 13px 50px}.head h2{font-size:21px}.reader-box{inset:0;border-radius:0}.reader-content{padding:25px 17px}.reader-content h1{font-size:27px}}
 
+
+.youtube-placeholder{position:absolute;inset:0;display:grid;place-items:center;overflow:hidden;background:#07152e;cursor:pointer}.youtube-placeholder img{width:100%;height:100%;object-fit:cover;display:block}.youtube-placeholder-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;color:#fff;background:linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.62));padding:20px}.youtube-placeholder-overlay span{font-size:11px;opacity:.9}.youtube-play{width:62px;height:44px;border-radius:12px;background:#ff0033;color:#fff;display:grid;place-items:center;font-size:23px;box-shadow:0 8px 25px rgba(0,0,0,.28)}.social-player{position:relative}.social-player iframe{position:relative;z-index:2;opacity:0;transition:opacity .2s}.social-player iframe.ready{opacity:1}.social-player.youtube-loading:after{content:'Đang kết nối YouTube…';position:absolute;z-index:3;left:50%;top:50%;transform:translate(-50%,-50%);padding:9px 12px;border-radius:10px;background:rgba(0,0,0,.72);color:#fff;font-size:11px;pointer-events:none}.youtube-fallback{position:absolute;z-index:4;inset:20px;display:none;place-items:center;text-align:center;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:rgba(7,21,46,.96);color:#fff;padding:25px}.youtube-fallback a{display:inline-block;margin-top:10px;background:#1769ff;color:#fff;padding:9px 12px;border-radius:9px;font-weight:900;font-size:11px}
+
 .yt-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
 .yt-result-card{border:1px solid #e0e7f1;background:#fff;border-radius:12px;overflow:hidden;text-align:left;cursor:pointer;padding:0;transition:.16s;box-shadow:0 4px 14px rgba(25,45,80,.05)}
 .yt-result-card:hover{transform:translateY(-2px);border-color:#bcd0ff;box-shadow:0 10px 24px rgba(25,45,80,.10)}
@@ -56,7 +59,7 @@ main{max-width:1320px;margin:auto;padding:34px 22px 65px}.section{margin-bottom:
 <section class="hero"><div class="hero-in"><div class="eyebrow">APPLE SEED • ALL-IN-ONE</div><h1>🎬 Giải trí ngay trên Apple Seed</h1><p>Tin mới, công nghệ, thể thao, video, âm nhạc và giải trí — khách chỉ cần ở lại website Apple Seed, không phải chạy qua hàng loạt trang khác.</p></div></section>
 <div class="searchbar"><form class="searchbox" id="searchForm"><input id="searchInput" type="search" placeholder="🔎 Tìm tin tức, iPhone, AI, thể thao, game..." autocomplete="off"><button type="submit">Tìm kiếm</button></form><div id="searchResults" class="search-results"></div></div><div class="tabs"><div class="tabbar"><a class="active" href="#tin">📰 Tin mới</a><a href="#congnghe">📱 Công nghệ</a><a href="#thethao">⚽ Thể thao</a><a href="#video">▶️ Video</a><a href="#youtube">▶️ YouTube</a><a href="#tiktok">🎵 TikTok</a><a href="#amnhac">🎧 Âm nhạc</a><a href="#giaitri">🎬 Giải trí</a><a href="#game">🎮 Game</a></div></div>
 <main>
-<section class="section" id="youtube"><div class="head"><div><h2>▶️ YouTube</h2><p>Xem video YouTube bằng trình phát nhúng chính thức, ngay trong Apple Seed.</p></div></div><div class="social-grid"><div class="panel"><div class="social-player"><iframe id="youtubeFrame" title="YouTube trên Apple Seed" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div></div><div class="panel"><h3>🔎 Kho video YouTube</h3><p>Chọn chủ đề để phát video mẫu trong khung bên trái. Apple Seed không tải lại hoặc lưu video YouTube.</p><div class="social-cards"><button class="social-card" data-social-youtube="công nghệ iPhone Việt Nam"><b>📱 iPhone & Công nghệ</b><span>Video công nghệ</span></button><button class="social-card" data-social-youtube="thể thao Việt Nam"><b>⚽ Thể thao</b><span>Highlights & thể thao</span></button><button class="social-card" data-social-youtube="nhạc Việt Nam"><b>🎵 Âm nhạc</b><span>MV & V-pop</span></button><button class="social-card" data-social-youtube="lofi music"><b>🌙 Lofi</b><span>Study & chill</span></button></div><div class="social-search"><input id="youtubeSearch" type="search" placeholder="Tìm trong kho video hoặc dán link YouTube..."><button id="youtubeSearchBtn" type="button" onclick="window.appleSeedYoutubeSearch && window.appleSeedYoutubeSearch();">Tìm / Xem</button></div><div id="youtubeSearchResults"></div><div class="social-note">Apple Seed không tải, cào hoặc lưu video YouTube. Từ khóa được gửi tới bộ máy YouTube Search ở server; kết quả trả về thumbnail, tiêu đề và kênh. Bấm video để phát bằng trình phát YouTube chính thức ngay trong Apple Seed. API key YouTube không nằm trong mã frontend.</div></div></div></section><section class="section" id="tiktok">
+<section class="section" id="youtube"><div class="head"><div><h2>▶️ YouTube</h2><p>Xem video YouTube bằng trình phát nhúng chính thức, ngay trong Apple Seed.</p></div></div><div class="social-grid"><div class="panel"><div class="social-player" id="youtubeStage"><div class="youtube-placeholder" id="youtubePlaceholder"><img id="youtubePoster" src="https://i.ytimg.com/vi/-etoRi1t2co/hqdefault.jpg" alt="Video YouTube Apple Seed"><div class="youtube-placeholder-overlay"><div class="youtube-play">▶</div><b id="youtubePlaceholderTitle">iPhone 17 • Apple Việt Nam</b><span>Đang sẵn sàng phát video</span></div></div><iframe id="youtubeFrame" title="YouTube trên Apple Seed" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div></div><div class="panel"><h3>🔎 Kho video YouTube</h3><p>Chọn chủ đề để phát video mẫu trong khung bên trái. Apple Seed không tải lại hoặc lưu video YouTube.</p><div class="social-cards"><button class="social-card" data-social-youtube="công nghệ iPhone Việt Nam"><b>📱 iPhone & Công nghệ</b><span>Video công nghệ</span></button><button class="social-card" data-social-youtube="thể thao Việt Nam"><b>⚽ Thể thao</b><span>Highlights & thể thao</span></button><button class="social-card" data-social-youtube="nhạc Việt Nam"><b>🎵 Âm nhạc</b><span>MV & V-pop</span></button><button class="social-card" data-social-youtube="lofi music"><b>🌙 Lofi</b><span>Study & chill</span></button></div><div class="social-search"><input id="youtubeSearch" type="search" placeholder="Tìm trong kho video hoặc dán link YouTube..."><button id="youtubeSearchBtn" type="button" onclick="window.appleSeedYoutubeSearch && window.appleSeedYoutubeSearch();">Tìm / Xem</button></div><div id="youtubeSearchResults"></div><div class="social-note">Apple Seed không tải, cào hoặc lưu video YouTube. Từ khóa được gửi tới bộ máy YouTube Search ở server; kết quả trả về thumbnail, tiêu đề và kênh. Bấm video để phát bằng trình phát YouTube chính thức ngay trong Apple Seed. API key YouTube không nằm trong mã frontend.</div></div></div></section><section class="section" id="tiktok">
 <div class="head">
   <div><h2>🎵 TikTok</h2><p>Trải nghiệm TikTok ngay trong Apple Seed với trình phát chính thức và khu điều hướng kiểu ứng dụng.</p></div>
 </div>
@@ -269,13 +272,36 @@ function youtubeIdFromUrl(raw){
  return m?m[1]:null;
 }
 function playYoutube(id,title){
- const frame=document.getElementById('youtubeFrame');
- const safeId=String(id||'').trim();
- if(!/^[A-Za-z0-9_-]{11}$/.test(safeId)) return;
- frame.src=YOUTUBE_HOST+safeId+'?rel=0&playsinline=1';
- frame.title=title||'YouTube trên Apple Seed';
- document.getElementById('pTitle').textContent='YouTube • '+(title||'Apple Seed');
- document.getElementById('youtube').scrollIntoView({behavior:'smooth',block:'start'});
+  const frame=document.getElementById('youtubeFrame');
+  const stage=document.getElementById('youtubeStage');
+  const placeholder=document.getElementById('youtubePlaceholder');
+  const poster=document.getElementById('youtubePoster');
+  const placeholderTitle=document.getElementById('youtubePlaceholderTitle');
+  const safeId=String(id||'').trim();
+  if(!/^[A-Za-z0-9_-]{11}$/.test(safeId)) return;
+  clearTimeout(window.__ytPlayerTimer);
+  frame.classList.remove('ready');
+  stage.classList.add('youtube-loading');
+  placeholder.style.display='grid';
+  placeholderTitle.textContent=title||'YouTube trên Apple Seed';
+  poster.src='https://i.ytimg.com/vi/'+safeId+'/hqdefault.jpg';
+  frame.src=YOUTUBE_HOST+safeId+'?rel=0&playsinline=1';
+  frame.title=title||'YouTube trên Apple Seed';
+  frame.onload=()=>{
+    clearTimeout(window.__ytPlayerTimer);
+    frame.classList.add('ready');
+    stage.classList.remove('youtube-loading');
+    placeholder.style.display='none';
+  };
+  window.__ytPlayerTimer=setTimeout(()=>{
+    if(!frame.classList.contains('ready')){
+      stage.classList.remove('youtube-loading');
+      placeholder.style.display='grid';
+      placeholderTitle.textContent='Video chưa thể tải trong khung nhúng';
+    }
+  },9000);
+  document.getElementById('pTitle').textContent='YouTube • '+(title||'Apple Seed');
+  document.getElementById('youtube').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function playYoutubeEntry(v){playYoutube(v.id,v.title);}
 
@@ -481,7 +507,9 @@ document.getElementById('refresh').onclick=async()=>{
  }
 };
 
-// Initialize only reliable page data. Players load after the user chooses content, avoiding dead/expired embeds.
+// Initialize the main YouTube player with a verified Apple Việt Nam video.
+// If YouTube cannot be embedded, the thumbnail remains visible instead of a black dead frame.
 refreshAll();
+playYoutube(YOUTUBE_CATALOG[0].id,YOUTUBE_CATALOG[0].title);
 </script>
 </body></html>
