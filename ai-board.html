@@ -346,8 +346,10 @@ body.member-guest .member-gate{
   <span>Dán <b>nguyên văn panic log</b> của máy vào đây. Bạn không cần tự giải mã.</span>
   <span><b>Cách lấy trên iPhone:</b> Cài đặt → Quyền riêng tư &amp; Bảo mật → Phân tích &amp; Cải tiến → Dữ liệu phân tích → mở file <b>panic-full...</b> hoặc file có chữ <b>panic</b> → <b>Chia sẻ / Sao chép</b> rồi dán toàn bộ nội dung vào ô này.</span>
   <span><b>Nếu chỉ có một dòng lỗi</b> (ví dụ: <code>panic 0x20000 compass</code>) thì cứ dán nguyên dòng đó. AI sẽ dựa vào model máy + panic + số đo để phân tích.</span>
+  <span><b>Sensor Array / mã lỗi dạng số:</b> nếu máy hoặc tài liệu hiển thị mã lỗi bằng số thập phân, cứ ghi con số đó vào PANIC LOG. Ví dụ <code>524288</code> → mã HEX <code>0x80000</code>. Không cần tự đổi; hãy ghi rõ số và <b>gửi kèm ảnh main / schematic / boardview ở khung bên dưới</b> để AI đối chiếu vị trí sensor, đường tín hiệu và linh kiện liên quan.</span>
+  <span><b>Ví dụ nhập:</b> <code>Sensor Array: 524288 (HEX: 0x80000)</code> + ảnh main/schematic bên dưới → <b>PHÂN TÍCH AI</b>.</span>
 </div>
-<textarea id="panic" placeholder="Ví dụ: panic 0x20000 compass&#10;&#10;Hoặc dán toàn bộ nội dung file panic-full... vào đây.">panic 0x20000 compass</textarea>
+<textarea id="panic" placeholder="Ví dụ: panic 0x20000 compass&#10;Sensor Array: 524288 (HEX: 0x80000)&#10;&#10;Hoặc dán toàn bộ nội dung file panic-full... vào đây.">panic 0x20000 compass</textarea>
 </div>
 <div class="field"><label>Boot current</label><input placeholder="0.080A → 0.000A"></div>
 <div class="field"><label>Vbat / nguồn</label><input placeholder="4.20V"></div>
