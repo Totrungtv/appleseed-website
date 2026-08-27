@@ -56,7 +56,15 @@ sport:[['VnExpress Thể thao','https://vnexpress.net/rss/the-thao.rss'],['Tuổ
 ent:[['VnExpress Giải trí','https://vnexpress.net/rss/giai-tri.rss'],['Tuổi Trẻ Giải trí','https://tuoitre.vn/rss/giai-tri.rss']]
 };
 const PROXY='https://api.rss2json.com/v1/api.json?rss_url=';
+const RSS_TIMEOUT_MS=8000;
 let ALL_NEWS=[];
+async function fetchWithTimeout(url,options={}){
+ const controller=new AbortController();
+ const timer=setTimeout(()=>controller.abort(),RSS_TIMEOUT_MS);
+ try{
+  return await fetch(url,{...options,signal:controller.signal});
+ }finally{clearTimeout(timer);}
+}
 const esc=s=>String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 const strip=s=>{const d=document.createElement('div');d.innerHTML=s||'';return d.textContent||d.innerText||''};
 function cleanDesc(s){return strip(s).replace(/\s+/g,' ').trim().slice(0,220)}
@@ -84,7 +92,12 @@ async function loadSection(id,feeds){
  try{
   const all=[];
   for(const [source,url] of feeds){
-   try{const res=await fetch(PROXY+encodeURIComponent(url),{cache:'no-store'});const j=await res.json();(j.items||[]).slice(0,6).forEach(x=>all.push({...x,source}));}catch(e){}
+   try{
+ const res=await fetchWithTimeout(PROXY+encodeURIComponent(url),{cache:'no-store'});
+ if(!res.ok) throw new Error('RSS '+res.status);
+ const j=await res.json();
+ (j.items||[]).slice(0,6).forEach(x=>all.push({...x,source}));
+ }catch(e){}
   }
   all.sort((a,b)=>new Date(b.pubDate)-new Date(a.pubDate)); ALL_NEWS=[...ALL_NEWS.filter(x=>!all.some(y=>y.link&&x.link===y.link)),...all];
   el.innerHTML=all.length?all.slice(0,8).map(card).join(''):'<div class="empty">Chưa lấy được RSS lúc này. Pa thử bấm ↻ Cập nhật lại nhé.</div>';
@@ -275,7 +288,14 @@ document.getElementById('tiktokLoad').onclick=()=>{
 document.getElementById('tiktokUrl').addEventListener('input',e=>e.target.setCustomValidity(''));
 document.getElementById('tiktokFrame').addEventListener('load',()=>{document.getElementById('tiktokFrame').style.background='#000'});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('#reader.open').forEach(x=>x.classList.remove('open'));document.getElementById('pClose').click();document.body.classList.remove('modal-open')}});
-async function refreshAll(){await Promise.all([loadSection('newsGrid',FEEDS.news),loadSection('techGrid',FEEDS.tech),loadSection('sportGrid',FEEDS.sport),loadSection('entGrid',FEEDS.ent)])}
+async function refreshAll(){
+ await Promise.allSettled([
+  loadSection('newsGrid',FEEDS.news),
+  loadSection('techGrid',FEEDS.tech),
+  loadSection('sportGrid',FEEDS.sport),
+  loadSection('entGrid',FEEDS.ent)
+ ]);
+}
 function renderSearch(){
  const q=document.getElementById('searchInput').value.trim().toLowerCase(), box=document.getElementById('searchResults');
  if(!q){box.innerHTML='';return}
