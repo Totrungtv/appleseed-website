@@ -87,7 +87,7 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
 .account-name{font-size:19px;font-weight:900}.admin-badge{display:inline-flex;align-items:center;gap:5px;margin-top:7px;padding:5px 9px;border-radius:999px;background:#eef7ff;border:1px solid #bfdbfe;color:#145ca8;font-size:11px;font-weight:900;letter-spacing:.02em}.account-email{color:#647b98;font-size:13px;margin-top:4px;word-break:break-all}
 .account-coin-box{margin-top:16px;padding:15px;border-radius:15px;background:linear-gradient(135deg,#eef7ff,#f8fbff);border:1px solid #c8e2ff}
 .account-coin-box span{display:block;color:#46617f;font-size:12px;font-weight:800}.account-coin-box strong{display:block;color:#146ee8;font-size:29px;line-height:1.2;margin:4px 0}.account-coin-box small{color:#647b98;line-height:1.45}
-.account-details{margin-top:14px;border-top:1px solid #e6eef7}.account-details div{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid #e6eef7;font-size:12px}.account-details span{color:#647b98}.account-details b{text-align:right}
+.account-wallet-action{margin-top:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}.account-wallet-action .btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;padding:10px 14px}.account-wallet-hint{font-size:11px;color:#647b98}.account-details{margin-top:14px;border-top:1px solid #e6eef7}.account-details div{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid #e6eef7;font-size:12px}.account-details span{color:#647b98}.account-details b{text-align:right}
 .account-note{margin-top:12px;padding:11px 12px;border-radius:11px;background:#f5faff;color:#46617f;font-size:12px;line-height:1.5}
 .member-policy-side{margin-top:0}.member-policy-side .member-policy-grid{grid-template-columns:1fr 1fr}.member-policy-side .member-policy-item{padding:12px}.member-policy-side .member-policy-item h3{font-size:13px}.member-policy-side .member-policy-item p{font-size:12px}
 .member-policy-side .member-policy-note{font-size:12px}
@@ -176,6 +176,10 @@ body.member-guest .member-gate{
       <span>🪙 Số dư Coin</span>
       <strong id="memberAccountCoins">—</strong>
       <small>Coin dùng cho các tính năng AI theo cấu hình hệ thống.</small>
+    </div>
+    <div class="account-wallet-action">
+      <a class="btn primary" href="member-wallet.html">💳 Nạp Coin</a>
+      <span class="account-wallet-hint">Nạp Coin và xem lịch sử giao dịch</span>
     </div>
     <div class="account-details">
       <div><span>Trạng thái</span><b id="memberAccountStatus">—</b></div>
