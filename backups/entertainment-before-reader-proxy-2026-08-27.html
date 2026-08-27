@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Apple Seed Entertainment Center</title>
+<meta name="description" content="Apple Seed Entertainment Center — tin tức, công nghệ, thể thao, video, âm nhạc và giải trí ngay trên Apple Seed.">
+<style>
+:root{--blue:#1769ff;--ink:#14213d;--muted:#71809a;--bg:#f4f7fc;--card:#fff;--line:#e4eaf3;--dark:#07152e}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif}body.modal-open{overflow:hidden}button,a{font:inherit}a{text-decoration:none;color:inherit}
+.top{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}.nav{max-width:1320px;margin:auto;min-height:70px;padding:9px 22px;display:flex;align-items:center;justify-content:space-between;gap:15px}.brand{display:flex;align-items:center;gap:10px}.brand-mark{width:43px;height:43px;border-radius:12px;background:linear-gradient(135deg,#1769ff,#59a7ff);display:grid;place-items:center;color:#fff;font-weight:1000;font-size:20px}.brand b{font-size:20px}.brand small{display:block;color:var(--muted);font-size:9px;font-weight:900;letter-spacing:1.1px;margin-top:2px}.back{border:1px solid #d8e1ee;background:#fff;color:var(--blue);border-radius:10px;padding:9px 13px;font-size:12px;font-weight:900}
+.hero{background:radial-gradient(circle at 85% 15%,rgba(74,165,255,.28),transparent 30%),linear-gradient(135deg,#07152e,#0b2d59 65%,#145a9e);color:#fff;padding:48px 22px 70px}.hero-in{max-width:1320px;margin:auto}.eyebrow{font-size:11px;letter-spacing:2.4px;color:#9ed2ff;font-weight:950}.hero h1{font-size:46px;line-height:1.04;margin:10px 0 12px;letter-spacing:-1.4px}.hero p{max-width:760px;margin:0;color:#dbeaff;line-height:1.65;font-size:16px}
+.tabs{max-width:1320px;margin:-28px auto 0;padding:0 22px;position:relative}.tabbar{background:#fff;border:1px solid var(--line);border-radius:17px;padding:9px;display:flex;gap:7px;overflow:auto;box-shadow:0 12px 35px rgba(25,45,80,.12)}.tabbar a{white-space:nowrap;padding:11px 15px;border-radius:11px;font-size:12px;font-weight:900;color:#50617b}.tabbar a:hover,.tabbar a.active{background:#eef4ff;color:var(--blue)}
+main{max-width:1320px;margin:auto;padding:34px 22px 65px}.section{margin-bottom:38px}.head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:15px}.head h2{margin:0;font-size:24px}.head p{margin:5px 0 0;color:var(--muted);font-size:12px}.refresh{border:1px solid #d8e1ee;background:#fff;border-radius:10px;padding:9px 12px;color:var(--blue);font-weight:900;cursor:pointer;font-size:12px}
+.news-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}.news{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:17px;min-height:150px;transition:.18s;cursor:pointer}.news:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(25,45,80,.1);border-color:#c9d8f6}.news-media{height:155px;margin:-17px -17px 13px;overflow:hidden;background:linear-gradient(135deg,#07152e,#1769ff)}.news-media img{width:100%;height:100%;object-fit:cover;display:block}.searchbar{max-width:1320px;margin:26px auto 0;padding:0 22px}.searchbox{background:#fff;border:1px solid var(--line);border-radius:16px;padding:11px;display:flex;gap:9px;box-shadow:0 8px 24px rgba(25,45,80,.07)}.searchbox input{flex:1;min-width:0;border:1px solid #d8e1ee;border-radius:10px;padding:11px 13px;outline:none;font-size:13px}.searchbox input:focus{border-color:#9bbcff;box-shadow:0 0 0 3px #eef4ff}.searchbox button{border:0;background:var(--blue);color:#fff;border-radius:10px;padding:10px 15px;font-weight:900;cursor:pointer}.search-results{margin-top:13px}.search-results .empty{margin-bottom:13px}.source{font-size:10px;color:var(--blue);font-weight:950;text-transform:uppercase;letter-spacing:.5px}.news h3{font-size:15px;margin:9px 0 7px;line-height:1.35}.news p{font-size:12px;color:var(--muted);line-height:1.55;margin:0}.time{display:block;margin-top:11px;font-size:10px;color:#98a4b6}
+.live{display:grid;grid-template-columns:1.6fr 1fr;gap:14px}.panel{background:#fff;border:1px solid var(--line);border-radius:17px;padding:19px}.panel h3{margin:0 0 7px}.panel p{margin:0;color:var(--muted);font-size:12px;line-height:1.6}.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.chip{padding:9px 11px;background:#f3f6fb;border:1px solid #e0e7f1;border-radius:10px;color:var(--blue);font-size:11px;font-weight:900;cursor:pointer}.video-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.video{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden}.thumb{height:145px;background:linear-gradient(135deg,#07152e,#1969ad);display:grid;place-items:center;color:#fff;font-size:48px}.video-body{padding:15px}.video h3{margin:0 0 6px;font-size:15px}.video p{margin:0;color:var(--muted);font-size:11px;line-height:1.5}.video button{margin-top:11px;border:0;background:#1769ff;color:#fff;border-radius:9px;padding:9px 11px;font-weight:900;font-size:11px;cursor:pointer}
+.empty{padding:30px;text-align:center;color:var(--muted);background:#fff;border:1px dashed #d5deeb;border-radius:15px}.spinner{display:inline-block;width:18px;height:18px;border:2px solid #d7e2f5;border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle}@keyframes spin{to{transform:rotate(360deg)}}
+.footer{background:var(--dark);color:#c9d6e9;text-align:center;padding:28px 20px;font-size:11px}.footer strong{color:#fff}
+#reader{display:none;position:fixed;inset:0;z-index:1000}.reader-bg{position:absolute;inset:0;background:rgba(3,12,27,.72);backdrop-filter:blur(5px)}.reader-box{position:absolute;inset:4vh 5vw;background:#fff;border-radius:18px;overflow:hidden;display:grid;grid-template-rows:auto 1fr;box-shadow:0 30px 90px rgba(0,0,0,.32)}#reader.open{display:block}.reader-head{height:62px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:9px 16px;gap:15px}.reader-title{font-weight:950;font-size:15px}.reader-source{font-size:10px;color:var(--muted);margin-top:3px}.close{border:1px solid #d8e1ee;background:#f7f9fc;border-radius:10px;padding:9px 12px;font-weight:900;cursor:pointer}.reader-content{height:calc(100% - 62px);overflow:auto;padding:32px clamp(22px,5vw,72px) 60px;}.reader-content .label{color:var(--blue);font-weight:950;font-size:11px}.reader-content h1{font-size:clamp(28px,3vw,42px);line-height:1.18;max-width:1180px;margin:9px 0 12px}.reader-content .meta{color:var(--muted);font-size:11px;margin-bottom:22px}.reader-content .body{max-width:1180px;font-size:17px;line-height:1.85;color:#29364e}.reader-content .body p{margin:0 0 18px}.reader-content .body h2,.reader-content .body h3{line-height:1.3;margin:28px 0 12px}.reader-content .body blockquote{margin:20px 0;padding:12px 18px;border-left:4px solid #1769ff;background:#f5f8ff}.reader-content .body a{color:#1769ff;text-decoration:underline}.reader-content .body img{display:block;max-width:min(100%,1100px);height:auto;margin:18px auto;border-radius:12px}.reader-content .body img{max-width:100%;height:auto;border-radius:12px}.related-video{margin-top:30px;padding:18px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(135deg,#f7faff,#fff)}.related-video-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.related-video h3{margin:0;font-size:16px}.related-video p{margin:4px 0 0;color:var(--muted);font-size:11px}.related-video button{border:0;background:#1769ff;color:#fff;border-radius:10px;padding:9px 12px;font-weight:900;font-size:11px;cursor:pointer}.related-video .mini-frame{width:100%;aspect-ratio:16/9;border:0;border-radius:12px;background:#07152e;display:none}.reader-actions{margin-top:25px;display:flex;gap:9px;flex-wrap:wrap}.reader-actions a{display:inline-block;background:#1769ff;color:#fff;padding:10px 13px;border-radius:10px;font-size:11px;font-weight:900}.reader-actions button{background:#fff;border:1px solid #d8e1ee;padding:10px 13px;border-radius:10px;font-weight:900;cursor:pointer}
+#player{display:none;position:fixed;inset:0;z-index:1100;background:#050b16}.player-head{height:60px;display:flex;align-items:center;justify-content:space-between;padding:10px 18px;color:#fff}.player-frame{height:calc(100% - 60px);display:grid;place-items:center}.player-frame iframe{width:min(1100px,92vw);height:min(620px,78vh);border:0;border-radius:14px;background:#000}.social-grid{display:grid;grid-template-columns:1.35fr 1fr;gap:14px}.social-player{background:#07152e;border-radius:15px;overflow:hidden;min-height:400px;display:grid;place-items:center;position:relative}.social-player iframe{width:100%;height:100%;min-height:400px;border:0;display:block;background:#000}.social-search{display:flex;gap:8px;margin-top:13px}.social-search input{flex:1;border:1px solid #d8e1ee;border-radius:10px;padding:10px 12px;font-size:12px;outline:none}.social-search button{border:0;background:#1769ff;color:#fff;border-radius:10px;padding:10px 13px;font-weight:900;font-size:11px;cursor:pointer}.social-note{font-size:10px;color:var(--muted);line-height:1.5;margin-top:9px}.social-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:12px}.social-card{border:1px solid #e0e7f1;background:#f7f9fc;border-radius:11px;padding:11px;cursor:pointer}.social-card b{display:block;font-size:11px;margin-bottom:4px}.social-card span{font-size:10px;color:var(--muted)}@media(max-width:900px){.social-grid{grid-template-columns:1fr}}
+@media(max-width:900px){.news-grid{grid-template-columns:repeat(2,1fr)}.live{grid-template-columns:1fr}.video-grid{grid-template-columns:1fr 1fr}.hero h1{font-size:38px}}
+@media(max-width:560px){.nav{padding:8px 13px}.hero{padding:38px 14px 60px}.hero h1{font-size:32px}.hero p{font-size:14px}.tabs{padding:0 10px}.tabbar{border-radius:13px}.tabbar a{padding:9px 11px}.news-grid,.video-grid{grid-template-columns:1fr}main{padding:28px 13px 50px}.head h2{font-size:21px}.reader-box{inset:0;border-radius:0}.reader-content{padding:25px 17px}.reader-content h1{font-size:27px}}
+
+.yt-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.yt-result-card{border:1px solid #e0e7f1;background:#fff;border-radius:12px;overflow:hidden;text-align:left;cursor:pointer;padding:0;transition:.16s;box-shadow:0 4px 14px rgba(25,45,80,.05)}
+.yt-result-card:hover{transform:translateY(-2px);border-color:#bcd0ff;box-shadow:0 10px 24px rgba(25,45,80,.10)}
+.yt-result-thumb{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#07152e}
+.yt-result-body{padding:10px 11px}
+.yt-result-title{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:12px;font-weight:900;line-height:1.4;color:var(--ink)}
+.yt-result-channel{margin-top:5px;font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.yt-result-date{margin-top:3px;font-size:9px;color:#98a4b6}
+.yt-search-status{margin-top:12px;padding:10px 12px;border-radius:10px;background:#f7f9fc;color:var(--muted);font-size:11px;line-height:1.5}
+@media(max-width:700px){.yt-results{grid-template-columns:1fr}}
+
+.tiktok-appbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 14px;padding:10px;border:1px solid #e3e9f2;border-radius:16px;background:rgba(255,255,255,.92);box-shadow:0 8px 24px rgba(20,35,70,.06)}
+.tiktok-nav,.tiktok-login,.tiktok-open{appearance:none;border:1px solid #e0e7f1;background:#fff;color:#16233f;border-radius:10px;padding:9px 13px;font-weight:800;font-size:12px;text-decoration:none;cursor:pointer}
+.tiktok-nav.active{background:#111827;color:#fff;border-color:#111827}
+.tiktok-login{margin-left:auto;color:#111827}
+.tiktok-open{background:#2563eb;color:#fff;border-color:#2563eb}
+.tiktok-login-note{margin-top:12px;padding:11px 13px;border-radius:12px;background:#f7f9fc;border:1px solid #e2e8f0;color:#64748b;font-size:11px;line-height:1.55}
+@media(max-width:700px){.tiktok-login{margin-left:0}}
+.reader-frame-wrap{height:100%;min-height:70vh;background:#f7f9fc;position:relative}
+.reader-frame{width:100%;height:100%;min-height:70vh;border:0;display:block;background:#fff}
+.reader-frame-loading{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:13px;background:#fff;z-index:1;pointer-events:none}
+.reader-frame-wrap.loaded .reader-frame-loading{display:none}
+.reader-fallback{display:none;margin:12px 0;padding:11px 13px;border:1px solid #e0e7f1;border-radius:10px;background:#fff;color:var(--muted);font-size:11px;line-height:1.5}
+.reader-fallback a{color:var(--blue);font-weight:900;text-decoration:underline}
+</style>
+</head>
+<body>
+<header class="top"><nav class="nav">
+<a class="brand" href="./index.html"><span class="brand-mark">AS</span><span><b>Apple Seed</b><small>ENTERTAINMENT CENTER</small></span></a>
+<a class="back" href="./index.html">← Về Apple Seed</a>
+</nav></header>
+<section class="hero"><div class="hero-in"><div class="eyebrow">APPLE SEED • ALL-IN-ONE</div><h1>🎬 Giải trí ngay trên Apple Seed</h1><p>Tin mới, công nghệ, thể thao, video, âm nhạc và giải trí — khách chỉ cần ở lại website Apple Seed, không phải chạy qua hàng loạt trang khác.</p></div></section>
+<div class="searchbar"><form class="searchbox" id="searchForm"><input id="searchInput" type="search" placeholder="🔎 Tìm tin tức, iPhone, AI, thể thao, game..." autocomplete="off"><button type="submit">Tìm kiếm</button></form><div id="searchResults" class="search-results"></div></div><div class="tabs"><div class="tabbar"><a class="active" href="#tin">📰 Tin mới</a><a href="#congnghe">📱 Công nghệ</a><a href="#thethao">⚽ Thể thao</a><a href="#video">▶️ Video</a><a href="#youtube">▶️ YouTube</a><a href="#tiktok">🎵 TikTok</a><a href="#amnhac">🎧 Âm nhạc</a><a href="#giaitri">🎬 Giải trí</a><a href="#game">🎮 Game</a></div></div>
+<main>
+<section class="section" id="youtube"><div class="head"><div><h2>▶️ YouTube</h2><p>Xem video YouTube bằng trình phát nhúng chính thức, ngay trong Apple Seed.</p></div></div><div class="social-grid"><div class="panel"><div class="social-player"><iframe id="youtubeFrame" title="YouTube trên Apple Seed" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div></div><div class="panel"><h3>🔎 Kho video YouTube</h3><p>Chọn chủ đề để phát video mẫu trong khung bên trái. Apple Seed không tải lại hoặc lưu video YouTube.</p><div class="social-cards"><button class="social-card" data-social-youtube="công nghệ iPhone Việt Nam"><b>📱 iPhone & Công nghệ</b><span>Video công nghệ</span></button><button class="social-card" data-social-youtube="thể thao Việt Nam"><b>⚽ Thể thao</b><span>Highlights & thể thao</span></button><button class="social-card" data-social-youtube="nhạc Việt Nam"><b>🎵 Âm nhạc</b><span>MV & V-pop</span></button><button class="social-card" data-social-youtube="lofi music"><b>🌙 Lofi</b><span>Study & chill</span></button></div><div class="social-search"><input id="youtubeSearch" type="search" placeholder="Tìm trong kho video hoặc dán link YouTube..."><button id="youtubeSearchBtn" type="button" onclick="window.appleSeedYoutubeSearch && window.appleSeedYoutubeSearch();">Tìm / Xem</button></div><div id="youtubeSearchResults"></div><div class="social-note">Apple Seed không tải, cào hoặc lưu video YouTube. Từ khóa được gửi tới bộ máy YouTube Search ở server; kết quả trả về thumbnail, tiêu đề và kênh. Bấm video để phát bằng trình phát YouTube chính thức ngay trong Apple Seed. API key YouTube không nằm trong mã frontend.</div></div></div></section><section class="section" id="tiktok">
+<div class="head">
+  <div><h2>🎵 TikTok</h2><p>Trải nghiệm TikTok ngay trong Apple Seed với trình phát chính thức và khu điều hướng kiểu ứng dụng.</p></div>
+</div>
+<div class="tiktok-appbar" role="navigation" aria-label="Điều hướng TikTok">
+  <button type="button" class="tiktok-nav active" data-tiktok-action="home">🏠 Trang chủ</button>
+  <button type="button" class="tiktok-nav" data-tiktok-action="explore">🔎 Khám phá</button>
+  <a class="tiktok-nav" href="https://www.tiktok.com/" target="_blank" rel="noopener">🎵 TikTok</a>
+  <a class="tiktok-login" href="https://www.tiktok.com/login" target="_blank" rel="noopener">🔐 Đăng nhập TikTok</a>
+  <a class="tiktok-open" href="https://www.tiktok.com/" target="_blank" rel="noopener">Mở TikTok ↗</a>
+</div>
+<div class="social-grid">
+  <div class="panel">
+    <div class="social-player">
+      <iframe id="tiktokFrame" title="TikTok trên Apple Seed" allow="fullscreen; autoplay" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>📌 Xem TikTok ngay trên Apple Seed</h3>
+    <p>Dán URL video TikTok công khai. Apple Seed chỉ lấy ID để phát bằng trình phát chính thức của TikTok.</p>
+    <div class="social-search">
+      <input id="tiktokUrl" type="url" placeholder="https://www.tiktok.com/@.../video/..." autocomplete="url">
+      <button id="tiktokLoad" type="button">Xem</button>
+    </div>
+    <div class="chips">
+      <button class="chip" data-tiktok-id="6718335390845095173">▶ Video TikTok mẫu</button>
+      <a class="chip" href="https://www.tiktok.com/explore" target="_blank" rel="noopener">🔎 Khám phá TikTok</a>
+    </div>
+    <div class="tiktok-login-note">
+      <strong>🔐 Đăng nhập:</strong> TikTok không cho phép Apple Seed giả lập hoặc nhúng trang đăng nhập của TikTok trong iframe. Nút <b>Đăng nhập TikTok</b> mở trang đăng nhập chính thức của TikTok, nên tài khoản và mật khẩu vẫn được bảo vệ bởi TikTok.
+    </div>
+    <div class="social-note">Không tải, lưu hay sao chép video TikTok. Apple Seed chỉ nhúng trình phát chính thức và không vượt cơ chế bảo mật của TikTok.</div>
+  </div>
+</div>
+</section><section class="section" id="tin"><div class="head"><div><h2>📰 Tin mới</h2><p>Nội dung được lấy từ RSS và hiển thị bằng giao diện Apple Seed.</p></div><button class="refresh" id="refresh">↻ Cập nhật</button></div><div id="newsGrid" class="news-grid"><div class="empty"><span class="spinner"></span> Đang tải tin mới…</div></div></section>
+<section class="section" id="congnghe"><div class="head"><div><h2>📱 Công nghệ</h2><p>Tập trung vào Apple, điện thoại, AI và xu hướng công nghệ.</p></div></div><div id="techGrid" class="news-grid"><div class="empty">Đang tải…</div></div></section>
+<section class="section" id="thethao"><div class="head"><div><h2>⚽ Thể thao</h2><p>Tin thể thao cập nhật nhanh.</p></div></div><div id="sportGrid" class="news-grid"><div class="empty">Đang tải…</div></div></section>
+<section class="section" id="video"><div class="head"><div><h2>▶️ Video</h2><p>Video YouTube mở và phát trong chính giao diện Apple Seed.</p></div></div><div class="video-grid">
+<article class="video"><div class="thumb">▶</div><div class="video-body"><h3>Công nghệ & iPhone</h3><p>Tìm video công nghệ mới nhất trên YouTube.</p><button data-youtube="công nghệ iPhone Việt Nam">Xem trong Apple Seed</button></div></article>
+<article class="video"><div class="thumb">⚽</div><div class="video-body"><h3>Thể thao</h3><p>Tìm video thể thao và highlights.</p><button data-youtube="thể thao Việt Nam">Xem trong Apple Seed</button></div></article>
+<article class="video"><div class="thumb">🎵</div><div class="video-body"><h3>Âm nhạc</h3><p>Tìm MV và nội dung âm nhạc.</p><button data-youtube="nhạc Việt Nam">Xem trong Apple Seed</button></div></article>
+</div></section>
+
+
+<section class="section" id="amnhac"><div class="head"><div><h2>🎧 Âm nhạc & Podcast</h2><p>Mở nội dung hỗ trợ phát trực tiếp trong website.</p></div></div><div class="live"><div class="panel"><h3>🎵 YouTube Music</h3><p>Tra cứu và nghe nội dung YouTube Music từ giao diện Apple Seed.</p><div class="chips"><button class="chip" data-youtube="nhạc Việt Nam">Nhạc Việt</button><button class="chip" data-youtube="lofi music">Lofi</button><button class="chip" data-youtube="podcast Việt Nam">Podcast</button></div></div><div class="panel"><h3>🟢 Spotify</h3><p>Spotify có thể mở trình phát nhúng đối với nội dung cho phép embed.</p><div class="chips"><a class="chip" href="https://open.spotify.com/embed">Mở trình phát Spotify</a></div></div></div></section>
+<section class="section" id="giaitri"><div class="head"><div><h2>🎬 Giải trí</h2><p>Phim, show, người nổi tiếng và nội dung đời sống.</p></div></div><div id="entGrid" class="news-grid"><div class="empty">Đang tải…</div></div></section>
+<section class="section" id="game"><div class="head"><div><h2>🎮 Game</h2><p>Không rời Apple Seed khi khám phá nội dung game.</p></div></div><div class="live"><div class="panel"><h3>🕹️ Game & esports</h3><p>Cập nhật tin game từ các nguồn tin công khai và mở video ngay trong Apple Seed.</p><div class="chips"><button class="chip" data-youtube="game Việt Nam esports">Esports</button><button class="chip" data-youtube="iPhone games">Game mobile</button><button class="chip" data-youtube="PC gaming Việt Nam">PC Gaming</button></div></div><div class="panel"><h3>🔒 Mô hình an toàn</h3><p>Apple Seed chỉ hiển thị nội dung từ nguồn công khai; không sao chép tài khoản, nội dung trả phí hoặc vượt cơ chế bảo mật của website khác.</p></div></div></section>
+</main>
+<footer class="footer">Apple Seed Entertainment Center · <strong>Tô Thanh Trung – Apple Seed</strong> · <a href="./index.html">Trang chính</a></footer>
+
+<div id="reader" aria-hidden="true"><div class="reader-bg" data-close></div><section class="reader-box"><header class="reader-head"><div><div class="reader-title" id="rSource">Apple Seed</div><div class="reader-source" id="rUrl"></div></div><button class="close" data-close>✕ Đóng</button></header><article class="reader-content"><div class="label" id="rLabel"></div><h1 id="rTitle"></h1><div class="meta" id="rMeta"></div><div class="body" id="rBody"></div><div class="related-video" id="relatedVideo"><div class="related-video-head"><div><h3>▶️ Video liên quan</h3><p id="relatedVideoDesc">Video từ YouTube được phát bằng trình phát nhúng chính thức.</p></div><button id="relatedVideoBtn">Xem video</button></div><iframe class="mini-frame" id="relatedVideoFrame" title="Video liên quan" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div><div class="reader-actions"><a id="rOriginal" href="#" target="_blank" rel="noopener">Đọc nguồn gốc ↗</a><button data-close>← Quay lại tin</button></div></article></section></div>
+<div id="player"><div class="player-head"><strong id="pTitle">Apple Seed Video</strong><button class="close" id="pClose">✕ Đóng</button></div><div class="player-frame"><iframe id="pFrame" title="Apple Seed Video" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe></div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase-config.js"></script>
+<script>
+const FEEDS={
+news:[['VnExpress','https://vnexpress.net/rss/tin-moi-nhat.rss'],['Tuổi Trẻ','https://tuoitre.vn/rss/tin-moi-nhat.rss']],
+tech:[['VnExpress Công nghệ','https://vnexpress.net/rss/khoa-hoc-cong-nghe.rss'],['Tuổi Trẻ Công nghệ','https://tuoitre.vn/rss/cong-nghe.rss']],
+sport:[['VnExpress Thể thao','https://vnexpress.net/rss/the-thao.rss'],['Tuổi Trẻ Thể thao','https://tuoitre.vn/rss/the-thao.rss']],
+ent:[['VnExpress Giải trí','https://vnexpress.net/rss/giai-tri.rss'],['Tuổi Trẻ Giải trí','https://tuoitre.vn/rss/giai-tri.rss']]
+};
+const PROXY='https://api.rss2json.com/v1/api.json?rss_url=';
+const RSS_TIMEOUT_MS=8000;
+let ALL_NEWS=[];
+async function fetchWithTimeout(url,options={}){
+ const controller=new AbortController();
+ const timer=setTimeout(()=>controller.abort(),RSS_TIMEOUT_MS);
+ try{
+  return await fetch(url,{...options,signal:controller.signal});
+ }finally{clearTimeout(timer);}
+}
+const esc=s=>String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+const strip=s=>{const d=document.createElement('div');d.innerHTML=s||'';return d.textContent||d.innerText||''};
+function cleanDesc(s){return strip(s).replace(/\s+/g,' ').trim().slice(0,220)}
+function getImages(item){
+ const out=[];
+ const add=v=>{if(!v)return;const x=String(v).trim();if(/^https?:\/\//i.test(x)&&!out.includes(x))out.push(x)};
+ add(item.thumbnail);
+ add(item.enclosure?.link);
+ add(item.enclosure?.url);
+ const raw=String(item.content||'')+'\\n'+String(item.description||'');
+ const re=/(?:src|data-src|data-original)=[\\\"']([^\\\"']+)[\\\"']/gi;
+ let m;
+ while((m=re.exec(raw))!==null) add(m[1]);
+ return out.slice(0,6);
+}
+function card(item){
+ const title=esc(item.title), desc=esc(cleanDesc(item.description||item.content)), source=esc(item.source||'Tin tức'), date=item.pubDate?new Date(item.pubDate).toLocaleString('vi-VN',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'Mới cập nhật'; const images=getImages(item);
+ const image=images[0]||'';
+ const candidates=encodeURIComponent(JSON.stringify(images));
+ const data=encodeURIComponent(JSON.stringify({title:item.title,description:item.description||item.content,link:item.link,source:item.source||'Nguồn tin',date:item.pubDate}));
+ return '<article class="news" data-item="'+data+'">'+(image?'<div class="news-media"><img src="'+esc(image)+'" data-original-src="'+esc(image)+'" data-image-candidates="'+candidates+'" data-image-index="0" data-proxy-tried="0" alt="" loading="lazy" referrerpolicy="no-referrer"></div>':'')+'<div class="source">'+source+'</div><h3>'+title+'</h3><p>'+desc+'</p><span class="time">'+date+'</span></article>';
+}
+async function loadSection(id,feeds){
+ const el=document.getElementById(id);el.innerHTML='<div class="empty"><span class="spinner"></span> Đang cập nhật…</div>';
+ try{
+  const all=[];
+  for(const [source,url] of feeds){
+   try{
+ const res=await fetchWithTimeout(PROXY+encodeURIComponent(url),{cache:'no-store'});
+ if(!res.ok) throw new Error('RSS '+res.status);
+ const j=await res.json();
+ (j.items||[]).slice(0,6).forEach(x=>all.push({...x,source}));
+ }catch(e){}
+  }
+  all.sort((a,b)=>new Date(b.pubDate)-new Date(a.pubDate)); ALL_NEWS=[...ALL_NEWS.filter(x=>!all.some(y=>y.link&&x.link===y.link)),...all];
+  el.innerHTML=all.length?all.slice(0,8).map(card).join(''):'<div class="empty">Chưa lấy được RSS lúc này. Pa thử bấm ↻ Cập nhật lại nhé.</div>';
+ }catch(e){el.innerHTML='<div class="empty">Không tải được tin lúc này.</div>'}
+}
+function renderReaderMarkdown(text){
+ let s=String(text||'').replace(/\r/g,'');
+ const marker=s.indexOf('Markdown Content:');
+ if(marker>=0) s=s.slice(marker+'Markdown Content:'.length).trim();
+ const lines=s.split('\n');
+ let html='',para=[],list=false;
+ const flush=()=>{if(!para.length)return;const p=para.join(' ').trim();if(p)html+='<p>'+formatInline(p)+'</p>';para=[];};
+ const closeList=()=>{if(list){html+='</ul>';list=false;}};
+ for(let line of lines){
+  line=line.trim();
+  if(!line){flush();closeList();continue;}
+  if(/^#{2,6}\s+/.test(line)){flush();closeList();const m=line.match(/^(#{2,6})\s+(.+)/);const n=Math.min(6,m[1].length);html+='<h'+n+'>'+formatInline(m[2])+'</h'+n+'>';continue;}
+  if(/^[-*+]\s+/.test(line)){flush();if(!list){html+='<ul>';list=true;}html+='<li>'+formatInline(line.replace(/^[-*+]\s+/,''))+'</li>';continue;}
+  if(/^>\s?/.test(line)){flush();closeList();html+='<blockquote>'+formatInline(line.replace(/^>\s?/,''))+'</blockquote>';continue;}
+  if(/^Title:\s|^URL Source:\s|^Published Time:\s/.test(line))continue;
+  para.push(line);
+ }
+ flush();closeList();
+ return html||'<p>Không có nội dung để hiển thị.</p>';
+}
+function formatInline(s){
+ let out=esc(s);
+ out=out.replace(/!\[([^\]]*)\]\((https?:\/\/[^\s)]+)(?:\s+[^)]*)?\)/gi,'<img src="$2" alt="$1" loading="lazy" referrerpolicy="no-referrer">');
+ out=out.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)(?:\s+&quot;[^)]*)?\)/gi,'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+ out=out.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+ out=out.replace(/__([^_]+)__/g,'<strong>$1</strong>');
+ out=out.replace(/\*([^*]+)\*/g,'<em>$1</em>');
+ return out;
+}
+async function openReader(item){
+ const reader=document.getElementById('reader');
+ const body=document.getElementById('rBody');
+ const sourceUrl=String(item.link||'').trim();
+ document.getElementById('rSource').textContent=item.source||'Apple Seed';
+ document.getElementById('rUrl').textContent=sourceUrl;
+ document.getElementById('rLabel').textContent='APPLE SEED • TIN MỚI';
+ document.getElementById('rTitle').textContent=item.title||'';
+ document.getElementById('rMeta').textContent=item.date?new Date(item.date).toLocaleString('vi-VN'):'';
+ document.getElementById('rOriginal').href=sourceUrl||'#';
+ setupRelatedVideo(item);
+ reader.classList.add('open');
+ reader.setAttribute('aria-hidden','false');
+ document.body.classList.add('modal-open');
+
+ if(!sourceUrl){
+   body.innerHTML='<div class="empty">Bài viết không có địa chỉ nguồn hợp lệ.</div>';
+   return;
+ }
+
+ const safe=esc(sourceUrl);
+ body.innerHTML=
+   '<div class="reader-frame-wrap" id="readerFrameWrap">'+
+     '<div class="reader-frame-loading"><span class="spinner"></span>&nbsp; Đang mở bài viết gốc…</div>'+
+     '<iframe class="reader-frame" id="readerFrame" title="Bài viết gốc" src="'+safe+'" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; fullscreen; picture-in-picture; encrypted-media"></iframe>'+
+   '</div>'+
+   '<div class="reader-fallback" id="readerFallback">Apple Seed đang hiển thị nguyên trang nguồn trong khung đọc. Nếu nguồn báo tự chặn iframe hoặc tài nguyên hình ảnh/video không cho phép nhúng, Apple Seed không can thiệp vượt bảo mật của nguồn. Ông có thể bấm <a href="'+safe+'" target="_blank" rel="noopener noreferrer">Mở bài gốc trong tab trình duyệt</a>.</div>';
+
+ const frame=document.getElementById('readerFrame');
+ const wrap=document.getElementById('readerFrameWrap');
+ const fallback=document.getElementById('readerFallback');
+ frame.addEventListener('load',()=>{
+   wrap.classList.add('loaded');
+   // Một số website gửi trang chặn iframe bằng CSP/X-Frame-Options.
+   // Không đọc/chèn DOM cross-origin; chỉ cung cấp đường dẫn nguồn hợp lệ.
+   setTimeout(()=>{fallback.style.display='block';},1200);
+ },{once:true});
+}
+function relatedVideoFor(title){
+ const t=String(title||'').toLowerCase();
+ if(/iphone|apple|ios|ipad|mac|samsung|android|điện thoại|công nghệ|ai/.test(t)) return {id:'-etoRi1t2co',title:'Video công nghệ & iPhone'};
+ if(/bóng đá|football|soccer|thể thao|tennis|nba|fifa/.test(t)) return {id:'13lbcOEtk7M',title:'Video thể thao'};
+ if(/nhạc|music|mv|ca sĩ|album|podcast/.test(t)) return {id:'lTRiuFIWV54',title:'Video âm nhạc'};
+ if(/game|gaming|esports|liên quân|pubg|valorant/.test(t)) return {id:'13lbcOEtk7M',title:'Video game & esports'};
+ return {id:'-etoRi1t2co',title:'Video nổi bật trên YouTube'};
+}
+function setupRelatedVideo(item){
+ const v=relatedVideoFor(item.title), frame=document.getElementById('relatedVideoFrame'), btn=document.getElementById('relatedVideoBtn');
+ document.getElementById('relatedVideoDesc').textContent=v.title+' · phát trực tiếp trong Apple Seed.';
+ frame.style.display='none';frame.src='about:blank';btn.textContent='▶ Xem video';
+ btn.onclick=()=>{frame.src='https://www.youtube.com/embed/'+v.id+'?rel=1&playsinline=1';frame.style.display='block';btn.textContent='↻ Phát lại';};
+}
+const YOUTUBE_HOST='https://www.youtube-nocookie.com/embed/';
+const YOUTUBE_SEARCH_HOST='https://www.youtube.com/results?search_query=';
+const YOUTUBE_VIDEOS={
+ 'công nghệ iPhone Việt Nam':{id:'-etoRi1t2co',title:'iPhone 17 • Apple Việt Nam'},
+ 'thể thao Việt Nam':{id:'13lbcOEtk7M',title:'ASEAN Cup 2026 • Đội tuyển Việt Nam'},
+ 'nhạc Việt Nam':{id:'lTRiuFIWV54',title:'Lofi Girl • 1 A.M Study Session'},
+ 'lofi music':{id:'lTRiuFIWV54',title:'Lofi Girl • 1 A.M Study Session'},
+ 'podcast Việt Nam':{id:'4QDSZARb86o',title:'Apple • Hướng dẫn iPhone mới'},
+ 'game Việt Nam esports':{id:'13lbcOEtk7M',title:'Video thể thao Việt Nam'},
+ 'iPhone games':{id:'4QDSZARb86o',title:'Apple • Hướng dẫn iPhone mới'},
+ 'PC gaming Việt Nam':{id:'13lbcOEtk7M',title:'Video giải trí'}
+};
+const YOUTUBE_CATALOG=[
+ {id:'-etoRi1t2co',title:'iPhone 17 • Apple Việt Nam',keys:'iphone apple công nghệ ios'},
+ {id:'4QDSZARb86o',title:'Hướng dẫn dòng iPhone mới • Apple',keys:'iphone apple công nghệ'},
+ {id:'13lbcOEtk7M',title:'Đội tuyển Việt Nam • ASEAN Cup 2026',keys:'bóng đá thể thao việt nam asean cup'},
+ {id:'lTRiuFIWV54',title:'Lofi Girl • 1 A.M Study Session',keys:'lofi music nhạc study chill'}
+];
+function youtubeIdFromUrl(raw){
+ const s=String(raw||'').trim();
+ const m=s.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/i);
+ return m?m[1]:null;
+}
+function playYoutube(id,title){
+ const frame=document.getElementById('youtubeFrame');
+ const safeId=String(id||'').trim();
+ if(!/^[A-Za-z0-9_-]{11}$/.test(safeId)) return;
+ frame.src=YOUTUBE_HOST+safeId+'?rel=0&playsinline=1';
+ frame.title=title||'YouTube trên Apple Seed';
+ document.getElementById('pTitle').textContent='YouTube • '+(title||'Apple Seed');
+ document.getElementById('youtube').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function playYoutubeEntry(v){playYoutube(v.id,v.title);}
+
+document.addEventListener('error',e=>{
+ const img=e.target;
+ if(img.tagName!=='IMG') return;
+ let candidates=[];
+ try{candidates=JSON.parse(decodeURIComponent(img.dataset.imageCandidates||'[]'));}catch(_){}
+ if(!candidates.length) return;
+ let idx=Number(img.dataset.imageIndex||0);
+ const proxied=img.dataset.proxyTried==='1';
+ if(!proxied){
+   img.dataset.proxyTried='1';
+   img.src='https://images.weserv.nl/?url='+encodeURIComponent(candidates[idx]);
+   return;
+ }
+ if(idx+1<candidates.length){
+   idx++;
+   img.dataset.imageIndex=String(idx);
+   img.dataset.proxyTried='0';
+   img.src=candidates[idx];
+   return;
+ }
+ img.style.display='none';
+},{capture:true});
+document.addEventListener('click',e=>{
+ const n=e.target.closest('.news');if(n){try{openReader(JSON.parse(decodeURIComponent(n.dataset.item)))}catch(x){}}
+ const close=e.target.closest('[data-close]');if(close){document.getElementById('reader').classList.remove('open');document.body.classList.remove('modal-open')}
+ const y=e.target.closest('[data-youtube]');if(y){
+   const q=y.dataset.youtube, v=YOUTUBE_VIDEOS[q];
+   document.getElementById('pTitle').textContent='YouTube • '+(v?v.title:q);
+   if(v) document.getElementById('pFrame').src='https://www.youtube.com/embed/'+v.id+'?rel=0&modestbranding=1&playsinline=1';
+   else document.getElementById('pFrame').src='https://www.youtube.com/embed/-etoRi1t2co?autoplay=1&rel=0&playsinline=1';
+   document.getElementById('player').style.display='block';document.body.classList.add('modal-open');
+ }
+});
+document.getElementById('pClose').onclick=()=>{document.getElementById('pFrame').src='about:blank';document.getElementById('player').style.display='none';document.body.classList.remove('modal-open')};
+
+const SOCIAL_YOUTUBE={
+ 'công nghệ iPhone Việt Nam':YOUTUBE_CATALOG[0],
+ 'thể thao Việt Nam':YOUTUBE_CATALOG[2],
+ 'nhạc Việt Nam':YOUTUBE_CATALOG[3],
+ 'lofi music':YOUTUBE_CATALOG[3]
+};
+function playSocialYoutube(key){
+ const v=SOCIAL_YOUTUBE[key]||YOUTUBE_CATALOG.find(x=>x.id===key);
+ if(!v)return;
+ playYoutube(v.id,v.title);
+}
+document.querySelectorAll('[data-social-youtube]').forEach(btn=>btn.addEventListener('click',()=>playSocialYoutube(btn.dataset.socialYoutube)));
+function normalizeSearchText(s){
+ return String(s||'').toLowerCase()
+   .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+   .replace(/[^a-z0-9\s_-]/g,' ')
+   .replace(/\s+/g,' ').trim();
+}
+async function renderYoutubeSearch(){
+ const input=document.getElementById('youtubeSearch');
+ const box=document.getElementById('youtubeSearchResults');
+ const btn=document.getElementById('youtubeSearchBtn');
+ if(!input||!box)return;
+ const raw=input.value.trim();
+ if(!raw){
+   box.innerHTML='<div class="yt-search-status">Nhập từ khóa như <b>iPhone 17</b>, <b>nhạc Việt</b>, <b>sửa iPhone</b> hoặc dán link YouTube.</div>';
+   input.focus();
+   return;
+ }
+ const directId=youtubeIdFromUrl(raw);
+ if(directId){
+   box.innerHTML='<div class="yt-search-status">🔗 Đã nhận link YouTube. Bấm nút bên dưới để phát ngay trong Apple Seed.</div><button type="button" class="chip" id="youtubeDirectBtn">▶ Xem video YouTube này</button>';
+   const direct=document.getElementById('youtubeDirectBtn');
+   if(direct)direct.onclick=()=>playYoutube(directId,'Video YouTube');
+   return;
+ }
+ if(!window.supabaseClient){
+   box.innerHTML='<div class="yt-search-status">⚠️ Chưa khởi tạo kết nối YouTube Search. Vui lòng tải lại trang.</div>';
+   return;
+ }
+ const oldText=btn?btn.textContent:'Tìm / Xem';
+ if(btn){btn.disabled=true;btn.textContent='Đang tìm…';}
+ box.innerHTML='<div class="yt-search-status"><span class="spinner"></span> Đang tìm video YouTube thật…</div>';
+ try{
+   const {data,error}=await window.supabaseClient.functions.invoke('youtube-search',{
+     body:{q:raw,maxResults:12,regionCode:'VN',relevanceLanguage:'vi'}
+   });
+   if(error)throw error;
+   const items=Array.isArray(data?.items)?data.items:[];
+   if(!items.length){
+     box.innerHTML='<div class="yt-search-status">Không tìm thấy video phù hợp. Pa thử từ khóa khác nhé.</div><a class="chip" href="'+YOUTUBE_SEARCH_HOST+encodeURIComponent(raw)+'" target="_blank" rel="noopener noreferrer">🔎 Mở kết quả trên YouTube</a>';
+     return;
+   }
+   box.innerHTML='<div class="yt-search-status">🎬 Tìm thấy <b>'+items.length+'</b> video. Bấm một video để phát ngay trong Apple Seed.</div><div class="yt-results">'+items.map((v,i)=>{
+     const date=v.publishedAt?new Date(v.publishedAt).toLocaleDateString('vi-VN'):'';
+     return '<button type="button" class="yt-result-card" data-yt-api-index="'+i+'">'+
+       '<img class="yt-result-thumb" src="'+esc(v.thumbnail||'')+'" alt="" loading="lazy" referrerpolicy="no-referrer">'+
+       '<div class="yt-result-body">'+
+         '<div class="yt-result-title">'+esc(v.title)+'</div>'+
+         '<div class="yt-result-channel">▶ '+esc(v.channelTitle||'YouTube')+'</div>'+
+         '<div class="yt-result-date">'+esc(date)+'</div>'+
+       '</div>'+
+     '</button>';
+   }).join('')+'</div>';
+   box.querySelectorAll('[data-yt-api-index]').forEach(card=>{
+     card.addEventListener('click',()=>{
+       const v=items[Number(card.dataset.ytApiIndex)];
+       if(v?.videoId)playYoutube(v.videoId,v.title||'YouTube');
+     });
+   });
+ }catch(err){
+   console.error('Apple Seed YouTube Search:',err);
+   const msg=String(err?.message||err||'').slice(0,220);
+   box.innerHTML='<div class="yt-search-status">⚠️ Không kết nối được bộ máy tìm kiếm YouTube lúc này.'+(msg?'<br><small>'+esc(msg)+'</small>':'')+'</div><a class="chip" href="'+YOUTUBE_SEARCH_HOST+encodeURIComponent(raw)+'" target="_blank" rel="noopener noreferrer">🔎 Mở YouTube để tìm</a>';
+ }finally{
+   if(btn){btn.disabled=false;btn.textContent=oldText;}
+ }
+}
+window.appleSeedYoutubeSearch=renderYoutubeSearch;
+function bindYoutubeSearch(){
+ const btn=document.getElementById('youtubeSearchBtn');
+ const input=document.getElementById('youtubeSearch');
+ if(!btn||!input)return;
+ btn.type='button';
+ btn.onclick=(e)=>{e.preventDefault();e.stopPropagation();window.appleSeedYoutubeSearch();};
+ input.onkeydown=(e)=>{if(e.key==='Enter'){e.preventDefault();window.appleSeedYoutubeSearch();}};
+ input.oninput=()=>input.setCustomValidity('');
+}
+bindYoutubeSearch();
+
+
+
+document.querySelectorAll('[data-tiktok-action]').forEach(btn=>btn.addEventListener('click',()=>{
+  document.querySelectorAll('.tiktok-nav[data-tiktok-action]').forEach(x=>x.classList.remove('active'));
+  btn.classList.add('active');
+  if(btn.dataset.tiktokAction==='explore') window.open('https://www.tiktok.com/explore','_blank','noopener');
+  else window.open('https://www.tiktok.com/','_blank','noopener');
+}));
+function tiktokPlayerUrl(id){
+ return 'https://www.tiktok.com/player/v1/'+encodeURIComponent(id)+'?controls=1&description=1&music_info=1&rel=1';
+}
+function loadTikTok(id){
+ const frame=document.getElementById('tiktokFrame');
+ frame.src=tiktokPlayerUrl(id);
+ frame.setAttribute('allow','fullscreen; autoplay');
+ frame.setAttribute('referrerpolicy','strict-origin-when-cross-origin');
+}
+document.querySelectorAll('[data-tiktok-id]').forEach(btn=>btn.addEventListener('click',()=>loadTikTok(btn.dataset.tiktokId)));
+document.getElementById('tiktokLoad').onclick=()=>{
+ const raw=document.getElementById('tiktokUrl').value.trim();
+ const match=raw.match(/\/video\/(\d{8,30})/);
+ if(match) loadTikTok(match[1]);
+ else document.getElementById('tiktokUrl').setCustomValidity('URL TikTok chưa đúng dạng /video/ID.');
+};
+document.getElementById('tiktokUrl').addEventListener('input',e=>e.target.setCustomValidity(''));
+document.getElementById('tiktokFrame').addEventListener('load',()=>{document.getElementById('tiktokFrame').style.background='#000'});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('#reader.open').forEach(x=>x.classList.remove('open'));document.getElementById('pClose').click();document.body.classList.remove('modal-open')}});
+async function refreshAll(){
+ await Promise.allSettled([
+  loadSection('newsGrid',FEEDS.news),
+  loadSection('techGrid',FEEDS.tech),
+  loadSection('sportGrid',FEEDS.sport),
+  loadSection('entGrid',FEEDS.ent)
+ ]);
+}
+function renderSearch(){
+ const q=document.getElementById('searchInput').value.trim().toLowerCase(), box=document.getElementById('searchResults');
+ if(!q){box.innerHTML='';return}
+ const found=ALL_NEWS.filter(x=>(x.title+' '+strip(x.description||x.content||'')+' '+x.source).toLowerCase().includes(q)).sort((a,b)=>new Date(b.pubDate)-new Date(a.pubDate)).slice(0,12);
+ box.innerHTML='<div class="head"><div><h2>🔎 Kết quả tìm kiếm</h2><p>'+found.length+' tin phù hợp đang có trong Apple Seed.</p></div></div>'+(found.length?'<div class="news-grid">'+found.map(card).join('')+'</div>':'<div class="empty">Không tìm thấy tin phù hợp. Pa thử từ khóa khác nhé.</div>');
+ box.scrollIntoView({behavior:'smooth',block:'start'});
+}
+document.getElementById('searchForm').addEventListener('submit',e=>{e.preventDefault();renderSearch()});
+document.getElementById('searchInput').addEventListener('input',()=>{if(document.getElementById('searchInput').value.trim().length>=2)renderSearch()});
+document.getElementById('refresh').onclick=async()=>{
+ ALL_NEWS=[];
+ await refreshAll();
+ renderSearch();
+ // Refresh keeps the currently selected players; if the main player was empty, restore a verified video.
+ if(!document.getElementById('youtubeFrame').src || document.getElementById('youtubeFrame').src==='about:blank'){
+   playYoutube(YOUTUBE_CATALOG[0].id,YOUTUBE_CATALOG[0].title);
+ }
+};
+
+// Initialize the embedded players immediately on page load.
+playYoutube(YOUTUBE_CATALOG[0].id,YOUTUBE_CATALOG[0].title);
+loadTikTok('6718335390845095173');
+refreshAll();
+</script>
+</body></html>
