@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Apple Seed — Thành viên & Coin</title>
+<link rel="stylesheet" href="style.css">
+<style>
+:root{--blue:#1769ff;--bg:#f4f7fb;--line:#dfe7f1;--text:#10213d;--muted:#6b7c93}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.wrap{max-width:1280px;margin:auto;padding:26px 18px 70px}.top{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-bottom:18px}.top h1{margin:0}.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 13px;font-weight:800;cursor:pointer;color:var(--text)}.primary{background:var(--blue);color:#fff;border-color:var(--blue)}.danger{color:#b42318}.muted{color:var(--muted);font-size:13px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 8px 30px rgba(20,50,90,.06);margin-bottom:18px}
+.toolbar{display:grid;grid-template-columns:minmax(220px,1fr) auto;gap:10px}.toolbar input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #cfd9e6;border-radius:10px;font:inherit}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}.stat{border:1px solid var(--line);border-radius:13px;padding:13px;background:#f9fbfe}.stat b{display:block;font-size:22px;margin-top:3px}
+.member-row{display:grid;grid-template-columns:2fr 1.1fr .8fr 1.2fr 1.5fr;gap:10px;align-items:center;border-top:1px solid var(--line);padding:14px 0}.member-row:first-child{border-top:0}.member-name{font-weight:850}.badge{display:inline-flex;padding:4px 8px;border-radius:999px;background:#eef5ff;color:#175cd3;font-size:11px;font-weight:850}.badge.pending{background:#fff7ed;color:#c2410c}.badge.active{background:#ecfdf3;color:#067647}.badge.suspended{background:#fff1f2;color:#b42318}.coins{font-weight:900;color:#1769ff}
+.empty{padding:30px;text-align:center;color:var(--muted)}
+.modal{position:fixed;inset:0;background:rgba(7,18,35,.55);display:none;align-items:center;justify-content:center;padding:18px;z-index:1000}.modal.open{display:flex}.box{width:min(1050px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:18px;padding:20px}.box-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.detail{border:1px solid var(--line);border-radius:12px;padding:11px;background:#f9fbfe}.detail strong{display:block;margin-bottom:4px}.section{margin-top:18px}.payment{border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:10px}.payment-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.proof{max-width:260px;max-height:260px;border-radius:10px;border:1px solid var(--line);display:block;margin-top:8px}.credit{display:grid;grid-template-columns:160px 1fr auto;gap:8px;margin-top:10px}.credit input{padding:10px;border:1px solid #cfd9e6;border-radius:9px;font:inherit}
+.login{max-width:430px;margin:80px auto}.login input{width:100%;box-sizing:border-box;padding:11px;border:1px solid #cfd9e6;border-radius:10px;margin:6px 0 12px}
+@media(max-width:900px){.member-row{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr 1fr}.toolbar{grid-template-columns:1fr}.detail-grid,.payment-grid{grid-template-columns:1fr}.credit{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="login" class="panel login">
+  <h2>🔐 Apple Seed Admin</h2>
+  <p class="muted">Đăng nhập Admin để mở Trung tâm quản lý thành viên.</p>
+  <label>Email<input id="email" type="email"></label>
+  <label>Mật khẩu<input id="password" type="password"></label>
+  <button class="btn primary" id="loginBtn">Đăng nhập</button>
+  <p id="loginMsg" class="muted"></p>
+</div>
+
+<main id="app" class="wrap" style="display:none">
+  <div class="top">
+    <div><div class="muted">APPLE SEED • ADMIN CONTROL</div><h1>👥 Thành viên & Coin</h1><div class="muted">Quản lý tài khoản, thời hạn Trial, số dư Coin, lịch sử nạp và ảnh xác nhận chuyển khoản.</div></div>
+    <div class="actions"><a class="btn" href="admin.html">← Admin chính</a><a class="btn" href="index.html">Website</a><button class="btn" id="logout">Đăng xuất</button></div>
+  </div>
+
+  <div id="status" class="panel" style="display:none"></div>
+  <section class="panel">
+    <div class="toolbar"><input id="search" placeholder="🔎 Tìm theo email, tên hoặc số điện thoại..."><button class="btn primary" id="refresh">↻ Cập nhật</button></div>
+    <div class="stats">
+      <div class="stat"><span class="muted">Tổng tài khoản</span><b id="total">0</b></div>
+      <div class="stat"><span class="muted">Đang Trial</span><b id="trial">0</b></div>
+      <div class="stat"><span class="muted">Đang hoạt động</span><b id="active">0</b></div>
+      <div class="stat"><span class="muted">Chờ xác nhận</span><b id="pending">0</b></div>
+    </div>
+    <div id="list"></div>
+  </section>
+</main>
+
+<div class="modal" id="modal"><div class="box">
+  <div class="box-head"><div><div class="muted">MEMBER DETAIL</div><h2 id="detailTitle">Tài khoản</h2></div><button class="btn" id="close">✕ Đóng</button></div>
+  <div id="detail"></div>
+</div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script>
+(()=>{
+ const sb=window.supabaseClient, $=id=>document.getElementById(id);
+ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+ const money=v=>Number(v||0).toLocaleString('vi-VN');
+ const date=v=>v?new Date(v).toLocaleString('vi-VN'):'—';
+ let members=[];
+ function msg(t,error=false){$('status').textContent=t;$('status').style.display='block';$('status').style.background=error?'#fff1f2':'#eff8ff';$('status').style.color=error?'#b42318':'#175cd3'}
+ async function isAdmin(){
+   const {data:{user},error}=await sb.auth.getUser(); if(error||!user)return false;
+   const {data:p}=await sb.from('profiles').select('role').eq('id',user.id).maybeSingle();
+   return p?.role==='admin';
+ }
+ async function load(){
+   const {data,error}=await sb.rpc('apple_seed_admin_member_list',{p_search:$('search').value.trim()||null,p_limit:300,p_offset:0});
+   if(error){msg('Không tải được danh sách thành viên: '+error.message,true);return}
+   members=data||[];
+   $('total').textContent=members.length;
+   $('trial').textContent=members.filter(x=>x.account_status==='trial').length;
+   $('active').textContent=members.filter(x=>x.account_status==='active').length;
+   $('pending').textContent=members.reduce((n,x)=>n+Number(x.pending_payments||0),0);
+   $('list').innerHTML=members.map(m=>'<div class="member-row"><div><div class="member-name">'+esc(m.full_name||'Chưa có tên')+'</div><div class="muted">'+esc(m.email||'—')+'</div><div class="muted">'+esc(m.phone||'—')+'</div></div><div><span class="badge '+esc(m.account_status)+'">'+esc(m.account_status)+'</span><div class="muted">Trial đến: '+date(m.trial_expires_at)+'</div></div><div><span class="coins">'+money(m.coins)+' Coin</span></div><div><div class="muted">Đăng ký: '+date(m.created_at)+'</div><div class="muted">Đăng nhập: '+date(m.last_sign_in_at)+'</div></div><div class="actions"><button class="btn primary" onclick="openMember(\''+m.user_id+'\')">👁 Chi tiết</button>'+(Number(m.pending_payments)>0?'<span class="badge pending">💳 '+m.pending_payments+' chờ nạp</span>':'')+'</div></div>').join('')||'<div class="empty">Chưa có tài khoản.</div>';
+ }
+ async function openMember(id){
+   const {data,error}=await sb.rpc('apple_seed_admin_member_detail',{p_user_id:id});
+   if(error){msg('Không đọc được tài khoản: '+error.message,true);return}
+   const a=data.account,payments=data.payments||[],ledger=data.ledger||[];
+   $('detailTitle').textContent=(a.full_name||'Thành viên')+' · '+(a.email||'');
+   $('detail').innerHTML='<div class="detail-grid">'+
+    detail('Email',a.email)+detail('Email xác nhận',date(a.email_confirmed_at))+detail('Ngày đăng ký',date(a.created_at))+detail('Đăng nhập gần nhất',date(a.last_sign_in_at))+detail('Họ tên',a.full_name)+detail('Điện thoại',a.phone)+detail('Trạng thái','<span class="badge '+esc(a.status)+'">'+esc(a.status)+'</span>')+detail('Coin','<span class="coins">'+money(a.coins)+'</span>')+detail('Trial bắt đầu',date(a.trial_started_at))+detail('Trial kết thúc',date(a.trial_expires_at))+detail('Lần hoạt động cuối',date(a.last_seen_at))+
+   '</div><div class="section"><h3>💳 Yêu cầu nạp / ảnh chuyển khoản</h3>'+
+   (payments.length?payments.map(p=>paymentHtml(p,a.user_id)).join(''):'<div class="empty">Chưa có yêu cầu nạp.</div>')+
+   '</div><div class="section"><h3>🪙 Lịch sử Coin</h3>'+
+   (ledger.length?ledger.map(l=>'<div class="payment"><b>'+(l.delta>0?'+':'')+money(l.delta)+' Coin</b> · '+esc(l.transaction_type)+' · số dư '+money(l.balance_after)+' Coin<div class="muted">'+date(l.created_at)+' · '+esc(l.note||'')+'</div></div>').join(''):'<div class="empty">Chưa có giao dịch.</div>')+'</div>';
+   $('modal').classList.add('open');
+ }
+ function detail(k,v){return '<div class="detail"><strong>'+esc(k)+'</strong><span>'+esc(v||'—')+'</span></div>'}
+ function paymentHtml(p,userId){
+   const pending=p.status==='pending';
+   return '<div class="payment"><div class="payment-grid"><div><b>Trạng thái:</b> <span class="badge '+esc(p.status)+'">'+esc(p.status)+'</span><br><b>Ngày gửi:</b> '+date(p.submitted_at)+'</div><div><b>Số tiền khai báo:</b> '+money(p.amount_vnd)+' ₫<br><b>Coin đề nghị:</b> '+money(p.requested_coins)+' Coin</div><div><b>Ngân hàng:</b> '+esc(p.bank_name)+'<br><b>STK nhận:</b> '+esc(p.bank_account)+'<br><b>Chủ TK:</b> '+esc(p.account_holder)+'</div><div><b>Nội dung chuyển khoản:</b> '+esc(p.transfer_reference||'—')+'<br><b>Ghi chú:</b> '+esc(p.note||'—')+'</div></div>'+
+   (p.proof_path?'<button class="btn" type="button" onclick="viewProof(\''+esc(p.proof_path)+'\')">🖼 Xem ảnh chuyển khoản</button>':'<div class="muted" style="margin-top:8px">Không có ảnh chứng từ.</div>')+
+   (pending?'<div class="credit"><input id="coin-'+p.id+'" type="number" min="1" step="1" value="'+Math.max(0,Number(p.requested_coins||0))+'" placeholder="Coin cộng"><input id="note-'+p.id+'" placeholder="Ghi chú Admin, ví dụ: Đã kiểm tra giao dịch MB"><button class="btn primary" onclick="approvePayment(\''+p.id+'\',\''+userId+'\')">✅ Xác nhận & cộng Coin</button></div><div class="actions" style="margin-top:8px"><button class="btn danger" onclick="rejectPayment(\''+p.id+'\')">❌ Từ chối yêu cầu</button></div>':'')+
+   '</div>';
+ }
+ window.viewProof=async path=>{const {data,error}=await sb.storage.from('member-payment-proofs').createSignedUrl(path,600);if(error){msg('Không mở được ảnh chứng từ: '+error.message,true);return}window.open(data.signedUrl,'_blank','noopener')};
+ window.approvePayment=async(pid,uid)=>{const coins=Number($('coin-'+pid)?.value||0);const note=$('note-'+pid)?.value||'Admin xác nhận thanh toán';if(!Number.isInteger(coins)||coins<=0){msg('Số Coin phải là số nguyên dương.',true);return}if(!confirm('Xác nhận giao dịch và cộng '+coins.toLocaleString('vi-VN')+' Coin cho thành viên này?'))return;const {data,error}=await sb.rpc('apple_seed_admin_credit_coins',{p_user_id:uid,p_delta:coins,p_note:note,p_payment_request_id:pid});if(error){msg('Cộng Coin lỗi: '+error.message,true);return}msg('✅ Đã xác nhận thanh toán. Số dư mới: '+Number(data).toLocaleString('vi-VN')+' Coin.');await openMember(uid);await load()};
+ window.rejectPayment=async pid=>{const reason=prompt('Lý do từ chối:','Chưa xác minh được giao dịch');if(reason===null)return;const {error}=await sb.from('member_payment_requests').update({status:'rejected',rejection_reason:reason,reviewed_at:new Date().toISOString()}).eq('id',pid).eq('status','pending');if(error){msg('Từ chối lỗi: '+error.message,true);return}msg('Đã từ chối yêu cầu nạp.');await load()};
+ function close(){ $('modal').classList.remove('open') }
+ $('close').onclick=close;$('modal').addEventListener('click',e=>{if(e.target===$('modal'))close()});
+ $('refresh').onclick=load;let timer; $('search').oninput=()=>{clearTimeout(timer);timer=setTimeout(load,300)};
+ $('logout').onclick=async()=>{await sb.auth.signOut();location.reload()};
+ $('loginBtn').onclick=async()=>{const {error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error){$('loginMsg').textContent=error.message;return}await boot()};
+ async function boot(){if(!(await isAdmin())){await sb.auth.signOut();$('loginMsg').textContent='Tài khoản này không có quyền Admin.';return}$('login').style.display='none';$('app').style.display='block';await load()}
+ sb.auth.getSession().then(async r=>{if(r.data.session)await boot()});
+ window.openMember=openMember;
+})();
+</script>
+</body></html>
