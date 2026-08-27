@@ -58,7 +58,7 @@ h1,h2,h3,p{margin-top:0}.top h1{margin-bottom:5px}.muted{color:#667085;font-size
 .price-cost{color:#b45309;font-weight:800;background:#fff7ed;padding:3px 7px;border-radius:7px;display:inline-block}
 .price-replacement{color:#7c3aed;font-weight:850}.price-sale{color:#047857;font-weight:800;background:#ecfdf3;padding:3px 7px;border-radius:7px;display:inline-block}
 </style>
-<!-- STABLE GUARD: configuration snapshot + icon picker; website deployment rollback remains backend-controlled. -->
+<!-- STABLE GUARD: website-wide GitHub commit snapshot + rollback request; shop data is never rolled back. -->
 </head>
 <body>
 <div id="login" class="panel" style="max-width:460px;margin:90px auto">
@@ -898,82 +898,172 @@ async function ensureStableSnapshot(){
   if(snap?.pages?.length && Array.isArray(snap.parts))return;
   await saveStablePartSnapshot('Stable đầu tiên');
 }
+let WEBSITE_STABLE = null;
+const STABLE_REPOSITORY='Totrungtv/appleseed-website';
+const STABLE_BRANCH='main';
+
+async function fetchWebsiteStableSnapshots(){
+  const r=await sb.from('stable_guard_snapshots')
+    .select('id,repository,branch,commit_sha,label,created_at,metadata')
+    .eq('repository',STABLE_REPOSITORY)
+    .eq('branch',STABLE_BRANCH)
+    .order('created_at',{ascending:false})
+    .limit(20);
+  if(r.error)throw r.error;
+  return r.data||[];
+}
+
+async function getWebsiteMainCommit(){
+  const res=await fetch('https://api.github.com/repos/Totrungtv/appleseed-website/commits/main',{
+    headers:{'Accept':'application/vnd.github+json'}
+  });
+  if(!res.ok)throw new Error('Không đọc được phiên bản main trên GitHub ('+res.status+').');
+  const data=await res.json();
+  if(!data?.sha)throw new Error('GitHub không trả về commit hiện tại.');
+  return {sha:data.sha,message:data.commit?.message||'',date:data.commit?.author?.date||data.commit?.committer?.date||null};
+}
+
+async function saveWebsiteStableSnapshot(label='Stable thủ công'){
+  try{
+    setStableStatus('Đang chốt Stable…','busy');
+    const commit=await getWebsiteMainCommit();
+    const user=(await sb.auth.getUser()).data?.user;
+    if(!user?.id)throw new Error('Phiên đăng nhập đã hết hạn.');
+    const payload={
+      repository:STABLE_REPOSITORY,
+      branch:STABLE_BRANCH,
+      commit_sha:commit.sha,
+      label,
+      created_by:user.id,
+      metadata:{commit_message:commit.message,commit_date:commit.date,source:'shop-admin'}
+    };
+    const r=await sb.from('stable_guard_snapshots').upsert(payload,{onConflict:'repository,branch,commit_sha'}).select().single();
+    if(r.error)throw r.error;
+    WEBSITE_STABLE=r.data;
+    updateStableGuard();
+    return r.data;
+  }catch(e){
+    setStableStatus('Chốt Stable thất bại','warn');
+    console.error('Website Stable snapshot error',e);
+    alert('❌ Không chốt được Stable website: '+(e?.message||e));
+    updateStableGuard();
+    return null;
+  }
+}
+
+async function ensureWebsiteStableSnapshot(){
+  try{
+    const rows=await fetchWebsiteStableSnapshots();
+    if(rows.length){
+      WEBSITE_STABLE=rows[0];
+      updateStableGuard();
+      return rows[0];
+    }
+    return await saveWebsiteStableSnapshot('Stable website đầu tiên');
+  }catch(e){
+    console.error('Stable website init:',e);
+    setStableStatus('Chưa có Stable website','warn');
+    updateStableGuard();
+    return null;
+  }
+}
+
 function updateStableGuard(){
   const t=document.getElementById('stableGuardText'), s=document.getElementById('stableGuardStatus');
-  const snap=getStablePartSnapshot();
-  if(snap){
-    const d=new Date(snap.savedAt);
-    t.textContent=`Stable gần nhất: ${d.toLocaleString('vi-VN')} · ${snap.parts?.length||0} linh kiện · ${snap.pages?.length||0} trang. Thêm/sửa thành công sẽ tự chốt Stable mới.`;
-    s.textContent='✅ Stable đã lưu'; s.className='stable-ok';
+  if(!t||!s)return;
+  if(WEBSITE_STABLE){
+    const d=new Date(WEBSITE_STABLE.created_at);
+    const sha=String(WEBSITE_STABLE.commit_sha||'').slice(0,7);
+    t.textContent='Stable website gần nhất: '+d.toLocaleString('vi-VN')+' · commit '+sha+' · '+(WEBSITE_STABLE.label||'Stable')+'. Khi rollback, toàn bộ mã website trên main sẽ quay về đúng mốc này; dữ liệu cửa hàng không bị rollback.';
+    s.textContent='✅ Stable website đã lưu'; s.className='stable-ok';
   }else{
-    t.textContent='Chưa có mốc Stable. Hệ thống sẽ tự tạo khi tải dữ liệu linh kiện.';
+    t.textContent='Chưa có mốc Stable website. Hệ thống sẽ tự chốt phiên bản hiện tại.';
     s.textContent='⚠️ Chưa có Stable'; s.className='stable-warn';
   }
 }
-async function restoreStablePartSnapshot(){
-  const snap=getStablePartSnapshot();
-  if(!snap?.pages?.length || !Array.isArray(snap.parts)){alert('Chưa có bản Stable đầy đủ để khôi phục.');return}
-  if(!confirm(`Khôi phục toàn bộ bảng LINH KIỆN về bản Stable gần nhất?\n\n• ${snap.parts.length} linh kiện\n• ${snap.pages.length} trang\n• ${new Date(snap.savedAt).toLocaleString('vi-VN')}\n\nCác thay đổi SAU mốc này sẽ bị đưa về bản Stable.`))return;
-  const oldPages=partPages.map(x=>({...x}));
+
+async function showWebsiteStableHistory(){
   try{
-    setStableStatus('Đang khôi phục…','busy');
-    // Restore category metadata conservatively.
-    const dbCats=await sb.from('shop_part_categories').select('*').order('id',{ascending:true});
-    if(!dbCats.error){
-      for(const p of snap.pages){
-        if(String(p.id||'').startsWith('local-'))continue;
-        const r=await sb.from('shop_part_categories').update({name:p.name,icon:p.icon||'🧩',sort_order:Number(p.sort_order)||0,active:p.active!==false}).eq('id',p.id);
-        if(r.error)throw r.error;
-      }
-      for(const p of snap.pages.filter(x=>String(x.id||'').startsWith('local-'))){
-        const exists=(dbCats.data||[]).some(c=>c.name===p.name);
-        if(!exists){
-          const r=await sb.from('shop_part_categories').insert({name:p.name,icon:p.icon||'🧩',sort_order:Number(p.sort_order)||0,active:true});
-          if(r.error)console.warn('Category restore insert:',r.error);
-        }
-      }
-    }
-    // Restore shop_parts. Keep the same IDs where possible; re-create missing rows.
-    const current=await sb.from('shop_parts').select('*').order('id',{ascending:true}).limit(5000);
-    if(current.error)throw current.error;
-    const wantedIds=new Set(snap.parts.map(x=>Number(x.id)).filter(Number.isFinite));
-    for(const row of snap.parts){
-      const payload={name:row.name||'',sku:row.sku||'',category:row.category||'Linh kiện khác',device_model:row.device_model||UNKNOWN_MODEL_LABEL,status:row.status||'in_stock',quantity:Number(row.quantity||0),cost_price:Number(row.cost_price||0),sale_price:Number(row.sale_price||0),replacement_price:Number(row.replacement_price||0),note:row.note||''};
-      if(row.id!=null){
-        const r=await sb.from('shop_parts').update(payload).eq('id',row.id);
-        if(r.error)throw r.error;
-      }else{
-        const r=await sb.from('shop_parts').insert(payload);
-        if(r.error)throw r.error;
-      }
-    }
-    for(const row of (current.data||[])){
-      if(row.id!=null && !wantedIds.has(Number(row.id))){
-        const r=await sb.from('shop_parts').delete().eq('id',row.id);
-        if(r.error)throw r.error;
-      }
-    }
-    partPages=snap.pages.map(x=>({...x}));
-    localStorage.setItem('appleSeedPartPages',JSON.stringify(partPages));
-    activePartPage='iPhone';
-    await loadPartPages();
-    await loadParts();
-    updateStableGuard();
-    alert('✅ Đã khôi phục bảng linh kiện về bản Stable.\n\nDữ liệu trong mốc Stable đã được phục hồi.');
+    const rows=await fetchWebsiteStableSnapshots();
+    if(!rows.length){alert('Chưa có lịch sử Stable website.');return}
+    const html=rows.map((x,i)=>{
+      const d=new Date(x.created_at).toLocaleString('vi-VN');
+      const sha=String(x.commit_sha||'').slice(0,12);
+      return '<div class="listitem"><b>'+(i===0?'🟢 ':'')+esc(x.label||'Stable')+'</b><div class="small muted">'+esc(d)+' · commit '+esc(sha)+'</div><div class="small muted">'+esc(x.metadata?.commit_message||'')+'</div></div>';
+    }).join('');
+    openModal('🛡️ Lịch sử Stable website','<div class="notice">Mỗi mốc Stable là một commit thật của toàn bộ mã website trên GitHub. Rollback không xóa dữ liệu khách hàng, sửa chữa, kho, thu chi hoặc bảo hành.</div><div class="listbox">'+html+'</div>');
+  }catch(e){alert('Không đọc được lịch sử Stable: '+(e?.message||e));}
+}
+
+async function requestWebsiteStableRollback(){
+  try{
+    const rows=await fetchWebsiteStableSnapshots();
+    const snap=rows[0];
+    if(!snap){alert('Chưa có bản Stable website để khôi phục.');return}
+    WEBSITE_STABLE=snap;
+    const d=new Date(snap.created_at).toLocaleString('vi-VN');
+    const sha=String(snap.commit_sha||'');
+    const ok=confirm('⚠️ KHÔI PHỤC TOÀN BỘ WEBSITE?\\n\\n'+
+      'Stable: '+(snap.label||'Stable')+'\\n'+
+      'Thời điểm: '+d+'\\n'+
+      'Commit: '+sha.slice(0,12)+'\\n\\n'+
+      'Toàn bộ file website trên main sẽ quay về đúng mốc Stable.\\n'+
+      'Dữ liệu Supabase của khách hàng, sửa chữa, kho, thu chi, bảo hành... KHÔNG bị xóa.\\n\\n'+
+      'GitHub Actions sẽ thực hiện rollback tự động trong tối đa khoảng 5 phút.');
+    if(!ok)return;
+    const user=(await sb.auth.getUser()).data?.user;
+    if(!user?.id)throw new Error('Phiên đăng nhập đã hết hạn.');
+    const r=await sb.from('stable_guard_requests').insert({
+      snapshot_id:snap.id,
+      requested_by:user.id,
+      status:'pending',
+      message:'Yêu cầu rollback toàn bộ website về '+sha
+    }).select('id').single();
+    if(r.error)throw r.error;
+    setStableStatus('Đang chờ rollback…','busy');
+    document.getElementById('stableGuardText').textContent='⏳ Đã gửi yêu cầu rollback toàn website về Stable '+sha.slice(0,12)+'. GitHub Actions sẽ xử lý tự động.';
+    await pollWebsiteRollback(r.data.id);
   }catch(e){
-    partPages=oldPages;
-    setStableStatus('Khôi phục thất bại','warn');
-    alert('❌ Không thể khôi phục Stable: '+(e?.message||e));
+    setStableStatus('Rollback thất bại','warn');
+    alert('❌ Không tạo được yêu cầu rollback: '+(e?.message||e));
     updateStableGuard();
   }
 }
-async function commitCurrentPartsStable(){
-  const ok=await saveStablePartSnapshot('Stable chốt thủ công');
-  if(ok)alert('✅ Đã chốt toàn bộ dữ liệu linh kiện hiện tại thành bản Stable mới.');
-  else alert('❌ Không lưu được bản Stable.');
+
+async function pollWebsiteRollback(requestId){
+  const started=Date.now();
+  while(Date.now()-started<8*60*1000){
+    await new Promise(resolve=>setTimeout(resolve,10000));
+    const r=await sb.from('stable_guard_requests')
+      .select('status,message,error_message,result_commit_sha,processed_at')
+      .eq('id',requestId).maybeSingle();
+    if(r.error)continue;
+    if(!r.data)continue;
+    if(r.data.status==='succeeded'){
+      setStableStatus('Website đã rollback','ok');
+      document.getElementById('stableGuardText').textContent='✅ Website đã được khôi phục về Stable. '+(r.data.message||'');
+      alert('✅ Đã khôi phục toàn bộ mã website về bản Stable.\\n\\nDữ liệu cửa hàng vẫn được giữ nguyên.');
+      await ensureWebsiteStableSnapshot();
+      return;
+    }
+    if(r.data.status==='failed'||r.data.status==='cancelled'){
+      setStableStatus('Rollback thất bại','warn');
+      document.getElementById('stableGuardText').textContent='❌ Rollback thất bại: '+(r.data.error_message||r.data.message||'Không rõ lỗi.');
+      alert('❌ Rollback website thất bại.\\n\\n'+(r.data.error_message||r.data.message||'Không rõ lỗi.'));
+      return;
+    }
+  }
+  setStableStatus('Đang chờ GitHub Actions…','busy');
+  document.getElementById('stableGuardText').textContent='⏳ Yêu cầu rollback vẫn đang chờ GitHub Actions xử lý. Có thể tải lại trang để xem trạng thái.';
 }
-document.getElementById('restorePartsStable')?.addEventListener('click',restoreStablePartSnapshot);
-document.getElementById('commitPartsStable')?.addEventListener('click',commitCurrentPartsStable);
+
+async function commitCurrentWebsiteStable(){
+  const snap=await saveWebsiteStableSnapshot('Stable website chốt thủ công');
+  if(snap)alert('✅ Đã chốt toàn bộ website hiện tại thành Stable mới.\\n\\nCommit: '+snap.commit_sha);
+}
+
+document.getElementById('restorePartsStable')?.addEventListener('click',requestWebsiteStableRollback);
+document.getElementById('commitPartsStable')?.addEventListener('click',commitCurrentWebsiteStable);
 
 async function openPartPageManager(){
   await loadPartPages();
@@ -1143,6 +1233,7 @@ function bindNewPartButton(){
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bindNewPartButton); else bindNewPartButton();
 updateStableGuard();
 ensureStableSnapshot().then(updateStableGuard);
+ensureWebsiteStableSnapshot().then(updateStableGuard);
 // ===== GLOBAL SEARCH =====
 const GLOBAL_SEARCH_TYPES=[
   {key:'customers',title:'👤 Khách hàng',tab:'customers',table:'customers',fields:['name','phone','address','note'],label:r=>`${r.name||''} · ${r.phone||''}`,meta:r=>r.address||r.note||'',edit:r=>`editCustomer(${JSON.stringify(r).replace(/</g,'\\u003c').replace(/'/g,'&#39;')})`},
