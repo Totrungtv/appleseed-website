@@ -136,7 +136,17 @@ body.member-guest .member-gate{
 .coin-modal-close{border:0;background:#edf3f8;color:#294764}
 </style>
 
-\n<style> .ai-parallel-result{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}.ai-real-data,.ai-analysis{padding:14px;border:1px solid #cfe2f7;border-radius:13px}.ai-real-data{background:#fff}.ai-analysis{background:#f5faff}@media(max-width:800px){.ai-parallel-result{grid-template-columns:1fr}} </style>\n
+\n<style>
+.ai-parallel-result{display:flex;flex-direction:column;gap:14px}
+.ai-real-data,.ai-analysis{padding:16px;border:1px solid #cfe2f7;border-radius:13px;width:100%;box-sizing:border-box}
+.ai-real-data{background:#fff}
+.ai-analysis{background:#f5faff}
+.ai-real-data .panic-data{max-height:360px;overflow:auto}
+@media(min-width:901px){
+  .grid > .card:first-child,
+  .grid > .card:nth-child(2){grid-column:1/-1}
+}
+</style>\n
 <style>
 .device-field{grid-column:1/-1}
 .device-field select{font-size:15px;font-weight:700;min-height:48px}
@@ -698,7 +708,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
       const ai=await callAI(['Phân tích ca sửa chữa iPhone theo nguyên tắc evidence-first.','Thiết bị: '+device,'Loại lỗi: '+fault,'PANIC LOG: '+panic,'DERIVED CODE CONTEXT: tự nhận diện các mã lỗi/sensor array dạng số thập phân trong PANIC LOG. Nếu có số nguyên dương phù hợp mã lỗi, tự tính HEX tương ứng (ví dụ 524288 = 0x80000) và dùng cả giá trị thập phân + HEX khi phân tích. Không yêu cầu người dùng tự chuyển đổi. Với mã Sensor Array, phải đối chiếu theo đúng model thiết bị và các bằng chứng trong panic/ảnh/số đo; nếu không có dữ liệu đủ để xác định ý nghĩa thì nói rõ chưa đủ bằng chứng, không bịa.','Boot current: '+boot,'Vbat / nguồn: '+vbat,'Diode / Resistance: '+diode,'I2C / SDA / SCL: '+i2c,'Trả lời tiếng Việt. Tách rõ dữ kiện, nhận định có cơ sở, dữ liệu còn thiếu, phép đo tiếp theo và thứ tự ưu tiên. Không bịa linh kiện/đường mạch. Nếu có ảnh, chỉ mô tả những gì thực sự nhìn thấy.'].join('\n'),await image('boardImage'),'boardImage');
       const reply=ai.reply;
       const bill=ai.billing;
-      result.innerHTML='<div class="ai-parallel-result"><div class="ai-real-data"><b>📋 DỮ LIỆU THỰC TẾ</b><div style="margin-top:9px;line-height:1.65"><b>Thiết bị:</b> '+esc(device||'—')+'<br><b>Loại lỗi:</b> '+esc(fault||'—')+'<br><b>PANIC LOG:</b><pre style="white-space:pre-wrap;font:inherit;margin:6px 0 0">'+esc(panic||'—')+'</pre><b>Boot:</b> '+esc(boot||'—')+'<br><b>Vbat:</b> '+esc(vbat||'—')+'<br><b>Diode/R:</b> '+esc(diode||'—')+'<br><b>I2C:</b> '+esc(i2c||'—')+'</div></div><div class="ai-analysis"><b>🧠 PHÂN TÍCH AI</b><div style="white-space:pre-wrap;line-height:1.65;margin-top:9px">'+esc(reply)+'</div></div></div><div class="muted" style="margin-top:10px">🪙 Đã trừ '+bill.cost+' Coin • Còn lại '+bill.balance+' Coin</div>';
+      result.innerHTML='<div class="ai-parallel-result"><div class="ai-real-data"><b>📋 DỮ LIỆU THỰC TẾ</b><div style="margin-top:9px;line-height:1.7"><b>Thiết bị:</b> '+esc(device||'—')+'<br><b>Loại lỗi:</b> '+esc(fault||'—')+'<br><b>PANIC LOG:</b><pre class="panic-data" style="white-space:pre-wrap;font:inherit;margin:6px 0 0">'+esc(panic||'—')+'</pre><b>Boot:</b> '+esc(boot||'—')+'<br><b>Vbat:</b> '+esc(vbat||'—')+'<br><b>Diode/R:</b> '+esc(diode||'—')+'<br><b>I2C:</b> '+esc(i2c||'—')+'</div></div><div class="ai-analysis"><b>🧠 PHÂN TÍCH AI</b><div style="white-space:pre-wrap;line-height:1.7;margin-top:9px">'+esc(reply)+'</div></div></div><div class="muted" style="margin-top:10px">🪙 Đã trừ '+bill.cost+' Coin • Còn lại '+bill.balance+' Coin</div>';
     }catch(e){
       console.error('AI Board:',e);
       if(e?.code==='INSUFFICIENT_COINS') showCoinModal(e.cost,e.balance);
