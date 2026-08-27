@@ -213,7 +213,7 @@ async function openReader(item){
    return;
  }
 
- const safe=esc(sourceUrl);
+ const safe=esc(sourceUrl); /* reader-proxy-ready */
  body.innerHTML=
    '<div class="reader-frame-wrap" id="readerFrameWrap">'+
      '<div class="reader-frame-loading"><span class="spinner"></span>&nbsp; Đang mở bài viết gốc…</div>'+
