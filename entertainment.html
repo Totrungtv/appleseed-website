@@ -67,6 +67,21 @@ main{max-width:1320px;margin:auto;padding:34px 22px 65px}.section{margin-bottom:
 @media(max-width:560px){.news-secondary{padding:10px}.news-mini{flex-basis:225px}.searchbar{margin-top:16px}.search-results{margin-top:8px}}
 /* Apple Seed Mini Arcade */
 .arcade-wrap{display:grid;grid-template-columns:250px 1fr;gap:14px}.arcade-menu,.arcade-stage{background:#fff;border:1px solid var(--line);border-radius:17px;padding:16px}.arcade-menu h3{margin:0 0 5px;font-size:16px}.arcade-menu p{margin:0;color:var(--muted);font-size:11px;line-height:1.5}.arcade-games{display:grid;gap:8px;margin-top:13px}.arcade-game-btn{border:1px solid #e0e7f1;background:#f7f9fc;border-radius:11px;padding:11px 12px;text-align:left;font-weight:900;font-size:12px;color:var(--ink);cursor:pointer}.arcade-game-btn:hover,.arcade-game-btn.active{background:#eef4ff;border-color:#bcd0ff;color:var(--blue)}.arcade-stage{min-height:500px;background:linear-gradient(180deg,#f9fbff,#fff)}.arcade-stage-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.arcade-stage-head h3{margin:0;font-size:17px}.arcade-stage-head span{font-size:10px;color:var(--muted)}.arcade-board{position:relative;margin:auto;width:min(430px,100%);min-height:390px;border-radius:18px;background:#07152e;padding:16px;overflow:hidden}.arcade-board canvas{display:block;width:100%;height:auto;aspect-ratio:1;border-radius:12px;background:#050d1c}.snake-grid{display:grid;grid-template-columns:repeat(16,1fr);width:100%;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#050d1c;touch-action:none}.snake-cell{min-width:0;min-height:0;background:#07152e;border:1px solid rgba(255,255,255,.018)}.snake-cell.snake-body{background:#2b7cff}.snake-cell.snake-head{background:#59a7ff;box-shadow:0 0 0 2px rgba(255,255,255,.25) inset}.snake-cell.snake-food{background:#ff4d6d;border-radius:50%;transform:scale(.68)}.arcade-controls{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:12px}.arcade-controls button{border:1px solid #d8e1ee;background:#fff;border-radius:10px;padding:9px 12px;font-size:11px;font-weight:900;cursor:pointer}.arcade-controls .arcade-reset{background:var(--blue);border-color:var(--blue);color:#fff}.arcade-message{margin-top:10px;text-align:center;color:var(--muted);font-size:11px;line-height:1.5}.game2048{width:min(390px,100%);margin:auto;padding:12px;border-radius:16px;background:#bbada0;display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.tile2048{aspect-ratio:1;display:grid;place-items:center;border-radius:9px;background:#cdc1b4;color:#776e65;font-size:clamp(20px,6vw,30px);font-weight:950}.tile2048.n2{background:#eee4da}.tile2048.n4{background:#ede0c8}.tile2048.n8,.tile2048.n16,.tile2048.n32,.tile2048.n64{background:#f2b179;color:#fff}.tile2048.n128,.tile2048.n256,.tile2048.n512,.tile2048.n1024,.tile2048.n2048{background:#edcf72;color:#fff;font-size:clamp(17px,5vw,26px)}.ttt{width:min(330px,100%);margin:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.ttt button{aspect-ratio:1;border:0;border-radius:14px;background:#eef3fb;color:var(--ink);font-size:42px;font-weight:950;cursor:pointer}.ttt button:hover{background:#dce8ff}.arcade-help{margin-top:12px;padding:10px 12px;border:1px dashed #d5deeb;border-radius:11px;background:#fff;color:var(--muted);font-size:10px;line-height:1.55}@media(max-width:760px){.arcade-wrap{grid-template-columns:1fr}.arcade-menu{padding:13px}.arcade-games{grid-template-columns:repeat(3,1fr)}.arcade-game-btn{padding:10px 8px;text-align:center}}@media(max-width:430px){.arcade-games{grid-template-columns:1fr 1fr}.arcade-board{padding:10px}.arcade-controls button{min-width:54px}}</style>
+<style id="apple-seed-entertainment-search-fix">
+/* Prevent the category tabs from overlapping the search box on mobile. */
+.searchbar{margin-top:22px;margin-bottom:0}
+.tabs{margin:14px auto 0;position:relative}
+.tabbar{position:relative;z-index:1}
+@media(max-width:700px){
+  .searchbar{margin-top:18px;padding:0 13px}
+  .searchbox{padding:9px;gap:8px;align-items:stretch}
+  .searchbox input{font-size:14px;padding:12px}
+  .searchbox button{padding:11px 14px;white-space:nowrap}
+  .tabs{margin:12px auto 0;padding:0 13px}
+  .tabbar{padding:7px;gap:5px}
+  .tabbar a{padding:10px 12px;font-size:12px}
+}
+</style>
 </head>
 <body>
 <header class="top"><nav class="nav">
