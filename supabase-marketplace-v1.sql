@@ -1,6 +1,6 @@
 -- APPLE SEED MARKETPLACE V1
--- Nền tảng chợ mua bán kỹ thuật: sản phẩm + gian hàng.
--- Chạy riêng trong Supabase SQL Editor. Không sửa/xóa bảng shop hiện tại.
+-- Chợ mua bán kỹ thuật: gian hàng + sản phẩm.
+-- Migration riêng, không sửa/xóa bảng shop hiện tại.
 
 create table if not exists public.marketplace_shops (
   id uuid primary key default gen_random_uuid(),
@@ -14,7 +14,8 @@ create table if not exists public.marketplace_shops (
   status text not null default 'pending'
     check (status in ('pending','active','suspended')),
   created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
+  updated_at timestamptz not null default now(),
+  unique (id, owner_id)
 );
 
 create table if not exists public.marketplace_products (
@@ -44,73 +45,60 @@ create table if not exists public.marketplace_products (
     on delete cascade
 );
 
-create index if not exists idx_marketplace_products_category
-  on public.marketplace_products(category);
-create index if not exists idx_marketplace_products_status
-  on public.marketplace_products(status);
-create index if not exists idx_marketplace_products_shop
-  on public.marketplace_products(shop_id);
-create index if not exists idx_marketplace_products_created
-  on public.marketplace_products(created_at desc);
+create index if not exists idx_marketplace_products_category on public.marketplace_products(category);
+create index if not exists idx_marketplace_products_status on public.marketplace_products(status);
+create index if not exists idx_marketplace_products_shop on public.marketplace_products(shop_id);
+create index if not exists idx_marketplace_products_created on public.marketplace_products(created_at desc);
 
 alter table public.marketplace_shops enable row level security;
 alter table public.marketplace_products enable row level security;
 
 drop policy if exists "marketplace shops public active read" on public.marketplace_shops;
 create policy "marketplace shops public active read"
-on public.marketplace_shops for select
-to anon, authenticated
+on public.marketplace_shops for select to anon, authenticated
 using (status = 'active' or owner_id = auth.uid());
 
 drop policy if exists "marketplace shops owner insert" on public.marketplace_shops;
 create policy "marketplace shops owner insert"
-on public.marketplace_shops for insert
-to authenticated
+on public.marketplace_shops for insert to authenticated
 with check (owner_id = auth.uid());
 
 drop policy if exists "marketplace shops owner update" on public.marketplace_shops;
 create policy "marketplace shops owner update"
-on public.marketplace_shops for update
-to authenticated
+on public.marketplace_shops for update to authenticated
 using (owner_id = auth.uid())
 with check (owner_id = auth.uid());
 
 drop policy if exists "marketplace shops owner delete" on public.marketplace_shops;
 create policy "marketplace shops owner delete"
-on public.marketplace_shops for delete
-to authenticated
+on public.marketplace_shops for delete to authenticated
 using (owner_id = auth.uid());
 
 drop policy if exists "marketplace products public active read" on public.marketplace_products;
 create policy "marketplace products public active read"
-on public.marketplace_products for select
-to anon, authenticated
+on public.marketplace_products for select to anon, authenticated
 using (status = 'active' or seller_id = auth.uid());
 
 drop policy if exists "marketplace products seller insert" on public.marketplace_products;
 create policy "marketplace products seller insert"
-on public.marketplace_products for insert
-to authenticated
+on public.marketplace_products for insert to authenticated
 with check (
   seller_id = auth.uid()
   and exists (
     select 1 from public.marketplace_shops s
-    where s.id = shop_id
-      and s.owner_id = auth.uid()
+    where s.id = shop_id and s.owner_id = auth.uid()
   )
 );
 
 drop policy if exists "marketplace products seller update" on public.marketplace_products;
 create policy "marketplace products seller update"
-on public.marketplace_products for update
-to authenticated
+on public.marketplace_products for update to authenticated
 using (seller_id = auth.uid())
 with check (seller_id = auth.uid());
 
 drop policy if exists "marketplace products seller delete" on public.marketplace_products;
 create policy "marketplace products seller delete"
-on public.marketplace_products for delete
-to authenticated
+on public.marketplace_products for delete to authenticated
 using (seller_id = auth.uid());
 
 create or replace function public.marketplace_set_updated_at()
@@ -121,14 +109,12 @@ begin
 end;
 $$;
 
-drop trigger if exists trg_marketplace_shops_updated_at
-  on public.marketplace_shops;
+drop trigger if exists trg_marketplace_shops_updated_at on public.marketplace_shops;
 create trigger trg_marketplace_shops_updated_at
 before update on public.marketplace_shops
 for each row execute function public.marketplace_set_updated_at();
 
-drop trigger if exists trg_marketplace_products_updated_at
-  on public.marketplace_products;
+drop trigger if exists trg_marketplace_products_updated_at on public.marketplace_products;
 create trigger trg_marketplace_products_updated_at
 before update on public.marketplace_products
 for each row execute function public.marketplace_set_updated_at();
