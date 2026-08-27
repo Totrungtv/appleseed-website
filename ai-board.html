@@ -391,9 +391,10 @@ body.member-guest .member-gate{
 <div class="field"><label>I2C / SDA / SCL</label><input placeholder="Địa chỉ / tình trạng"></div>
 </div>
 <div class="drop" id="boardImageDrop">📷<br><strong>Chọn ảnh main / schematic / boardview</strong><br><span class="muted">JPG / PNG / WEBP • ảnh sẽ được gửi cùng ca phân tích</span><input id="boardImage" type="file" accept="image/jpeg,image/png,image/webp" style="margin-top:10px"></div>
-<div class="actions"><button class="btn primary" id="analyze">⚡ PHÂN TÍCH AI</button></div></div>
+<div class="actions"><button class="btn primary" id="analyze">⚡ PHÂN TÍCH AI</button></div>
+<div id="result" class="result">Chưa phân tích.</div></div>
 
-<div class="card"><h2>🧠 AI Diagnosis</h2><div class="muted">Evidence-first • không kết luận khi thiếu dữ liệu.</div><div id="result" class="result">Chưa phân tích.</div>
+<div class="card"><h2>🧠 AI Diagnosis</h2><div class="muted">Evidence-first • Kết quả phân tích PANIC hiển thị ngay dưới nút PHÂN TÍCH AI ở khung bên trái.</div>
 <div class="result"><strong>Case Intelligence</strong><div class="case"><b>iPhone 14 Pro Max · 0x20000 · Compass</b><div class="muted">Ưu tiên compass/sensor + I2C. Cần đo và đối chiếu board tốt.</div><span class="pill">I2C</span><span class="pill">PANIC</span></div></div>
 <h2 style="margin-top:22px">📐 Schematic Intelligence</h2><div class="fields"><div class="field"><label>Tài liệu</label><select id="schematicType"><option>Schematic</option><option>Boardview / ZXW</option><option>Pinout</option><option>Ảnh main</option></select></div><div class="field"><label>Vùng / linh kiện</label><input id="schematicZone" placeholder="U5200 / I2C compass / PP_VDD"></div></div><div class="drop schematic-drop" id="schematicImageDrop">📐<br><strong>Chọn / kéo thả ảnh Schematic / Boardview vào đây</strong><br><span class="muted" id="schematicImageHint">JPG / PNG / WEBP • ảnh này sẽ được gửi riêng cho Schematic Intelligence</span><input id="schematicImage" type="file" accept="image/jpeg,image/png,image/webp" style="margin-top:10px"></div><div class="actions"><button class="btn primary" id="analyzeSchematic" type="button">📐 ANALYZE SCHEMATIC</button></div><div id="schematicResult" class="result">Chưa phân tích schematic.</div></div>
 </section>
