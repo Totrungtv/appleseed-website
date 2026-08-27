@@ -156,6 +156,18 @@ body.member-guest .member-gate{
 .panic-guide{margin:7px 0 9px;padding:10px 12px;border:1px solid #cfe3fb;border-radius:10px;background:#f5f9ff;color:#5e7592;font-size:11px;line-height:1.55;display:flex;flex-direction:column;gap:3px}
 .panic-guide strong{color:#17345c;font-size:12px}
 .panic-guide code{background:#eaf3ff;padding:1px 4px;border-radius:4px;color:#1769ff}
+.panic-live-data{margin-top:10px;padding:13px 14px;border:1px solid #cfe2f7;border-radius:13px;background:#fff;box-shadow:0 8px 24px #1e50820d}
+.panic-live-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.panic-live-head strong{display:block;color:#17345c;font-size:13px}
+.panic-live-head span{display:block;color:#647b98;font-size:11px;margin-top:3px}
+.panic-live-status{color:#278cf0!important;font-weight:800;white-space:nowrap}
+.panic-live-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.panic-live-grid>div{padding:9px 10px;border:1px solid #e1ebf6;border-radius:10px;background:#f7fbff;min-width:0}
+.panic-live-grid span{display:block;color:#647b98;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
+.panic-live-grid b{display:block;margin-top:3px;color:#10233f;font-size:12px;word-break:break-word}
+.panic-live-wide{grid-column:1/-1}
+.panic-live-wide pre{margin:4px 0 0;white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;font-size:12px;line-height:1.5;color:#10233f;max-height:180px;overflow:auto}
+@media(max-width:560px){.panic-live-grid{grid-template-columns:1fr}.panic-live-wide{grid-column:auto}}
 </style></head>
 <body class="member-guest"><main class="wrap">
 <header class="top"><div><div class="kicker">APPLE SEED • ENGINEERING LAB</div><h1>AI Board Intelligence</h1><div class="muted">YouTube miễn phí • Các công cụ kỹ thuật dành cho thành viên Apple Seed</div></div></header>
@@ -358,6 +370,20 @@ body.member-guest .member-gate{
   <span><b>⚡ Muốn AI phân tích nhanh:</b> hãy ghi <code>Hãy giúp tôi phân tích tấm ảnh phía dưới</code> và chọn ảnh main / schematic / boardview. AI sẽ ưu tiên đọc hình ảnh, đối chiếu với model máy và các dữ liệu bạn đã nhập để đưa ra hướng phân tích.</span>
 </div>
 <textarea id="panic" placeholder="Ví dụ: panic 0x20000 compass&#10;Hoặc chỉ cần nhập mã số tự nhiên, ví dụ: 524288&#10;&#10;Hoặc dán toàn bộ nội dung file panic-full... vào đây.">panic 0x20000 compass</textarea>
+<div class="panic-live-data" id="panicLiveData">
+  <div class="panic-live-head">
+    <div>
+      <strong>📋 DỮ LIỆU THỰC TẾ</strong>
+      <span>AI sẽ đọc chính xác các dữ liệu bạn nhập ở khu vực này.</span>
+    </div>
+    <span class="panic-live-status">● Đang cập nhật</span>
+  </div>
+  <div class="panic-live-grid">
+    <div><span>Thiết bị</span><b id="liveDevice">—</b></div>
+    <div><span>Loại lỗi</span><b id="liveFault">—</b></div>
+    <div class="panic-live-wide"><span>PANIC LOG / mã lỗi</span><pre id="livePanic">—</pre></div>
+  </div>
+</div>
 </div>
 <div class="field"><label>Boot current</label><input placeholder="0.080A → 0.000A"></div>
 <div class="field"><label>Vbat / nguồn</label><input placeholder="4.20V"></div>
@@ -705,7 +731,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
       const ai=await callAI(['Phân tích ca sửa chữa iPhone theo nguyên tắc evidence-first.','Thiết bị: '+device,'Loại lỗi: '+fault,'PANIC LOG: '+panic,'DERIVED CODE CONTEXT: tự nhận diện các mã lỗi/sensor array dạng số thập phân trong PANIC LOG. Nếu có số nguyên dương phù hợp mã lỗi, tự tính HEX tương ứng (ví dụ 524288 = 0x80000) và dùng cả giá trị thập phân + HEX khi phân tích. Không yêu cầu người dùng tự chuyển đổi. Với mã Sensor Array, phải đối chiếu theo đúng model thiết bị và các bằng chứng trong panic/ảnh/số đo; nếu không có dữ liệu đủ để xác định ý nghĩa thì nói rõ chưa đủ bằng chứng, không bịa.','Boot current: '+boot,'Vbat / nguồn: '+vbat,'Diode / Resistance: '+diode,'I2C / SDA / SCL: '+i2c,'Trả lời tiếng Việt. Tách rõ dữ kiện, nhận định có cơ sở, dữ liệu còn thiếu, phép đo tiếp theo và thứ tự ưu tiên. Không bịa linh kiện/đường mạch. Nếu có ảnh, chỉ mô tả những gì thực sự nhìn thấy.'].join('\n'),await image('boardImage'),'boardImage');
       const reply=ai.reply;
       const bill=ai.billing;
-      result.innerHTML='<div class="ai-parallel-result"><div class="ai-real-data"><b>📋 DỮ LIỆU THỰC TẾ</b><div style="margin-top:9px;line-height:1.7"><b>Thiết bị:</b> '+esc(device||'—')+'<br><b>Loại lỗi:</b> '+esc(fault||'—')+'<br><b>PANIC LOG:</b><pre class="panic-data" style="white-space:pre-wrap;font:inherit;margin:6px 0 0">'+esc(panic||'—')+'</pre><b>Boot:</b> '+esc(boot||'—')+'<br><b>Vbat:</b> '+esc(vbat||'—')+'<br><b>Diode/R:</b> '+esc(diode||'—')+'<br><b>I2C:</b> '+esc(i2c||'—')+'</div></div><div class="ai-analysis"><b>🧠 PHÂN TÍCH AI</b><div style="white-space:pre-wrap;line-height:1.7;margin-top:9px">'+esc(reply)+'</div></div></div><div class="muted" style="margin-top:10px">🪙 Đã trừ '+bill.cost+' Coin • Còn lại '+bill.balance+' Coin</div>';
+      result.innerHTML='<div class="ai-parallel-result"><div class="ai-analysis"><b>🧠 PHÂN TÍCH AI</b><div style="white-space:pre-wrap;line-height:1.7;margin-top:9px">'+esc(reply)+'</div></div></div><div class="muted" style="margin-top:10px">🪙 Đã trừ '+bill.cost+' Coin • Còn lại '+bill.balance+' Coin</div>';
     }catch(e){
       console.error('AI Board:',e);
       if(e?.code==='INSUFFICIENT_COINS') showCoinModal(e.cost,e.balance);
@@ -840,4 +866,24 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
 </div>
 
 <style>#appleSeedMemberChatBtn{border:1px solid #a9cdf8;background:#fff;color:#1769ff}#appleSeedMemberChatBtn:hover{background:#eef6ff}</style><script>(function(){const btn=document.getElementById('appleSeedMemberChatBtn');if(!btn)return;btn.addEventListener('click',function(){const w=window.open('member-chat.html','appleSeedMemberChat','width=1180,height=760,resizable=yes,scrollbars=yes');if(w)w.focus()})})();</script>
+<script>
+/* ===== PANIC LIVE DATA PREVIEW =====
+   Dữ liệu thực tế nằm ngay cạnh PANIC LOG để người sửa dễ kiểm tra dữ liệu trước khi gửi AI.
+*/
+(function initPanicLiveData(){
+  const $=id=>document.getElementById(id);
+  const deviceSelect=document.querySelector('.grid .card:first-child select');
+  const faultSelect=document.querySelectorAll('.grid .card:first-child select')[1];
+  const panic=$('panic'), device=$('liveDevice'), fault=$('liveFault'), panicOut=$('livePanic');
+  function sync(){
+    if(device) device.textContent=deviceSelect?.value||'—';
+    if(fault) fault.textContent=faultSelect?.value||'—';
+    if(panicOut) panicOut.textContent=panic?.value?.trim()||'—';
+  }
+  deviceSelect?.addEventListener('change',sync);
+  faultSelect?.addEventListener('change',sync);
+  panic?.addEventListener('input',sync);
+  sync();
+})();
+</script>
 </body></html>
