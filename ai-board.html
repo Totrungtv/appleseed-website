@@ -499,19 +499,78 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
     if(!/^image\/(jpeg|png|webp)$/i.test(f.type))throw new Error('Chỉ hỗ trợ JPG, PNG hoặc WEBP.');
     return await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(new Error('Không đọc được ảnh.'));r.readAsDataURL(f)});
   }
-  async function callAI(message,img=null){
-    const t=await token(), controller=new AbortController(), timer=setTimeout(()=>controller.abort(),60000);
+  async function callAI(message,img=null,inputId='boardImage'){
+    const client=window.supabaseClient;
+    if(!client) throw new Error('Chưa kết nối Supabase.');
+    const {data:sessionData,error:sessionError}=await client.auth.getSession();
+    if(sessionError) throw sessionError;
+    const session=sessionData?.session;
+    if(!session?.user?.id) throw new Error('Phiên thành viên đã hết hạn. Hãy đăng nhập lại.');
+
+    const file=$(inputId)?.files?.[0];
+    if(!file) throw new Error(inputId==='schematicImage'
+      ? 'Bạn chưa chọn ảnh schematic/boardview.'
+      : 'Bạn chưa chọn ảnh main / schematic / boardview.');
+    if(file.size>8*1024*1024) throw new Error('Ảnh quá lớn. Vui lòng chọn ảnh dưới 8 MB.');
+    if(!/^image\\/(jpeg|png|webp)$/i.test(file.type)) throw new Error('Chỉ hỗ trợ JPG, PNG hoặc WEBP.');
+
+    const safe=file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,'-');
+    const path=`pan-ai/${session.user.id}/${Date.now()}-${Math.random().toString(36).slice(2,8)}-${safe}`;
+
+    const upload=await client.storage.from('ai-schematics').upload(path,file,{
+      cacheControl:'3600',
+      upsert:false,
+      contentType:file.type
+    });
+    if(upload.error) throw upload.error;
+
+    const selects=document.querySelectorAll('.grid .card:first-child select');
+    const model=selects[0]?.value||'';
+    const boardCode=$('schematicArea')?.value?.trim()||'';
+
+    const insert=await client.from('ai_schematic_analyses').insert({
+      title:(model+' — '+(inputId==='schematicImage'?'Schematic Intelligence':'AI Board Diagnosis')).slice(0,180),
+      device_model:model,
+      board_code:boardCode,
+      notes:message,
+      file_path:path,
+      file_name:file.name,
+      mime_type:file.type,
+      ai_status:'queued',
+      created_by:session.user.id
+    }).select('id').single();
+
+    if(insert.error) throw insert.error;
+
+    const t=session.access_token;
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),60000);
     try{
       const response=await fetch(window.SUPABASE_URL+'/functions/v1/appleseed-ai',{
         method:'POST',
-        headers:{'Content-Type':'application/json','apikey':window.SUPABASE_ANON_KEY,'Authorization':'Bearer '+t},
-        body:JSON.stringify({message,source:'ai-board',mode:'member_board_diagnosis',image_data:img,page:location.pathname}),
+        headers:{
+          'Content-Type':'application/json',
+          'apikey':window.SUPABASE_ANON_KEY,
+          'Authorization':'Bearer '+t
+        },
+        body:JSON.stringify({
+          analysis_id:insert.data.id,
+          file_path:path,
+          device_model:model,
+          board_code:boardCode,
+          notes:message,
+          mime_type:file.type,
+          source:'ai-board',
+          page:location.pathname
+        }),
         signal:controller.signal
       });
-      const raw=await response.text(); let data=null; try{data=raw?JSON.parse(raw):null}catch{data=raw}
-      if(!response.ok)throw new Error((data&&typeof data==='object'&&(data.error||data.message))||'AI server lỗi HTTP '+response.status);
-      const reply=(typeof data==='string'?data:(data?.reply||data?.message||data?.content||data?.answer||'')).trim();
-      if(!reply)throw new Error('AI không trả về nội dung.');
+      const raw=await response.text();
+      let data=null;
+      try{data=raw?JSON.parse(raw):null}catch{data=raw}
+      if(!response.ok) throw new Error((data&&typeof data==='object'&&(data.error||data.message))||'AI server lỗi HTTP '+response.status);
+      const reply=(typeof data==='string'?data:(data?.analysis||data?.reply||data?.message||data?.content||data?.answer||'')).trim();
+      if(!reply) throw new Error('AI không trả về nội dung.');
       return reply;
     }finally{clearTimeout(timer)}
   }
@@ -524,7 +583,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
     if(!panic&&!boot&&!vbat&&!diode&&!i2c){result.innerHTML='<b>⚠️ Thiếu dữ liệu</b><p>Nhập PANIC log hoặc ít nhất một giá trị đo trước khi phân tích.</p>';return}
     btn.disabled=true;btn.textContent='⏳ AI đang phân tích...';result.innerHTML='<b>⏳ Đang phân tích ca kỹ thuật…</b><p class="muted">Đang gửi dữ liệu đến AI backend.</p>';
     try{
-      const reply=await callAI(['Phân tích ca sửa chữa iPhone theo nguyên tắc evidence-first.','Thiết bị: '+device,'Loại lỗi: '+fault,'PANIC LOG: '+panic,'Boot current: '+boot,'Vbat / nguồn: '+vbat,'Diode / Resistance: '+diode,'I2C / SDA / SCL: '+i2c,'Trả lời tiếng Việt. Tách rõ dữ kiện, nhận định có cơ sở, dữ liệu còn thiếu, phép đo tiếp theo và thứ tự ưu tiên. Không bịa linh kiện/đường mạch. Nếu có ảnh, chỉ mô tả những gì thực sự nhìn thấy.'].join('\n'),await image());
+      const reply=await callAI(['Phân tích ca sửa chữa iPhone theo nguyên tắc evidence-first.','Thiết bị: '+device,'Loại lỗi: '+fault,'PANIC LOG: '+panic,'Boot current: '+boot,'Vbat / nguồn: '+vbat,'Diode / Resistance: '+diode,'I2C / SDA / SCL: '+i2c,'Trả lời tiếng Việt. Tách rõ dữ kiện, nhận định có cơ sở, dữ liệu còn thiếu, phép đo tiếp theo và thứ tự ưu tiên. Không bịa linh kiện/đường mạch. Nếu có ảnh, chỉ mô tả những gì thực sự nhìn thấy.'].join('\n'),await image('boardImage'),'boardImage');
       result.innerHTML='<b>🧠 Kết quả AI</b><div style="white-space:pre-wrap;line-height:1.65;margin-top:8px">'+esc(reply)+'</div>';
     }catch(e){console.error('AI Board:',e);result.innerHTML='<b>⚠️ Phân tích chưa chạy được</b><p>'+esc(e?.name==='AbortError'?'AI phản hồi quá lâu, hãy thử lại.':(e?.message||String(e)))+'</p>'}
     finally{btn.disabled=false;btn.textContent='⚡ PHÂN TÍCH AI'}
@@ -536,7 +595,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
     if(!zone&&!panic){result.innerHTML='<b>⚠️ Thiếu dữ liệu</b><p>Nhập vùng/linh kiện hoặc PANIC log trước.</p>';return}
     btn.disabled=true;btn.textContent='⏳ Đang phân tích...';result.innerHTML='<b>⏳ AI đang đọc yêu cầu schematic…</b>';
     try{
-      const reply=await callAI(['Phân tích yêu cầu schematic/boardview cho ca sửa iPhone.','Loại tài liệu: '+doc,'Vùng / linh kiện: '+zone,'PANIC LOG: '+panic,'Nêu vùng cần kiểm tra, tín hiệu/rail liên quan nếu có bằng chứng, phép đo nên làm và điều kiện kết luận. Không bịa reference designator hoặc net name chưa được cung cấp.'].join('\n'),await image('schematicImage'));
+      const reply=await callAI(['Phân tích yêu cầu schematic/boardview cho ca sửa iPhone.','Loại tài liệu: '+doc,'Vùng / linh kiện: '+zone,'PANIC LOG: '+panic,'Nêu vùng cần kiểm tra, tín hiệu/rail liên quan nếu có bằng chứng, phép đo nên làm và điều kiện kết luận. Không bịa reference designator hoặc net name chưa được cung cấp.'].join('\n'),await image('schematicImage'),'schematicImage');
       result.innerHTML='<b>📐 Kết quả Schematic Intelligence</b><div style="white-space:pre-wrap;line-height:1.65;margin-top:8px">'+esc(reply)+'</div>';
     }catch(e){console.error('Schematic AI:',e);result.innerHTML='<b>⚠️ Schematic chưa phân tích được</b><p>'+esc(e?.name==='AbortError'?'AI phản hồi quá lâu, hãy thử lại.':(e?.message||String(e)))+'</p>'}
     finally{btn.disabled=false;btn.textContent='📐 ANALYZE SCHEMATIC'}
