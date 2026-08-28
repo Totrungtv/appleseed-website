@@ -1669,7 +1669,34 @@ body.apple-seed-v4 .as4-footer-cta{width:min(1280px,100%)!important;margin:0 aut
   <link rel="stylesheet" href="homepage-v5-theme.css?v=20260828-v5">
 
 
-</head>
+<style id="homepage-reference-redesign">
+/* Apple Seed homepage — visual direction based on supplied reference */
+:root{--u1-blue:#087cff;--u1-dark:#03152e}
+body{background:#f7f9fd;color:#101827}
+.ui01-header{background:rgba(3,17,38,.96);border-bottom:1px solid rgba(255,255,255,.12)}
+.ui01-header-inner{height:72px;width:min(1280px,calc(100% - 48px))}
+.ui01-brand strong{color:#fff;font-size:16px}.ui01-brand small{color:#d4dbea}
+.ui01-nav{gap:30px}.ui01-nav a{color:#fff;font-size:12px;font-weight:800;padding:26px 0}.ui01-nav a.active:after{background:#1688ff}.ui01-nav a:hover{color:#39a1ff}
+.ui01-search{background:transparent;border:0;width:34px;padding:0}.ui01-search span{font-size:25px;color:#fff}.ui01-search input{display:none}.ui01-icon-btn{display:none}.ui01-login{background:transparent;border-color:#5c6980;color:#fff}.ui01-signup{background:#0d82ff;color:#fff}
+.ui01-hero{background:linear-gradient(115deg,#03172f 0%,#041b36 52%,#061c37 100%);padding:0 24px;min-height:468px;color:#fff}
+.ui01-hero-inner{width:min(1280px,100%);grid-template-columns:1.02fr 1.35fr;gap:20px;min-height:468px;position:relative}
+.ui01-hero-copy{padding-top:10px;z-index:2}.ui01-kicker{display:inline-block;background:rgba(15,130,255,.12);border:1px solid #0b83ff;color:#1991ff;border-radius:20px;padding:6px 12px;font-size:11px;letter-spacing:1px;margin-bottom:12px}
+.ui01-hero-copy h1{font-size:39px;line-height:1.08;letter-spacing:-1.5px;color:#fff;margin:0 0 18px}.ui01-hero-copy h1 em{color:#1688ff}
+.ui01-hero-copy p{max-width:560px;color:#e4ebf5;font-size:14px;line-height:1.65;margin:0 0 25px}
+.ui01-actions{gap:12px}.ui01-primary,.ui01-secondary{height:50px;padding:0 24px;border-radius:8px;font-size:13px}.ui01-primary{background:#087cff;box-shadow:0 10px 24px rgba(8,124,255,.25)}.ui01-secondary{background:transparent;border:1px solid #63718a;color:#fff}
+.ui01-trust{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:34px}.ui01-trust>div{display:grid;grid-template-columns:32px 1fr;column-gap:8px;align-items:center;font-size:10px}.ui01-trust span{grid-row:1/3;width:30px;height:30px;border:1px solid #41526e;border-radius:50%;display:grid;place-items:center;color:#fff}.ui01-trust b{font-size:10px}.ui01-trust small{color:#aab7c9;font-size:9px}
+.ui01-phones{height:468px;align-items:flex-end;justify-content:flex-end}.ui01-real-phone-art img{width:100%!important;max-width:700px!important;height:auto!important;max-height:455px!important;object-fit:contain!important;object-position:right bottom!important;filter:drop-shadow(0 24px 25px rgba(0,0,0,.28))!important}
+.ui01-lab{display:none!important}
+.ui01-featured{background:#f7f9fd;padding:28px 24px 42px}.ui01-featured-heading{text-align:center;margin:0 auto 20px}.ui01-featured-heading>span{color:#087cff;font-size:12px;font-weight:900}.ui01-featured-heading h2{margin:4px 0 3px;font-size:26px;color:#111827}.ui01-featured-heading p{margin:0;color:#687386;font-size:12px}
+.ui01-service-strip{width:min(1188px,100%);margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:14px;background:transparent;border:0;box-shadow:none;overflow:visible}
+.ui01-service-strip a{min-height:210px;padding:14px 12px 15px;background:#fff;border:1px solid #e7ebf2;border-radius:12px;box-shadow:0 8px 22px rgba(31,48,79,.07);display:flex;flex-direction:column;align-items:center;transition:.2s}.ui01-service-strip a:hover{transform:translateY(-4px);box-shadow:0 14px 30px rgba(31,48,79,.12)}.ui01-service-strip a:last-child{border-right:1px solid #e7ebf2}
+.ui01-service-strip span{width:100%;height:92px;display:flex;align-items:center;justify-content:center;color:initial}.ui01-service-strip span img{width:92px;height:118px;object-fit:contain;display:block}.ui01-service-strip b{font-size:14px;margin-top:4px}.ui01-service-strip small{font-size:10px;line-height:1.45;color:#748096;min-height:30px;margin-top:7px}.ui01-service-strip em{font-style:normal;color:#087cff;font-size:10px;font-weight:800;margin-top:auto;padding-top:10px}
+.ui01-dashboard,.ui01-content-grid{width:min(1188px,calc(100% - 48px))}
+.ui01-footer{background:#03172f}
+.chat-btn{background:#fff!important;border:3px solid #167cff!important;box-shadow:0 8px 24px rgba(0,0,0,.22)!important;width:62px!important;height:62px!important}.chat-btn img{width:52px!important;height:58px!important}
+@media(max-width:1000px){.ui01-nav{gap:15px}.ui01-nav a{font-size:10px}.ui01-hero-inner{grid-template-columns:1fr 1fr}.ui01-hero-copy h1{font-size:32px}.ui01-trust{grid-template-columns:1fr 1fr}.ui01-service-strip{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:650px){.ui01-header-inner{height:auto;min-height:72px;flex-wrap:wrap;padding:8px 0}.ui01-nav{order:3;overflow-x:auto;width:100%;justify-content:flex-start}.ui01-nav a{padding:10px 0}.ui01-hero{padding:25px 18px 0}.ui01-hero-inner{grid-template-columns:1fr;min-height:0}.ui01-hero-copy{padding:0}.ui01-hero-copy h1{font-size:31px}.ui01-trust{grid-template-columns:1fr 1fr}.ui01-phones{height:auto}.ui01-real-phone-art img{max-height:300px!important}.ui01-service-strip{grid-template-columns:1fr 1fr}.ui01-service-strip a{min-height:205px}.ui01-featured{padding-left:14px;padding-right:14px}}
+</style></head>
 
 <header class="ui01-header">
   <div class="ui01-header-inner">
@@ -1678,13 +1705,13 @@ body.apple-seed-v4 .as4-footer-cta{width:min(1280px,100%)!important;margin:0 aut
       <span><strong>APPLE SEED</strong><small>REPAIR &amp; TECHNOLOGY</small></span>
     </a>
     <nav class="ui01-nav" aria-label="Điều hướng">
-      <a href="./index.html" class="active">Trang chủ</a>
-      <a href="#dich-vu">Dịch vụ⌄</a>
-      <a href="#homeRenderer">Bài viết</a>
-      <a href="#ky-thuat">Cộng đồng</a>
-      <a href="./ai-board.html">AI Assistant</a>
-      <a href="./entertainment.html">Entertainment</a>
-      <a href="#lien-he">Về chúng tôi</a>
+      <a href="./index.html" class="active">TRANG CHỦ</a>
+      <a href="#dich-vu">DỊCH VỤ</a>
+      <a href="#san-pham">BẢNG GIÁ</a>
+      <a href="#homeRenderer">KHO HỌC</a>
+      <a href="./ai-board.html">AI BOARD</a>
+      <a href="#ky-thuat">DIỄN ĐÀN</a>
+      <a href="#memberAuthModal" onclick="document.getElementById('memberHomeLoginBtn')?.click();return false;">THÀNH VIÊN</a>
     </nav>
     <div class="ui01-header-tools">
       <label class="ui01-search"><span>⌕</span><input type="search" placeholder="Tìm kiếm..." aria-label="Tìm kiếm"></label>
@@ -1703,14 +1730,19 @@ body.apple-seed-v4 .as4-footer-cta{width:min(1280px,100%)!important;margin:0 aut
   <section class="ui01-hero" aria-label="Apple Seed Engineering Center">
     <div class="ui01-hero-inner">
       <div class="ui01-hero-copy">
-        <span class="ui01-kicker">APPLE SEED — ENGINEERING CENTER</span>
-        <h1>Không chỉ sửa iPhone.<br><em>Chẩn đoán đúng lỗi.</em></h1>
-        <p>Trung tâm kỹ thuật Apple Seed — nơi Member có thể tra cứu kỹ thuật, dùng công cụ chuyên môn và đặt lịch ngay trên một giao diện.</p>
+        <span class="ui01-kicker">APPLE SEED</span>
+        <h1>Trung tâm sửa chữa iPhone<br><em>Uy tín - Chuyên sâu - Tận tâm</em></h1>
+        <p>Apple Seed chuyên sửa chữa iPhone với đội ngũ kỹ thuật viên giàu kinh nghiệm, linh kiện chính hãng và quy trình sửa chữa minh bạch.</p>
         <div class="ui01-actions">
-          <a href="./ai-board.html" class="ui01-primary">⚙ AI Engineering</a>
-          <a href="./booking.html" class="ui01-secondary">▣ Đặt lịch sửa chữa</a>
+          <a href="#dich-vu" class="ui01-primary">Xem dịch vụ&nbsp; →</a>
+          <a href="./booking.html" class="ui01-secondary">▣ &nbsp;Đặt lịch ngay</a>
         </div>
-        <div class="ui01-quick-tags"><a href="#ky-thuat">⌕ Chẩn đoán</a><a href="#homeRenderer">△ PANIC</a><a href="#homeRenderer">⌁ Schematic</a><a href="./products.html">▦ Tools</a></div>
+        <div class="ui01-trust">
+          <div><span>♙</span><b>Kỹ thuật viên chuyên nghiệp</b><small>Kinh nghiệm 10+ năm</small></div>
+          <div><span>⚙</span><b>Lin kiện chính hãng</b><small>Cam kết chất lượng</small></div>
+          <div><span>♢</span><b>Bảo hành uy tín</b><small>Hỗ trợ dài hạn</small></div>
+          <div><span>▣</span><b>Sửa chữa lấy liền</b><small>Tiết kiệm thời gian</small></div>
+        </div>
       </div>
       <div class="ui01-phones ui01-real-phone-art" aria-label="Apple Seed iPhone showcase">
         <img src="./assets/ui01-hero-phones.jpg?v=20260828-real-phones" alt="Ba điện thoại iPhone Apple Seed" loading="eager" decoding="async" fetchpriority="high">
@@ -1723,15 +1755,15 @@ body.apple-seed-v4 .as4-footer-cta{width:min(1280px,100%)!important;margin:0 aut
     </div>
   </section>
 
-  <section class="ui01-service-strip" id="dich-vu" aria-label="Dịch vụ">
-    <a href="#dich-vu"><span>▱</span><b>Màn hình</b><small>Thay màn hình</small></a>
-    <a href="#dich-vu"><span>⌁</span><b>Pin</b><small>Thay pin chính hãng</small></a>
-    <a href="#dich-vu"><span>◉</span><b>Face ID</b><small>Sửa Face ID</small></a>
-    <a href="#dich-vu"><span>▣</span><b>Camera</b><small>Sửa camera</small></a>
-    <a href="#ky-thuat"><span>✣</span><b>Mainboard</b><small>Sửa chữa main</small></a>
-    <a href="#homeRenderer"><span>◈</span><b>Nâng cấp</b><small>Phần mềm – iOS</small></a>
-    <a href="#homeRenderer"><span>▤</span><b>Dữ liệu</b><small>Khôi phục dữ liệu</small></a>
-    <a href="#homeRenderer"><span>⁙</span><b>Khác</b><small>Các dịch vụ khác</small></a>
+  <section class="ui01-featured" id="dich-vu" aria-label="Dịch vụ nổi bật">
+    <div class="ui01-featured-heading"><span>DỊCH VỤ NỔI BẬT</span><h2>Chúng tôi cung cấp</h2><p>Các dịch vụ sửa chữa iPhone chuyên nghiệp với chất lượng tốt nhất</p></div>
+    <div class="ui01-service-strip">
+      <a href="#dich-vu"><span><img src="./assets/apple-seed-robot.svg" alt=""></span><b>Sửa chữa iPhone</b><small>Sửa chữa các lỗi phần cứng, phần mềm cho tất cả dòng iPhone.</small><em>Xem chi tiết&nbsp; →</em></a>
+      <a href="#dich-vu"><span><img src="./assets/apple-seed-robot.svg" alt=""></span><b>Thay pin chính hãng</b><small>Pin chính hãng Apple, bảo hành lên đến 12 tháng.</small><em>Xem chi tiết&nbsp; →</em></a>
+      <a href="#dich-vu"><span><img src="./assets/apple-seed-robot.svg" alt=""></span><b>Thay màn hình</b><small>Màn hình chính hãng, hiển thị sắc nét, cảm ứng mượt mà.</small><em>Xem chi tiết&nbsp; →</em></a>
+      <a href="#dich-vu"><span><img src="./assets/apple-seed-robot.svg" alt=""></span><b>Mở khóa iCloud</b><small>Hỗ trợ mở khóa iCloud chính chủ, an toàn, uy tín.</small><em>Xem chi tiết&nbsp; →</em></a>
+      <a href="#dich-vu"><span><img src="./assets/apple-seed-robot.svg" alt=""></span><b>Sửa Face ID</b><small>Sửa chữa Face ID, TrueDepth chuyên sâu.</small><em>Xem chi tiết&nbsp; →</em></a>
+    </div>
   </section>
 
   <section class="ui01-dashboard" id="ky-thuat">
