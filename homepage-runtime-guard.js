@@ -16,59 +16,7 @@
   }
 
   function fallbackHtml(){
-    return `
-      <section class="hero as-home-fallback" id="gioi-thieu" ${FALLBACK_MARK}="1">
-        <div class="hero-inner">
-          <div>
-            <img class="shop-photo" src="shop.jpg"
-                 alt="Cửa hàng Apple Seed Trà Vinh - trung tâm sửa chữa iPhone"
-                 onerror="this.style.display='none'">
-          </div>
-          <div>
-            <div class="eyebrow">APPLE SEED • TRÀ VINH</div>
-            <h1>Trung tâm sửa chữa iPhone</h1>
-            <p class="lead">Kiểm tra, chẩn đoán và sửa chữa iPhone, Face ID, main, pin, màn hình và linh kiện. Tư vấn rõ tình trạng trước khi sửa.</p>
-            <div class="as-fallback-actions">
-              <a class="cta" href="booking.html">📅 Đặt lịch sửa</a>
-              <a class="as-fallback-secondary" href="tel:0898888269">☎ Gọi Apple Seed</a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="services as-home-fallback" id="dich-vu" ${FALLBACK_MARK}="1">
-        <div class="section-kicker">DỊCH VỤ CỐT LÕI</div>
-        <h2>Sửa iPhone chuyên sâu</h2>
-        <div class="service-grid">
-          <article class="service-card"><div class="service-icon">📱</div><div><h3>Sửa iPhone</h3><p>Kiểm tra lỗi phần cứng, phần mềm và tư vấn phương án sửa.</p></div></article>
-          <article class="service-card"><div class="service-icon">🔧</div><div><h3>Sửa main</h3><p>Chẩn đoán mất nguồn, chạm nguồn, mất áp và lỗi board.</p></div></article>
-          <article class="service-card"><div class="service-icon">🔐</div><div><h3>Face ID</h3><p>Kiểm tra và xử lý lỗi Face ID theo tình trạng máy.</p></div></article>
-          <article class="service-card"><div class="service-icon">🔋</div><div><h3>Pin • Màn • Camera</h3><p>Thay thế linh kiện phù hợp, báo rõ trước khi thực hiện.</p></div></article>
-        </div>
-      </section>
-
-      <section class="contact as-home-fallback" id="lien-he" ${FALLBACK_MARK}="1">
-        <div class="contact-inner">
-          <div class="contact-card">
-            <div class="section-kicker">APPLE SEED • TRÀ VINH</div>
-            <h2>Đến Apple Seed</h2>
-            <p>292 Phạm Ngũ Lão, Trà Vinh. Có thể gọi trực tiếp hoặc mở bản đồ để đi đến cửa hàng.</p>
-            <div class="contact-list">
-              <a href="tel:0898888269">☎ 0898888269</a>
-              <a href="https://maps.app.goo.gl/QEWg9owQidGW5ZyG7" target="_blank" rel="noopener noreferrer">🗺 Mở Google Maps</a>
-              <a href="booking.html">📅 Đặt lịch trước</a>
-            </div>
-          </div>
-          <div class="map-card">
-            <div class="map-title">📍 Vị trí Apple Seed Trà Vinh</div>
-            <iframe title="Google Maps Apple Seed Trà Vinh"
-              src="https://www.google.com/maps?q=AppleSeed%20292%20Ph%E1%BA%A1m%20Ng%C5%A9%20L%C3%A3o%20Tr%C3%A0%20Vinh&output=embed"
-              loading="eager" referrerpolicy="no-referrer-when-downgrade"
-              allowfullscreen></iframe>
-          </div>
-        </div>
-      </section>
-    `;
+    return '';
   }
 
   function addStyles(){
@@ -96,12 +44,9 @@
   function renderFallback(reason){
     const root=document.getElementById(ROOT_ID);
     if(!root) return false;
-    if(root.querySelector("["+FALLBACK_MARK+"]")) return true;
-
-    root.innerHTML=fallbackHtml();
-    addStyles();
-    root.dataset.appleSeedHomeFallbackReason=reason||"unknown";
-    document.dispatchEvent(new CustomEvent("appleSeedHomeFallbackReady"));
+    root.innerHTML='';
+    root.dataset.appleSeedHomeFallbackReason=reason||'unknown';
+    document.dispatchEvent(new CustomEvent('appleSeedHomeFallbackReady'));
     return true;
   }
 
@@ -120,7 +65,7 @@
       const target=document.querySelector(href);
       if(!target) return;
       e.preventDefault();
-      const header=document.querySelector(".site-header");
+      const header=document.querySelector(".ui01-header");
       const offset=(header ? header.offsetHeight : 86)+8;
       const y=target.getBoundingClientRect().top+window.pageYOffset-offset;
       window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
