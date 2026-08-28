@@ -2989,6 +2989,10 @@ form.onsubmit=async e=>{
 <script id="apple-seed-inline-member-signup-js">
 (function(){
   function init(){
+    /* Mobile has its own auth fallback below. Do not move the modal box into
+       the inline panel on small screens, otherwise the fallback opens an
+       empty dark overlay while the actual form is detached from it. */
+    if(window.matchMedia && window.matchMedia('(max-width:560px)').matches)return;
     const root=document.getElementById('homeRenderer');
     const modal=document.getElementById('memberAuthModal');
     const box=document.querySelector('#memberAuthModal .member-auth-box');
