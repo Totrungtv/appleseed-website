@@ -94,9 +94,30 @@ window.setRec=async(id,statusValue)=>{const {data:{user}}=await sb.auth.getUser(
 let knowledgeRows=[];
 function bytesToDataUrl(file,maxBytes=8388608){return new Promise((resolve,reject)=>{if(!file)return resolve(null);if(file.size>maxBytes)return reject(new Error('Ảnh quá lớn. Vui lòng dùng ảnh dưới 8 MB.'));const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(new Error('Không đọc được ảnh.'));r.readAsDataURL(file);});}
 function bindChatImage(){const input=$('chatImage'),chip=$('chatImageChip'),preview=$('chatImagePreview'),clear=$('clearChatImage'),textarea=$('chatInput');if(!input||!textarea)return;const show=async file=>{try{if(!file||!/^image\/(jpeg|png|webp|gif)$/i.test(file.type))return;if(file.size>8388608)throw new Error('Ảnh quá lớn. Vui lòng dùng ảnh dưới 8 MB.');window.__chatImageData=await bytesToDataUrl(file);chip.textContent='📷 '+(file.name||'Ảnh đã dán');chip.classList.remove('hidden');clear.classList.remove('hidden');preview.innerHTML='<img class="image-preview-chat" src="'+window.__chatImageData+'" alt="Ảnh đính kèm">';preview.classList.remove('hidden');}catch(e){status(e.message,true);}};input.onchange=async()=>{await show(input.files?.[0]);input.value='';};textarea.addEventListener('paste',async e=>{const items=Array.from(e.clipboardData?.items||[]);const item=items.find(x=>x.kind==='file'&&/^image\//i.test(x.type));if(!item)return;const file=item.getAsFile();if(!file)return;e.preventDefault();await show(file);textarea.focus();});window.clearChatImage=()=>{window.__chatImageData=null;input.value='';chip.textContent='';chip.classList.add('hidden');clear.classList.add('hidden');preview.innerHTML='';preview.classList.add('hidden');};clear.onclick=window.clearChatImage;}
-async function loadKnowledge(){const box=$('knowledgeList');if(!box)return;const {data,error}=await sb.from('ai_knowledge').select('id,title,content,category,status,image_path,created_at,approved_at').order('created_at',{ascending:false}).limit(50);if(error){box.innerHTML='<p class="muted">Không tải được kho kiến thức: '+esc(error.message)+'</p>';return;}knowledgeRows=data||[];box.innerHTML=knowledgeRows.map(k=>'<article class="knowledge-item"><div class="item-head"><div><h4>'+esc(k.title)+'</h4><div class="muted">'+esc(k.category)+' · '+new Date(k.created_at).toLocaleString('vi-VN')+'</div></div><span class="badge '+(k.status==='approved'?'':'off')+'">'+esc(k.status)+'</span></div><p>'+esc(k.content.slice(0,900))+(k.content.length>900?'…':'')+'</p>'+(k.image_path?'<span class="image-chip">📷 Có ảnh</span>':'')+'<div class="item-actions">'+(k.status==='draft'?'<button class="btn primary" onclick="approveKnowledge('+k.id+')">✅ Duyệt cho AI</button>':'')+'<button class="btn danger" onclick="archiveKnowledge('+k.id+')">🗄️ Lưu trữ</button></div></article>').join('')||'<p class="muted">Kho kiến thức đang trống.</p>';}
+async function loadKnowledge(){const box=$('knowledgeList');if(!box)return;const {data,error}=await sb.from('ai_knowledge').select('id,title,content,category,status,image_path,created_at,approved_at').order('created_at',{ascending:false}).limit(50);if(error){box.innerHTML='<p class="muted">Không tải được kho kiến thức: '+esc(error.message)+'</p>';return;}knowledgeRows=data||[];box.innerHTML=knowledgeRows.map(k=>'<article class="knowledge-item"><div class="item-head"><div><h4>'+esc(k.title)+'</h4><div class="muted">'+esc(k.category)+' · '+new Date(k.created_at).toLocaleString('vi-VN')+'</div></div><span class="badge '+(k.status==='approved'?'':'off')+'">'+esc(k.status)+'</span></div><p>'+esc(k.content.slice(0,900))+(k.content.length>900?'…':'')+'</p>'+(k.image_path?'<span class="image-chip">📷 Có ảnh</span>':'')+'<div class="item-actions">'+(k.status==='draft'?'<button class="btn primary" onclick="approveKnowledge('+k.id+')">✅ Duyệt cho AI</button>':'')+'<button class="btn" onclick="archiveKnowledge('+k.id+')">🗄️ Lưu trữ</button><button class="btn danger" onclick="deleteKnowledge('+k.id+')">🗑️ Xóa tài liệu</button></div></article>').join('')||'<p class="muted">Kho kiến thức đang trống.</p>';}
 window.approveKnowledge=async id=>{const {data:{user}}=await sb.auth.getUser();const {error}=await sb.from('ai_knowledge').update({status:'approved',approved_by:user?.id||null,approved_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('id',id);if(error){status('Duyệt kiến thức lỗi: '+error.message,true);return}status('✅ Đã đưa kiến thức vào nguồn AI.');await loadKnowledge();};
 window.archiveKnowledge=async id=>{const {error}=await sb.from('ai_knowledge').update({status:'archived',updated_at:new Date().toISOString()}).eq('id',id);if(error){status('Lưu trữ lỗi: '+error.message,true);return}status('Đã lưu trữ kiến thức.');await loadKnowledge();};
+window.deleteKnowledge=async id=>{
+  const row=knowledgeRows.find(x=>x.id===id);
+  if(!row)return;
+  const name=row.title||'tài liệu này';
+  if(!confirm('XÓA VĨNH VIỄN?\n\n'+name+'\n\nThao tác này sẽ xóa mục Knowledge Base và file gốc (nếu có). Không thể hoàn tác.'))return;
+  const btns=[...document.querySelectorAll('[onclick*="deleteKnowledge('+id+')"]')];
+  btns.forEach(b=>{b.disabled=true;b.textContent='⏳ Đang xóa…';});
+  try{
+    if(row.image_path){
+      const {error:storageError}=await sb.storage.from('ai-knowledge').remove([row.image_path]);
+      if(storageError)throw new Error('Không xóa được file gốc: '+storageError.message);
+    }
+    const {error}=await sb.from('ai_knowledge').delete().eq('id',id);
+    if(error)throw error;
+    status('🗑️ Đã xóa vĩnh viễn tài liệu: '+name);
+    await loadKnowledge();
+  }catch(e){
+    status('Xóa tài liệu lỗi: '+(e?.message||String(e)),true);
+    btns.forEach(b=>{b.disabled=false;b.textContent='🗑️ Xóa tài liệu';});
+  }
+};
 function isKnowledgeImage(file){return !!file&&/^image\/(jpeg|png|webp|gif)$/i.test(file.type);}
 function isKnowledgeDocument(file){return !!file&&(/^(application\/pdf|application\/vnd\.openxmlformats-officedocument\.wordprocessingml\.document|text\/plain)$/i.test(file.type)||/\.(pdf|docx|txt)$/i.test(file.name||''));}
 async function extractKnowledgeDocument(file){
