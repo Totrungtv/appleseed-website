@@ -3302,8 +3302,95 @@ body{padding-top:72px!important}
 @media(max-width:900px){.ui01-phones{height:315px}.ui01-phone{width:125px;height:260px;border-radius:26px}.ui01-phone+.ui01-phone{margin-left:-30px}}
 @media(max-width:560px){.ui01-phones{height:285px;transform:scale(.86);transform-origin:center bottom}.ui01-phone{width:125px;height:260px}}
 
+/* UI 01 reference redesign — hero background + real phone presentation */
+.ui01-hero{
+  position:relative!important;
+  isolation:isolate;
+  background:
+    radial-gradient(900px 420px at 72% 38%,rgba(208,225,246,.62),transparent 68%),
+    radial-gradient(520px 300px at 94% 70%,rgba(119,177,226,.18),transparent 72%),
+    linear-gradient(180deg,#f7faff 0%,#eef4fb 54%,#fff 100%)!important;
+  overflow:hidden!important;
+}
+.ui01-hero:before{
+  content:"";position:absolute;inset:-8%;
+  z-index:-1;opacity:.62;
+  background:
+    radial-gradient(180px 120px at 18% 32%,rgba(255,255,255,.95),transparent 72%),
+    radial-gradient(220px 150px at 40% 18%,rgba(177,204,226,.48),transparent 70%),
+    radial-gradient(250px 170px at 78% 26%,rgba(190,211,230,.58),transparent 70%),
+    radial-gradient(210px 150px at 91% 65%,rgba(117,171,211,.34),transparent 70%),
+    linear-gradient(115deg,rgba(255,255,255,.95),rgba(223,234,244,.5),rgba(255,255,255,.8));
+  filter:blur(26px);
+  transform:scale(1.08);
+}
+.ui01-hero:after{
+  content:"";position:absolute;left:48%;right:0;bottom:0;height:48%;
+  z-index:-1;opacity:.22;
+  background:
+    linear-gradient(90deg,transparent 0 18%,rgba(120,154,184,.25) 18% 19%,transparent 19% 48%,rgba(120,154,184,.22) 48% 49%,transparent 49%),
+    radial-gradient(160px 90px at 70% 70%,rgba(56,118,170,.28),transparent 72%);
+  filter:blur(18px);
+}
+.ui01-hero-inner{
+  width:min(1390px,100%)!important;
+  min-height:440px!important;
+  grid-template-columns:minmax(0,1fr) minmax(420px,1.15fr) 250px!important;
+  gap:18px!important;
+}
+.ui01-hero-copy{position:relative;z-index:2}
+.ui01-hero-copy h1{
+  font-size:55px!important;
+  line-height:1.01!important;
+  letter-spacing:-2.8px!important;
+}
+.ui01-hero-copy p{font-size:14px!important;max-width:590px!important}
+.ui01-phones{
+  height:430px!important;
+  align-items:flex-end!important;
+  overflow:visible!important;
+  filter:drop-shadow(0 25px 25px rgba(20,43,74,.16))!important;
+}
+.ui01-real-phone-art img{
+  width:min(620px,112%)!important;
+  max-width:none!important;
+  height:auto!important;
+  max-height:425px!important;
+  object-fit:contain!important;
+  object-position:center bottom!important;
+  mix-blend-mode:multiply!important;
+  filter:contrast(1.12) saturate(1.08) drop-shadow(0 18px 22px rgba(20,43,74,.14))!important;
+  -webkit-mask-image:radial-gradient(ellipse 76% 86% at 50% 58%,#000 48%,rgba(0,0,0,.96) 62%,transparent 91%)!important;
+  mask-image:radial-gradient(ellipse 76% 86% at 50% 58%,#000 48%,rgba(0,0,0,.96) 62%,transparent 91%)!important;
+}
+.ui01-lab{
+  width:250px!important;
+  border-radius:18px!important;
+  box-shadow:0 20px 45px rgba(27,43,70,.12)!important;
+  position:relative;z-index:2;
+}
+.ui01-service-strip{
+  margin-top:-2px!important;
+}
+@media(max-width:1100px){
+  .ui01-hero-inner{grid-template-columns:1fr 1.05fr 220px!important}
+  .ui01-hero-copy h1{font-size:48px!important}
+  .ui01-real-phone-art img{width:570px!important}
+}
+@media(max-width:900px){
+  .ui01-hero-inner{grid-template-columns:1fr!important;min-height:0!important}
+  .ui01-hero-copy{order:1}
+  .ui01-phones{order:2;height:350px!important}
+  .ui01-lab{order:3;width:min(330px,100%)!important}
+  .ui01-real-phone-art img{width:min(570px,105%)!important;max-height:340px!important}
+}
+@media(max-width:560px){
+  .ui01-hero-copy h1{font-size:35px!important}
+  .ui01-phones{height:285px!important}
+  .ui01-real-phone-art img{width:430px!important;max-height:270px!important}
+}
 /* UI 01 real phone artwork */
-.ui01-real-phone-art{height:365px!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:visible!important}.ui01-real-phone-art img{display:block;width:min(560px,100%);height:auto;object-fit:contain;filter:drop-shadow(0 18px 22px rgba(26,38,63,.16))}.ui01-real-phone-art .ui01-phone{display:none!important}@media(max-width:900px){.ui01-real-phone-art{height:315px!important}.ui01-real-phone-art img{width:500px}}@media(max-width:560px){.ui01-real-phone-art{height:285px!important}.ui01-real-phone-art img{width:430px;max-width:none;transform:translateX(-3px)}}
+.ui01-real-phone-art{height:365px!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:visible!important;position:relative}.ui01-real-phone-art img{display:block;width:min(560px,100%);height:auto;max-height:350px;object-fit:contain;object-position:center;mix-blend-mode:multiply;filter:drop-shadow(0 18px 22px rgba(26,38,63,.16));transform:translateY(2px)}.ui01-real-phone-art .ui01-phone{display:none!important}@media(max-width:900px){.ui01-real-phone-art{height:315px!important}.ui01-real-phone-art img{width:500px;max-height:300px}}@media(max-width:560px){.ui01-real-phone-art{height:285px!important}.ui01-real-phone-art img{width:430px;max-width:none;max-height:270px;transform:translate(-3px,2px)}}
 </style>
 <div id="appleSeedRollbackOverlay" aria-live="polite" aria-modal="true" role="alertdialog">
   <div id="appleSeedRollbackCard">
