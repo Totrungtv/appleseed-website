@@ -645,14 +645,26 @@ function loadTikTok(id){
  },9000);
 }
 document.querySelectorAll('[data-tiktok-id]').forEach(btn=>btn.addEventListener('click',()=>loadTikTok(btn.dataset.tiktokId)));
-document.getElementById('tiktokLoad').onclick=()=>{
- const raw=document.getElementById('tiktokUrl').value.trim();
- const match=raw.match(/\/video\/(\d{8,30})/);
- if(match) loadTikTok(match[1]);
- else document.getElementById('tiktokUrl').setCustomValidity('URL TikTok chưa đúng dạng /video/ID.');
-};
-document.getElementById('tiktokUrl').addEventListener('input',e=>e.target.setCustomValidity(''));
-document.getElementById('tiktokFrame').addEventListener('load',()=>{document.getElementById('tiktokFrame').style.background='#000';document.getElementById('tiktokStatus').classList.add('ok');clearTimeout(tiktokLoadTimer)});
+/* TikTok controls are optional on this page. Some builds intentionally omit the TikTok UI,
+   so never let missing optional elements stop the rest of Entertainment from initializing. */
+const tiktokLoadBtn=document.getElementById('tiktokLoad');
+const tiktokUrlInput=document.getElementById('tiktokUrl');
+const tiktokFrameEl=document.getElementById('tiktokFrame');
+const tiktokStatusEl=document.getElementById('tiktokStatus');
+if(tiktokLoadBtn && tiktokUrlInput && tiktokFrameEl && tiktokStatusEl){
+ tiktokLoadBtn.onclick=()=>{
+   const raw=tiktokUrlInput.value.trim();
+   const match=raw.match(/\/video\/(\d{8,30})/);
+   if(match) loadTikTok(match[1]);
+   else tiktokUrlInput.setCustomValidity('URL TikTok chưa đúng dạng /video/ID.');
+ };
+ tiktokUrlInput.addEventListener('input',e=>e.target.setCustomValidity(''));
+ tiktokFrameEl.addEventListener('load',()=>{
+   tiktokFrameEl.style.background='#000';
+   tiktokStatusEl.classList.add('ok');
+   clearTimeout(tiktokLoadTimer);
+ });
+}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('#reader.open').forEach(x=>x.classList.remove('open'));document.getElementById('pClose').click();document.body.classList.remove('modal-open')}});
 async function refreshAll(){
  await Promise.allSettled([
