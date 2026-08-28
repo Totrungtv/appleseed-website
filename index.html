@@ -2468,8 +2468,8 @@ body.apple-seed-v4 .as4-footer-cta{width:min(1280px,100%)!important;margin:0 aut
           return false;
         }
 
-        const header=document.querySelector('.site-header');
-        const offset=(header?.offsetHeight||86)+8;
+        const header=document.querySelector('.as4-header');
+        const offset=(header?.offsetHeight||76)+8;
         const y=el.getBoundingClientRect().top+window.pageYOffset-offset;
 
         window.scrollTo({top:Math.max(0,y),behavior:'smooth'});
@@ -2536,8 +2536,8 @@ body.apple-seed-v4 .as4-footer-cta{width:min(1280px,100%)!important;margin:0 aut
           setTimeout(()=>{
             const el=document.querySelector(hash);
             if(el){
-              const header=document.querySelector('.site-header');
-              const offset=(header?.offsetHeight||86)+8;
+              const header=document.querySelector('.as4-header');
+              const offset=(header?.offsetHeight||76)+8;
               const y=el.getBoundingClientRect().top+window.pageYOffset-offset;
               window.scrollTo({top:Math.max(0,y),behavior:'smooth'});
             }
