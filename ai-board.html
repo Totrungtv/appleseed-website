@@ -787,7 +787,26 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
     if(!panic&&!boot&&!vbat&&!diode&&!i2c){result.innerHTML='<b>⚠️ Thiếu dữ liệu</b><p>Nhập PANIC log hoặc ít nhất một giá trị đo trước khi phân tích.</p>';return}
     btn.disabled=true;btn.textContent='⏳ AI đang phân tích...';result.innerHTML='<b>⏳ Đang phân tích ca kỹ thuật…</b><p class="muted">Đang gửi dữ liệu đến AI backend.</p>';
     try{
-      const ai=await callAI(['Phân tích ca sửa chữa iPhone theo nguyên tắc evidence-first.','Thiết bị: '+device,'Loại lỗi: '+fault,'PANIC LOG: '+panic,'DERIVED CODE CONTEXT: tự nhận diện các mã lỗi/sensor array dạng số thập phân trong PANIC LOG. Nếu có số nguyên dương phù hợp mã lỗi, tự tính HEX tương ứng (ví dụ 524288 = 0x80000) và dùng cả giá trị thập phân + HEX khi phân tích. Không yêu cầu người dùng tự chuyển đổi. Với mã Sensor Array, phải đối chiếu theo đúng model thiết bị và các bằng chứng trong panic/ảnh/số đo; nếu không có dữ liệu đủ để xác định ý nghĩa thì nói rõ chưa đủ bằng chứng, không bịa.','Boot current: '+boot,'Vbat / nguồn: '+vbat,'Diode / Resistance: '+diode,'I2C / SDA / SCL: '+i2c,'Trả lời tiếng Việt. Tách rõ dữ kiện, nhận định có cơ sở, dữ liệu còn thiếu, phép đo tiếp theo và thứ tự ưu tiên. Không bịa linh kiện/đường mạch. Nếu có ảnh, chỉ mô tả những gì thực sự nhìn thấy.'].join('\n'),await image('boardImage'),'boardImage');
+      function normalizeSensorArrayCode(v){
+  const raw=String(v??'').trim();
+  if(/^0x[0-9a-f]+$/i.test(raw)) return '0x'+raw.slice(2).toUpperCase();
+  if(/^\d+$/.test(raw)){const n=Number(raw);if(Number.isSafeInteger(n)&&n>0)return '0x'+n.toString(16).toUpperCase();}
+  return null;
+}
+function extractSensorArrayCodes(text){
+  const out=new Set();
+  const blocks=String(text||'').match(/sensor\s+array[\s\S]{0,1000}/ig)||[];
+  for(const block of blocks){
+    for(const token of block.match(/0x[0-9a-f]+|\b\d+\b/gi)||[]){
+      const code=normalizeSensorArrayCode(token);
+      if(code&&code!=='0x0')out.add(code);
+    }
+  }
+  return [...out];
+}
+const sensorCodes=extractSensorArrayCodes(panic);
+      const sensorLookup='SENSOR ARRAY CODES TO LOOK UP: '+(sensorCodes.length?sensorCodes.join(', '):'none')+'\\nMỗi mã đã được chuẩn hóa: mã 0x... giữ nguyên; số thập phân tự đổi sang HEX. Hãy dùng chính các mã này để tra Knowledge Base, không hard-code mã cụ thể.';
+      const ai=await callAI(['Phân tích ca sửa chữa iPhone theo nguyên tắc evidence-first.','Thiết bị: '+device,'Loại lỗi: '+fault,'PANIC LOG: '+panic,sensorLookup,'DERIVED CODE CONTEXT: tự nhận diện mã sensor array. Mã đã có 0x thì giữ nguyên; dãy số tự nhiên thì chuyển từng số sang HEX rồi tra. Không yêu cầu người dùng tự chuyển đổi.','Boot current: '+boot,'Vbat / nguồn: '+vbat,'Diode / Resistance: '+diode,'I2C / SDA / SCL: '+i2c,'Trả lời tiếng Việt. Tách rõ dữ kiện, nhận định có cơ sở, dữ liệu còn thiếu, phép đo tiếp theo và thứ tự ưu tiên. Không bịa linh kiện/đường mạch. Nếu có ảnh, chỉ mô tả những gì thực sự nhìn thấy.'].join('\n'),await image('boardImage'),'boardImage');
       const reply=ai.reply;
       const bill=ai.billing;
       const knowledge=ai.knowledge||[];
