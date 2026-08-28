@@ -31,7 +31,7 @@ window.__pdfjsReady=(async()=>{const m=await import('https://cdnjs.cloudflare.co
     <form id="knowledgeForm" class="form">
       <div class="row"><div class="field"><label>Tiêu đề *</label><input id="knowledgeTitle" required placeholder="Ví dụ: iPhone 14 Pro Max PANIC 0x20000 Compass"></div><div class="field"><label>Chuyên mục</label><select id="knowledgeCategory"><option value="board-repair">Board Repair</option><option value="panic">PANIC</option><option value="schematic">Schematic</option><option value="workflow">Quy trình</option><option value="general">Khác</option></select></div></div>
       <div class="field"><label>Nội dung kiến thức *</label><textarea id="knowledgeContent" placeholder="Ghi rõ hiện tượng, dữ liệu đo, nguyên nhân đã xác minh, cách xử lý và kết quả..."></textarea><div class="muted" style="margin-top:6px">Có thể nhập tay hoặc chọn tài liệu bên dưới để AI tự trích nội dung. Nếu chọn tài liệu, ô này có thể để trống.</div></div>
-      <div class="knowledge-drop"><div style="font-size:28px">📚</div><b>Nạp ảnh hoặc tài liệu cho AI</b><div class="muted">Ảnh: JPG / PNG / WEBP / GIF · Tài liệu: PDF / DOCX / TXT · tối đa 8 MB. Tài liệu sẽ được đọc và đưa nội dung vào Knowledge Base.</div><input id="knowledgeImage" type="file" accept="image/jpeg,image/png,image/webp,image/gif,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" style="margin-top:10px"><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button class="btn primary" type="button" id="analyzeKnowledgeImage" style="margin-top:10px">👁️ AI xem ảnh</button><button class="btn" type="button" id="extractKnowledgeDocument" style="margin-top:10px">📄 Đọc tài liệu</button></div></div>
+      <div class="knowledge-drop"><div style="font-size:28px">📚</div><b>Nạp ảnh hoặc tài liệu cho AI</b><div class="muted">Ảnh: JPG / PNG / WEBP / GIF · Tài liệu: PDF / DOCX / TXT · tối đa 8 MB. Tài liệu sẽ được đọc và đưa nội dung vào Knowledge Base.</div><input id="knowledgeImage" type="file" multiple accept="image/jpeg,image/png,image/webp,image/gif,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" style="margin-top:10px"><div id="knowledgeFileHint" class="muted" style="margin-top:7px">Có thể chọn nhiều PDF / DOCX / TXT cùng lúc. Mỗi tài liệu sẽ được lưu thành một mục kiến thức riêng.</div><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button class="btn primary" type="button" id="analyzeKnowledgeImage" style="margin-top:10px">👁️ AI xem ảnh</button><button class="btn" type="button" id="extractKnowledgeDocument" style="margin-top:10px">📄 Đọc tất cả tài liệu</button></div></div>
       <div id="knowledgeImagePreview" class="knowledge-preview hidden"></div>
       <div class="item-actions"><button class="btn primary" id="saveKnowledge" type="submit">🧠 Lưu kiến thức</button><button class="btn" type="button" id="clearKnowledge">Xóa form</button></div>
       <div id="knowledgeStatus" class="muted"></div>
@@ -122,41 +122,80 @@ async function extractKnowledgeDocument(file){
   throw new Error('Định dạng chưa hỗ trợ. Dùng PDF, DOCX hoặc TXT.');
 }
 $('knowledgeImage').onchange=async()=>{
-  const f=$('knowledgeImage').files?.[0],p=$('knowledgeImagePreview'),aiBtn=$('analyzeKnowledgeImage'),docBtn=$('extractKnowledgeDocument');
-  if(!f){p.classList.add('hidden');aiBtn?.classList.remove('hidden');docBtn?.classList.remove('hidden');return}
+  const files=Array.from($('knowledgeImage').files||[]),p=$('knowledgeImagePreview'),aiBtn=$('analyzeKnowledgeImage'),docBtn=$('extractKnowledgeDocument'),hint=$('knowledgeFileHint');
+  if(!files.length){p.classList.add('hidden');aiBtn?.classList.remove('hidden');docBtn?.classList.remove('hidden');if(hint)hint.textContent='Có thể chọn nhiều PDF / DOCX / TXT cùng lúc. Mỗi tài liệu sẽ được lưu thành một mục kiến thức riêng.';return}
   try{
-    if(f.size>8388608) throw new Error('File quá lớn. Vui lòng dùng file dưới 8 MB.');
-    if(isKnowledgeImage(f)){
-      const d=await bytesToDataUrl(f);p.innerHTML='<img src="'+d+'" style="width:120px;height:90px;object-fit:cover;border-radius:10px"><span class="muted">📷 '+esc(f.name)+'</span>';p.classList.remove('hidden');aiBtn?.classList.remove('hidden');docBtn?.classList.add('hidden');
-    }else if(isKnowledgeDocument(f)){
-      p.innerHTML='<div class="image-chip">📄 '+esc(f.name)+' · sẵn sàng đọc tài liệu</div>';p.classList.remove('hidden');aiBtn?.classList.add('hidden');docBtn?.classList.remove('hidden');
-    }else throw new Error('Chỉ hỗ trợ JPG, PNG, WEBP, GIF, PDF, DOCX hoặc TXT.');
+    const total=files.reduce((n,f)=>n+f.size,0);
+    if(files.some(f=>f.size>8388608)) throw new Error('Có file vượt quá 8 MB. Hãy tách file lớn ra hoặc nén lại.');
+    if(total>50*1024*1024) throw new Error('Tổng dung lượng mỗi lần nạp tối đa 50 MB.');
+    const bad=files.find(f=>!isKnowledgeImage(f)&&!isKnowledgeDocument(f));
+    if(bad) throw new Error('File không hỗ trợ: '+bad.name+'. Chỉ dùng JPG, PNG, WEBP, GIF, PDF, DOCX hoặc TXT.');
+    const images=files.filter(isKnowledgeImage),docs=files.filter(isKnowledgeDocument);
+    p.innerHTML=files.map(f=>'<div class="image-chip">'+(isKnowledgeImage(f)?'📷':'📄')+' '+esc(f.name)+'</div>').join('');p.classList.remove('hidden');
+    if(files.length===1 && images.length===1){
+      const d=await bytesToDataUrl(images[0]);p.innerHTML='<img src="'+d+'" style="width:120px;height:90px;object-fit:cover;border-radius:10px"><span class="muted">📷 '+esc(images[0].name)+'</span>';aiBtn?.classList.remove('hidden');docBtn?.classList.add('hidden');
+      if(hint)hint.textContent='Đang chọn 1 ảnh. Dùng “AI xem ảnh” để trích kiến thức từ ảnh.';
+    }else if(docs.length){
+      aiBtn?.classList.add('hidden');docBtn?.classList.remove('hidden');
+      if(hint)hint.textContent='Đã chọn '+files.length+' file · '+docs.length+' tài liệu sẽ được đọc cùng lúc. Mỗi tài liệu tạo 1 mục kiến thức.'+(images.length?' · Ảnh được xử lý riêng.':'');
+    }else{
+      aiBtn?.classList.add('hidden');docBtn?.classList.add('hidden');
+      if(hint)hint.textContent='Đã chọn '+images.length+' ảnh. Hãy chọn từng ảnh để dùng AI xem ảnh.';
+    }
   }catch(e){status(e.message,true);$('knowledgeImage').value='';p.classList.add('hidden');}
 };
 $('extractKnowledgeDocument').onclick=async()=>{
-  const f=$('knowledgeImage').files?.[0],btn=$('extractKnowledgeDocument');if(!f)return status('Chọn PDF, DOCX hoặc TXT trước pa.',true);
-  btn.disabled=true;btn.textContent='⏳ Đang đọc…';
+  const files=Array.from($('knowledgeImage').files||[]).filter(isKnowledgeDocument),btn=$('extractKnowledgeDocument');if(!files.length)return status('Chọn PDF, DOCX hoặc TXT trước pa.',true);
+  btn.disabled=true;btn.textContent='⏳ Đang đọc '+files.length+' tài liệu…';
   try{
-    if(!isKnowledgeDocument(f)) throw new Error('File này không phải PDF, DOCX hoặc TXT.');
-    const content=(await extractKnowledgeDocument(f)).trim();
-    if(!content) throw new Error('Không trích được chữ. Nếu đây là PDF scan/ảnh chụp, hãy dùng ảnh để AI xem.');
-    $('knowledgeContent').value=($('knowledgeContent').value.trim()?$('knowledgeContent').value.trim()+'\n\n':'')+'[NỘI DUNG TÀI LIỆU: '+f.name+']\n'+content;
-    status('📄 Đã đọc tài liệu và đưa nội dung vào ô kiến thức. Kiểm tra rồi bấm “Lưu kiến thức”.');
-  }catch(e){status('Đọc tài liệu lỗi: '+(e?.message||String(e)),true)}finally{btn.disabled=false;btn.textContent='📄 Đọc tài liệu';}
-};
-$('knowledgeForm').onsubmit=async e=>{e.preventDefault();const btn=$('saveKnowledge'),f=$('knowledgeImage').files?.[0];btn.disabled=true;btn.textContent='⏳ Đang lưu…';try{const {data:{user}}=await sb.auth.getUser();if(!user)throw new Error('Phiên Admin hết hạn.');
-    if(!f&&!$('knowledgeContent').value.trim())throw new Error('Hãy nhập nội dung hoặc chọn một tài liệu.');
-    if(f&&!isKnowledgeImage(f)&&!isKnowledgeDocument(f))throw new Error('Định dạng chưa hỗ trợ.');
-    let imagePath=null;
-    if(f&&isKnowledgeImage(f)){
-      if(f.size>8388608)throw new Error('Ảnh quá lớn.');
-      const ext=(f.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');imagePath=user.id+'/'+Date.now()+'-'+crypto.randomUUID()+'.'+ext;
-      const up=await sb.storage.from('ai-knowledge').upload(imagePath,f,{contentType:f.type,upsert:false});if(up.error)throw up.error;
+    const outputs=[];
+    for(let i=0;i<files.length;i++){
+      const f=files[i];
+      const content=(await extractKnowledgeDocument(f)).trim();
+      if(!content) throw new Error('Không trích được chữ từ '+f.name+'. Nếu đây là PDF scan/ảnh chụp, hãy dùng ảnh để AI xem.');
+      outputs.push('===== TÀI LIỆU '+(i+1)+': '+f.name+' =====\n'+content);
     }
-    let content=$('knowledgeContent').value.trim();
-    if(f&&isKnowledgeDocument(f)&&!content) content=('[NỘI DUNG TÀI LIỆU: '+f.name+']\n'+(await extractKnowledgeDocument(f)).trim()).trim();
-    if(!content)throw new Error('Tài liệu không có nội dung chữ. Với PDF scan, hãy dùng ảnh để AI xem.');
-    const {error}=await sb.from('ai_knowledge').insert({title:$('knowledgeTitle').value.trim()||f?.name||'Kiến thức Apple Seed',content,category:$('knowledgeCategory').value,source_type:f&&isKnowledgeDocument(f)?'admin-document':'admin',image_path:imagePath,status:'draft',created_by:user.id});if(error){if(imagePath)await sb.storage.from('ai-knowledge').remove([imagePath]);throw error}status('🧠 Đã nạp kiến thức vào kho. Hãy bấm “Duyệt cho AI” để robot bắt đầu sử dụng.');$('knowledgeForm').reset();$('knowledgeImagePreview').classList.add('hidden');await loadKnowledge();}catch(e){status('Nạp kiến thức lỗi: '+(e?.message||String(e)),true)}finally{btn.disabled=false;btn.textContent='🧠 Lưu kiến thức';}};
+    $('knowledgeContent').value=($('knowledgeContent').value.trim()?$('knowledgeContent').value.trim()+'\n\n':'')+outputs.join('\n\n');
+    status('📚 Đã đọc '+files.length+' tài liệu và gom nội dung vào ô kiến thức. Khi lưu, hệ thống sẽ tạo từng tài liệu thành mục riêng nếu ông chọn “Nạp hàng loạt”.');
+  }catch(e){status('Đọc tài liệu lỗi: '+(e?.message||String(e)),true)}finally{btn.disabled=false;btn.textContent='📄 Đọc tất cả tài liệu';}
+};
+$('knowledgeForm').onsubmit=async e=>{e.preventDefault();const btn=$('saveKnowledge'),files=Array.from($('knowledgeImage').files||[]);btn.disabled=true;btn.textContent='⏳ Đang nạp…';try{const {data:{user}}=await sb.auth.getUser();if(!user)throw new Error('Phiên Admin hết hạn.');
+    const contentInput=$('knowledgeContent').value.trim();
+    if(!files.length&&!contentInput)throw new Error('Hãy nhập nội dung hoặc chọn một tài liệu.');
+    if(files.some(f=>f.size>8388608))throw new Error('Có file quá 8 MB.');
+    if(files.reduce((n,f)=>n+f.size,0)>50*1024*1024)throw new Error('Tổng dung lượng mỗi lần nạp tối đa 50 MB.');
+    if(files.some(f=>!isKnowledgeImage(f)&&!isKnowledgeDocument(f)))throw new Error('Có file không được hỗ trợ.');
+
+    // Không có file: giữ nguyên cách lưu một mục kiến thức thủ công.
+    if(!files.length){
+      const {error}=await sb.from('ai_knowledge').insert({title:$('knowledgeTitle').value.trim()||'Kiến thức Apple Seed',content:contentInput,category:$('knowledgeCategory').value,source_type:'admin',image_path:null,status:'draft',created_by:user.id});
+      if(error)throw error;
+      status('🧠 Đã nạp kiến thức vào kho. Hãy bấm “Duyệt cho AI” để robot sử dụng.');
+    }else{
+      const docs=files.filter(isKnowledgeDocument),images=files.filter(isKnowledgeImage);
+      const rows=[];const uploaded=[];
+      // Tài liệu điện tử: đọc trực tiếp và tạo 1 record / file.
+      for(const f of docs){
+        const extracted=(await extractKnowledgeDocument(f)).trim();
+        if(!extracted)throw new Error('Không đọc được nội dung của '+f.name+'.');
+        rows.push({title:($('knowledgeTitle').value.trim()?$('knowledgeTitle').value.trim()+' — ':'')+f.name,content:'[NỘI DUNG TÀI LIỆU: '+f.name+']\n'+extracted,category:$('knowledgeCategory').value,source_type:'admin-document',image_path:null,status:'draft',created_by:user.id});
+      }
+      // Ảnh được lưu riêng; muốn AI hiểu nội dung ảnh thì dùng nút “AI xem ảnh”.
+      for(const f of images){
+        const ext=(f.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');
+        const imagePath=user.id+'/'+Date.now()+'-'+crypto.randomUUID()+'.'+ext;
+        const up=await sb.storage.from('ai-knowledge').upload(imagePath,f,{contentType:f.type,upsert:false});
+        if(up.error)throw up.error;
+        uploaded.push(imagePath);
+        rows.push({title:($('knowledgeTitle').value.trim()?$('knowledgeTitle').value.trim()+' — ':'')+f.name,content:'[ẢNH TÀI LIỆU: '+f.name+']\nẢnh đã được lưu trong Knowledge Base. Hãy dùng “AI xem ảnh” để bổ sung nội dung phân tích trước khi duyệt cho AI.',category:$('knowledgeCategory').value,source_type:'admin-image',image_path:imagePath,status:'draft',created_by:user.id});
+      }
+      if(contentInput && rows.length===1)rows[0].content=contentInput+'\n\n'+rows[0].content;
+      const {error}=await sb.from('ai_knowledge').insert(rows);
+      if(error){if(uploaded.length)await sb.storage.from('ai-knowledge').remove(uploaded);throw error;}
+      status('📚 Đã nạp thành công '+rows.length+' tài liệu/ảnh vào Knowledge Base. Mỗi file là một mục riêng, trạng thái Draft.');
+    }
+    $('knowledgeForm').reset();$('knowledgeImagePreview').classList.add('hidden');await loadKnowledge();
+  }catch(e){status('Nạp kiến thức lỗi: '+(e?.message||String(e)),true)}finally{btn.disabled=false;btn.textContent='🧠 Lưu kiến thức';}};
 $('clearKnowledge').onclick=()=>{$('knowledgeForm').reset();$('knowledgeImagePreview').classList.add('hidden');};
 $('analyzeKnowledgeImage').onclick=async()=>{const f=$('knowledgeImage').files?.[0],btn=$('analyzeKnowledgeImage');if(!f){status('Chọn ảnh trước pa.',true);return}btn.disabled=true;btn.textContent='⏳ AI đang xem ảnh…';try{const data=await bytesToDataUrl(f);const {data:{session}}=await sb.auth.getSession();if(!session?.access_token)throw new Error('Phiên Admin hết hạn.');const response=await fetch(window.SUPABASE_URL+'/functions/v1/appleseed-ai',{method:'POST',headers:{'Content-Type':'application/json','apikey':window.SUPABASE_ANON_KEY,'Authorization':'Bearer '+session.access_token},body:JSON.stringify({message:'Hãy xem ảnh này và phân tích những gì thực sự nhìn thấy. Nếu là main/schematic/boardview, hãy xác định vùng đáng chú ý, ký hiệu/linh kiện có thể đọc được, giả thuyết lỗi và các phép đo cần làm. Không bịa phần không nhìn thấy.',source:'ai-admin',mode:'robot_workspace',image_data:data})});const raw=await response.text();if(!response.ok)throw new Error(((()=>{try{return JSON.parse(raw).error}catch{return raw}})())||'AI lỗi HTTP '+response.status);$('knowledgeContent').value=($('knowledgeContent').value.trim()?$('knowledgeContent').value.trim()+'\\n\\n':'')+'[AI phân tích ảnh]\\n'+raw;status('👁️ AI đã phân tích ảnh và đưa kết quả vào ô Nội dung kiến thức. Ông kiểm tra rồi mới lưu.');}catch(e){status('Phân tích ảnh lỗi: '+(e?.message||String(e)),true)}finally{btn.disabled=false;btn.textContent='👁️ AI xem & phân tích ảnh';}};$('refreshKnowledge').onclick=loadKnowledge;
 $('refresh').onclick=refreshAll;$('logout').onclick=async()=>{await sb.auth.signOut();location.reload()};$('loginBtn').onclick=async()=>{const m=$('loginMsg');try{const {error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error)throw error;await checkSession()}catch(e){m.textContent='Đăng nhập lỗi: '+(e?.message||String(e))}};checkSession();
