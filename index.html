@@ -1554,7 +1554,7 @@ body.apple-inline-member-open{overflow-anchor:none}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
-<script src="member-auth.js?v=20260825-auth-fix2"></script>
+<script src="member-auth.js?v=20260828-auth-fix3"></script>
 <script>
 (function(){
   const sb=window.supabaseClient;
@@ -3087,6 +3087,52 @@ form.onsubmit=async e=>{
       signupBtn.dataset.appleSeedMobileAuthBound='1';
       signupBtn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();show(true)},true);
       signupBtn.addEventListener('touchend',e=>{e.preventDefault();e.stopPropagation();show(true)},{capture:true,passive:false});
+    }
+
+    /* Mobile login fallback: keep authentication independent from the modal
+       opener so iOS Safari can submit the form even if another auth initializer
+       failed or was cached. */
+    if(loginForm && !loginForm.dataset.appleSeedMobileLoginBound){
+      loginForm.dataset.appleSeedMobileLoginBound='1';
+      loginForm.addEventListener('submit',async e=>{
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        const email=document.getElementById('memberHomeLoginEmail')?.value.trim().toLowerCase();
+        const password=document.getElementById('memberHomeLoginPassword')?.value||'';
+        const submit=e.submitter||loginForm.querySelector('button[type="submit"]');
+        const setStatus=(msg,ok=false)=>{
+          const st=document.getElementById('memberAuthStatus');
+          if(st){st.textContent=msg;st.className='member-auth-status show '+(ok?'ok':'err');}
+        };
+        if(!email){setStatus('Vui lòng nhập email.');return;}
+        if(!password){setStatus('Vui lòng nhập mật khẩu.');return;}
+        if(!window.supabaseClient?.auth){setStatus('Supabase Auth chưa sẵn sàng. Hãy tải lại trang.');return;}
+        if(submit){submit.disabled=true;submit.textContent='Đang đăng nhập...';}
+        try{
+          const {data,error}=await window.supabaseClient.auth.signInWithPassword({email,password});
+          if(error) throw error;
+          if(data?.user && typeof window.memberEnsureProfile==='function'){
+            try{await window.memberEnsureProfile(data.user);}catch(_){}
+          }
+          modal.classList.remove('open');
+          document.body.style.overflow='';
+          setStatus('✅ Đăng nhập thành công.',true);
+          if(typeof window.getMemberSession==='function'){
+            const session=await window.getMemberSession();
+            const pill=document.getElementById('memberUserPill');
+            const name=document.getElementById('memberUserName');
+            if(session?.user && pill && name){
+              name.textContent='👤 '+(session.user.user_metadata?.full_name||session.user.email||'Thành viên');
+              loginBtn.style.display='none'; signupBtn.style.display='none'; pill.classList.add('show');
+            }
+          }
+        }catch(err){
+          console.error('Apple Seed mobile login:',err);
+          setStatus(err?.message||'Đăng nhập không thành công.');
+        }finally{
+          if(submit){submit.disabled=false;submit.textContent='🔐 Đăng nhập';}
+        }
+      },true);
     }
 
     modal.addEventListener('click',e=>{if(e.target===modal){modal.classList.remove('open');modal.style.display='none';document.body.style.overflow=''}},true);
