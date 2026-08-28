@@ -1,4 +1,4 @@
-/* Apple Seed homepage runtime resilience v1
+/* Apple Seed homepage runtime resilience v2
  * UI-only fallback: never touches Supabase data.
  * If the CMS renderer is slow/unavailable, restore a functional home
  * surface with the shop map, contact links and core navigation.
@@ -108,7 +108,7 @@
   function isStillLoading(){
     const root=document.getElementById(ROOT_ID);
     if(!root) return false;
-    return /Đang tải Apple Seed/i.test(root.textContent||"") && !root.querySelector("section[id]");
+    return /Đang tải Apple Seed/i.test(root.textContent||"");
   }
 
   function wireCoreNavigation(){
@@ -137,7 +137,14 @@
     // Give the CMS a short head start, then guarantee a usable page.
     setTimeout(function(){
       if(isStillLoading()) renderFallback("cms-timeout");
-    },1800);
+    },900);
+
+    // Watch the placeholder itself so a slow/failed renderer cannot leave a blank home.
+    const observer=new MutationObserver(function(){
+      if(isStillLoading()) renderFallback("cms-placeholder");
+    });
+    observer.observe(root,{childList:true,subtree:true,characterData:true});
+    setTimeout(function(){ observer.disconnect(); },12000);
 
     // If an earlier script fails before replacing the placeholder, recover.
     window.addEventListener("error",function(){
