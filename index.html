@@ -2346,7 +2346,7 @@ body.apple-seed-v4 .as4-footer-cta{width:min(1280px,100%)!important;margin:0 aut
     const accent=s.accent_color||'';
     const style=`${bg?`background:${esc(bg)};`:''}${color?`color:${esc(color)};`:''}${accent?`--blue:${esc(accent)};`:''}`;
     const content=s.content_html?safeHtml(s.content_html):'';
-    const image=s.image_url?`<img class="shop-photo" src="${esc(s.image_url)}" alt="${esc(s.image_alt||s.title||'Apple Seed')}">`:'';
+    const image=`<img class="shop-photo" src="${esc(s.image_url||'shop.jpg')}" alt="${esc(s.image_alt||s.title||'Cửa hàng Apple Seed Trà Vinh')}" loading="eager" onerror="this.onerror=null;this.src='shop.jpg';">`;
     const button=s.button_text?`<a class="cta" href="${esc(s.button_url||'#')}">${esc(s.button_text)}</a>`:'';
 
     // TRANG DỊCH VỤ ĐỘNG: bài viết lấy từ bảng public.pages.
@@ -2366,7 +2366,7 @@ body.apple-seed-v4 .as4-footer-cta{width:min(1280px,100%)!important;margin:0 aut
 
     if(s.section_type==='hero')return `<section class="hero" id="${id}" style="${style}"><div class="hero-inner"><div>${image}</div><div>${s.eyebrow?`<div class="eyebrow">${esc(s.eyebrow)}</div>`:''}<h1>${esc(s.title||'')}</h1>${s.subtitle?`<p class="lead">${esc(s.subtitle)}</p>`:''}${content?`<div class="lead">${content}</div>`:''}${button}</div></div></section>`;
     if(s.section_type==='services')return `<section class="services" id="${id}" style="${style}"><div class="section-kicker">${esc(s.eyebrow||'DỊCH VỤ')}</div><h2>${esc(s.title||'')}</h2><div class="service-grid">${content?`<div style="grid-column:1/-1;text-align:left">${content}</div>`:''}</div></section>`;
-    if(s.section_type==='map')return `<section class="contact" id="${id}" style="${style}"><div class="contact-inner"><div class="contact-card"><div class="section-kicker">${esc(s.eyebrow||'LIÊN HỆ')}</div><h2>${esc(s.title||'Apple Seed Trà Vinh')}</h2><div>${content}</div></div><div class="map-card"><div class="map-title">${esc(s.subtitle||'📍 Vị trí Apple Seed Trà Vinh')}</div><iframe title="Google Maps Apple Seed Trà Vinh" src="https://www.google.com/maps?q=AppleSeed%20292%20Ph%E1%BA%A1m%20Ng%C5%A9%20L%C3%A3o%20Tr%C3%A0%20Vinh&output=embed" loading="lazy"></iframe></div></div></section>`;
+    if(s.section_type==='map')return `<section class="contact" id="lien-he-map" style="${style}"><div class="contact-inner"><div class="contact-card"><div class="section-kicker">${esc(s.eyebrow||'ĐỊA CHỈ')}</div><h2>${esc(s.title||'Apple Seed Trà Vinh – Địa chỉ cửa hàng')}</h2><div>${content}</div></div><div class="map-card"><div class="map-title">${esc(s.subtitle||'📍 Vị trí Apple Seed Trà Vinh')}</div><iframe title="Google Maps Apple Seed Trà Vinh" src="https://www.google.com/maps?q=AppleSeed%20292%20Ph%E1%BA%A1m%20Ng%C5%A9%20L%C3%A3o%20Tr%C3%A0%20Vinh&output=embed" loading="eager" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div></div></section>`;
     return `<section class="services" id="${id}" style="${style}"><div class="section-kicker">${esc(s.eyebrow||'')}</div><h2>${esc(s.title||'')}</h2>${s.subtitle?`<p class="lead" style="margin:0 auto 20px">${esc(s.subtitle)}</p>`:''}<div style="max-width:1160px;margin:auto;text-align:left">${content}</div>${button?`<div style="margin-top:20px">${button}</div>`:''}</section>`;
   }
 
@@ -2507,7 +2507,24 @@ body.apple-seed-v4 .as4-footer-cta{width:min(1280px,100%)!important;margin:0 aut
       }
       // CMS có thể trả về danh sách nav thiếu Đặt lịch -> tự bổ sung lại.
       ensureBookingNav();
-      fixNavigation();if(s.error||!s.data?.length){staticFallback();bindProductCards();fixNavigation();return}let html='';let contactRendered=false;for(const sec of s.data){if(sec.section_type==='products'){html+=await productsHtml();continue}if(sec.section_type==='map'||sec.section_type==='contact'){if(contactRendered)continue;contactRendered=true;html+=sec.section_type==='contact'?contactHtml():renderSection(sec);continue}html+=renderSection(sec)}root.innerHTML=html+(contactRendered?'':contactHtml());
+      fixNavigation();
+      if(s.error||!s.data?.length){staticFallback();bindProductCards();fixNavigation();return}
+      let html='';
+      let hasServices=false,hasContact=false,hasMap=false;
+      for(const sec of s.data){
+        if(sec.section_type==='products'){html+=await productsHtml();continue}
+        if(sec.section_type==='services')hasServices=true;
+        if(sec.section_type==='contact')hasContact=true;
+        if(sec.section_type==='map')hasMap=true;
+        html+=renderSection(sec);
+      }
+      // Chỉ dùng fallback khi CMS thực sự thiếu section, tuyệt đối không thay thế dữ liệu đang có.
+      if(!hasServices){
+        html+=`<section class="services" id="dich-vu"><div class="section-kicker">APPLE SEED</div><h2>Dịch vụ sửa chữa iPhone</h2><div class="service-grid"><article class="service-card"><div class="service-icon">📱</div><div><h3>Sửa iPhone</h3><p>Kiểm tra và sửa chữa lỗi phần cứng, phần mềm.</p></div></article><article class="service-card"><div class="service-icon">🔧</div><div><h3>Sửa main</h3><p>Chẩn đoán lỗi nguồn, chạm, mất áp và lỗi board.</p></div></article><article class="service-card"><div class="service-icon">🔐</div><div><h3>Face ID</h3><p>Kiểm tra và xử lý lỗi Face ID theo tình trạng máy.</p></div></article></div></section>`;
+      }
+      if(!hasContact)html+=contactHtml();
+      if(!hasMap)html+=`<section class="contact" id="lien-he-map"><div class="contact-inner"><div class="contact-card"><div class="section-kicker">ĐỊA CHỈ</div><h2>Apple Seed Trà Vinh</h2><p>292 Phạm Ngũ Lão, Khóm 2, Trà Vinh.</p><a href="https://maps.app.goo.gl/QEWg9owQidGW5ZyG7" target="_blank" rel="noopener noreferrer">🗺 Mở Google Maps</a></div><div class="map-card"><div class="map-title">📍 Vị trí Apple Seed Trà Vinh</div><iframe title="Google Maps Apple Seed Trà Vinh" src="https://www.google.com/maps?q=AppleSeed%20292%20Ph%E1%BA%A1m%20Ng%C5%A9%20L%C3%A3o%20Tr%C3%A0%20Vinh&output=embed" loading="eager" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div></div></section>`;
+      root.innerHTML=html;
       fixNavigation();
       bindProductCards();
       await loadDynamicPages();
