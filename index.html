@@ -1664,6 +1664,13 @@ body.apple-seed-v4 .as4-footer-cta{width:min(1280px,100%)!important;margin:0 aut
 @media(max-width:560px){body.apple-seed-v4 .as4-header-inner{padding:9px 12px!important;gap:8px!important}body.apple-seed-v4 .as4-brand img{width:46px!important;height:46px!important}body.apple-seed-v4 .as4-brand-copy strong{font-size:20px!important}body.apple-seed-v4 .as4-brand-copy small{font-size:8px!important;letter-spacing:1.2px!important}body.apple-seed-v4 .as4-member{gap:4px!important}body.apple-seed-v4 .as4-login,body.apple-seed-v4 .as4-signup{min-height:38px!important;padding:7px 8px!important;font-size:11px!important}body.apple-seed-v4 .as4-nav{gap:4px!important}body.apple-seed-v4 .as4-nav a{padding:8px 9px!important;font-size:11px!important}body.apple-seed-v4 .as4-hero{padding:12px 12px 10px!important}body.apple-seed-v4 .as4-hero-copy{min-height:430px!important;padding:28px 22px!important;border-radius:23px!important}body.apple-seed-v4 .as4-hero-copy h1{font-size:42px!important;letter-spacing:-2.5px!important}body.apple-seed-v4 .as4-hero-copy>p{font-size:14px!important}.as4-proof{grid-template-columns:repeat(2,1fr)!important;margin-top:18px!important}body.apple-seed-v4 .as4-hero-panel{min-height:310px!important;border-radius:23px!important}body.apple-seed-v4 .as4-command{padding:12px 12px 30px!important}body.apple-seed-v4 .as4-section-head{display:block!important}body.apple-seed-v4 .as4-section-head h2{font-size:25px!important}body.apple-seed-v4 .as4-section-head p{margin-top:7px!important}body.apple-seed-v4 .as4-command-grid{gap:8px!important}body.apple-seed-v4 .as4-command-card{min-height:100px!important;padding:12px 10px!important;border-radius:15px!important;grid-template-columns:40px 1fr!important}.as4-command-icon{width:40px!important;height:40px!important;border-radius:12px!important;font-size:21px!important}.as4-command-card i{display:none!important}.as4-command-card b{font-size:12px!important}.as4-command-card small{font-size:9px!important}body.apple-seed-v4 .as4-content-zone{padding:27px 12px 34px!important}body.apple-seed-v4 .as4-footer-cta{margin:0 12px 18px!important;padding:25px 20px!important;display:block!important;border-radius:20px!important}.as4-footer-cta h2{font-size:28px!important}.as4-footer-actions{margin-top:16px!important;display:grid!important;grid-template-columns:1fr 1fr!important}}
 </style>
   <link rel="stylesheet" href="homepage-v5-theme.css?v=20260828-v5">
+
+<style id="apple-seed-home-lower-cleanup">
+/* Homepage: keep the Google Maps footer; hide the duplicate/lower footer and video area. */
+.apple-seed-site-footer,
+.video-library,
+.ui01-video-feature{display:none!important}
+</style>
 </head>
 
 <header class="ui01-header">
@@ -1705,7 +1712,7 @@ body.apple-seed-v4 .as4-footer-cta{width:min(1280px,100%)!important;margin:0 aut
           <a href="./ai-board.html" class="ui01-primary">⚙ AI Engineering</a>
           <a href="./booking.html" class="ui01-secondary">▣ Đặt lịch sửa chữa</a>
         </div>
-        <div class="ui01-quick-tags"><a href="#ky-thuat">⌕ Chẩn đoán</a><a href="#homeRenderer">△ PANIC</a><a href="#homeRenderer">⌁ Schematic</a><a href="#video-sua-chua">▣ Video</a><a href="./products.html">▦ Tools</a></div>
+        <div class="ui01-quick-tags"><a href="#ky-thuat">⌕ Chẩn đoán</a><a href="#homeRenderer">△ PANIC</a><a href="#homeRenderer">⌁ Schematic</a><a href="./products.html">▦ Tools</a></div>
       </div>
       <div class="ui01-phones ui01-real-phone-art" aria-label="Apple Seed iPhone showcase">
         <img src="./assets/ui01-hero-phones.jpg?v=20260828-real-phones" alt="Ba điện thoại iPhone Apple Seed" loading="eager">
@@ -1771,12 +1778,7 @@ body.apple-seed-v4 .as4-footer-cta{width:min(1280px,100%)!important;margin:0 aut
     <section class="ui01-dynamic-fallback" aria-label="Dữ liệu website"><div class="ui01-dynamic-title">Nội dung Apple Seed</div><div id="dynamicPagesGrid" class="dynamic-pages-grid"></div></section>
   </div>
 
-  <section class="video-library" id="video-sua-chua" aria-label="Video sửa chữa">
-    <div class="video-library-inner">
-      <div class="video-library-head"><div><div class="section-kicker">APPLE SEED • VIDEO</div><h2>Video sửa chữa</h2><p>Tìm video kỹ thuật trên YouTube và xem trực tiếp tại Apple Seed.</p></div></div>
-      <div class="apple-seed-youtube-search"><div class="youtube-search-copy"><div class="section-kicker">YOUTUBE ENGINE</div><h3>Tìm video YouTube</h3><p>Nhập model hoặc lỗi cần xem.</p></div><div class="youtube-search-form"><input id="youtubeSearchInput" type="search" autocomplete="off" placeholder="Nhập model + lỗi cần tìm…" aria-label="Tìm video YouTube"><button id="youtubeSearchBtn" class="video-add-btn" type="button">🔎 Tìm YouTube</button></div><div id="youtubeSearchStatus" class="youtube-search-status"></div><div id="youtubeSearchGrid" class="video-grid"></div></div>
-    </div>
-  </section>
+
 </main>
 <div class="video-modal" id="videoViewModal" role="dialog" aria-modal="true" aria-labelledby="videoModalTitle">
   <div class="video-modal-box">
