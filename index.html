@@ -164,7 +164,7 @@ body{
 .mi{width:18px;height:18px;display:inline-grid;place-items:center}
 .hero{background:var(--bg);padding:76px 24px 42px}
 .hero-inner{max-width:1240px;margin:auto;display:grid;grid-template-columns:minmax(0,1.18fr) minmax(360px,.82fr);align-items:center;gap:52px}
-.shop-photo{width:100%;height:auto;aspect-ratio:auto;object-fit:contain;object-position:center;display:block;border-radius:18px;box-shadow:0 18px 40px rgba(37,57,95,.12)}
+.shop-photo{width:100%;aspect-ratio:1.58/1;object-fit:cover;object-position:center;border-radius:18px;box-shadow:0 18px 40px rgba(37,57,95,.12)}
 .eyebrow{color:var(--blue);font-size:15px;font-weight:850;letter-spacing:3px;margin-bottom:18px}
 h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
 .lead{margin:24px 0 28px;max-width:620px;color:#52627b;font-size:19px;line-height:1.65}
@@ -219,13 +219,11 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
 .product-modal-thumbs{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:10px}.product-modal-nav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border:0;border-radius:50%;background:rgba(255,255,255,.94);box-shadow:0 4px 16px rgba(0,0,0,.16);font-size:28px;line-height:1;cursor:pointer;z-index:3}.product-modal-prev{left:14px}.product-modal-next{right:14px}.product-modal-counter{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);background:rgba(15,23,42,.7);color:#fff;border-radius:20px;padding:5px 11px;font-size:12px;z-index:3}
 .product-modal-thumbs button{border:2px solid #e1e6ef;background:#fff;border-radius:8px;padding:0;overflow:hidden;cursor:pointer;transition:.15s ease}.product-modal-thumbs button:hover,.product-modal-thumbs button.active{border-color:var(--blue);box-shadow:0 0 0 2px rgba(23,105,255,.12)}
 .product-modal-thumbs img{display:block;width:100%;height:72px;object-fit:cover}
-@media(max-width:900px){
- .chat-btn{right:20px;bottom:20px;width:68px;height:68px;font-size:31px}
-.products-home-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:900px){.products-home-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.products-home-grid{grid-template-columns:1fr}.product-home-photo{width:74px;height:74px}.product-modal{padding:10px}.product-modal-main{height:45vh}.product-modal-thumbs{grid-template-columns:repeat(4,1fr)}}
 .booking-nav{display:inline-flex;align-items:center;justify-content:center;gap:7px;background:var(--blue);color:#fff!important;padding:10px 14px;border-radius:9px;font-weight:850;box-shadow:0 6px 16px rgba(23,105,255,.18);white-space:nowrap}
 .booking-nav:hover{filter:brightness(.96)}
-.chat-btn{position:fixed;right:30px;bottom:30px;width:76px;height:76px;border:0;border-radius:50%;background:linear-gradient(145deg,#2f8cff,#1769ff);color:#fff;display:grid;place-items:center;font-size:34px;line-height:1;box-shadow:0 16px 38px rgba(23,105,255,.34),0 0 0 1px rgba(255,255,255,.55) inset;z-index:1000;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease}.chat-btn:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 20px 44px rgba(23,105,255,.4),0 0 0 1px rgba(255,255,255,.65) inset}.chat-btn:active{transform:scale(.96)}
+.chat-btn{position:fixed;right:24px;bottom:24px;width:58px;height:58px;border:0;border-radius:50%;background:#1769ff;color:#fff;display:grid;place-items:center;font-size:27px;box-shadow:0 12px 28px rgba(23,105,255,.3);z-index:1000;cursor:pointer}
 .chat-box{position:fixed;right:24px;bottom:94px;width:350px;max-width:calc(100vw - 32px);height:440px;background:#fff;border:1px solid #e2e7f0;border-radius:18px;box-shadow:0 20px 55px rgba(23,37,66,.2);display:none;flex-direction:column;overflow:hidden;z-index:1000}
 .chat-box.open{display:flex}
 .chat-head{background:var(--blue);color:#fff;padding:16px 18px;font-weight:850;display:flex;justify-content:space-between;align-items:center}
@@ -339,23 +337,6 @@ html.apple-seed-lock-copy,html.apple-seed-lock-copy body{-webkit-user-select:non
 input,textarea,select,[contenteditable="true"]{-webkit-user-select:text!important;user-select:text!important}
 img{-webkit-user-drag:none}
 @media print{body:before{content:"APPLE SEED • NỘI DUNG BẢN QUYỀN • appleseedtravinh.com";position:fixed;top:45%;left:8%;right:8%;text-align:center;font-size:28px;font-weight:900;opacity:.18;z-index:2147483647;transform:rotate(-18deg);pointer-events:none}}
-
-
-/* ===== APPLE SEED LEGAL FOOTER V2 ===== */
-.apple-seed-site-footer{background:#f7faff;border-top:1px solid #dfe8f5;padding:0 16px 22px}
-.apple-seed-footer-inner{max-width:1160px;margin:auto}
-.apple-seed-footer-brand{display:flex;align-items:center;gap:12px;padding:24px 0 18px}
-.apple-seed-footer-brand img{width:54px;height:54px;object-fit:contain}
-.apple-seed-footer-brand strong{display:block;color:#17233d;font-size:20px;font-weight:900}
-.apple-seed-footer-brand span{display:block;margin-top:3px;color:#61708a;font-size:10px;font-weight:800;letter-spacing:1px}
-.apple-seed-footer-links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;border-top:1px solid #e2e9f3;border-bottom:1px solid #e2e9f3;padding:16px 0}
-.apple-seed-footer-links a{display:flex;align-items:center;min-height:42px;padding:10px 12px;border:1px solid #dbe6f4;border-radius:10px;background:#fff;color:#1769ff;font-size:13px;font-weight:800}
-.apple-seed-footer-links a:hover{border-color:#a9c9ff;box-shadow:0 5px 16px rgba(23,105,255,.08)}
-.apple-seed-footer-bottom{text-align:center;padding-top:18px;color:#61708a;font-size:12px;line-height:1.6}
-.apple-seed-footer-bottom strong{color:#17233d}
-.apple-seed-footer-bottom .copy-warning{display:block;margin-top:5px;color:#b42318;font-weight:800}
-@media(max-width:700px){.apple-seed-site-footer{padding:0 14px 20px}.apple-seed-footer-links{grid-template-columns:1fr 1fr;gap:8px}.apple-seed-footer-links a{font-size:12px;padding:9px 10px}.apple-seed-footer-brand{padding-top:20px}}
-@media(max-width:420px){.apple-seed-footer-links{grid-template-columns:1fr}.apple-seed-footer-links a{min-height:40px}.apple-seed-footer-brand img{width:48px;height:48px}.apple-seed-footer-brand strong{font-size:18px}}
 
 /* ===== APPLE SEED COPYRIGHT / AUTHOR ===== */
 .apple-seed-copyright{
@@ -1292,60 +1273,7 @@ button,a,input,textarea{ -webkit-tap-highlight-color:transparent }
 .entertainment-home-btn{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;padding:13px 20px;border-radius:14px;text-decoration:none;font-weight:800;background:#7c3aed;color:#fff;box-shadow:0 8px 18px rgba(124,58,237,.22)}
 .entertainment-home-btn:hover{transform:translateY(-1px)}
 @media(max-width:700px){.entertainment-home-inner{flex-direction:column;align-items:stretch}.entertainment-home-btn{width:100%}}
-</style><style id="apple-seed-home-clean-layout">
-.home-tools{background:#f6f8fc;border-top:1px solid #edf1f7;padding:28px 16px 42px}
-.home-tools-inner{max-width:1240px;margin:0 auto}
-.home-tools-heading{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:12px}
-.home-tools-heading h2{margin:0;font-size:25px;line-height:1.15;letter-spacing:-.6px}
-.home-tools-heading p{margin:6px 0 0;color:#718096;font-size:13px}
-.home-tools-ai{display:inline-flex;align-items:center;gap:7px;padding:10px 14px;border:1px solid #d7e4ff;border-radius:999px;background:#fff;color:#1769ff;font-size:12px;font-weight:850;white-space:nowrap;box-shadow:0 5px 16px rgba(35,54,91,.06)}
-.youtube-top-section{padding:0!important;background:transparent!important}
-.youtube-top-inner{max-width:none!important}
-.youtube-top-section .apple-seed-youtube-search{margin:0!important;padding:20px!important;border:1px solid #e3e9f3!important;border-radius:16px!important;background:#fff!important;box-shadow:0 8px 24px rgba(35,54,91,.06)!important}
-.youtube-search-copy .section-kicker{margin-bottom:5px}
-.youtube-search-copy h3{margin:0;font-size:21px;line-height:1.25;letter-spacing:-.3px}
-.youtube-search-copy p{margin:6px 0 0;color:#718096;font-size:12px;line-height:1.5}
-.youtube-search-form{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;margin-top:15px}
-.youtube-search-form input{width:100%;min-width:0;border:1px solid #d9dfeb;border-radius:10px;padding:12px 13px;outline:none;background:#fff}
-.youtube-search-form input:focus{border-color:#1769ff;box-shadow:0 0 0 3px rgba(23,105,255,.1)}
-.youtube-search-form .video-add-btn{min-height:46px;border:0;border-radius:10px;padding:0 18px;background:#1769ff;color:#fff;font-weight:850;cursor:pointer}
-.youtube-search-status{margin-top:9px;color:#718096;font-size:12px}
-.home-entertainment{margin-top:12px;min-height:64px;padding:12px 16px;display:flex;align-items:center;gap:12px;border:1px solid #e1e7f0;border-radius:15px;background:#fff;color:#17233d;box-shadow:0 7px 20px rgba(35,54,91,.05);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
-.home-entertainment:hover{transform:translateY(-2px);border-color:#ccd9f5;box-shadow:0 12px 28px rgba(35,54,91,.09)}
-.home-entertainment-icon{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;background:#f1edff;font-size:21px;flex:none}
-.home-entertainment-copy{display:grid;gap:2px;min-width:0}
-.home-entertainment-copy strong{font-size:14px}
-.home-entertainment-copy small{color:#718096;font-size:11px}
-.home-entertainment-arrow{margin-left:auto;color:#1769ff;font-size:20px;font-weight:800}
-@media(max-width:700px){.home-tools{padding:22px 12px 30px}.home-tools-heading{align-items:flex-start}.home-tools-heading h2{font-size:21px}.home-tools-heading p{font-size:12px}.home-tools-ai{padding:8px 11px;font-size:11px}.youtube-top-section .apple-seed-youtube-search{padding:16px!important;border-radius:14px!important}.youtube-search-copy h3{font-size:20px}.youtube-search-form{grid-template-columns:1fr}.youtube-search-form .video-add-btn{width:100%}.home-entertainment{min-height:58px;padding:10px 12px}}
-@media(max-width:420px){.home-tools-heading{display:block}.home-tools-ai{margin-top:10px}}
-</style>
-<style id="apple-seed-home-quick-links">
-.home-tools{background:#f6f8fc;border-top:1px solid #edf1f7;padding:28px 16px 40px}.home-tools-inner{max-width:1240px;margin:0 auto}.home-tools-heading{margin-bottom:14px}.home-tools-heading h2{margin:0;font-size:24px;line-height:1.15;letter-spacing:-.5px}.home-tools-heading p{margin:6px 0 0;color:#718096;font-size:13px}.home-quick-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.home-quick-card{min-height:74px;padding:14px 16px;display:flex;align-items:center;gap:12px;border:1px solid #e1e7f0;border-radius:16px;background:#fff;color:#17233d;box-shadow:0 7px 20px rgba(35,54,91,.05);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}.home-quick-card:hover{transform:translateY(-2px);border-color:#ccd9f5;box-shadow:0 12px 28px rgba(35,54,91,.09)}.home-quick-icon{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;font-size:22px;flex:none}.home-quick-ai .home-quick-icon{background:#eef5ff}.home-quick-entertainment .home-quick-icon{background:#f3efff}.home-quick-copy{display:grid;gap:3px;min-width:0}.home-quick-copy strong{font-size:15px}.home-quick-copy small{color:#718096;font-size:11px;line-height:1.35}.home-quick-arrow{margin-left:auto;color:#1769ff;font-size:20px;font-weight:800}@media(max-width:600px){.home-tools{padding:22px 12px 30px}.home-tools-heading h2{font-size:21px}.home-tools-heading p{font-size:12px}.home-quick-links{grid-template-columns:1fr;gap:10px}.home-quick-card{min-height:64px;padding:11px 13px;border-radius:14px}.home-quick-icon{width:40px;height:40px;border-radius:11px;font-size:20px}.home-quick-copy strong{font-size:14px}}
-</style>
-<style id="apple-seed-inline-member-signup">
-#appleSeedInlineMember{display:none;margin:28px auto 0;max-width:1180px;padding:26px;border:1px solid #d7e6fb;border-radius:24px;background:linear-gradient(135deg,#f5faff,#fff);box-shadow:0 18px 50px rgba(27,91,160,.12);scroll-margin-top:95px}
-#appleSeedInlineMember.open{display:block}
-.apple-inline-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(420px,520px);gap:30px;align-items:stretch}
-.apple-inline-benefits{padding:22px 12px 22px 8px}
-.apple-inline-kicker{font-size:11px;font-weight:900;letter-spacing:2.6px;color:#1769ff;margin-bottom:10px}
-.apple-inline-benefits h3{margin:0 0 10px;color:#10213f;font-size:28px;line-height:1.15}
-.apple-inline-benefits>p{margin:0 0 22px;color:#637692;line-height:1.65}
-.apple-inline-list{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.apple-inline-item{padding:14px;border:1px solid #dce9f8;border-radius:14px;background:#fff}
-.apple-inline-item strong{display:block;color:#17345d;font-size:14px;margin-bottom:4px}
-.apple-inline-item span{color:#6c7d96;font-size:12px;line-height:1.45}
-.apple-inline-security{margin-top:18px;padding:13px 15px;border-radius:13px;background:#eef6ff;color:#55708f;font-size:12px}
-#appleSeedInlineMember .member-auth-box{width:100%;max-height:none;padding:26px;border-radius:20px;box-shadow:0 15px 38px rgba(23,65,115,.12);border:1px solid #e0e9f5}
-#appleSeedInlineMember .member-auth-close{display:flex;align-items:center;justify-content:center;background:#f4f8fd;box-shadow:none;color:#526b88}
-#appleSeedInlineMember .member-auth-tabs{margin-top:20px}
-#appleSeedInlineMember .member-auth-submit{background:linear-gradient(135deg,#1769ff,#358cff);box-shadow:0 9px 20px rgba(23,105,255,.16)}
-.apple-inline-close{display:block;margin:18px auto 0;border:0;background:transparent;color:#1769ff;font-weight:850;cursor:pointer;padding:7px 12px}
-body.apple-inline-member-open{overflow-anchor:none}
-@media(max-width:900px){.apple-inline-grid{grid-template-columns:1fr}.apple-inline-benefits{padding:6px 2px}.apple-inline-list{grid-template-columns:1fr 1fr}}
-@media(max-width:560px){#appleSeedInlineMember{margin:20px 12px 0;padding:14px;border-radius:18px}.apple-inline-list{grid-template-columns:1fr}.apple-inline-benefits h3{font-size:23px}#appleSeedInlineMember .member-auth-box{padding:20px 16px}}
-</style>
-</head>
+</style></head>
 
 <body>
 
@@ -1369,38 +1297,48 @@ body.apple-inline-member-open{overflow-anchor:none}
   <button class="member-auth-btn primary" type="button" id="memberHomeSignupBtn">✨ Đăng ký</button>
   <div class="member-user-pill" id="memberUserPill">
     <span id="memberUserName">👤 Thành viên</span>
-    <a href="member-wallet.html" class="member-wallet-link" style="font-weight:800;text-decoration:none;color:#1769ff">💳 Coin</a>
     <button class="member-logout-btn" type="button" id="memberHomeLogoutBtn">Đăng xuất</button>
   </div>
 </div>
 </div>
 </nav>
 </header>
-<main id="homeRenderer"><div class="hero" style="padding:70px 24px"><div style="max-width:1240px;margin:auto">Đang tải Apple Seed...</div></div></main>
-
-<section class="home-tools" aria-label="Apple Seed tiện ích">
-  <div class="home-tools-inner">
-    <div class="home-tools-heading">
-      <div>
-        <div class="section-kicker">APPLE SEED</div>
-        <h2>Khám phá thêm</h2>
-        <p>Các trung tâm tiện ích của Apple Seed.</p>
-      </div>
+<section class="entertainment-home-hero" aria-label="Apple Seed Entertainment Center">
+  <div class="entertainment-home-inner">
+    <div>
+      <div class="section-kicker">APPLE SEED ENTERTAINMENT CENTER</div>
+      <h2>🎬 Khu giải trí của Apple Seed</h2>
+      <p>Tin tức, video, YouTube, TikTok, âm nhạc và nội dung giải trí — tất cả trong một trang.</p>
     </div>
-    <div class="home-quick-links">
-      <a class="home-quick-card home-quick-ai" href="./ai-board.html" aria-label="Mở AI Engineering Center">
-        <span class="home-quick-icon">🤖</span>
-        <span class="home-quick-copy"><strong>AI Engineering</strong><small>Trợ lý kỹ thuật Apple Seed</small></span>
-        <span class="home-quick-arrow">→</span>
-      </a>
-      <a class="home-quick-card home-quick-entertainment" href="./entertainment.html" aria-label="Mở Apple Seed Entertainment Center">
-        <span class="home-quick-icon">🎬</span>
-        <span class="home-quick-copy"><strong>Entertainment</strong><small>Tin tức · Video · TikTok · Âm nhạc</small></span>
-        <span class="home-quick-arrow">→</span>
-      </a>
+    <a class="entertainment-home-btn" href="./entertainment.html">MỞ TRUNG TÂM GIẢI TRÍ →</a>
+  </div>
+</section>
+
+<div id="apple-seed-ai-top" class="apple-seed-ai-float"><a href="./ai-board.html" aria-label="Mở AI Engineering Center">🚀 AI ENGINEERING CENTER</a></div>
+
+
+<section class="youtube-top-section" id="youtube-engine-top">
+  <div class="youtube-top-inner">
+    <div class="apple-seed-youtube-search" id="appleSeedYoutubeSearch" style="margin-top:22px;padding:18px;border:1px solid #dbe7f5;border-radius:16px;background:#fff;box-shadow:0 8px 24px rgba(35,54,91,.06)">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div>
+          <div class="section-kicker" style="margin-bottom:5px">YOUTUBE ENGINE</div>
+          <h3 style="margin:0;font-size:20px">🔎 Tìm video YouTube ngay trên Apple Seed</h3>
+          <p style="margin:6px 0 0;color:#718096;font-size:12px">Tìm video sửa chữa trên YouTube và xem trực tiếp trong web. Apple Seed chỉ lưu liên kết/video ID, không tải file video về máy chủ.</p>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+        <input id="youtubeSearchInput" type="search" placeholder="Ví dụ: iPhone 14 Pro Max panic 0x20000" style="flex:1;min-width:240px;border:1px solid #d9dfeb;border-radius:10px;padding:12px 13px;outline:none">
+        <button id="youtubeSearchBtn" type="button" class="video-add-btn">🔎 Tìm YouTube</button>
+      </div>
+      <div id="youtubeSearchStatus" style="margin-top:10px;color:#718096;font-size:12px"></div>
+      <div id="youtubeSearchGrid" class="video-grid" style="margin-top:14px"></div>
     </div>
   </div>
 </section>
+
+<main id="homeRenderer"><div class="hero" style="padding:70px 24px"><div style="max-width:1240px;margin:auto">Đang tải Apple Seed...</div></div></main>
+
 
 
 <div class="video-modal" id="videoViewModal" role="dialog" aria-modal="true" aria-labelledby="videoModalTitle">
@@ -2963,92 +2901,11 @@ form.onsubmit=async e=>{
   };
 })();
 </script>
-<footer class="apple-seed-site-footer" aria-label="Apple Seed – Thông tin pháp lý và liên hệ">
-  <div class="apple-seed-footer-inner">
-    <div class="apple-seed-footer-brand">
-      <img src="logo.png" alt="Apple Seed">
-      <div>
-        <strong>Apple Seed</strong>
-        <span>TRUNG TÂM SỬA CHỮA IPHONE</span>
-      </div>
-    </div>
-    <nav class="apple-seed-footer-links" aria-label="Liên kết pháp lý">
-      <a href="phap-ly.html">⚖️ Pháp lý &amp; Chính sách</a>
-      <a href="phap-ly.html#member">📄 Điều khoản Member</a>
-      <a href="phap-ly.html#privacy">🔒 Chính sách bảo mật</a>
-      <a href="phap-ly.html#chat">💬 Quy định Chat</a>
-      <a href="phap-ly.html#report">🛡️ Báo cáo tài khoản</a>
-      <a href="phap-ly.html#contact">📞 Liên hệ</a>
-    </nav>
-    <div class="apple-seed-footer-bottom">
-      <div>Website được viết và phát triển bởi <strong>Tô Thanh Trung</strong> – Apple Seed</div>
-      <div class="copy-warning">🚫 Nội dung website thuộc Apple Seed. Không sao chép, đăng lại hoặc phân phối khi chưa được phép.</div>
-    </div>
-  </div>
-</footer>
-<script id="apple-seed-inline-member-signup-js">
-(function(){
-  function init(){
-    const root=document.getElementById('homeRenderer');
-    const modal=document.getElementById('memberAuthModal');
-    const box=document.querySelector('#memberAuthModal .member-auth-box');
-    if(!root||!modal||!box)return;
-    if(document.getElementById('appleSeedInlineMember'))return;
-    const panel=document.createElement('section');
-    panel.id='appleSeedInlineMember';
-    panel.setAttribute('aria-label','Đăng ký thành viên Apple Seed');
-    panel.innerHTML=`<div class="apple-inline-grid">
-      <div class="apple-inline-benefits">
-        <div class="apple-inline-kicker">APPLE SEED • MEMBER</div>
-        <h3>Thành viên Apple Seed được gì?</h3>
-        <p>Đăng ký ngay trên trang này để mở khóa các tiện ích dành cho Member.</p>
-        <div class="apple-inline-list">
-          <div class="apple-inline-item"><strong>🤖 AI Board</strong><span>Phân tích PANIC và hỗ trợ kỹ thuật.</span></div>
-          <div class="apple-inline-item"><strong>🎬 Video kỹ thuật</strong><span>Truy cập khu vực nội dung dành cho thành viên.</span></div>
-          <div class="apple-inline-item"><strong>📐 Schematic</strong><span>Tra cứu tài liệu và boardview theo quyền.</span></div>
-          <div class="apple-inline-item"><strong>💬 Cộng đồng</strong><span>Trao đổi và kết nối với Member.</span></div>
-        </div>
-        <div class="apple-inline-security">🔒 Thông tin tài khoản được bảo vệ và chỉ dùng cho mục đích xác thực thành viên.</div>
-      </div>
-      <div class="apple-inline-form"></div>
-    </div>
-    <button class="apple-inline-close" type="button" aria-label="Đóng bảng đăng ký">← Đóng bảng đăng ký</button>`;
-    const gate=root.querySelector('section')||root.lastElementChild;
-    (gate?.parentNode||root).insertBefore(panel,gate?.nextSibling||null);
-    const host=panel.querySelector('.apple-inline-form');
-    host.appendChild(box);
-    modal.setAttribute('aria-hidden','true');
-    modal.style.display='none';
-    const close=panel.querySelector('.apple-inline-close');
-    function hide(){
-      modal.style.display='';
-      modal.removeAttribute('aria-hidden');
-      modal.appendChild(box);
-      panel.classList.remove('open');
-      document.body.classList.remove('apple-inline-member-open');
-    }
-    box.querySelector('#memberAuthClose')?.addEventListener('click',hide);
-    close.addEventListener('click',hide);
-    function openSignup(){
-      panel.classList.add('open');
-      document.body.classList.add('apple-inline-member-open');
-      document.getElementById('memberHomeTabSignup')?.click();
-      setTimeout(()=>panel.scrollIntoView({behavior:'smooth',block:'start'}),20);
-    }
-    root.addEventListener('click',function(e){
-      const target=e.target.closest('button,a');
-      if(!target||!root.contains(target))return;
-      const label=(target.textContent||'').trim().replace(/\s+/g,' ');
-      if(/đăng ký/i.test(label) && !target.closest('#appleSeedInlineMember')){e.preventDefault();openSignup();}
-    });
-    window.appleSeedOpenInlineSignup=openSignup;
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
-  const observer=new MutationObserver(()=>init());
-  observer.observe(document.getElementById('homeRenderer')||document.body,{childList:true,subtree:true});
-})();
-</script>
 </body>
 </html>
+<footer class="apple-seed-copyright" aria-label="Bản quyền Apple Seed">
+  <div>Website được viết và phát triển bởi <strong>Tô Thanh Trung</strong> – Apple Seed</div>
+  <span class="copy-warning">🚫 NGHIÊM CẤM SAO CHÉP, SỬ DỤNG LẠI, ĐĂNG LẠI HOẶC PHÂN PHỐI NỘI DUNG DƯỚI MỌI HÌNH THỨC KHI CHƯA ĐƯỢC PHÉP.</span>
+</footer>
 
 

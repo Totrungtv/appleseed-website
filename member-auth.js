@@ -389,12 +389,6 @@ async function memberSignUp(
       cleanPhone
     );
 
-    try{
-      await memberSB.rpc('apple_seed_member_touch');
-    }catch(error){
-      console.warn('Apple Seed member touch:', error);
-    }
-
   }
 
   return {
@@ -477,12 +471,6 @@ async function memberSignIn(
     await memberEnsureProfile(
       result.data.user
     );
-
-    try{
-      await memberSB.rpc('apple_seed_member_touch');
-    }catch(error){
-      console.warn('Apple Seed member touch:', error);
-    }
 
   }
 
@@ -909,16 +897,3 @@ window.memberListenAuthState =
 console.log(
   '✅ Apple Seed Member Auth VIP FIX loaded.'
 );
-
-
-/* =========================================================
-   AI BOARD MEMBER ACCOUNT / COIN UI
-   Chỉ nạp trên ai-board.html để không ảnh hưởng trang khác.
-   ========================================================= */
-
-if(/ai-board\\.html$/i.test(window.location.pathname)){
-  const script = document.createElement('script');
-  script.src = 'ai-board-member-ui.js?v=1';
-  script.async = false;
-  document.head.appendChild(script);
-}

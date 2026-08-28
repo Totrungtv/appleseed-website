@@ -6,7 +6,7 @@
 <title>Apple Seed AI Board</title>
 <style>
 body{margin:0;font-family:Inter,system-ui,sans-serif;background:linear-gradient(135deg,#f7fbff,#eef7ff 52%,#e8f2ff);color:#10233f}
-.wrap{max-width:1600px;margin:auto;padding:24px}.top{display:flex;justify-content:space-between;gap:20px;align-items:center;flex-wrap:wrap}
+.wrap{max-width:1180px;margin:auto;padding:30px}.top{display:flex;justify-content:space-between;gap:20px;align-items:center;flex-wrap:wrap}
 .kicker{font-size:11px;font-weight:900;letter-spacing:.18em;color:#647b98}h1{font-size:36px;margin:6px 0}.muted{color:#647b98;font-size:14px}
 .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}.card{background:#fff;border:1px solid #cfe2f7;border-radius:20px;padding:20px;box-shadow:0 18px 55px #1e50821a;margin-top:18px}
 .fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.full{grid-column:1/-1}.field{display:flex;flex-direction:column;gap:7px;margin-top:14px}
@@ -72,177 +72,22 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
 .member-gate{margin-top:18px;background:#fff;border:1px solid #cfe2f7;border-radius:20px;padding:26px;text-align:center;box-shadow:0 18px 55px #1e50821a}
 .member-gate-icon{font-size:34px}.member-gate h2{margin:8px 0 7px}.member-gate p{margin:0 auto;max-width:720px;color:#647b98;line-height:1.6}.member-gate-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:16px}
 .member-gate a{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
-.member-policy{margin-top:18px;background:#fff;border:1px solid #cfe2f7;border-radius:20px;padding:20px;box-shadow:0 18px 55px #1e50821a}
-.member-policy-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap}
-.member-policy h2{margin:0 0 6px}.member-policy-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:15px}
-.member-policy-item{padding:15px;border:1px solid #d5e5f5;border-radius:14px;background:#f8fbff}
-.member-policy-item h3{margin:0 0 7px;font-size:15px}.member-policy-item p{margin:0;color:#647b98;line-height:1.55;font-size:13px}
-.member-policy-note{margin-top:14px;padding:14px 16px;border-radius:13px;background:#eef7ff;border:1px solid #c5e1ff;color:#145ca8;font-weight:750;line-height:1.55}
-@media(max-width:700px){.member-policy-grid{grid-template-columns:1fr}}
-
-/* ===== MEMBER ACCOUNT + POLICY SIDE PANEL ===== */
-.member-dashboard{display:grid;grid-template-columns:minmax(260px,.72fr) minmax(0,1.28fr);gap:18px;margin-top:18px;align-items:stretch}
-.member-account-card{background:#fff;border:1px solid #cfe2f7;border-radius:20px;padding:20px;box-shadow:0 18px 55px #1e50821a}
-.member-account-card h2{margin:5px 0 14px}.member-logout-btn{color:#b42318!important;border-color:#fecaca!important;background:#fff7f7!important}.member-logout-btn:disabled{opacity:.65}
-.account-name{font-size:19px;font-weight:900}.admin-badge{display:inline-flex;align-items:center;gap:5px;margin-top:7px;padding:5px 9px;border-radius:999px;background:#eef7ff;border:1px solid #bfdbfe;color:#145ca8;font-size:11px;font-weight:900;letter-spacing:.02em}.admin-badge[hidden]{display:none!important}.account-email{color:#647b98;font-size:13px;margin-top:4px;word-break:break-all}
-.account-coin-box{margin-top:16px;padding:15px;border-radius:15px;background:linear-gradient(135deg,#eef7ff,#f8fbff);border:1px solid #c8e2ff}
-.account-coin-box span{display:block;color:#46617f;font-size:12px;font-weight:800}.account-coin-box strong{display:block;color:#146ee8;font-size:29px;line-height:1.2;margin:4px 0}.account-coin-box small{color:#647b98;line-height:1.45}
-.account-wallet-action{margin-top:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}.account-wallet-action .btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;padding:10px 14px}.account-wallet-hint{font-size:11px;color:#647b98}.account-details{margin-top:14px;border-top:1px solid #e6eef7}.account-details div{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid #e6eef7;font-size:12px}.account-details span{color:#647b98}.account-details b{text-align:right}
-.account-note{margin-top:12px;padding:11px 12px;border-radius:11px;background:#f5faff;color:#46617f;font-size:12px;line-height:1.5}
-.member-policy-side{margin-top:0}.member-policy-side .member-policy-grid{grid-template-columns:1fr 1fr}.member-policy-side .member-policy-item{padding:12px}.member-policy-side .member-policy-item h3{font-size:13px}.member-policy-side .member-policy-item p{font-size:12px}
-.member-policy-side .member-policy-note{font-size:12px}
-@media(max-width:900px){.member-dashboard{grid-template-columns:1fr}.member-policy-side{margin-top:0}}
-@media(max-width:560px){.member-policy-side .member-policy-grid{grid-template-columns:1fr}}
 /* Chỉ mở YouTube cho khách; toàn bộ công cụ AI/Board/Library/Community yêu cầu Member. */
 body.member-guest .repair-video-library,
 body.member-guest .youtube-submit,
 body.member-guest .grid,
 body.member-guest main > .card{display:none!important}
-body.member-guest .member-policy{display:block}
 body.member-guest .member-gate{display:block}
 body.member-guest .top .pill{display:none}
 @media(max-width:560px){.member-gate{padding:20px 16px}}
-
-/* APPLE SEED MEMBER GATE VISIBILITY FIX v1
-   Chỉ hiện Member Gate khi chưa đăng nhập.
-   Khi đã đăng nhập: ẩn TẤT CẢ gate, kể cả gate bị trùng ID.
-*/
-body.member-authenticated .member-gate{
-  display:none !important;
-  visibility:hidden !important;
-  height:0 !important;
-  min-height:0 !important;
-  margin:0 !important;
-  padding:0 !important;
-  overflow:hidden !important;
-}
-body.member-guest .member-gate{
-  display:block !important;
-  visibility:visible !important;
-  height:auto !important;
-  overflow:visible !important;
-}
-
 </style>
-
-<style>
-/* ===== APPLE SEED COIN BILLING MODAL ===== */
-.coin-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(7,17,30,.72);z-index:100000}
-.coin-modal.open{display:flex}
-.coin-modal-box{width:min(460px,100%);background:#fff;border:1px solid #cfe2f7;border-radius:22px;padding:24px;box-shadow:0 28px 90px rgba(0,0,0,.28);text-align:center}
-.coin-modal-icon{font-size:42px}.coin-modal-box h2{margin:8px 0}.coin-modal-box p{color:#647b98;line-height:1.6;margin:8px 0}
-.coin-modal-balance{margin:16px 0;padding:13px;border-radius:13px;background:#f5faff;border:1px solid #d5e8fb;color:#145ca8;font-weight:850}
-.coin-modal-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:16px}
-.coin-modal-close{border:0;background:#edf3f8;color:#294764}
-</style>
-
-\n<style>
-.ai-knowledge-results{display:block;width:100%;box-sizing:border-box;margin:0 0 14px;padding:16px;border:1px solid #cfe2f7;border-radius:13px;background:#fff}
-.ai-knowledge-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
-.ai-knowledge-head b{color:#17345c}.ai-knowledge-empty{padding:10px 12px;border-radius:10px;background:#f7fbff;color:#647b98;font-size:12px}
-.ai-knowledge-item{padding:11px 12px;border:1px solid #e1ebf6;border-radius:11px;background:#f7fbff;margin-top:8px}
-.ai-knowledge-item strong{display:block;color:#10233f;font-size:13px}.ai-knowledge-meta{font-size:10px;color:#278cf0;font-weight:800;margin-top:3px;text-transform:uppercase}.ai-knowledge-item p{margin:7px 0 0;color:#46617f;font-size:12px;line-height:1.55;white-space:pre-wrap;max-height:150px;overflow:auto}
-</style>
-<style>
-.ai-parallel-result{display:block!important;width:100%!important}
-.ai-real-data,.ai-analysis{display:block!important;width:100%!important;max-width:none!important;box-sizing:border-box;padding:16px;border:1px solid #cfe2f7;border-radius:13px}
-.ai-real-data{background:#fff;margin:0 0 14px!important}
-.ai-analysis{background:#f5faff;margin:0!important}
-.ai-real-data .panic-data{max-height:360px;overflow:auto}
-
-</style>\n
-<style>
-.device-field{grid-column:1/-1}
-.device-field select{font-size:15px;font-weight:700;min-height:48px}
-.device-count{font-size:11px;font-weight:800;color:#278cf0;margin-left:5px}
-.device-hint{font-size:11px;color:#647b98;margin-top:5px}
-.device-field select:focus{border-color:#278cf0;box-shadow:0 0 0 3px #278cf01a;outline:0}
-</style>
-<style>
-.panic-help-label{font-size:11px;font-weight:700;color:#278cf0;margin-left:5px}
-.panic-guide{margin:7px 0 9px;padding:10px 12px;border:1px solid #cfe3fb;border-radius:10px;background:#f5f9ff;color:#5e7592;font-size:11px;line-height:1.55;display:flex;flex-direction:column;gap:3px}
-.panic-guide strong{color:#17345c;font-size:12px}
-.panic-guide code{background:#eaf3ff;padding:1px 4px;border-radius:4px;color:#1769ff}
-.panic-live-data{margin-top:10px;padding:13px 14px;border:1px solid #cfe2f7;border-radius:13px;background:#fff;box-shadow:0 8px 24px #1e50820d}
-.panic-live-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:10px}
-.panic-live-head strong{display:block;color:#17345c;font-size:13px}
-.panic-live-head span{display:block;color:#647b98;font-size:11px;margin-top:3px}
-.panic-live-status{color:#278cf0!important;font-weight:800;white-space:nowrap}
-.panic-live-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.panic-live-grid>div{padding:9px 10px;border:1px solid #e1ebf6;border-radius:10px;background:#f7fbff;min-width:0}
-.panic-live-grid span{display:block;color:#647b98;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
-.panic-live-grid b{display:block;margin-top:3px;color:#10233f;font-size:12px;word-break:break-word}
-.panic-live-wide{grid-column:1/-1}
-.panic-live-wide pre{margin:4px 0 0;white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;font-size:12px;line-height:1.5;color:#10233f;max-height:180px;overflow:auto}
-@media(max-width:560px){.panic-live-grid{grid-template-columns:1fr}.panic-live-wide{grid-column:auto}}
-</style><style id="apple-seed-ai-video-cta">
-.ai-board-quick-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px}
-.ai-board-quick-actions .btn{display:flex;align-items:center;justify-content:center;text-decoration:none;min-height:52px;box-sizing:border-box;text-align:center}
-@media(max-width:560px){.ai-board-quick-actions{grid-template-columns:repeat(2,minmax(0,1fr))}.ai-board-quick-actions .btn{width:100%;padding:10px 8px;font-size:14px;line-height:1.25}}
-
-</style>
-<style id="apple-seed-home-float-style">
-#appleSeedHomeFloat{position:fixed;left:24px;bottom:24px;z-index:99998;display:inline-flex;align-items:center;gap:8px;min-height:46px;padding:0 17px;border:1px solid #cfe2f7;border-radius:999px;background:rgba(255,255,255,.96);color:#1769ff;text-decoration:none;font-size:14px;font-weight:850;box-shadow:0 12px 30px rgba(23,105,255,.16);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:transform .18s ease,box-shadow .18s ease,background .18s ease}
-#appleSeedHomeFloat:hover{transform:translateY(-2px);background:#f7fbff;box-shadow:0 16px 34px rgba(23,105,255,.22)}
-#appleSeedHomeFloat:active{transform:scale(.97)}
-@media(max-width:700px){#appleSeedHomeFloat{left:14px;bottom:14px;min-height:42px;padding:0 14px;font-size:13px}}
-</style>
-<style id="ai-board-inline-auth-style">#aiBoardMemberAuth{display:none;margin:20px 0 0;padding:22px;border:1px solid #cfe2f7;border-radius:18px;background:linear-gradient(135deg,#f4f9ff,#fff);box-shadow:0 14px 35px rgba(27,91,160,.1)}#aiBoardMemberAuth.open{display:block}.aima-head{text-align:center}.aima-head h3{margin:5px 0;color:#10213f}.aima-head p{margin:0;color:#667b96;font-size:13px}.aima-tabs{display:flex;gap:8px;max-width:430px;margin:18px auto}.aima-tabs button{flex:1;border:1px solid #cfe2f7;background:#fff;color:#1769ff;border-radius:10px;padding:10px;font-weight:850}.aima-tabs button.active{background:#1769ff;color:#fff}.aima-form{display:none;max-width:520px;margin:auto;gap:10px}.aima-form.active{display:grid}.aima-form label{font-size:12px;font-weight:800;color:#284665}.aima-form input{width:100%;margin-top:5px;padding:11px;border:1px solid #d5e3f2;border-radius:9px;box-sizing:border-box}.aima-form button[type=submit]{min-height:44px;border:0;border-radius:10px;background:#1769ff;color:#fff;font-weight:900}.aima-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.aima-status{text-align:center;min-height:20px;font-size:12px;color:#5e7592}.aima-status.ok{color:#138a4d}.aima-forgot,.aima-back-login{border:0;background:none;color:#1769ff;font-weight:850;cursor:pointer;text-align:center;padding:5px}.aima-close{display:block;margin:12px auto 0;border:0;background:none;color:#1769ff;font-weight:850}@media(max-width:560px){#aiBoardMemberAuth{padding:16px}.aima-row{grid-template-columns:1fr}}</style></head>
-<body class="member-guest">
-<a id="appleSeedHomeFloat" href="index.html" aria-label="Về trang chủ">⌂ <span>Về trang chủ</span></a><main class="wrap">
-<header class="top"><div><div class="kicker">APPLE SEED • ENGINEERING LAB</div><h1>AI Board Intelligence</h1><div class="muted">Trợ lý kỹ thuật sửa iPhone • Phân tích PANIC, lỗi phần cứng và tra cứu ca sửa thực tế.</div><div class="ai-board-quick-actions">
-<a class="btn primary" href="#repair-video-library">🎬 <span>Xem video sửa chữa</span></a>
-<a class="btn secondary" href="#youtube-center">🔎 <span>Tìm video YouTube</span></a>
-<a class="btn secondary" href="#panic">🚨 <span>Phân tích PANIC</span></a>
-<a class="btn secondary" href="#schematicType">📐 <span>Tra cứu Schematic</span></a>
-</div></div></header>
+</head>
+<body class="member-guest"><main class="wrap">
+<header class="top"><div><div class="kicker">APPLE SEED • ENGINEERING LAB</div><h1>AI Board Intelligence</h1><div class="muted">YouTube miễn phí • Các công cụ kỹ thuật dành cho thành viên Apple Seed</div></div></header>
 
 
 
 <!-- ===== APPLE SEED VIDEO TOOLS: TOP OF AI BOARD ===== -->
-<section class="member-dashboard" id="member-dashboard">
-  <aside class="member-account-card" id="member-account-card">
-    <div class="kicker">APPLE SEED • MEMBER</div>
-    <h2>Tài khoản của tôi</h2>
-    <div class="account-name" id="memberAccountName">Đang tải...</div>
-    <span class="admin-badge" id="memberAccountAdminBadge" hidden>🛡️ ADMIN ✓</span>
-    
-    <div class="account-email" id="memberAccountEmail">—</div>
-    <div class="account-coin-box">
-      <span>🪙 Số dư Coin</span>
-      <strong id="memberAccountCoins">—</strong>
-      <small>Coin dùng cho các tính năng AI theo cấu hình hệ thống.</small>
-    </div>
-    <div class="account-wallet-action">
-      <a class="btn primary" href="member-wallet.html">💳 Nạp Coin</a>
-      <button class="btn secondary member-chat-btn" type="button" id="appleSeedMemberChatBtn"><span>💬 Chat</span><span class="chat-notification" id="memberChatNotification" hidden aria-label="Tin nhắn mới">🔔<b id="memberChatUnreadCount">0</b></span></button>
-      <button class="btn secondary member-logout-btn" type="button" id="appleSeedMemberLogoutBtn">🚪 Đăng xuất</button>
-      <span class="account-wallet-hint">Nạp Coin và trò chuyện với Member</span>
-    </div>
-    <div class="account-details">
-      <div><span>Trạng thái</span><b id="memberAccountStatus">—</b></div>
-      <div><span>Trial đến</span><b id="memberAccountTrial">—</b></div>
-      <div><span>Ngày đăng ký</span><b id="memberAccountCreated">—</b></div>
-    </div>
-    <div class="account-note" id="memberAccountNote">Đang đọc thông tin thành viên...</div>
-  </aside>
-
-  <section class="member-policy member-policy-side" id="member-policy" aria-label="Nội quy thành viên và chính sách Coin">
-    <div class="member-policy-head"><div><div class="kicker">APPLE SEED • MEMBER POLICY</div><h2>📜 Nội quy & chính sách Coin</h2><div class="muted">Quy định sử dụng AI Board dành cho thành viên.</div></div><span class="pill">🎁 +150 Coin khi đăng ký</span></div>
-    <div class="member-policy-grid">
-      <article class="member-policy-item"><h3>🆓 Đăng ký miễn phí</h3><p>Tạo tài khoản thành viên <b>miễn phí</b>.</p></article>
-      <article class="member-policy-item"><h3>🎁 Coin khởi tạo</h3><p>Tài khoản mới được tặng <b>150 Coin một lần</b>.</p></article>
-      <article class="member-policy-item"><h3>⏱️ Trial</h3><p>Thời gian Trial theo cấu hình hệ thống. Hết Trial, tính năng yêu cầu Coin/gói sẽ cần quyền sử dụng phù hợp.</p></article>
-      <article class="member-policy-item"><h3>🚫 Không tạo nhiều tài khoản</h3><p>Không đăng ký nhiều tài khoản để nhận Coin khởi tạo. Apple Seed có quyền kiểm tra tài khoản có dấu hiệu lạm dụng.</p></article>
-      <article class="member-policy-item"><h3>💳 Nạp Coin</h3><p>Chuyển khoản theo hướng dẫn và gửi xác nhận. Admin chỉ cộng Coin sau khi <b>đối chiếu giao dịch thực tế</b>.</p></article>
-      <article class="member-policy-item"><h3>🧾 Minh bạch</h3><p>Coin thưởng và Coin nạp được ghi nhận trong Ledger để đối soát.</p></article>
-      <article class="member-policy-item"><h3>🛡️ An toàn tài khoản</h3><p>Không chia sẻ mật khẩu, giả mạo chứng từ hoặc tìm cách vượt giới hạn hệ thống.</p></article>
-      <article class="member-policy-item"><h3>🛠️ Khi AI gặp sự cố</h3><p>Không tự vượt cơ chế bảo vệ. Báo Admin để ghi nhận lỗi và xử lý/kiểm thử.</p></article>
-    </div>
-    <div class="member-policy-note">📌 <b>ĐĂNG KÝ MIỄN PHÍ → +150 COIN MỘT LẦN → COIN ĐƯỢC GHI LEDGER.</b></div>
-  </section>
-</section>
-
 <section class="youtube-center" id="youtube-center">
   <div class="youtube-head">
     <div>
@@ -264,16 +109,12 @@ body.member-guest .member-gate{
   </div>
 </section>
 
-
-
 <section class="member-gate" id="member-gate">
   <div class="member-gate-icon">🔐</div>
   <h2>Đăng ký thành viên để sử dụng toàn bộ tính năng</h2>
   <p>Apple Seed mở khu vực YouTube để mọi người xem miễn phí. Các tính năng AI Board, chẩn đoán PANIC, schematic, boardview, thư viện sửa chữa và cộng đồng kỹ thuật chỉ dành cho thành viên.</p>
-  <div class="member-gate-actions"><button class="btn primary" type="button" id="aiBoardMemberGateBtn">👤 Đăng ký / Đăng nhập thành viên</button></div>
+  <div class="member-gate-actions"><a class="btn primary" href="index.html">👤 Đăng ký / Đăng nhập thành viên</a></div>
 </section>
-
-
 
 <section class="repair-video-library" id="repair-video-library">
   <div class="repair-video-library-head">
@@ -338,105 +179,20 @@ body.member-guest .member-gate{
 <section class="grid">
 <div class="card"><h2>🧪 Diagnostic Workspace</h2><div class="muted">Tạo ca kỹ thuật và chuẩn bị dữ liệu cho AI.</div>
 <div class="fields">
-<div class="field full device-field">
-<label>Thiết bị <span class="device-count">• Đầy đủ dòng iPhone</span></label>
-<select id="deviceModel">
-  <option value="">Chọn thiết bị</option>
-  <optgroup label="iPhone 2G / 3G / 4 Series"><option>iPhone (1st generation)</option><option>iPhone 3G</option><option>iPhone 3GS</option><option>iPhone 4</option><option>iPhone 4S</option></optgroup>
-  <optgroup label="iPhone 5 Series">
-    <option>iPhone 5</option><option>iPhone 5c</option><option>iPhone 5s</option>
-  </optgroup>
-  <optgroup label="iPhone 6 Series">
-    <option>iPhone 6</option><option>iPhone 6 Plus</option><option>iPhone 6s</option><option>iPhone 6s Plus</option>
-  </optgroup>
-  <optgroup label="iPhone 7 Series">
-    <option>iPhone 7</option><option>iPhone 7 Plus</option>
-  </optgroup>
-  <optgroup label="iPhone 8 Series">
-    <option>iPhone 8</option><option>iPhone 8 Plus</option>
-  </optgroup>
-  <optgroup label="iPhone X Series">
-    <option>iPhone X</option><option>iPhone XR</option><option>iPhone XS</option><option>iPhone XS Max</option>
-  </optgroup>
-  <optgroup label="iPhone 11 Series">
-    <option>iPhone 11</option><option>iPhone 11 Pro</option><option>iPhone 11 Pro Max</option>
-  </optgroup>
-  <optgroup label="iPhone 12 Series">
-    <option>iPhone 12 mini</option><option>iPhone 12</option><option>iPhone 12 Pro</option><option>iPhone 12 Pro Max</option>
-  </optgroup>
-  <optgroup label="iPhone 13 Series">
-    <option>iPhone 13 mini</option><option>iPhone 13</option><option>iPhone 13 Pro</option><option>iPhone 13 Pro Max</option>
-  </optgroup>
-  <optgroup label="iPhone 14 Series">
-    <option>iPhone 14</option><option>iPhone 14 Plus</option><option>iPhone 14 Pro</option><option>iPhone 14 Pro Max</option>
-  </optgroup>
-  <optgroup label="iPhone 15 Series">
-    <option>iPhone 15</option><option>iPhone 15 Plus</option><option>iPhone 15 Pro</option><option>iPhone 15 Pro Max</option>
-  </optgroup>
-  <optgroup label="iPhone 16 Series">
-    <option>iPhone 16</option><option>iPhone 16 Plus</option><option>iPhone 16 Pro</option><option>iPhone 16 Pro Max</option><option>iPhone 16e</option>
-  </optgroup>
-  <optgroup label="iPhone 17 Series">
-    <option>iPhone 17</option><option>iPhone Air</option><option>iPhone 17 Pro</option><option>iPhone 17 Pro Max</option><option>iPhone 17e</option>
-  </optgroup>
-  <optgroup label="iPhone SE">
-    <option>iPhone SE (1st generation)</option><option>iPhone SE (2nd generation)</option><option>iPhone SE (3rd generation)</option>
-  </optgroup>
-  <optgroup label="iPad">
-    <option>iPad (1st generation)</option><option>iPad 2</option><option>iPad (3rd generation)</option><option>iPad (4th generation)</option><option>iPad (5th generation)</option><option>iPad (6th generation)</option><option>iPad (7th generation)</option><option>iPad (8th generation)</option><option>iPad (9th generation)</option><option>iPad (10th generation)</option><option>iPad (A16)</option>
-  </optgroup>
-  <optgroup label="iPad mini">
-    <option>iPad mini (1st generation)</option><option>iPad mini 2</option><option>iPad mini 3</option><option>iPad mini 4</option><option>iPad mini (5th generation)</option><option>iPad mini (6th generation)</option><option>iPad mini (A17 Pro)</option>
-  </optgroup>
-  <optgroup label="iPad Air">
-    <option>iPad Air (1st generation)</option><option>iPad Air 2</option><option>iPad Air (3rd generation)</option><option>iPad Air (4th generation)</option><option>iPad Air (5th generation)</option><option>iPad Air (M2)</option><option>iPad Air (M3)</option>
-  </optgroup>
-  <optgroup label="iPad Pro">
-    <option>iPad Pro 12.9-inch (1st generation)</option><option>iPad Pro 9.7-inch</option><option>iPad Pro 10.5-inch</option><option>iPad Pro 11-inch (1st generation)</option><option>iPad Pro 12.9-inch (2nd generation)</option><option>iPad Pro 11-inch (2nd generation)</option><option>iPad Pro 12.9-inch (3rd generation)</option><option>iPad Pro 11-inch (3rd generation)</option><option>iPad Pro 12.9-inch (4th generation)</option><option>iPad Pro 11-inch (4th generation)</option><option>iPad Pro 12.9-inch (5th generation)</option><option>iPad Pro 11-inch (4th generation, M2)</option><option>iPad Pro 11-inch (M4)</option><option>iPad Pro 13-inch (M4)</option><option>iPad Pro 11-inch (M5)</option><option>iPad Pro 13-inch (M5)</option>
-  </optgroup>
-</select>
-<div class="device-hint">📱 Chọn đúng model để AI đối chiếu PANIC, power sequence, I2C, RFFE và dữ liệu board tương ứng.</div>
-</div>
+<div class="field"><label>Thiết bị</label><select><option>iPhone 14 Pro Max</option><option>iPhone 15 Pro Max</option><option>iPhone 13 Pro Max</option></select></div>
 <div class="field"><label>Loại lỗi</label><select><option>PANIC / Kernel</option><option>Boot / No Power</option><option>Baseband</option><option>Face ID</option><option>I2C / Sensor</option></select></div>
-<div class="field full">
-<label>PANIC LOG <span class="panic-help-label">• Không biết lấy ở đâu? Xem hướng dẫn bên dưới</span></label>
-<div class="panic-guide">
-  <strong>📋 PANIC LOG dùng để làm gì?</strong>
-  <span>Dán <b>nguyên văn panic log</b> của máy vào đây. Bạn không cần tự giải mã.</span>
-  <span><b>Cách lấy trên iPhone:</b> Cài đặt → Quyền riêng tư &amp; Bảo mật → Phân tích &amp; Cải tiến → Dữ liệu phân tích → mở file <b>panic-full...</b> hoặc file có chữ <b>panic</b> → <b>Chia sẻ / Sao chép</b> rồi dán toàn bộ nội dung vào ô này.</span>
-  <span><b>Nếu chỉ có một dòng lỗi</b> (ví dụ: <code>panic 0x20000 compass</code>) thì cứ dán nguyên dòng đó. AI sẽ dựa vào model máy + panic + số đo để phân tích.</span>
-  <span><b>🧩 Mã lỗi dạng số / Sensor Array:</b> Nếu bạn thấy một <b>con số tự nhiên</b> trong log/tài liệu mà không biết đó là mã gì, <b>cứ nhập nguyên con số</b>. Bạn <b>không cần biết HEX, không cần tự đổi và không cần tự tra mã</b>. AI Board sẽ tự nhận diện mã, tự quy đổi sang HEX và tự đối chiếu theo <b>model iPhone + PANIC LOG + dữ liệu kỹ thuật + ảnh</b>.</span>
-  <span><b>Ví dụ:</b> chỉ cần nhập <code>524288</code> hoặc dán nguyên đoạn log có chứa <code>524288</code>. Sau đó gửi kèm <b>ảnh main / schematic / boardview</b>. AI sẽ tự xử lý <code>524288 → 0x80000</code> và đưa kết quả/nhận định dựa trên bằng chứng có trong ca.</span>
-  <span><b>⚡ Muốn AI phân tích nhanh:</b> hãy ghi <code>Hãy giúp tôi phân tích tấm ảnh phía dưới</code> và chọn ảnh main / schematic / boardview. AI sẽ ưu tiên đọc hình ảnh, đối chiếu với model máy và các dữ liệu bạn đã nhập để đưa ra hướng phân tích.</span>
-</div>
-<textarea id="panic" placeholder="Ví dụ: panic 0x20000 compass&#10;Hoặc chỉ cần nhập mã số tự nhiên, ví dụ: 524288&#10;&#10;Hoặc dán toàn bộ nội dung file panic-full... vào đây.">panic 0x20000 compass</textarea>
-<div class="panic-live-data" id="panicLiveData">
-  <div class="panic-live-head">
-    <div>
-      <strong>📋 DỮ LIỆU THỰC TẾ</strong>
-      <span>AI sẽ đọc chính xác các dữ liệu bạn nhập ở khu vực này.</span>
-    </div>
-    <span class="panic-live-status">● Đang cập nhật</span>
-  </div>
-  <div class="panic-live-grid">
-    <div><span>Thiết bị</span><b id="liveDevice">—</b></div>
-    <div><span>Loại lỗi</span><b id="liveFault">—</b></div>
-    <div class="panic-live-wide"><span>PANIC LOG / mã lỗi</span><pre id="livePanic">—</pre></div>
-  </div>
-</div>
-</div>
+<div class="field full"><label>PANIC LOG</label><textarea id="panic">panic 0x20000 compass</textarea></div>
 <div class="field"><label>Boot current</label><input placeholder="0.080A → 0.000A"></div>
 <div class="field"><label>Vbat / nguồn</label><input placeholder="4.20V"></div>
 <div class="field"><label>Diode / Resistance</label><input placeholder="Giá trị đo"></div>
 <div class="field"><label>I2C / SDA / SCL</label><input placeholder="Địa chỉ / tình trạng"></div>
 </div>
-<div class="drop" id="boardImageDrop">📷<br><strong>Chọn ảnh main / schematic / boardview</strong><br><span class="muted">JPG / PNG / WEBP • ảnh sẽ được gửi cùng ca phân tích</span><input id="boardImage" type="file" accept="image/jpeg,image/png,image/webp" style="margin-top:10px"></div>
-<div class="actions"><button class="btn primary" id="analyze">⚡ PHÂN TÍCH AI</button></div>
-<div id="result" class="result">Chưa phân tích.</div></div>
+<div class="drop">📷<br><strong>Thả ảnh main / schematic / boardview</strong><br><span class="muted">Bước sau nối Supabase Storage</span></div>
+<div class="actions"><button class="btn primary" id="analyze">⚡ PHÂN TÍCH AI</button></div><div id="result" class="result">Chưa phân tích.</div></div>
 
-<div class="card"><h2>🧠 AI Diagnosis</h2><div class="muted">Evidence-first • Kết quả phân tích PANIC hiển thị ngay dưới nút PHÂN TÍCH AI ở khung bên trái.</div>
+<div class="card"><h2>🧠 AI Diagnosis</h2><div class="muted">Evidence-first • không kết luận khi thiếu dữ liệu.</div>
 <div class="result"><strong>Case Intelligence</strong><div class="case"><b>iPhone 14 Pro Max · 0x20000 · Compass</b><div class="muted">Ưu tiên compass/sensor + I2C. Cần đo và đối chiếu board tốt.</div><span class="pill">I2C</span><span class="pill">PANIC</span></div></div>
-<h2 style="margin-top:22px">📐 Schematic Intelligence</h2><div class="fields"><div class="field"><label>Tài liệu</label><select id="schematicType"><option>Schematic</option><option>Boardview / ZXW</option><option>Pinout</option><option>Ảnh main</option></select></div><div class="field"><label>Vùng / linh kiện</label><input id="schematicZone" placeholder="U5200 / I2C compass / PP_VDD"></div></div><div class="drop schematic-drop" id="schematicImageDrop">📐<br><strong>Chọn / kéo thả ảnh Schematic / Boardview vào đây</strong><br><span class="muted" id="schematicImageHint">JPG / PNG / WEBP • ảnh này sẽ được gửi riêng cho Schematic Intelligence</span><input id="schematicImage" type="file" accept="image/jpeg,image/png,image/webp" style="margin-top:10px"></div><div class="actions"><button class="btn primary" id="analyzeSchematic" type="button">📐 ANALYZE SCHEMATIC</button></div><div id="schematicResult" class="result">Chưa phân tích schematic.</div></div>
+<h2 style="margin-top:22px">📐 Schematic Intelligence</h2><div class="fields"><div class="field"><label>Tài liệu</label><select><option>Schematic</option><option>Boardview / ZXW</option><option>Pinout</option><option>Ảnh main</option></select></div><div class="field"><label>Vùng / linh kiện</label><input placeholder="U5200 / I2C compass / PP_VDD"></div></div><div class="actions"><button class="btn primary">📐 ANALYZE SCHEMATIC</button></div></div>
 </section>
 
 <section class="card"><div class="kicker">LIBRARY</div><h2>📚 Schematic Library</h2><div class="muted">Kho sơ đồ theo từng model iPhone.</div>
@@ -459,15 +215,15 @@ body.member-guest .member-gate{
 
 
 
-<section class="card"><div class="kicker">COMMUNITY</div><h2>🚨 PANIC Control Center</h2><div class="muted">Case thực tế của Member → thảo luận → xác minh → Knowledge Base.</div>
-<div class="case"><b>🧰 PANIC Community</b><div class="muted">Đăng ca thật, tìm ca theo model/PANIC/IC và trao đổi trực tiếp với anh em thợ.</div><span class="pill">Member</span><span class="pill">Case thực tế</span><span class="pill">Replies</span></div>
-<div class="actions"><a class="btn primary" href="panic-community.html">💬 Mở PANIC Community</a><a class="btn secondary" href="panic-center.html">🚨 PANIC Control Center</a></div></section>
+<section class="card"><div class="kicker">COMMUNITY</div><h2>🚨 PANIC Control Center</h2><div class="muted">Đăng ca bệnh thực tế, theo dõi phản hồi và sau này xác minh thành Knowledge Base.</div>
+<div class="case"><b>iPhone 14 Pro Max · Panic 0x20000 · Compass</b><div class="muted">6 kỹ thuật viên đang theo dõi.</div><span class="pill">I2C</span><span class="pill">6 replies</span></div>
+<div class="actions"><button class="btn primary">＋ Đăng ca PANIC</button><button class="btn secondary">💬 Chat theo case</button><button class="btn secondary">🔒 Chat riêng</button></div></section>
 
 <section class="card"><div class="kicker">ENGINEERING CENTER</div><h2>🗺️ Full System Map</h2><div class="fields">
 <div class="case"><b>🔬 AI Board Lab</b><div class="muted">PANIC • Measurement • I2C • RFFE</div></div>
 <div class="case"><b>📐 Schematic Library</b><div class="muted">Model → schematic → boardview → pinout</div></div>
-<div class="case"><a href="panic-center.html" style="text-decoration:none;color:inherit;display:block"><b>🚨 PANIC Center</b><div class="muted">Case thật → thảo luận → xác minh</div></a></div>
-<div class="case"><a href="panic-center.html" style="text-decoration:none;color:inherit;display:block"><b>💬 Technician Network</b><div class="muted">Online → nhóm → chat case</div></a></div>
+<div class="case"><b>🚨 PANIC Center</b><div class="muted">Case thật → thảo luận → xác minh</div></div>
+<div class="case"><b>💬 Technician Network</b><div class="muted">Online → nhóm → chat riêng</div></div>
 <div class="case"><b>🧠 Verified Knowledge</b><div class="muted">Case xác minh → AI knowledge</div></div>
 <div class="case"><b>🛡️ Admin Control</b><div class="muted">Duyệt case • thành viên • dữ liệu</div></div>
 </div></section>
@@ -475,28 +231,9 @@ body.member-guest .member-gate{
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
-<script src="member-auth.js"></script>
 <script>
 (()=>{
   const q=id=>document.getElementById(id);
-  const logoutBtn = q('appleSeedMemberLogoutBtn');
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', async () => {
-      if (!confirm('Bạn có chắc muốn đăng xuất tài khoản Member không?')) return;
-      logoutBtn.disabled = true;
-      logoutBtn.textContent = '⏳ Đang đăng xuất...';
-      try {
-        if (typeof window.memberLogout !== 'function') throw new Error('Chưa tải được chức năng đăng xuất.');
-        await window.memberLogout();
-      } catch (e) {
-        console.error('Apple Seed member logout:', e);
-        logoutBtn.disabled = false;
-        logoutBtn.textContent = '🚪 Đăng xuất';
-        alert(e?.message || 'Không thể đăng xuất.');
-      }
-    });
-  }
-
   const query=q('youtubeQuery'), btn=q('youtubeSearchBtn'), grid=q('youtubeGrid'), status=q('youtubeStatus');
   const modal=q('youtubePlayerModal'), frame=q('youtubeFrame'), title=q('youtubePlayerTitle');
   const close=q('youtubePlayerClose'), direct=q('youtubeDirectUrl'), openDirect=q('youtubeOpenUrl');
@@ -660,352 +397,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
 </script>
 
 <script>
-/* ===== APPLE SEED AI BOARD REAL ANALYSIS =====
-   Không còn kết quả hard-code. Mọi phân tích gọi Edge Function appleseed-ai.
-*/
-(()=> {
-  const $=id=>document.getElementById(id);
-  const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-  async function token(){
-    if(!window.supabaseClient) throw new Error('Chưa kết nối Supabase.');
-    const {data,error}=await window.supabaseClient.auth.getSession();
-    if(error) throw error;
-    if(!data?.session?.access_token) throw new Error('Phiên thành viên đã hết hạn. Hãy đăng nhập lại.');
-    return data.session.access_token;
-  }
-  async function image(inputId='boardImage'){
-    const f=$(inputId)?.files?.[0];
-    if(!f)return null;
-    if(f.size>8*1024*1024)throw new Error('Ảnh quá lớn. Vui lòng chọn ảnh dưới 8 MB.');
-    if(!/^image\/(jpeg|png|webp)$/i.test(f.type))throw new Error('Chỉ hỗ trợ JPG, PNG hoặc WEBP.');
-    return await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(new Error('Không đọc được ảnh.'));r.readAsDataURL(f)});
-  }
-  function showCoinModal(cost,balance){
-    const modal=$('coinModal'), msg=$('coinModalMessage'), bal=$('coinModalBalance');
-    if(!modal)return;
-    const c=Number(cost||0);
-    const b=Number(balance||0);
-    if(msg)msg.textContent=`Phân tích này cần ${c} Coin. Số dư hiện tại không đủ để tiếp tục.`;
-    if(bal)bal.textContent=`Số dư hiện tại: ${b.toLocaleString('vi-VN')} Coin`;
-    modal.classList.add('open');
-  }
-  function closeCoinModal(){ $('coinModal')?.classList.remove('open'); }
-  $('coinModalClose')?.addEventListener('click',closeCoinModal);
-  $('coinModal')?.addEventListener('click',e=>{if(e.target?.id==='coinModal')closeCoinModal();});
-
-  async function callAI(message,img=null,inputId='boardImage'){
-    const client=window.supabaseClient;
-    if(!client) throw new Error('Chưa kết nối Supabase.');
-    const {data:sessionData,error:sessionError}=await client.auth.getSession();
-    if(sessionError) throw sessionError;
-    const session=sessionData?.session;
-    if(!session?.user?.id) throw new Error('Phiên thành viên đã hết hạn. Hãy đăng nhập lại.');
-
-    const file=$(inputId)?.files?.[0];
-    if(!file) throw new Error(inputId==='schematicImage'
-      ? 'Bạn chưa chọn ảnh schematic/boardview.'
-      : 'Bạn chưa chọn ảnh main / schematic / boardview.');
-    if(file.size>8*1024*1024) throw new Error('Ảnh quá lớn. Vui lòng chọn ảnh dưới 8 MB.');
-    if(!/^image\/(jpeg|png|webp)$/i.test(file.type)) throw new Error('Chỉ hỗ trợ JPG, PNG hoặc WEBP.');
-
-    const safe=file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,'-');
-    const path=`pan-ai/${session.user.id}/${Date.now()}-${Math.random().toString(36).slice(2,8)}-${safe}`;
-
-    const upload=await client.storage.from('ai-schematics').upload(path,file,{
-      cacheControl:'3600',
-      upsert:false,
-      contentType:file.type
-    });
-    if(upload.error) throw upload.error;
-
-    const selects=document.querySelectorAll('.grid .card:first-child select');
-    const model=selects[0]?.value||'';
-    const boardCode=$('schematicArea')?.value?.trim()||'';
-
-    const insert=await client.from('ai_schematic_analyses').insert({
-      title:(model+' — '+(inputId==='schematicImage'?'Schematic Intelligence':'AI Board Diagnosis')).slice(0,180),
-      device_model:model,
-      board_code:boardCode,
-      notes:message,
-      file_path:path,
-      file_name:file.name,
-      mime_type:file.type,
-      ai_status:'queued',
-      created_by:session.user.id
-    }).select('id').single();
-
-    if(insert.error) throw insert.error;
-
-    const t=session.access_token;
-    const controller=new AbortController();
-    const timer=setTimeout(()=>controller.abort(),60000);
-    try{
-      const response=await fetch(window.SUPABASE_URL+'/functions/v1/appleseed-ai',{
-        method:'POST',
-        headers:{
-          'Content-Type':'application/json',
-          'apikey':window.SUPABASE_ANON_KEY,
-          'Authorization':'Bearer '+t
-        },
-        body:JSON.stringify({
-          analysis_id:insert.data.id,
-          file_path:path,
-          device_model:model,
-          board_code:boardCode,
-          notes:message,
-          mime_type:file.type,
-          source:'ai-board',
-          page:location.pathname,
-          action:inputId==='schematicImage'?'schematic_analysis':'ai_analysis'
-        }),
-        signal:controller.signal
-      });
-      const raw=await response.text();
-      let data=null;
-      try{data=raw?JSON.parse(raw):null}catch{data=raw}
-      if(!response.ok){
-        const err=new Error((data&&typeof data==='object'&&(data.error||data.message))||'AI server lỗi HTTP '+response.status);
-        err.code=data?.code||'';
-        err.balance=data?.balance??0;
-        err.cost=data?.cost??0;
-        throw err;
-      }
-      const reply=(typeof data==='string'?data:(data?.analysis||data?.reply||data?.message||data?.content||data?.answer||'')).trim();
-      if(!reply) throw new Error('AI không trả về nội dung.');
-      const billing={cost:Number(data?.cost||0),balance:Number(data?.balance||0)};
-      const balanceEl=$('memberAccountCoins');
-      if(balanceEl && Number.isFinite(billing.balance)) balanceEl.textContent=billing.balance.toLocaleString('vi-VN')+' Coin';
-      return {reply,billing,knowledge:Array.isArray(data?.knowledge_matches)?data.knowledge_matches:[]};
-    }finally{clearTimeout(timer)}
-  }
-  $('analyze').onclick=async()=>{
-    const btn=$('analyze'), result=$('result');
-    const selects=document.querySelectorAll('.grid .card:first-child select');
-    const inputs=[...document.querySelectorAll('.grid .card:first-child input')];
-    const device=selects[0]?.value||'', fault=selects[1]?.value||'', panic=$('panic')?.value.trim()||'';
-    const boot=inputs[0]?.value.trim()||'',vbat=inputs[1]?.value.trim()||'',diode=inputs[2]?.value.trim()||'',i2c=inputs[3]?.value.trim()||'';
-    if(!panic&&!boot&&!vbat&&!diode&&!i2c){result.innerHTML='<b>⚠️ Thiếu dữ liệu</b><p>Nhập PANIC log hoặc ít nhất một giá trị đo trước khi phân tích.</p>';return}
-    btn.disabled=true;btn.textContent='⏳ AI đang phân tích...';result.innerHTML='<b>⏳ Đang phân tích ca kỹ thuật…</b><p class="muted">Đang gửi dữ liệu đến AI backend.</p>';
-    try{
-      function normalizeSensorArrayCode(v){
-  const raw=String(v??'').trim();
-  if(/^0x[0-9a-f]+$/i.test(raw)) return '0x'+raw.slice(2).toUpperCase();
-  if(/^\d+$/.test(raw)){const n=Number(raw);if(Number.isSafeInteger(n)&&n>0)return '0x'+n.toString(16).toUpperCase();}
-  return null;
-}
-function extractSensorArrayCodes(text){
-  const out=new Set();
-  const blocks=String(text||'').match(/sensor\s+array[\s\S]{0,1000}/ig)||[];
-  for(const block of blocks){
-    for(const token of block.match(/0x[0-9a-f]+|\b\d+\b/gi)||[]){
-      const code=normalizeSensorArrayCode(token);
-      if(code&&code!=='0x0')out.add(code);
-    }
-  }
-  return [...out];
-}
-const sensorCodes=extractSensorArrayCodes(panic);
-      const sensorLookup='SENSOR ARRAY CODES TO LOOK UP: '+(sensorCodes.length?sensorCodes.join(', '):'none')+'\\nMỗi mã đã được chuẩn hóa: mã 0x... giữ nguyên; số thập phân tự đổi sang HEX. Hãy dùng chính các mã này để tra Knowledge Base, không hard-code mã cụ thể.';
-      const ai=await callAI(['Phân tích ca sửa chữa iPhone theo nguyên tắc evidence-first.','Thiết bị: '+device,'Loại lỗi: '+fault,'PANIC LOG: '+panic,sensorLookup,'DERIVED CODE CONTEXT: tự nhận diện mã sensor array. Mã đã có 0x thì giữ nguyên; dãy số tự nhiên thì chuyển từng số sang HEX rồi tra. Không yêu cầu người dùng tự chuyển đổi.','Boot current: '+boot,'Vbat / nguồn: '+vbat,'Diode / Resistance: '+diode,'I2C / SDA / SCL: '+i2c,'Trả lời tiếng Việt. Tách rõ dữ kiện, nhận định có cơ sở, dữ liệu còn thiếu, phép đo tiếp theo và thứ tự ưu tiên. Không bịa linh kiện/đường mạch. Nếu có ảnh, chỉ mô tả những gì thực sự nhìn thấy.'].join('\n'),await image('boardImage'),'boardImage');
-      const reply=ai.reply;
-      const bill=ai.billing;
-      const knowledge=ai.knowledge||[];
-      const knowledgeHtml=knowledge.length
-        ? knowledge.map((k,i)=>'<article class="ai-knowledge-item"><strong>📄 '+esc(k.title||('Tài liệu #'+(i+1)))+'</strong><div class="ai-knowledge-meta">'+esc(k.category||'Knowledge Base')+' · độ khớp '+esc(k.relevance_score||0)+'</div><p>'+esc(k.content||'')+'</p></article>').join('')
-        : '<div class="ai-knowledge-empty">Không tìm thấy tài liệu PANIC/Knowledge Base đã duyệt phù hợp với ca này.</div>';
-      result.innerHTML='<div class="ai-parallel-result"><div class="ai-knowledge-results"><div class="ai-knowledge-head"><b>📚 TRA CỨU TÀI LIỆU APPLE SEED</b><span class="muted">'+knowledge.length+' tài liệu phù hợp</span></div>'+knowledgeHtml+'</div><div class="ai-analysis"><b>🧠 PHÂN TÍCH AI</b><div style="white-space:pre-wrap;line-height:1.7;margin-top:9px">'+esc(reply)+'</div></div></div><div class="muted" style="margin-top:10px">🪙 Đã trừ '+bill.cost+' Coin • Còn lại '+bill.balance+' Coin</div>';
-    }catch(e){
-      console.error('AI Board:',e);
-      if(e?.code==='INSUFFICIENT_COINS') showCoinModal(e.cost,e.balance);
-      result.innerHTML='<b>⚠️ Phân tích chưa chạy được</b><p>'+esc(e?.name==='AbortError'?'AI phản hồi quá lâu, hãy thử lại.':(e?.message||String(e)))+'</p>'
-    }
-    finally{btn.disabled=false;btn.textContent='⚡ PHÂN TÍCH AI'}
-  };
-  const schematicBtn = $('analyzeSchematic');
-  if (schematicBtn) schematicBtn.addEventListener('click', async ()=>{
-    const btn=$('analyzeSchematic'),result=$('schematicResult');
-    const card=document.querySelectorAll('.grid .card')[1], selects=card?.querySelectorAll('select'), zone=card?.querySelector('input')?.value.trim()||'',doc=selects?.[0]?.value||'Schematic',panic=$('panic')?.value.trim()||'';
-    if(!zone&&!panic){result.innerHTML='<b>⚠️ Thiếu dữ liệu</b><p>Nhập vùng/linh kiện hoặc PANIC log trước.</p>';return}
-    btn.disabled=true;btn.textContent='⏳ Đang phân tích...';result.innerHTML='<b>⏳ AI đang đọc yêu cầu schematic…</b>';
-    try{
-      const ai=await callAI(['Phân tích yêu cầu schematic/boardview cho ca sửa iPhone.','Loại tài liệu: '+doc,'Vùng / linh kiện: '+zone,'PANIC LOG: '+panic,'Nêu vùng cần kiểm tra, tín hiệu/rail liên quan nếu có bằng chứng, phép đo nên làm và điều kiện kết luận. Không bịa reference designator hoặc net name chưa được cung cấp.'].join('\n'),await image('schematicImage'),'schematicImage');
-      const reply=ai.reply;
-      const bill=ai.billing;
-      const knowledge=ai.knowledge||[];
-      const knowledgeHtml=knowledge.length ? knowledge.map((k,i)=>'<article class="ai-knowledge-item"><strong>📄 '+esc(k.title||('Tài liệu #'+(i+1)))+'</strong><div class="ai-knowledge-meta">'+esc(k.category||'Knowledge Base')+' · độ khớp '+esc(k.relevance_score||0)+'</div><p>'+esc(k.content||'')+'</p></article>').join('') : '<div class="ai-knowledge-empty">Không tìm thấy tài liệu đã duyệt phù hợp.</div>';
-      result.innerHTML='<div class="ai-knowledge-results"><div class="ai-knowledge-head"><b>📚 TRA CỨU TÀI LIỆU APPLE SEED</b><span class="muted">'+knowledge.length+' tài liệu phù hợp</span></div>'+knowledgeHtml+'</div><div class="ai-analysis"><b>📐 KẾT QUẢ SCHEMATIC INTELLIGENCE</b><div style="white-space:pre-wrap;line-height:1.65;margin-top:8px">'+esc(reply)+'</div></div><div class="muted" style="margin-top:10px">🪙 Đã trừ '+bill.cost+' Coin • Còn lại '+bill.balance+' Coin</div>';
-    }catch(e){
-      console.error('Schematic AI:',e);
-      if(e?.code==='INSUFFICIENT_COINS') showCoinModal(e.cost,e.balance);
-      result.innerHTML='<b>⚠️ Schematic chưa phân tích được</b><p>'+esc(e?.name==='AbortError'?'AI phản hồi quá lâu, hãy thử lại.':(e?.message||String(e)))+'</p>'
-    }
-    finally{btn.disabled=false;btn.textContent='📐 ANALYZE SCHEMATIC'}
-  });
-  const schematicInput=$('schematicImage');
-  const schematicDrop=$('schematicImageDrop');
-  schematicInput?.addEventListener('change',()=>{
-    const f=schematicInput.files?.[0];
-    const hint=$('schematicImageHint');
-    if(hint) hint.textContent=f?'📎 '+f.name+' • sẵn sàng gửi cùng lần phân tích schematic':'JPG / PNG / WEBP • ảnh này sẽ được gửi riêng cho Schematic Intelligence';
-  });
-  ['dragenter','dragover'].forEach(ev=>schematicDrop?.addEventListener(ev,e=>{e.preventDefault();schematicDrop.classList.add('dragover')}));
-  ['dragleave','drop'].forEach(ev=>schematicDrop?.addEventListener(ev,e=>{e.preventDefault();schematicDrop.classList.remove('dragover')}));
-  schematicDrop?.addEventListener('drop',e=>{
-    const f=e.dataTransfer?.files?.[0];
-    if(!f)return;
-    if(!/^image\/(jpeg|png|webp)$/i.test(f.type)){alert('Chỉ hỗ trợ JPG, PNG hoặc WEBP.');return;}
-    try{const dt=new DataTransfer();dt.items.add(f);schematicInput.files=dt.files;schematicInput.dispatchEvent(new Event('change',{bubbles:true}));}catch(err){console.warn('Không gán được file kéo thả:',err);}
-  });
-  $('upload').onclick=()=>{const f=$('file').files?.[0];$('uploadStatus').textContent=f?'📎 Đã chọn '+f.name+'. Muốn AI phân tích ảnh, chọn ảnh ở ô “main / schematic / boardview” phía trên.':'Chưa chọn file.'};
-  $('boardImage')?.addEventListener('change',()=>{const f=$('boardImage').files?.[0],drop=$('boardImageDrop');if(drop)drop.querySelector('.muted').textContent=f?'📎 '+f.name+' • sẵn sàng gửi cùng ca phân tích':'JPG / PNG / WEBP • ảnh sẽ được gửi cùng ca phân tích'});
-})();
+document.getElementById('analyze').onclick=()=>document.getElementById('result').innerHTML='<b>🔎 Phân tích sơ bộ</b><p>PANIC 0x20000 + compass → ưu tiên cụm compass/sensor và I2C. Chưa kết luận linh kiện.</p><span class="pill">Power</span><span class="pill">SDA/SCL</span><span class="pill">Board comparison</span>';
+document.getElementById('upload').onclick=()=>{const f=document.getElementById('file').files[0];document.getElementById('uploadStatus').textContent=f?'Đã chọn: '+f.name+' — giao diện sẵn sàng nối Storage thật.':'Chưa chọn file.'};
 </script>
-<script>
-/* ===== APPLE SEED MEMBER ACCESS =====
-   YouTube luôn miễn phí.
-   Sau khi đăng nhập thành công, mở lại toàn bộ AI Board / Diagnostic / Library.
-*/
-(async function initAppleSeedMemberAccess(){
-  async function loadMemberAccount(session){
-    const nameEl=document.getElementById('memberAccountName'), emailEl=document.getElementById('memberAccountEmail');
-    const coinsEl=document.getElementById('memberAccountCoins'), statusEl=document.getElementById('memberAccountStatus');
-    const trialEl=document.getElementById('memberAccountTrial'), createdEl=document.getElementById('memberAccountCreated'), noteEl=document.getElementById('memberAccountNote'), adminBadge=document.getElementById('memberAccountAdminBadge');
-    if(!session?.user){
-      nameEl.textContent='Chưa đăng nhập'; emailEl.textContent='Hãy đăng ký / đăng nhập thành viên';
-      coinsEl.textContent='—'; statusEl.textContent='Guest'; trialEl.textContent='—'; createdEl.textContent='—'; if(adminBadge)adminBadge.hidden=true;
-      noteEl.textContent='YouTube miễn phí. Đăng nhập để xem số dư Coin và sử dụng AI Board.';
-      return;
-    }
-    const u=session.user;
-    nameEl.textContent=u.user_metadata?.full_name||'Thành viên';
-    emailEl.textContent=u.email||'—';
-    try{
-      const sb=window.supabaseClient;
-      const [p,m]=await Promise.all([
-        sb.from('profiles').select('full_name,role').eq('id',u.id).maybeSingle(),
-        sb.from('member_accounts').select('coins,status,trial_expires_at,created_at').eq('user_id',u.id).maybeSingle()
-      ]);
-      if(p.data?.full_name)nameEl.textContent=p.data.full_name;
-      if(adminBadge)adminBadge.hidden=p.data?.role!=='admin';
-      const a=m.data;
-      const fmt=v=>v?new Date(v).toLocaleString('vi-VN'):'—';
-      coinsEl.textContent=Number(a?.coins||0).toLocaleString('vi-VN')+' Coin';
-      statusEl.textContent=a?.status||'—';
-      trialEl.textContent=fmt(a?.trial_expires_at);
-      createdEl.textContent=fmt(a?.created_at);
-      noteEl.textContent=a?'Số dư được đọc trực tiếp từ tài khoản thành viên.':'Chưa tìm thấy hồ sơ Coin của tài khoản.';
-    }catch(err){
-      console.error('Member account card:',err);
-      coinsEl.textContent='—'; if(adminBadge)adminBadge.hidden=true; noteEl.textContent='Không đọc được số dư Coin. Vui lòng tải lại trang.';
-    }
-  }
-
-  const applyMemberState = (session) => {
-    const loggedIn = !!session?.user;
-    document.body.classList.toggle('member-guest', !loggedIn);
-    document.body.classList.toggle('member-authenticated', loggedIn);
-
-    const gate = document.getElementById('member-gate');
-    if (gate) gate.style.display = loggedIn ? 'none' : '';
-
-    if (loggedIn) {
-      const user = session.user;
-      const name = user.user_metadata?.full_name || user.email || 'Thành viên';
-      const header = document.querySelector('.top .muted');
-      if (header) header.textContent = 'Xin chào ' + name + ' • Toàn bộ công cụ kỹ thuật dành cho thành viên.';
-    }
-  };
-
-  try {
-    if (!window.supabaseClient) throw new Error('Supabase client chưa sẵn sàng.');
-
-    const { data, error } = await window.supabaseClient.auth.getSession();
-    if (error) throw error;
-    applyMemberState(data?.session || null);
-    await loadMemberAccount(data?.session || null);
-
-    window.supabaseClient.auth.onAuthStateChange((_event, session) => {
-      applyMemberState(session || null);
-      loadMemberAccount(session || null);
-    });
-  } catch (error) {
-    console.error('Apple Seed member access:', error);
-    /* Fail closed: không có session thì vẫn chỉ cho YouTube. */
-    applyMemberState(null);
-  }
-})();
-</script>
-
-<div class="coin-modal" id="coinModal" role="dialog" aria-modal="true" aria-labelledby="coinModalTitle">
-  <div class="coin-modal-box">
-    <div class="coin-modal-icon">🪙</div>
-    <h2 id="coinModalTitle">Bạn đã hết Coin</h2>
-    <p id="coinModalMessage">Tính năng AI này cần Coin để tiếp tục phân tích.</p>
-    <div class="coin-modal-balance" id="coinModalBalance">Số dư: 0 Coin</div>
-    <div class="coin-modal-actions">
-      <a class="btn primary" href="member-wallet.html">💳 Nạp Coin ngay</a>
-      <button class="btn coin-modal-close" id="coinModalClose" type="button">Để sau</button>
-    </div>
-  </div>
-</div>
-
-<style>
-#appleSeedMemberChatBtn{border:1px solid #a9cdf8;background:#fff;color:#1769ff;display:inline-flex;align-items:center;gap:8px}
-#appleSeedMemberChatBtn:hover{background:#eef6ff}
-.chat-notification{display:inline-flex;align-items:center;gap:3px;color:#d92d20;font-size:14px;font-weight:900}
-.chat-notification b{min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:#d92d20;color:#fff;font-size:10px;line-height:17px;text-align:center}
-</style>
-<script>
-(function(){
-  const btn=document.getElementById('appleSeedMemberChatBtn');
-  const badge=document.getElementById('memberChatNotification');
-  const count=document.getElementById('memberChatUnreadCount');
-  if(!btn||!badge||!count)return;
-  let timer=null;
-  async function refreshUnread(){
-    try{
-      const sb=window.supabaseClient;
-      if(!sb){badge.hidden=true;return}
-      const sessionResult=await sb.auth.getSession();
-      const uid=sessionResult?.data?.session?.user?.id;
-      if(!uid){badge.hidden=true;return}
-      const partResult=await sb.from('chat_participants').select('conversation_id,last_read_at').eq('user_id',uid);
-      if(partResult.error||!partResult.data?.length){badge.hidden=true;return}
-      const ids=partResult.data.map(x=>x.conversation_id);
-      const readAt=Object.fromEntries(partResult.data.map(x=>[x.conversation_id,x.last_read_at]));
-      const msgResult=await sb.from('chat_messages').select('conversation_id,created_at,sender_id').in('conversation_id',ids).neq('sender_id',uid).order('created_at',{ascending:false}).limit(500);
-      if(msgResult.error){badge.hidden=true;return}
-      const unread=(msgResult.data||[]).filter(m=>!readAt[m.conversation_id]||new Date(m.created_at)>new Date(readAt[m.conversation_id])).length;
-      badge.hidden=unread===0;
-      count.textContent=unread>99?'99+':String(unread);
-    }catch(_){badge.hidden=true}
-  }
-  function start(){refreshUnread();if(timer)clearInterval(timer);timer=setInterval(refreshUnread,10000)}
-  btn.addEventListener('click',()=>setTimeout(refreshUnread,1200));
-  window.addEventListener('focus',refreshUnread);
-  start();
-  window.appleSeedRefreshChatUnread=refreshUnread;
-})();
-</script>
-<script>(function(){const btn=document.getElementById('appleSeedMemberChatBtn');if(!btn)return;btn.addEventListener('click',function(){if(window.matchMedia('(max-width:700px)').matches){window.location.href='member-chat.html';return}const w=window.open('member-chat.html','appleSeedMemberChat','width=1180,height=760,resizable=yes,scrollbars=yes');if(w)w.focus()})})();</script>
-<script>
-/* ===== PANIC LIVE DATA PREVIEW =====
-   Dữ liệu thực tế nằm ngay cạnh PANIC LOG để người sửa dễ kiểm tra dữ liệu trước khi gửi AI.
-*/
-(function initPanicLiveData(){
-  const $=id=>document.getElementById(id);
-  const deviceSelect=document.querySelector('.grid .card:first-child select');
-  const faultSelect=document.querySelectorAll('.grid .card:first-child select')[1];
-  const panic=$('panic'), device=$('liveDevice'), fault=$('liveFault'), panicOut=$('livePanic');
-  function sync(){
-    if(device) device.textContent=deviceSelect?.value||'—';
-    if(fault) fault.textContent=faultSelect?.value||'—';
-    if(panicOut) panicOut.textContent=panic?.value?.trim()||'—';
-  }
-  deviceSelect?.addEventListener('change',sync);
-  faultSelect?.addEventListener('change',sync);
-  panic?.addEventListener('input',sync);
-  sync();
-})();
-</script>
-<script id="ai-board-inline-auth-js">(function(){function init(){const gate=document.getElementById('member-gate'),btn=document.getElementById('aiBoardMemberGateBtn');if(!gate||!btn||document.getElementById('aiBoardMemberAuth'))return;const panel=document.createElement('div');panel.id='aiBoardMemberAuth';panel.innerHTML='<div class="aima-head"><div class="kicker">APPLE SEED • MEMBER</div><h3>Đăng ký / Đăng nhập ngay tại đây</h3><p>Không rời khỏi AI Board. Tài khoản vẫn dùng hệ thống Member hiện tại.</p></div><div class="aima-tabs"><button type="button" class="active" data-tab="signup">✨ Đăng ký</button><button type="button" data-tab="login">🔐 Đăng nhập</button></div><form class="aima-form active" data-form="signup"><div class="aima-row"><label>Họ và tên *<input name="name" autocomplete="name" required></label><label>Số điện thoại *<input name="phone" inputmode="tel" autocomplete="tel" required></label></div><label>Email *<input name="email" type="email" autocomplete="email" required></label><label>Mật khẩu *<input name="password" type="password" minlength="6" required></label><label>Xác nhận mật khẩu *<input name="confirm" type="password" minlength="6" required></label><button type="submit">✨ Tạo tài khoản thành viên</button></form><form class="aima-form" data-form="login"><label>Email *<input name="email" type="email" autocomplete="email" required></label><label>Mật khẩu *<input name="password" type="password" autocomplete="current-password" required></label><button type="submit">🔐 Đăng nhập</button><button type="button" class="aima-forgot">🔑 Quên mật khẩu?</button></form><form class="aima-form" data-form="forgot"><label>Email tài khoản *<input name="email" type="email" autocomplete="email" required></label><button type="submit">📩 Gửi link đặt lại mật khẩu</button><button type="button" class="aima-back-login">← Quay lại đăng nhập</button></form><div class="aima-status" aria-live="polite"></div><button class="aima-close" type="button">← Đóng bảng</button>';gate.appendChild(panel);const tabs=[...panel.querySelectorAll('[data-tab]')],forms=[...panel.querySelectorAll('[data-form]')],status=panel.querySelector('.aima-status');const show=t=>{tabs.forEach(x=>x.classList.toggle('active',x.dataset.tab===t));forms.forEach(x=>x.classList.toggle('active',x.dataset.form===t));status.textContent='';status.className='aima-status'};btn.onclick=()=>{panel.classList.add('open');show('signup');setTimeout(()=>panel.scrollIntoView({behavior:'smooth',block:'start'}),20)};tabs.forEach(x=>x.onclick=()=>show(x.dataset.tab));panel.querySelector('[data-form="signup"]').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget,d=new FormData(f),p=d.get('password');if(p!==d.get('confirm')){status.textContent='❌ Mật khẩu xác nhận chưa khớp.';return}const s=f.querySelector('button[type=submit]');s.disabled=true;s.textContent='Đang tạo tài khoản...';try{const r=await memberSignUp(String(d.get('name')).trim(),String(d.get('phone')).trim(),String(d.get('email')).trim().toLowerCase(),String(p));status.textContent=r?.session?'✅ Tài khoản đã tạo.':'✅ Đã tạo tài khoản. Hãy mở Gmail và bấm link xác nhận trước khi đăng nhập.';status.className='aima-status ok';}catch(x){status.textContent='❌ '+(x?.message||'Không tạo được tài khoản.')}finally{s.disabled=false;s.textContent='✨ Tạo tài khoản thành viên'}};panel.querySelector('[data-form="login"]').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget,d=new FormData(f),s=f.querySelector('button[type=submit]');s.disabled=true;s.textContent='Đang đăng nhập...';try{await memberSignIn(String(d.get('email')).trim().toLowerCase(),String(d.get('password')));status.textContent='✅ Đăng nhập thành công.';status.className='aima-status ok';setTimeout(()=>location.reload(),700)}catch(x){status.textContent='❌ '+(x?.message||'Đăng nhập không thành công.')}finally{s.disabled=false;s.textContent='🔐 Đăng nhập'}};panel.querySelector('.aima-forgot').onclick=()=>show('forgot');panel.querySelector('.aima-back-login').onclick=()=>show('login');panel.querySelector('[data-form="forgot"]').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget,d=new FormData(f),s=f.querySelector('button[type=submit]');s.disabled=true;s.textContent='Đang gửi...';try{await memberForgotPassword(String(d.get('email')).trim().toLowerCase());status.textContent='✅ Đã gửi email đặt lại mật khẩu. Hãy kiểm tra Gmail (cả Spam).';status.className='aima-status ok';f.reset()}catch(x){status.textContent='❌ '+(x?.message||'Không gửi được email đặt lại mật khẩu.')}finally{s.disabled=false;s.textContent='📩 Gửi link đặt lại mật khẩu'}};panel.querySelector('.aima-close').onclick=()=>panel.classList.remove('open')}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init()})();</script></body></html>
+</body></html>

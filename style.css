@@ -10,6 +10,8 @@ body {
   line-height: 1.6;
 }
 
+/* ================= HEADER ================= */
+
 .site-header {
   height: 80px;
   background: #fff;
@@ -22,6 +24,7 @@ body {
   height: 80px;
   margin: 0 auto;
   padding: 0 22px;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -55,6 +58,8 @@ nav a {
   white-space: nowrap;
 }
 
+/* ================= HERO ================= */
+
 .hero {
   background: #f1f4ff;
   padding: 55px 0 80px;
@@ -67,6 +72,7 @@ nav a {
   padding: 0 22px;
 }
 
+/* ẢNH CỬA HÀNG */
 .hero-image {
   display: block;
   width: 100%;
@@ -75,6 +81,8 @@ nav a {
   margin: 0 0 30px;
   border-radius: 16px;
 }
+
+/* ================= HERO TEXT ================= */
 
 .eyebrow {
   color: #2563eb;
@@ -108,6 +116,8 @@ nav a {
   font-weight: 700;
 }
 
+/* ================= SECTIONS ================= */
+
 .section {
   padding: 70px 0;
 }
@@ -120,6 +130,8 @@ nav a {
   font-size: 32px;
   margin: 0 0 28px;
 }
+
+/* ================= SERVICE CARDS ================= */
 
 .grid {
   display: grid;
@@ -144,13 +156,14 @@ nav a {
   color: #586475;
 }
 
+/* ================= FOOTER ================= */
+
 footer {
   text-align: center;
   padding: 28px;
   color: #687386;
   border-top: 1px solid #eee;
 }
-
 .map-actions {
   display: flex;
   gap: 12px;
@@ -165,6 +178,7 @@ footer {
 .map-actions .btn-phone {
   background: #172033;
 }
+/* ================= MAP ================= */
 
 .map-section {
   padding: 60px 0;
@@ -195,7 +209,10 @@ footer {
   border: 0;
 }
 
+/* ================= MOBILE ================= */
+
 @media (max-width: 650px) {
+
   .site-header {
     height: 70px;
   }
@@ -242,9 +259,4 @@ footer {
   .map-wrapper iframe {
     height: 350px;
   }
-}
-
-/* Apple Seed: policy is shown on AI Board, not duplicated in member-admin. */
-#app > section.panel:first-of-type {
-  display: none !important;
 }
