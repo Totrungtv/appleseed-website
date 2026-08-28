@@ -243,17 +243,18 @@ function getImages(item){
  while((m=re.exec(raw))!==null)add(m[1]);
  return out.slice(0,8);
 }
+const RSS_IMAGE_PROXY='https://nuismqcjyutqigdydfkg.supabase.co/functions/v1/rss-image-proxy?url=';
 function imageProxyUrl(url,variant=0){
  const u=String(url||'').trim();if(!u)return '';
  const safe=u.startsWith('http://')?'https://'+u.slice(7):u;
- if(variant===0)return safe;
+ if(variant===0)return RSS_IMAGE_PROXY+encodeURIComponent(safe);
  if(variant===1)return 'https://images.weserv.nl/?url='+encodeURIComponent(safe);
  if(variant===2)return 'https://wsrv.nl/?url='+encodeURIComponent(safe);
  return safe;
 }
-/* Apple Seed image engine: RSS images are often hotlink-protected.
-   Try reliable HTTPS image proxies first, then alternate source images,
-   and finally leave the branded gradient instead of a broken-image icon. */
+/* One deterministic image fallback chain.
+   0 = Apple Seed server proxy, 1 = weserv, 2 = wsrv, 3 = source.
+   This avoids duplicate error listeners fighting over the same <img>. */
 function installImageFallbacks(){
  if(window.__appleSeedImageEngineInstalled)return;
  window.__appleSeedImageEngineInstalled=true;
@@ -262,27 +263,30 @@ function installImageFallbacks(){
    if(!(img instanceof HTMLImageElement)||!img.dataset.imageCandidates)return;
    let list=[];
    try{list=JSON.parse(decodeURIComponent(img.dataset.imageCandidates)||'[]')}catch(_){}
-   const current=Number(img.dataset.imageIndex||0);
-   const variant=Number(img.dataset.imageVariant||1);
-   const source=list[current]||img.dataset.originalSrc||'';
-   if(variant===1){
-     img.dataset.imageVariant='2';
-     img.src=imageProxyUrl(source,2);
-     return;
+   if(!list.length){img.removeAttribute('src');return;}
+   let idx=Number(img.dataset.imageIndex||0);
+   let variant=Number(img.dataset.imageVariant||0);
+   const next=()=>{
+     if(variant<3){
+       variant++;
+       img.dataset.imageVariant=String(variant);
+       img.src=imageProxyUrl(list[idx],variant);
+       return true;
+     }
+     if(idx+1<list.length){
+       idx++;
+       variant=0;
+       img.dataset.imageIndex=String(idx);
+       img.dataset.imageVariant='0';
+       img.src=imageProxyUrl(list[idx],0);
+       return true;
+     }
+     return false;
+   };
+   if(!next()){
+     img.removeAttribute('src');
+     img.classList.add('image-unavailable');
    }
-   if(variant===2 && current+1<list.length){
-     img.dataset.imageIndex=String(current+1);
-     img.dataset.imageVariant='1';
-     img.src=imageProxyUrl(list[current+1],1);
-     return;
-   }
-   if(variant===2 && source){
-     img.dataset.imageVariant='0';
-     img.src=imageProxyUrl(source,0);
-     return;
-   }
-   img.removeAttribute('src');
-   img.classList.add('image-unavailable');
  },true);
 }
 installImageFallbacks();
@@ -468,15 +472,6 @@ function playYoutube(id,title){
 }
 function playYoutubeEntry(v){playYoutube(v.id,v.title);}
 
-document.addEventListener('error',e=>{
- const img=e.target;if(!(img instanceof HTMLImageElement))return;
- let candidates=[];try{candidates=JSON.parse(decodeURIComponent(img.dataset.imageCandidates||'[]'));}catch(_){}
- if(!candidates.length)return;
- let idx=Number(img.dataset.imageIndex||0),variant=Number(img.dataset.imageVariant||0);
- if(variant<3){variant++;img.dataset.imageVariant=String(variant);img.src=imageProxyUrl(candidates[idx],variant);return;}
- if(idx+1<candidates.length){idx++;img.dataset.imageIndex=String(idx);img.dataset.imageVariant='0';img.src=imageProxyUrl(candidates[idx],0);return;}
- img.removeAttribute('src');img.style.display='none';
-},{capture:true});
 document.addEventListener('click',e=>{
  const n=e.target.closest('.news, .news-mini');
  if(n){
