@@ -1744,7 +1744,22 @@ body.apple-seed-v4 .as4-footer-cta{width:min(1280px,100%)!important;margin:0 aut
 
   <section class="as4-content-zone" aria-label="Nội dung Apple Seed">
     <div class="as4-content-label"><span>NỘI DUNG TRUNG TÂM</span><div></div></div>
-    <div id="homeRenderer"><div class="hero" style="padding:70px 24px"><div style="max-width:1240px;margin:auto">Đang tải Apple Seed...</div></div></div>
+    <div id="homeRenderer">
+      <section class="hero" id="gioi-thieu" aria-label="Apple Seed">
+        <div class="hero-inner">
+          <div><img class="shop-photo" src="shop.jpg" alt="Cửa hàng Apple Seed Trà Vinh" loading="eager"></div>
+          <div>
+            <div class="eyebrow">APPLE SEED • TRÀ VINH</div>
+            <h1>Apple Seed Trà Vinh</h1>
+            <p class="lead">Sửa iPhone, Face ID, main và linh kiện. Tư vấn tình trạng máy rõ ràng trước khi sửa.</p>
+            <div class="as-fallback-actions">
+              <a class="cta" href="booking.html">📅 Đặt lịch sửa</a>
+              <a class="as-fallback-secondary" href="tel:0898888269">☎ Gọi Apple Seed</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
   </section>
 
   <section class="as4-footer-cta">
@@ -2422,13 +2437,21 @@ body.apple-seed-v4 .as4-footer-cta{width:min(1280px,100%)!important;margin:0 aut
       const t={data:themeRows?.[0]||null};
       const n={data:Array.isArray(navRows)?navRows:[],error:null};
       const s={data:Array.isArray(sectionRows)?sectionRows:[],error:null};
-      if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){const st=document.createElement('style');st.textContent=t.data.custom_css;document.head.appendChild(st)}if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){
-      const menu=document.querySelector('.menu');
-      const memberAuth=document.getElementById('memberAuthButtons');
-      menu.querySelectorAll(':scope > a').forEach(a=>a.remove());
-      menu.insertAdjacentHTML('afterbegin',n.data.map(x=>`<a href="${esc(x.url||'#')}"><span class="mi">${esc(x.icon||'')}</span><span>${esc(x.label)}</span></a>`).join(''));
-      if(memberAuth) menu.appendChild(memberAuth);
-    }
+      if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){const st=document.createElement('style');st.textContent=t.data.custom_css;document.head.appendChild(st)}if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.as4-brand img').src=t.data.logo_url}
+      // Giữ navigation V5 ổn định. CMS chỉ được cập nhật các mục trùng tên,
+      // không được xóa các lối vào Kỹ thuật / Video / Giải trí / Đặt lịch.
+      if(n.data?.length){
+        const menu=document.querySelector('.as4-nav');
+        const cmsByLabel=new Map(n.data.map(x=>[String(x.label||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(),x]));
+        menu?.querySelectorAll(':scope > a').forEach(a=>{
+          const label=String(a.textContent||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+          const x=cmsByLabel.get(label);
+          if(x){
+            a.href=x.url||a.href;
+            const icon=a.querySelector('.mi'); if(icon&&x.icon) icon.textContent=x.icon;
+          }
+        });
+      }
       // CMS có thể trả về danh sách nav thiếu Đặt lịch -> tự bổ sung lại.
       ensureBookingNav();
       fixNavigation();if(s.error||!s.data?.length){staticFallback();bindProductCards();fixNavigation();return}let html='';let contactRendered=false;for(const sec of s.data){if(sec.section_type==='products'){html+=await productsHtml();continue}if(sec.section_type==='map'||sec.section_type==='contact'){if(contactRendered)continue;contactRendered=true;html+=sec.section_type==='contact'?contactHtml():renderSection(sec);continue}html+=renderSection(sec)}root.innerHTML=html+(contactRendered?'':contactHtml());
@@ -3453,5 +3476,5 @@ form.onsubmit=async e=>{
 })();
 </script>
 <!-- APPLE SEED HOMEPAGE RUNTIME GUARD -->
-<script src="homepage-runtime-guard.js?v=20260828-resilience1"></script>
+<script src="homepage-runtime-guard.js?v=20260828-resilience2"></script>
 </body></html>
