@@ -39,6 +39,39 @@
 .modal-thumbs img{width:100%;height:90px;object-fit:cover;display:block}
 @media(max-width:900px){.products-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.products-page{padding:48px 16px 70px}.products-head h1{font-size:32px}.products-grid{grid-template-columns:1fr}.product-photo{height:250px}.modal-thumbs{grid-template-columns:repeat(4,1fr)}}
+/* APPLE SEED PRODUCTS THEME HOTFIX */
+:root{--pblue:#1769ff;--pnavy:#071b3b;--pline:#dfe8f5;--pbg:#f4f7fc}
+html{overflow-x:hidden!important}
+body{margin:0!important;background:#fff!important;color:#10203d!important;font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif!important}
+.site-header{height:82px!important;position:sticky!important;top:0!important;z-index:5000!important;background:rgba(255,255,255,.96)!important;border-bottom:1px solid #e7edf6!important;box-shadow:0 4px 22px rgba(15,35,65,.05)!important;backdrop-filter:blur(14px)!important}
+.site-header .nav{width:min(1180px,calc(100% - 40px))!important;height:82px!important;margin:0 auto!important;padding:0!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:22px!important}
+.site-header .brand{display:flex!important;align-items:center!important;gap:11px!important;flex-shrink:0!important}
+.site-header .brand img{display:block!important;width:54px!important;height:54px!important;max-width:54px!important;max-height:54px!important;object-fit:contain!important}
+.site-header .brand>div{display:flex!important;flex-direction:column!important}
+.site-header .brand-title{font-size:24px!important;line-height:1!important;font-weight:950!important;letter-spacing:-1px!important;color:#10203d!important}
+.site-header .brand-sub{margin-top:6px!important;color:#71819b!important;font-size:9px!important;font-weight:900!important;letter-spacing:2px!important;white-space:nowrap!important}
+.site-header .menu{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:18px!important}
+.site-header .menu a{display:inline-flex!important;align-items:center!important;gap:5px!important;color:#53647e!important;font-size:13px!important;font-weight:850!important;white-space:nowrap!important}
+.site-header .menu a:hover{color:#1769ff!important}
+.products-page{width:100%!important;max-width:none!important;margin:0!important;padding:0 0 76px!important;background:var(--pbg)!important}
+.products-head{position:relative!important;overflow:hidden!important;text-align:left!important;margin:0!important;padding:64px max(20px,calc((100% - 1180px)/2)) 62px!important;background:linear-gradient(120deg,#071a39 0%,#0d2e5d 58%,#1d508f 100%)!important;color:#fff!important}
+.products-head:before,.products-head:after{content:"";position:absolute;border:1px solid rgba(130,196,255,.12);border-radius:50%;pointer-events:none}
+.products-head:before{width:600px;height:600px;right:-260px;top:-430px}.products-head:after{width:500px;height:500px;left:-380px;bottom:-380px}
+.products-head .kicker{position:relative;z-index:1;color:#64a9ff!important;font-size:11px!important;font-weight:950!important;letter-spacing:4px!important}
+.products-head h1{position:relative;z-index:1;margin:11px 0 12px!important;color:#fff!important;font-size:clamp(38px,5vw,62px)!important;line-height:1!important;letter-spacing:-2.7px!important}
+.products-head p{position:relative;z-index:1;color:#c5d5ea!important;margin:0!important;max-width:720px!important;font-size:16px!important;line-height:1.7!important}
+.products-status{max-width:1180px!important;margin:0 auto!important;padding:30px 20px 8px!important;text-align:left!important;color:#71819b!important}
+.products-error{text-align:left!important;color:#b42318!important;padding:18px 0!important}
+.products-grid{width:min(1180px,calc(100% - 40px))!important;margin:0 auto!important;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:20px!important}
+.product-card-public{background:#fff!important;border:1px solid var(--pline)!important;border-radius:20px!important;overflow:hidden!important;box-shadow:0 10px 30px rgba(16,32,61,.055)!important;cursor:pointer!important;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease!important}
+.product-card-public:hover{transform:translateY(-4px)!important;box-shadow:0 18px 45px rgba(16,32,61,.12)!important;border-color:#c6dbf8!important}
+.product-photo{height:280px!important;background:linear-gradient(145deg,#f7faff,#edf3fa)!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important}
+.product-photo img{width:100%!important;height:100%!important;object-fit:cover!important;display:block!important}
+.product-body{padding:19px 19px 21px!important}.product-category{font-size:10px!important;color:#4d94f7!important;font-weight:950!important;letter-spacing:2px!important}.product-body h2{font-size:21px!important;line-height:1.2!important;margin:7px 0 8px!important}.product-desc{color:#71819b!important;line-height:1.55!important;min-height:72px!important}.product-price{font-size:19px!important;font-weight:950!important;color:#1769ff!important;margin-top:12px!important}.empty{grid-column:1/-1!important;background:#fff!important;border:1px dashed #ccd8e8!important;border-radius:18px!important;padding:48px!important;text-align:center!important;color:#6f809b!important}
+.modal{position:fixed!important;inset:0!important;background:rgba(5,16,34,.76)!important;backdrop-filter:blur(8px)!important;display:none!important;align-items:center!important;justify-content:center!important;padding:20px!important;z-index:99999!important}.modal.open{display:flex!important}.modal-box{width:min(980px,100%)!important;max-height:92vh!important;overflow:auto!important;background:#fff!important;border-radius:22px!important;padding:18px!important;position:relative!important;box-shadow:0 30px 90px rgba(0,0,0,.28)!important}.modal-main{background:#f4f7fb!important;border-radius:16px!important;min-height:390px!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important}.modal-main img{max-width:100%!important;max-height:62vh!important;object-fit:contain!important}.modal-title{padding:17px 4px 5px!important}.modal-title h2{margin:0!important;font-size:27px!important}.modal-price{color:#1769ff!important;font-weight:950!important;font-size:21px!important;margin-top:5px!important}.modal-thumbs{display:grid!important;grid-template-columns:repeat(6,1fr)!important;gap:8px!important;margin-top:12px!important}.modal-thumbs img{width:100%!important;height:90px!important;object-fit:cover!important;display:block!important}
+@media(max-width:900px){.products-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:600px){.site-header{height:auto!important}.site-header .nav{width:calc(100% - 28px)!important;min-height:76px!important;height:auto!important;padding:9px 0!important}.site-header .brand img{width:48px!important;height:48px!important;max-width:48px!important;max-height:48px!important}.site-header .brand-title{font-size:21px!important}.site-header .brand-sub{font-size:8px!important;letter-spacing:1.4px!important}.site-header .menu{gap:8px!important}.site-header .menu a{font-size:11px!important}.site-header .menu a:first-child,.site-header .menu a:nth-child(3),.site-header .menu a:nth-child(4){display:none!important}.products-head{padding:45px 16px 48px!important}.products-head h1{font-size:43px!important;letter-spacing:-2px!important}.products-head p{font-size:15px!important}.products-status{padding:25px 14px 8px!important}.products-grid{width:calc(100% - 28px)!important;grid-template-columns:1fr!important;gap:16px!important}.product-photo{height:255px!important}.modal{padding:8px!important}.modal-box{border-radius:18px!important;padding:10px!important}.modal-main{min-height:300px!important}.modal-thumbs{grid-template-columns:repeat(4,1fr)!important}.modal-thumbs img{height:72px!important}}
+
 </style>
 </head>
 <body>
@@ -60,9 +93,9 @@
 
 <main class="products-page">
 <section class="products-head">
-<div class="kicker">SẢN PHẨM</div>
-<h1>Sản phẩm Apple Seed</h1>
-<p>Sản phẩm được cập nhật trực tiếp từ hệ thống quản trị Apple Seed.</p>
+<div class="kicker">APPLE SEED • ENGINEERING CENTER</div>
+<h1>Không chỉ sửa iPhone.<br><span style="color:#63a9ff">Chọn đúng sản phẩm.</span></h1>
+<p>Sản phẩm và linh kiện Apple Seed được cập nhật trực tiếp từ hệ thống. Xem hình ảnh, thông tin và giá trước khi liên hệ.</p>
 </section>
 
 <div id="productsStatus" class="products-status">Đang tải sản phẩm...</div>
