@@ -137,6 +137,13 @@ body.member-guest .member-gate{
 </style>
 
 \n<style>
+.ai-knowledge-results{display:block;width:100%;box-sizing:border-box;margin:0 0 14px;padding:16px;border:1px solid #cfe2f7;border-radius:13px;background:#fff}
+.ai-knowledge-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.ai-knowledge-head b{color:#17345c}.ai-knowledge-empty{padding:10px 12px;border-radius:10px;background:#f7fbff;color:#647b98;font-size:12px}
+.ai-knowledge-item{padding:11px 12px;border:1px solid #e1ebf6;border-radius:11px;background:#f7fbff;margin-top:8px}
+.ai-knowledge-item strong{display:block;color:#10233f;font-size:13px}.ai-knowledge-meta{font-size:10px;color:#278cf0;font-weight:800;margin-top:3px;text-transform:uppercase}.ai-knowledge-item p{margin:7px 0 0;color:#46617f;font-size:12px;line-height:1.55;white-space:pre-wrap;max-height:150px;overflow:auto}
+</style>
+<style>
 .ai-parallel-result{display:block!important;width:100%!important}
 .ai-real-data,.ai-analysis{display:block!important;width:100%!important;max-width:none!important;box-sizing:border-box;padding:16px;border:1px solid #cfe2f7;border-radius:13px}
 .ai-real-data{background:#fff;margin:0 0 14px!important}
@@ -768,7 +775,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
       const billing={cost:Number(data?.cost||0),balance:Number(data?.balance||0)};
       const balanceEl=$('memberAccountCoins');
       if(balanceEl && Number.isFinite(billing.balance)) balanceEl.textContent=billing.balance.toLocaleString('vi-VN')+' Coin';
-      return {reply,billing};
+      return {reply,billing,knowledge:Array.isArray(data?.knowledge_matches)?data.knowledge_matches:[]};
     }finally{clearTimeout(timer)}
   }
   $('analyze').onclick=async()=>{
@@ -783,7 +790,11 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
       const ai=await callAI(['Phân tích ca sửa chữa iPhone theo nguyên tắc evidence-first.','Thiết bị: '+device,'Loại lỗi: '+fault,'PANIC LOG: '+panic,'DERIVED CODE CONTEXT: tự nhận diện các mã lỗi/sensor array dạng số thập phân trong PANIC LOG. Nếu có số nguyên dương phù hợp mã lỗi, tự tính HEX tương ứng (ví dụ 524288 = 0x80000) và dùng cả giá trị thập phân + HEX khi phân tích. Không yêu cầu người dùng tự chuyển đổi. Với mã Sensor Array, phải đối chiếu theo đúng model thiết bị và các bằng chứng trong panic/ảnh/số đo; nếu không có dữ liệu đủ để xác định ý nghĩa thì nói rõ chưa đủ bằng chứng, không bịa.','Boot current: '+boot,'Vbat / nguồn: '+vbat,'Diode / Resistance: '+diode,'I2C / SDA / SCL: '+i2c,'Trả lời tiếng Việt. Tách rõ dữ kiện, nhận định có cơ sở, dữ liệu còn thiếu, phép đo tiếp theo và thứ tự ưu tiên. Không bịa linh kiện/đường mạch. Nếu có ảnh, chỉ mô tả những gì thực sự nhìn thấy.'].join('\n'),await image('boardImage'),'boardImage');
       const reply=ai.reply;
       const bill=ai.billing;
-      result.innerHTML='<div class="ai-parallel-result"><div class="ai-analysis"><b>🧠 PHÂN TÍCH AI</b><div style="white-space:pre-wrap;line-height:1.7;margin-top:9px">'+esc(reply)+'</div></div></div><div class="muted" style="margin-top:10px">🪙 Đã trừ '+bill.cost+' Coin • Còn lại '+bill.balance+' Coin</div>';
+      const knowledge=ai.knowledge||[];
+      const knowledgeHtml=knowledge.length
+        ? knowledge.map((k,i)=>'<article class="ai-knowledge-item"><strong>📄 '+esc(k.title||('Tài liệu #'+(i+1)))+'</strong><div class="ai-knowledge-meta">'+esc(k.category||'Knowledge Base')+' · độ khớp '+esc(k.relevance_score||0)+'</div><p>'+esc(k.content||'')+'</p></article>').join('')
+        : '<div class="ai-knowledge-empty">Không tìm thấy tài liệu PANIC/Knowledge Base đã duyệt phù hợp với ca này.</div>';
+      result.innerHTML='<div class="ai-parallel-result"><div class="ai-knowledge-results"><div class="ai-knowledge-head"><b>📚 TRA CỨU TÀI LIỆU APPLE SEED</b><span class="muted">'+knowledge.length+' tài liệu phù hợp</span></div>'+knowledgeHtml+'</div><div class="ai-analysis"><b>🧠 PHÂN TÍCH AI</b><div style="white-space:pre-wrap;line-height:1.7;margin-top:9px">'+esc(reply)+'</div></div></div><div class="muted" style="margin-top:10px">🪙 Đã trừ '+bill.cost+' Coin • Còn lại '+bill.balance+' Coin</div>';
     }catch(e){
       console.error('AI Board:',e);
       if(e?.code==='INSUFFICIENT_COINS') showCoinModal(e.cost,e.balance);
@@ -801,7 +812,9 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
       const ai=await callAI(['Phân tích yêu cầu schematic/boardview cho ca sửa iPhone.','Loại tài liệu: '+doc,'Vùng / linh kiện: '+zone,'PANIC LOG: '+panic,'Nêu vùng cần kiểm tra, tín hiệu/rail liên quan nếu có bằng chứng, phép đo nên làm và điều kiện kết luận. Không bịa reference designator hoặc net name chưa được cung cấp.'].join('\n'),await image('schematicImage'),'schematicImage');
       const reply=ai.reply;
       const bill=ai.billing;
-      result.innerHTML='<b>📐 Kết quả Schematic Intelligence</b><div style="white-space:pre-wrap;line-height:1.65;margin-top:8px">'+esc(reply)+'</div><div class="muted" style="margin-top:10px">🪙 Đã trừ '+bill.cost+' Coin • Còn lại '+bill.balance+' Coin</div>';
+      const knowledge=ai.knowledge||[];
+      const knowledgeHtml=knowledge.length ? knowledge.map((k,i)=>'<article class="ai-knowledge-item"><strong>📄 '+esc(k.title||('Tài liệu #'+(i+1)))+'</strong><div class="ai-knowledge-meta">'+esc(k.category||'Knowledge Base')+' · độ khớp '+esc(k.relevance_score||0)+'</div><p>'+esc(k.content||'')+'</p></article>').join('') : '<div class="ai-knowledge-empty">Không tìm thấy tài liệu đã duyệt phù hợp.</div>';
+      result.innerHTML='<div class="ai-knowledge-results"><div class="ai-knowledge-head"><b>📚 TRA CỨU TÀI LIỆU APPLE SEED</b><span class="muted">'+knowledge.length+' tài liệu phù hợp</span></div>'+knowledgeHtml+'</div><div class="ai-analysis"><b>📐 KẾT QUẢ SCHEMATIC INTELLIGENCE</b><div style="white-space:pre-wrap;line-height:1.65;margin-top:8px">'+esc(reply)+'</div></div><div class="muted" style="margin-top:10px">🪙 Đã trừ '+bill.cost+' Coin • Còn lại '+bill.balance+' Coin</div>';
     }catch(e){
       console.error('Schematic AI:',e);
       if(e?.code==='INSUFFICIENT_COINS') showCoinModal(e.cost,e.balance);
