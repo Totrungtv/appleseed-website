@@ -188,6 +188,11 @@ body.apple-seed-v4 a{color:inherit}
 #homeRenderer .lead,#homeRenderer p,#homeRenderer .service-card p,#homeRenderer .contact-card p{color:#9db3ca!important}
 #homeRenderer .eyebrow,#homeRenderer .section-kicker{color:#4da5ff!important}
 #homeRenderer .service-grid,#homeRenderer .products-home-grid,#homeRenderer .dynamic-pages-grid{gap:12px!important}
+#homeRenderer .home-card-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important;margin-top:14px!important}
+#homeRenderer .home-card{min-height:118px!important;padding:18px!important;border:1px solid rgba(100,165,224,.17)!important;border-radius:14px!important;background:#071a2d!important;color:#eef6ff!important;box-shadow:none!important}
+#homeRenderer .home-card h3{margin:0 0 7px!important;font-size:15px!important;color:#f2f8ff!important}
+#homeRenderer .home-card p{margin:0!important;color:#9db3ca!important;font-size:11px!important;line-height:1.5!important}
+@media(max-width:680px){#homeRenderer .home-card-grid{grid-template-columns:1fr!important}}
 #homeRenderer .service-card,#homeRenderer .product-home-card,#homeRenderer .page-card{
   background:#071a2d!important;border-color:rgba(100,165,224,.17)!important;color:#eef6ff!important;
   box-shadow:none!important;
