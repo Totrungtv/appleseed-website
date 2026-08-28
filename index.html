@@ -1742,7 +1742,89 @@ body{
   </div>
 </div>
 
-<!-- Giữ nguyên toàn bộ Member/Auth/Reset/Chat/Video và các lớp dữ liệu hiện hữu -->
+<div class="member-auth-modal" id="memberAuthModal" role="dialog" aria-modal="true" aria-labelledby="memberAuthTitle">
+  <div class="member-auth-box">
+    <button class="member-auth-close" id="memberAuthClose" type="button" aria-label="Đóng">×</button>
+    <div class="eyebrow">APPLE SEED MEMBER</div>
+    <h2 id="memberAuthTitle" style="margin:0 48px 7px 0">👤 Tài khoản khách hàng</h2>
+    <p class="member-auth-note">Đăng ký một lần để quản lý lịch sửa chữa, trạng thái và trao đổi với Apple Seed.</p>
+    <div class="member-auth-tabs">
+      <button id="memberHomeTabLogin" class="active" type="button">Đăng nhập</button>
+      <button id="memberHomeTabSignup" type="button">Đăng ký thành viên</button>
+    </div>
+
+    <form id="memberHomeLoginForm" class="member-auth-form">
+      <label>Email<input id="memberHomeLoginEmail" type="email" autocomplete="email" required placeholder="email@gmail.com"></label>
+      <label>Mật khẩu<input id="memberHomeLoginPassword" type="password" autocomplete="current-password" required placeholder="••••••••"></label>
+      <button class="member-auth-submit" type="submit">🔐 Đăng nhập</button>
+      <button
+        type="button"
+        id="memberForgotPassword"
+        style="margin-top:10px;width:100%;border:0;background:none;color:#1769ff;font-weight:700;cursor:pointer;"
+      >
+        🔑 Quên mật khẩu?
+      </button>
+    </form>
+
+    <form id="memberHomeSignupForm" class="member-auth-form" style="display:none">
+      <div class="member-auth-grid">
+        <label>Họ và tên *<input id="memberHomeSignupName" required autocomplete="name" placeholder="Nguyễn Văn A"></label>
+        <label>Số điện thoại *<input id="memberHomeSignupPhone" required inputmode="tel" autocomplete="tel" placeholder="0898888269"></label>
+      </div>
+      <label>Email *<input id="memberHomeSignupEmail" type="email" required autocomplete="email" placeholder="email@gmail.com"></label>
+      <label class="as-password-field">Mật khẩu *
+        <span class="as-password-wrap">
+          <input id="memberHomeSignupPassword" type="password" minlength="6" required autocomplete="new-password" placeholder="Tối thiểu 6 ký tự">
+          <button type="button" class="as-password-toggle" data-password-target="memberHomeSignupPassword" aria-label="Hiện mật khẩu">👁</button>
+        </span>
+      </label>
+      <label class="as-password-field">Xác nhận mật khẩu *
+        <span class="as-password-wrap">
+          <input id="memberHomeSignupPasswordConfirm" type="password" minlength="6" required autocomplete="new-password" placeholder="Nhập lại mật khẩu">
+          <button type="button" class="as-password-toggle" data-password-target="memberHomeSignupPasswordConfirm" aria-label="Hiện xác nhận mật khẩu">👁</button>
+        </span>
+        <small id="asPasswordMatch" class="as-password-match" aria-live="polite"></small>
+      </label>
+      <button class="member-auth-submit" type="submit">✨ Tạo tài khoản thành viên</button>
+      <div class="member-auth-note">Sau khi đăng ký, hệ thống sẽ gửi email xác nhận. Hãy mở Gmail và bấm <b>link xác nhận</b> để kích hoạt tài khoản trước khi đăng nhập.</div>
+    </form>
+
+    <div class="member-auth-status" id="memberAuthStatus"></div>
+    <button class="member-auth-resend" id="memberAuthResend" type="button">📩 Gửi lại email xác nhận</button>
+  </div>
+</div>
+
+
+<div class="member-reset-modal" id="memberResetModal" role="dialog" aria-modal="true" aria-labelledby="memberResetTitle">
+  <div class="member-reset-box">
+    <button class="member-reset-close" id="memberResetClose" type="button" aria-label="Đóng">×</button>
+    <div class="member-reset-icon">🔐</div>
+    <h2 id="memberResetTitle">Khôi phục mật khẩu</h2>
+    <p>Nhập email tài khoản Apple Seed. Chúng tôi sẽ gửi một liên kết bảo mật để bạn đặt lại mật khẩu.</p>
+    <form class="member-reset-form" id="memberResetForm">
+      <label>Email tài khoản
+        <input id="memberResetEmail" type="email" autocomplete="email" required placeholder="email@gmail.com">
+      </label>
+      <div class="member-reset-status" id="memberResetStatus"></div>
+      <button class="member-reset-submit" id="memberResetSubmit" type="submit">📩 Gửi liên kết đặt lại mật khẩu</button>
+      <button class="member-reset-back" id="memberResetBack" type="button">← Quay lại đăng nhập</button>
+    </form>
+  </div>
+</div>
+
+<button class="chat-btn" id="chatBtn" aria-label="Mở trợ lý Apple Seed">🤖</button>
+<div class="chat-box" id="chatBox" aria-label="Trợ lý Apple Seed">
+<div class="chat-head"><span>🤖 Trợ lý Apple Seed</span><button class="chat-close" id="chatClose">×</button></div>
+<div class="chat-body" id="chatBody">
+<div class="msg bot">Xin chào 👋 Tôi là trợ lý Apple Seed. Bạn cần hỏi về sửa iPhone, Face ID, main, linh kiện hay địa chỉ cửa hàng?</div>
+<a class="chat-booking" href="booking.html">📅 Đặt lịch sửa</a>
+</div>
+<form class="chat-input" id="chatForm">
+<input id="chatInput" autocomplete="off" placeholder="Nhập câu hỏi...">
+<button>Gửi</button>
+</form>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
 <script src="member-auth.js?v=20260828-auth-fix3"></script>
