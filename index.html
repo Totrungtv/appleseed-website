@@ -1713,7 +1713,7 @@ body.apple-seed-v4 .as4-footer-cta{width:min(1280px,100%)!important;margin:0 aut
         <div class="ui01-quick-tags"><a href="#ky-thuat">⌕ Chẩn đoán</a><a href="#homeRenderer">△ PANIC</a><a href="#homeRenderer">⌁ Schematic</a><a href="./products.html">▦ Tools</a></div>
       </div>
       <div class="ui01-phones ui01-real-phone-art" aria-label="Apple Seed iPhone showcase">
-        <img src="./assets/ui01-hero-phones.jpg?v=20260828-real-phones" alt="Ba điện thoại iPhone Apple Seed" loading="eager">
+        <img src="./assets/ui01-hero-phones.jpg?v=20260828-real-phones" alt="Ba điện thoại iPhone Apple Seed" loading="eager" decoding="async" fetchpriority="high">
       </div>
       <aside class="ui01-lab">
         <div class="ui01-lab-head"><b>Apple Seed Lab</b><span>ONLINE</span></div>
@@ -3157,18 +3157,18 @@ body{padding-top:72px!important}
   filter:drop-shadow(0 25px 25px rgba(20,43,74,.16))!important;
 }
 .ui01-real-phone-art img{
-  width:min(620px,112%)!important;
+  width:min(660px,116%)!important;
   max-width:none!important;
   height:auto!important;
-  max-height:425px!important;
+  max-height:445px!important;
   object-fit:contain!important;
   object-position:center bottom!important;
-  mix-blend-mode:multiply!important;
-  filter:contrast(1.12) saturate(1.08) drop-shadow(0 18px 22px rgba(20,43,74,.14))!important;
-  -webkit-mask-image:radial-gradient(ellipse 76% 86% at 50% 58%,#000 48%,rgba(0,0,0,.96) 62%,transparent 91%)!important;
-  mask-image:radial-gradient(ellipse 76% 86% at 50% 58%,#000 48%,rgba(0,0,0,.96) 62%,transparent 91%)!important;
-}
-.ui01-lab{
+  mix-blend-mode:normal!important;
+  filter:contrast(1.16) saturate(1.10) brightness(1.015) drop-shadow(0 18px 22px rgba(20,43,74,.14))!important;
+  image-rendering:auto!important;
+  transform:translateZ(0);
+  backface-visibility:hidden;
+}.ui01-lab{
   width:250px!important;
   border-radius:18px!important;
   box-shadow:0 20px 45px rgba(27,43,70,.12)!important;
