@@ -2727,11 +2727,19 @@ form.onsubmit=async e=>{
       thinking.textContent=answerText;
       body.scrollTop=body.scrollHeight;
     });
+
+    /* Edge Function may return a JSON envelope as a streamed text body.
+       Never show the transport envelope to customers. Extract the reply. */
+    const trimmed=answerText.trim();
+    if(trimmed.startsWith("{") && trimmed.endsWith("}")){
+      try{
+        const payload=JSON.parse(trimmed);
+        const reply=typeof payload?.reply==="string"?payload.reply.trim():"";
+        if(reply) thinking.textContent=reply;
+      }catch(_){}
+    }
   }catch(error){
     console.error("AppleSeed AI:",error);
-
-    // Nếu AI thật lỗi, giữ chatbot không bị chết:
-    // dùng bộ trả lời cục bộ cũ làm phương án dự phòng.
     answerText=answerFallback(q);
     thinking.textContent=answerText;
   }finally{
