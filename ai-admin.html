@@ -10,7 +10,9 @@
 :root{--blue:#2563eb;--bg:#f6f8fb;--line:#e5e7eb;--text:#111827;--muted:#667085;--green:#159447;--red:#b42318}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif}.wrap{max-width:1250px;margin:auto;padding:28px 18px 70px}.top{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:22px}.top h1{margin:0 0 5px}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 12px;font-weight:800;cursor:pointer;text-decoration:none;color:inherit}.primary{background:var(--blue);border-color:var(--blue);color:#fff}.danger{color:var(--red)}.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:18px;box-shadow:0 5px 20px rgba(0,0,0,.04)}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.card{border:1px solid var(--line);border-radius:15px;padding:16px}.card h3{margin:0 0 7px}.muted{color:var(--muted);font-size:13px;line-height:1.55}.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#eff6ff;color:#175cd3;font-size:12px;font-weight:800}.badge.off{background:#f2f4f7;color:#667085}.badge.bad{background:#fef3f2;color:#b42318}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.form{display:grid;gap:12px}.field label{font-weight:800;font-size:13px;display:block;margin-bottom:5px}input,textarea,select{width:100%;padding:11px;border:1px solid #d0d5dd;border-radius:9px;font:inherit;background:#fff}textarea{min-height:180px;resize:vertical}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}.hidden{display:none}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{padding:14px;border:1px solid var(--line);border-radius:13px;background:#fafafa}.stat b{font-size:23px;display:block}.list{display:grid;gap:10px}.item{border:1px solid var(--line);border-radius:13px;padding:13px}.item-head{display:flex;justify-content:space-between;gap:10px}.item h4{margin:0 0 5px}.item-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.high{border-left:4px solid #dc2626}.medium{border-left:4px solid #f59e0b}.low{border-left:4px solid #22c55e}.login{max-width:460px;margin:90px auto}.status{padding:11px 13px;border-radius:10px;margin-bottom:14px;background:#eff6ff;color:#175cd3}.status.error{background:#fef3f2;color:#b42318}@media(max-width:850px){.grid,.stats,.row{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}}
 .knowledge-drop{border:2px dashed #bfdbfe;border-radius:14px;padding:18px;background:#f8fbff;text-align:center}.knowledge-preview{display:flex;gap:10px;align-items:center;margin-top:10px}.knowledge-preview img{width:120px;height:90px;object-fit:cover;border-radius:10px;border:1px solid var(--line)}.knowledge-list{display:grid;gap:10px;margin-top:12px}.knowledge-item{border:1px solid var(--line);border-radius:13px;padding:13px}.knowledge-item p{white-space:pre-wrap}.image-attach{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}.image-chip{font-size:12px;padding:5px 8px;border-radius:999px;background:#eff6ff;color:#175cd3;font-weight:700}.image-preview-chat{max-width:180px;max-height:130px;object-fit:cover;border-radius:10px;border:1px solid #d0d5dd;display:block;margin-top:7px}</style>
-</head>
+<script>
+window.__pdfjsReady=(async()=>{const m=await import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs');m.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs';return m;})().catch(()=>null);
+</script></head>
 <body>
 <div id="login" class="panel login">
   <h1>🤖 Apple Seed AI Robot Center</h1><p class="muted">Đăng nhập bằng tài khoản Supabase có role Admin/Staff.</p>
@@ -28,8 +30,8 @@
     <div class="toolbar"><div><h2 style="margin:0">🧠 Nạp kiến thức cho AI</h2><div class="muted">Admin đưa kiến thức kỹ thuật, quy trình sửa, ca PANIC, ghi chú hoặc ảnh main/schematic vào kho. Chỉ mục <b>Đã duyệt</b> mới được robot dùng làm kiến thức nền.</div></div><span class="badge">Knowledge Base</span></div>
     <form id="knowledgeForm" class="form">
       <div class="row"><div class="field"><label>Tiêu đề *</label><input id="knowledgeTitle" required placeholder="Ví dụ: iPhone 14 Pro Max PANIC 0x20000 Compass"></div><div class="field"><label>Chuyên mục</label><select id="knowledgeCategory"><option value="board-repair">Board Repair</option><option value="panic">PANIC</option><option value="schematic">Schematic</option><option value="workflow">Quy trình</option><option value="general">Khác</option></select></div></div>
-      <div class="field"><label>Nội dung kiến thức *</label><textarea id="knowledgeContent" required placeholder="Ghi rõ hiện tượng, dữ liệu đo, nguyên nhân đã xác minh, cách xử lý và kết quả..."></textarea></div>
-      <div class="knowledge-drop"><div style="font-size:28px">📷</div><b>Thêm ảnh để AI xem</b><div class="muted">JPG / PNG / WEBP / GIF · tối đa 8 MB. Ảnh được giữ trong kho riêng của Admin.</div><input id="knowledgeImage" type="file" accept="image/jpeg,image/png,image/webp,image/gif" style="margin-top:10px"><button class="btn primary" type="button" id="analyzeKnowledgeImage" style="margin-top:10px">👁️ AI xem & phân tích ảnh</button></div>
+      <div class="field"><label>Nội dung kiến thức *</label><textarea id="knowledgeContent" placeholder="Ghi rõ hiện tượng, dữ liệu đo, nguyên nhân đã xác minh, cách xử lý và kết quả..."></textarea><div class="muted" style="margin-top:6px">Có thể nhập tay hoặc chọn tài liệu bên dưới để AI tự trích nội dung. Nếu chọn tài liệu, ô này có thể để trống.</div></div>
+      <div class="knowledge-drop"><div style="font-size:28px">📚</div><b>Nạp ảnh hoặc tài liệu cho AI</b><div class="muted">Ảnh: JPG / PNG / WEBP / GIF · Tài liệu: PDF / DOCX / TXT · tối đa 8 MB. Tài liệu sẽ được đọc và đưa nội dung vào Knowledge Base.</div><input id="knowledgeImage" type="file" accept="image/jpeg,image/png,image/webp,image/gif,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" style="margin-top:10px"><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button class="btn primary" type="button" id="analyzeKnowledgeImage" style="margin-top:10px">👁️ AI xem ảnh</button><button class="btn" type="button" id="extractKnowledgeDocument" style="margin-top:10px">📄 Đọc tài liệu</button></div></div>
       <div id="knowledgeImagePreview" class="knowledge-preview hidden"></div>
       <div class="item-actions"><button class="btn primary" id="saveKnowledge" type="submit">🧠 Lưu kiến thức</button><button class="btn" type="button" id="clearKnowledge">Xóa form</button></div>
       <div id="knowledgeStatus" class="muted"></div>
@@ -60,6 +62,8 @@
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/mammoth@1.9.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs" type="module" id="pdfjsModule"></script>
 <script src="supabase-config.js"></script>
 <script>
 const sb=window.supabaseClient; const $=id=>document.getElementById(id); const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
@@ -93,8 +97,66 @@ function bindChatImage(){const input=$('chatImage'),chip=$('chatImageChip'),prev
 async function loadKnowledge(){const box=$('knowledgeList');if(!box)return;const {data,error}=await sb.from('ai_knowledge').select('id,title,content,category,status,image_path,created_at,approved_at').order('created_at',{ascending:false}).limit(50);if(error){box.innerHTML='<p class="muted">Không tải được kho kiến thức: '+esc(error.message)+'</p>';return;}knowledgeRows=data||[];box.innerHTML=knowledgeRows.map(k=>'<article class="knowledge-item"><div class="item-head"><div><h4>'+esc(k.title)+'</h4><div class="muted">'+esc(k.category)+' · '+new Date(k.created_at).toLocaleString('vi-VN')+'</div></div><span class="badge '+(k.status==='approved'?'':'off')+'">'+esc(k.status)+'</span></div><p>'+esc(k.content.slice(0,900))+(k.content.length>900?'…':'')+'</p>'+(k.image_path?'<span class="image-chip">📷 Có ảnh</span>':'')+'<div class="item-actions">'+(k.status==='draft'?'<button class="btn primary" onclick="approveKnowledge('+k.id+')">✅ Duyệt cho AI</button>':'')+'<button class="btn danger" onclick="archiveKnowledge('+k.id+')">🗄️ Lưu trữ</button></div></article>').join('')||'<p class="muted">Kho kiến thức đang trống.</p>';}
 window.approveKnowledge=async id=>{const {data:{user}}=await sb.auth.getUser();const {error}=await sb.from('ai_knowledge').update({status:'approved',approved_by:user?.id||null,approved_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('id',id);if(error){status('Duyệt kiến thức lỗi: '+error.message,true);return}status('✅ Đã đưa kiến thức vào nguồn AI.');await loadKnowledge();};
 window.archiveKnowledge=async id=>{const {error}=await sb.from('ai_knowledge').update({status:'archived',updated_at:new Date().toISOString()}).eq('id',id);if(error){status('Lưu trữ lỗi: '+error.message,true);return}status('Đã lưu trữ kiến thức.');await loadKnowledge();};
-$('knowledgeImage').onchange=async()=>{const f=$('knowledgeImage').files?.[0],p=$('knowledgeImagePreview');if(!f){p.classList.add('hidden');return}try{const d=await bytesToDataUrl(f);p.innerHTML='<img src="'+d+'" style="width:120px;height:90px;object-fit:cover;border-radius:10px"><span class="muted">📷 '+esc(f.name)+'</span>';p.classList.remove('hidden');}catch(e){status(e.message,true);$('knowledgeImage').value='';}};
-$('knowledgeForm').onsubmit=async e=>{e.preventDefault();const btn=$('saveKnowledge'),f=$('knowledgeImage').files?.[0];btn.disabled=true;btn.textContent='⏳ Đang lưu…';try{const {data:{user}}=await sb.auth.getUser();if(!user)throw new Error('Phiên Admin hết hạn.');let imagePath=null;if(f){if(f.size>8388608)throw new Error('Ảnh quá lớn.');const ext=(f.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');imagePath=user.id+'/'+Date.now()+'-'+crypto.randomUUID()+'.'+ext;const up=await sb.storage.from('ai-knowledge').upload(imagePath,f,{contentType:f.type,upsert:false});if(up.error)throw up.error;}const {error}=await sb.from('ai_knowledge').insert({title:$('knowledgeTitle').value.trim(),content:$('knowledgeContent').value.trim(),category:$('knowledgeCategory').value,source_type:'admin',image_path:imagePath,status:'draft',created_by:user.id});if(error){if(imagePath)await sb.storage.from('ai-knowledge').remove([imagePath]);throw error}status('🧠 Đã nạp kiến thức vào kho. Hãy bấm “Duyệt cho AI” để robot bắt đầu sử dụng.');$('knowledgeForm').reset();$('knowledgeImagePreview').classList.add('hidden');await loadKnowledge();}catch(e){status('Nạp kiến thức lỗi: '+(e?.message||String(e)),true)}finally{btn.disabled=false;btn.textContent='🧠 Lưu kiến thức';}};
+function isKnowledgeImage(file){return !!file&&/^image\/(jpeg|png|webp|gif)$/i.test(file.type);}
+function isKnowledgeDocument(file){return !!file&&(/^(application\/pdf|application\/vnd\.openxmlformats-officedocument\.wordprocessingml\.document|text\/plain)$/i.test(file.type)||/\.(pdf|docx|txt)$/i.test(file.name||''));}
+async function extractKnowledgeDocument(file){
+  if(!file) throw new Error('Chọn tài liệu trước pa.');
+  if(file.size>8388608) throw new Error('Tài liệu quá lớn. Vui lòng dùng file dưới 8 MB.');
+  const name=(file.name||'').toLowerCase();
+  if(/\.txt$/i.test(name)||file.type==='text/plain') return await file.text();
+  if(/\.docx$/i.test(name)){
+    if(!window.mammoth) throw new Error('Bộ đọc DOCX chưa tải xong. Hãy tải lại trang rồi thử lại.');
+    const result=await window.mammoth.extractRawText({arrayBuffer:await file.arrayBuffer()});
+    return result.value||'';
+  }
+  if(/\.pdf$/i.test(name)||file.type==='application/pdf'){
+    if(!window.__pdfjsReady) throw new Error('Bộ đọc PDF chưa tải xong. Hãy tải lại trang rồi thử lại.');
+    const pdf=await window.__pdfjsReady.getDocument({data:await file.arrayBuffer()}).promise;
+    const parts=[];
+    for(let i=1;i<=pdf.numPages;i++){
+      const page=await pdf.getPage(i), textContent=await page.getTextContent();
+      parts.push('--- Trang '+i+' ---\n'+textContent.items.map(x=>x.str||'').join(' '));
+    }
+    return parts.join('\n\n');
+  }
+  throw new Error('Định dạng chưa hỗ trợ. Dùng PDF, DOCX hoặc TXT.');
+}
+$('knowledgeImage').onchange=async()=>{
+  const f=$('knowledgeImage').files?.[0],p=$('knowledgeImagePreview'),aiBtn=$('analyzeKnowledgeImage'),docBtn=$('extractKnowledgeDocument');
+  if(!f){p.classList.add('hidden');aiBtn?.classList.remove('hidden');docBtn?.classList.remove('hidden');return}
+  try{
+    if(f.size>8388608) throw new Error('File quá lớn. Vui lòng dùng file dưới 8 MB.');
+    if(isKnowledgeImage(f)){
+      const d=await bytesToDataUrl(f);p.innerHTML='<img src="'+d+'" style="width:120px;height:90px;object-fit:cover;border-radius:10px"><span class="muted">📷 '+esc(f.name)+'</span>';p.classList.remove('hidden');aiBtn?.classList.remove('hidden');docBtn?.classList.add('hidden');
+    }else if(isKnowledgeDocument(f)){
+      p.innerHTML='<div class="image-chip">📄 '+esc(f.name)+' · sẵn sàng đọc tài liệu</div>';p.classList.remove('hidden');aiBtn?.classList.add('hidden');docBtn?.classList.remove('hidden');
+    }else throw new Error('Chỉ hỗ trợ JPG, PNG, WEBP, GIF, PDF, DOCX hoặc TXT.');
+  }catch(e){status(e.message,true);$('knowledgeImage').value='';p.classList.add('hidden');}
+};
+$('extractKnowledgeDocument').onclick=async()=>{
+  const f=$('knowledgeImage').files?.[0],btn=$('extractKnowledgeDocument');if(!f)return status('Chọn PDF, DOCX hoặc TXT trước pa.',true);
+  btn.disabled=true;btn.textContent='⏳ Đang đọc…';
+  try{
+    if(!isKnowledgeDocument(f)) throw new Error('File này không phải PDF, DOCX hoặc TXT.');
+    const content=(await extractKnowledgeDocument(f)).trim();
+    if(!content) throw new Error('Không trích được chữ. Nếu đây là PDF scan/ảnh chụp, hãy dùng ảnh để AI xem.');
+    $('knowledgeContent').value=($('knowledgeContent').value.trim()?$('knowledgeContent').value.trim()+'\n\n':'')+'[NỘI DUNG TÀI LIỆU: '+f.name+']\n'+content;
+    status('📄 Đã đọc tài liệu và đưa nội dung vào ô kiến thức. Kiểm tra rồi bấm “Lưu kiến thức”.');
+  }catch(e){status('Đọc tài liệu lỗi: '+(e?.message||String(e)),true)}finally{btn.disabled=false;btn.textContent='📄 Đọc tài liệu';}
+};
+$('knowledgeForm').onsubmit=async e=>{e.preventDefault();const btn=$('saveKnowledge'),f=$('knowledgeImage').files?.[0];btn.disabled=true;btn.textContent='⏳ Đang lưu…';try{const {data:{user}}=await sb.auth.getUser();if(!user)throw new Error('Phiên Admin hết hạn.');
+    if(!f&&!$('knowledgeContent').value.trim())throw new Error('Hãy nhập nội dung hoặc chọn một tài liệu.');
+    if(f&&!isKnowledgeImage(f)&&!isKnowledgeDocument(f))throw new Error('Định dạng chưa hỗ trợ.');
+    let imagePath=null;
+    if(f&&isKnowledgeImage(f)){
+      if(f.size>8388608)throw new Error('Ảnh quá lớn.');
+      const ext=(f.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');imagePath=user.id+'/'+Date.now()+'-'+crypto.randomUUID()+'.'+ext;
+      const up=await sb.storage.from('ai-knowledge').upload(imagePath,f,{contentType:f.type,upsert:false});if(up.error)throw up.error;
+    }
+    let content=$('knowledgeContent').value.trim();
+    if(f&&isKnowledgeDocument(f)&&!content) content=('[NỘI DUNG TÀI LIỆU: '+f.name+']\n'+(await extractKnowledgeDocument(f)).trim()).trim();
+    if(!content)throw new Error('Tài liệu không có nội dung chữ. Với PDF scan, hãy dùng ảnh để AI xem.');
+    const {error}=await sb.from('ai_knowledge').insert({title:$('knowledgeTitle').value.trim()||f?.name||'Kiến thức Apple Seed',content,category:$('knowledgeCategory').value,source_type:f&&isKnowledgeDocument(f)?'admin-document':'admin',image_path:imagePath,status:'draft',created_by:user.id});if(error){if(imagePath)await sb.storage.from('ai-knowledge').remove([imagePath]);throw error}status('🧠 Đã nạp kiến thức vào kho. Hãy bấm “Duyệt cho AI” để robot bắt đầu sử dụng.');$('knowledgeForm').reset();$('knowledgeImagePreview').classList.add('hidden');await loadKnowledge();}catch(e){status('Nạp kiến thức lỗi: '+(e?.message||String(e)),true)}finally{btn.disabled=false;btn.textContent='🧠 Lưu kiến thức';}};
 $('clearKnowledge').onclick=()=>{$('knowledgeForm').reset();$('knowledgeImagePreview').classList.add('hidden');};
 $('analyzeKnowledgeImage').onclick=async()=>{const f=$('knowledgeImage').files?.[0],btn=$('analyzeKnowledgeImage');if(!f){status('Chọn ảnh trước pa.',true);return}btn.disabled=true;btn.textContent='⏳ AI đang xem ảnh…';try{const data=await bytesToDataUrl(f);const {data:{session}}=await sb.auth.getSession();if(!session?.access_token)throw new Error('Phiên Admin hết hạn.');const response=await fetch(window.SUPABASE_URL+'/functions/v1/appleseed-ai',{method:'POST',headers:{'Content-Type':'application/json','apikey':window.SUPABASE_ANON_KEY,'Authorization':'Bearer '+session.access_token},body:JSON.stringify({message:'Hãy xem ảnh này và phân tích những gì thực sự nhìn thấy. Nếu là main/schematic/boardview, hãy xác định vùng đáng chú ý, ký hiệu/linh kiện có thể đọc được, giả thuyết lỗi và các phép đo cần làm. Không bịa phần không nhìn thấy.',source:'ai-admin',mode:'robot_workspace',image_data:data})});const raw=await response.text();if(!response.ok)throw new Error(((()=>{try{return JSON.parse(raw).error}catch{return raw}})())||'AI lỗi HTTP '+response.status);$('knowledgeContent').value=($('knowledgeContent').value.trim()?$('knowledgeContent').value.trim()+'\\n\\n':'')+'[AI phân tích ảnh]\\n'+raw;status('👁️ AI đã phân tích ảnh và đưa kết quả vào ô Nội dung kiến thức. Ông kiểm tra rồi mới lưu.');}catch(e){status('Phân tích ảnh lỗi: '+(e?.message||String(e)),true)}finally{btn.disabled=false;btn.textContent='👁️ AI xem & phân tích ảnh';}};$('refreshKnowledge').onclick=loadKnowledge;
 $('refresh').onclick=refreshAll;$('logout').onclick=async()=>{await sb.auth.signOut();location.reload()};$('loginBtn').onclick=async()=>{const m=$('loginMsg');try{const {error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error)throw error;await checkSession()}catch(e){m.textContent='Đăng nhập lỗi: '+(e?.message||String(e))}};checkSession();
