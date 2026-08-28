@@ -1664,6 +1664,54 @@ body.apple-seed-v4 .as4-footer-cta{width:min(1280px,100%)!important;margin:0 aut
 @media(max-width:560px){body.apple-seed-v4 .as4-header-inner{padding:9px 12px!important;gap:8px!important}body.apple-seed-v4 .as4-brand img{width:46px!important;height:46px!important}body.apple-seed-v4 .as4-brand-copy strong{font-size:20px!important}body.apple-seed-v4 .as4-brand-copy small{font-size:8px!important;letter-spacing:1.2px!important}body.apple-seed-v4 .as4-member{gap:4px!important}body.apple-seed-v4 .as4-login,body.apple-seed-v4 .as4-signup{min-height:38px!important;padding:7px 8px!important;font-size:11px!important}body.apple-seed-v4 .as4-nav{gap:4px!important}body.apple-seed-v4 .as4-nav a{padding:8px 9px!important;font-size:11px!important}body.apple-seed-v4 .as4-hero{padding:12px 12px 10px!important}body.apple-seed-v4 .as4-hero-copy{min-height:430px!important;padding:28px 22px!important;border-radius:23px!important}body.apple-seed-v4 .as4-hero-copy h1{font-size:42px!important;letter-spacing:-2.5px!important}body.apple-seed-v4 .as4-hero-copy>p{font-size:14px!important}.as4-proof{grid-template-columns:repeat(2,1fr)!important;margin-top:18px!important}body.apple-seed-v4 .as4-hero-panel{min-height:310px!important;border-radius:23px!important}body.apple-seed-v4 .as4-command{padding:12px 12px 30px!important}body.apple-seed-v4 .as4-section-head{display:block!important}body.apple-seed-v4 .as4-section-head h2{font-size:25px!important}body.apple-seed-v4 .as4-section-head p{margin-top:7px!important}body.apple-seed-v4 .as4-command-grid{gap:8px!important}body.apple-seed-v4 .as4-command-card{min-height:100px!important;padding:12px 10px!important;border-radius:15px!important;grid-template-columns:40px 1fr!important}.as4-command-icon{width:40px!important;height:40px!important;border-radius:12px!important;font-size:21px!important}.as4-command-card i{display:none!important}.as4-command-card b{font-size:12px!important}.as4-command-card small{font-size:9px!important}body.apple-seed-v4 .as4-content-zone{padding:27px 12px 34px!important}body.apple-seed-v4 .as4-footer-cta{margin:0 12px 18px!important;padding:25px 20px!important;display:block!important;border-radius:20px!important}.as4-footer-cta h2{font-size:28px!important}.as4-footer-actions{margin-top:16px!important;display:grid!important;grid-template-columns:1fr 1fr!important}}
 </style>
   <link rel="stylesheet" href="homepage-v5-theme.css?v=20260828-v5">
+<style id="apple-seed-contact-layout-fix-20260828">
+/* CONTACT LAYOUT FIX — keep the approved homepage theme, restore full-width contact/map grid */
+.as4-content-zone #homeRenderer > .contact#lien-he{
+  width:100% !important;
+  max-width:none !important;
+  min-width:0 !important;
+  display:block !important;
+}
+.as4-content-zone #homeRenderer > .contact#lien-he .contact-inner{
+  width:min(1260px, calc(100% - 56px)) !important;
+  max-width:1260px !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+  display:grid !important;
+  grid-template-columns:minmax(0, .78fr) minmax(0, 1.22fr) !important;
+  gap:20px !important;
+  align-items:stretch !important;
+  min-width:0 !important;
+}
+.as4-content-zone #homeRenderer > .contact#lien-he .contact-card,
+.as4-content-zone #homeRenderer > .contact#lien-he .map-card{
+  width:100% !important;
+  min-width:0 !important;
+  max-width:none !important;
+}
+.as4-content-zone #homeRenderer > .contact#lien-he .contact-card h2,
+.as4-content-zone #homeRenderer > .contact#lien-he .contact-card p,
+.as4-content-zone #homeRenderer > .contact#lien-he .contact-list{
+  max-width:none !important;
+  min-width:0 !important;
+}
+.as4-content-zone #homeRenderer > .contact#lien-he .map-card iframe{
+  display:block !important;
+  width:100% !important;
+  min-width:0 !important;
+}
+@media(max-width:900px){
+  .as4-content-zone #homeRenderer > .contact#lien-he .contact-inner{
+    width:min(100%, calc(100% - 36px)) !important;
+    grid-template-columns:minmax(0,1fr) !important;
+  }
+}
+@media(max-width:560px){
+  .as4-content-zone #homeRenderer > .contact#lien-he .contact-inner{
+    width:100% !important;
+  }
+}
+</style>
 </head>
 
 <body class="apple-seed-v4">
