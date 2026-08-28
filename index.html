@@ -3115,8 +3115,11 @@ form.onsubmit=async e=>{
             try{await window.memberEnsureProfile(data.user);}catch(_){}
           }
           modal.classList.remove('open');
+          modal.style.display='none';
+          modal.setAttribute('aria-hidden','true');
           document.body.style.overflow='';
-          setStatus('✅ Đăng nhập thành công.',true);
+          const successStatus=document.getElementById('memberAuthStatus');
+          if(successStatus){successStatus.textContent='';successStatus.className='member-auth-status';}
           if(typeof window.getMemberSession==='function'){
             const session=await window.getMemberSession();
             const pill=document.getElementById('memberUserPill');
