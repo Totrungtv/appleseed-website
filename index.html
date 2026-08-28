@@ -2592,6 +2592,8 @@ function answerFallback(q){
 
   const model=raw.match(/(?:iphone|ip)\s*(5s|6s|7|8|x|xr|xs|11|12|13|14|15|16)(?:\s*(pro|max|plus|mini))?/i);
 
+  if(/^(alo|hello|hi|xin chao|chao|chao ban|hey)\s*[!.?]*$/i.test(s)) return "Xin chào 👋 Tôi là trợ lý Apple Seed. Bạn có thể hỏi tôi về sửa iPhone, Face ID, main, linh kiện, đặt lịch hoặc địa chỉ cửa hàng.";
+
   if(s.includes("dia chi")||s.includes("o dau")||s.includes("map")||s.includes("google"))
     return 'Apple Seed ở 292 Phạm Ngũ Lão, Trà Vinh. Bạn có thể bấm "Đặt lịch sửa" trên website hoặc "Mở Google Maps" ở phần Liên hệ.';
 
@@ -2653,7 +2655,7 @@ async function askAppleSeedAI(message, onDelta){
         "apikey":anonKey,
         "Authorization":"Bearer "+anonKey
       },
-      body:JSON.stringify({message}),
+      body:JSON.stringify({message,source:"homepage-chat"}),
       signal:controller.signal
     });
 
