@@ -815,8 +815,13 @@ function heroImagesFromCss(css){
 }
 function heroImageOptionsFromCss(css){const s=String(css||'');return{phoneFit:(s.match(/\/\* hero-image-fit:([^*]+) \*\//)||[])[1]?.trim()||'contain',backgroundFit:(s.match(/\/\* hero-background-fit:([^*]+) \*\//)||[])[1]?.trim()||'cover'}}
 function replaceHeroImages(existing,images,phoneFit,backgroundFit){let css=String(existing||'');const a=css.indexOf(HERO_IMAGE_START),b=css.indexOf(HERO_IMAGE_END);if(a>=0&&b>=a)css=(css.slice(0,a)+css.slice(b+HERO_IMAGE_END.length)).trim();const block=heroImageBlock(images,phoneFit,backgroundFit);return (css?css+'\n\n':'')+(Object.keys(images).length?block:'')}
+window.__appleSeedHeroImages=window.__appleSeedHeroImages||{};
 function renderHeroImageFields(css){
-  const images=heroImagesFromCss(css),opts=heroImageOptionsFromCss(css);
+  const parsed=heroImagesFromCss(css);
+  const hasState=Object.keys(window.__appleSeedHeroImages||{}).length>0;
+  const images=hasState?window.__appleSeedHeroImages:parsed;
+  if(!hasState) window.__appleSeedHeroImages={...parsed};
+  const opts=heroImageOptionsFromCss(css);
   const fit=$('heroPhoneFit'),bgfit=$('heroBackgroundFit'); if(fit)fit.value=opts.phoneFit;if(bgfit)bgfit.value=opts.backgroundFit;
   ['background','phone0','phone1','phone2','phone3','phone4','phone5'].forEach(slot=>{const box=$('heroImagePreview'+(slot==='background'?'Background':slot.charAt(0).toUpperCase()+slot.slice(1)));if(!box)return;const url=images[slot];box.innerHTML='';if(url){const img=document.createElement('img');img.src=url;img.alt='Ảnh '+slot;img.onerror=()=>{box.className='hero-image-preview empty';box.textContent='Ảnh lỗi hoặc URL không truy cập được'};box.className='hero-image-preview';box.appendChild(img)}else{box.className='hero-image-preview empty';box.textContent='Chưa chọn ảnh'}});
 }
@@ -842,9 +847,9 @@ async function uploadHeroImageSlot(slot,file){
     const r=await sb.storage.from('site-images').upload(path,file,{cacheControl:'31536000',upsert:false,contentType:file.type});
     if(r.error)throw r.error;
     const url=sb.storage.from('site-images').getPublicUrl(path).data.publicUrl;
-    const images=heroImagesFromCss($('themeCustomCss').value||'');
-    images[slot]=url;
-    $('themeCustomCss').value=replaceHeroImages($('themeCustomCss').value||'',images,$('heroPhoneFit').value,$('heroBackgroundFit').value);
+    window.__appleSeedHeroImages=window.__appleSeedHeroImages||{};
+    window.__appleSeedHeroImages[slot]=url;
+    $('themeCustomCss').value=replaceHeroImages($('themeCustomCss').value||'',window.__appleSeedHeroImages,$('heroPhoneFit').value,$('heroBackgroundFit').value);
     renderHeroImageFields($('themeCustomCss').value);
     status('✅ Đã tải ảnh Hero. Bấm “💾 Lưu ảnh Hero” để xuất bản lên website.');
   }catch(e){
@@ -853,13 +858,14 @@ async function uploadHeroImageSlot(slot,file){
     // Giữ ảnh local đang chọn để ông thấy file đã được nhận, không làm ô ảnh trắng.
   }
 }
-function clearHeroImageSlot(slot){const images=heroImagesFromCss($('themeCustomCss').value||'');delete images[slot];$('themeCustomCss').value=replaceHeroImages($('themeCustomCss').value||'',images,$('heroPhoneFit').value,$('heroBackgroundFit').value);renderHeroImageFields($('themeCustomCss').value);}
+function clearHeroImageSlot(slot){window.__appleSeedHeroImages=window.__appleSeedHeroImages||heroImagesFromCss($('themeCustomCss').value||'');delete window.__appleSeedHeroImages[slot];$('themeCustomCss').value=replaceHeroImages($('themeCustomCss').value||'',window.__appleSeedHeroImages,$('heroPhoneFit').value,$('heroBackgroundFit').value);renderHeroImageFields($('themeCustomCss').value);}
 async function saveHeroImages(){
   const btn=$('saveHeroImagesBtn');
   try{
     await ensureThemeRow();
-    const images=heroImagesFromCss($('themeCustomCss').value||'');
-    const css=replaceHeroImages($('themeCustomCss').value||'',images,$('heroPhoneFit').value,$('heroBackgroundFit').value);
+    const images=window.__appleSeedHeroImages||heroImagesFromCss($('themeCustomCss').value||'');
+    window.__appleSeedHeroImages={...images};
+    const css=replaceHeroImages($('themeCustomCss').value||'',window.__appleSeedHeroImages,$('heroPhoneFit').value,$('heroBackgroundFit').value);
     $('themeCustomCss').value=css;
     const payload={id:1,site_name:$('themeSiteName').value.trim()||'Apple Seed',font_family:$('themeFont').value||'system',primary_color:colorOr($('themePrimary').value,'#2563eb'),secondary_color:colorOr($('themeSecondary').value,'#0f172a'),page_bg:colorOr($('themeBg').value,'#f6f8fb'),surface_color:colorOr($('themeSurface').value,'#ffffff'),text_color:colorOr($('themeText').value,'#111827'),muted_color:colorOr($('themeMuted').value,'#667085'),radius_px:Number($('themeRadius').value)||16,container_width:Number($('themeWidth').value)||1180,section_spacing:Number($('themeSpacing').value)||64,hero_height:Number($('themeHeroHeight').value)||420,button_style:$('themeButton').value||'rounded',card_style:$('themeCard').value||'soft',icon_style:$('themeIcon').value||'emoji',image_default_fit:$('themeImageFit').value||'cover',logo_url:$('themeLogo').value.trim(),favicon_url:$('themeFavicon').value.trim(),meta_title:$('themeMetaTitle').value.trim(),meta_description:$('themeMetaDescription').value.trim(),og_image:$('themeOgImage').value.trim(),custom_css:css};
     if(btn){btn.disabled=true;btn.textContent='⏳ Đang lưu...'}
@@ -963,7 +969,7 @@ function initHeroImageManager(){
     const file=e.target.files?.[0];
     if(file)await uploadHeroImageSlot(slot,file);
     input.value='';
-  };document.querySelectorAll('[data-hero-clear]').forEach(btn=>btn.onclick=()=>clearHeroImageSlot(btn.dataset.heroClear));$('heroPhoneFit').onchange=()=>{$('themeCustomCss').value=replaceHeroImages($('themeCustomCss').value||'',heroImagesFromCss($('themeCustomCss').value||''),$('heroPhoneFit').value,$('heroBackgroundFit').value);renderHeroImageFields($('themeCustomCss').value)};$('heroBackgroundFit').onchange=()=>{$('themeCustomCss').value=replaceHeroImages($('themeCustomCss').value||'',heroImagesFromCss($('themeCustomCss').value||''),$('heroPhoneFit').value,$('heroBackgroundFit').value);renderHeroImageFields($('themeCustomCss').value)};$('saveHeroImagesBtn').onclick=saveHeroImages;renderHeroImageFields($('themeCustomCss').value||'')}
+  };window.__appleSeedHeroImages={...heroImagesFromCss($('themeCustomCss').value||'')};document.querySelectorAll('[data-hero-clear]').forEach(btn=>btn.onclick=()=>clearHeroImageSlot(btn.dataset.heroClear));$('heroPhoneFit').onchange=()=>{$('themeCustomCss').value=replaceHeroImages($('themeCustomCss').value||'',heroImagesFromCss($('themeCustomCss').value||''),$('heroPhoneFit').value,$('heroBackgroundFit').value);renderHeroImageFields($('themeCustomCss').value)};$('heroBackgroundFit').onchange=()=>{$('themeCustomCss').value=replaceHeroImages($('themeCustomCss').value||'',heroImagesFromCss($('themeCustomCss').value||''),$('heroPhoneFit').value,$('heroBackgroundFit').value);renderHeroImageFields($('themeCustomCss').value)};$('saveHeroImagesBtn').onclick=saveHeroImages;renderHeroImageFields($('themeCustomCss').value||'')}
 function initHeroStudio(){const css=$('themeCustomCss')?.value||'',current=heroPresetFromCss(css)||'01';renderHeroPresets(current);$('heroPresetCurrent').textContent=`Đang dùng: Mẫu ${current} — ${HERO_PRESETS[current].name}`;$('applyHeroPreset').onclick=()=>applyHeroPreset(document.querySelector('.hero-preset.selected')?.dataset.preset||current);$('openHeroPreview').onclick=()=>window.open('index.html','_blank')}
 
 async function loadProductGallery(productId){
