@@ -496,7 +496,7 @@ async function applyHeroPreset(id){if(!id||!HERO_PRESETS[id])return;const btn=$(
 const HERO_IMAGE_START='/* APPLESEED_HERO_IMAGES_START */',HERO_IMAGE_END='/* APPLESEED_HERO_IMAGES_END */';
 function heroImageBlock(images,phoneFit='contain',backgroundFit='cover'){
   const lines=[HERO_IMAGE_START,'/* hero-image-fit:'+phoneFit+' */','/* hero-background-fit:'+backgroundFit+' */'];
-  if(images.background) lines.push('#apple-seed-premium-home{background-image:url("'+images.background.replace(/"/g,'\\"')+'")!important;background-size:'+backgroundFit+'!important;background-position:center!important;background-repeat:no-repeat!important}');
+  if(images.background) { lines.push('#apple-seed-premium-home{background-image:url("'+images.background.replace(/"/g,'\\"')+'")!important;background-size:'+backgroundFit+'!important;background-position:center!important;background-repeat:no-repeat!important}'); lines.push('#apple-seed-premium-home:before{background:transparent!important}'); lines.push('#apple-seed-premium-home:after{background:none!important}'); }
   const slots=['phone0','phone1','phone2','phone3','phone4','phone5'];
   slots.forEach((slot,i)=>{
     const url=images[slot]; if(!url)return;

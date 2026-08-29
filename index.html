@@ -1181,37 +1181,6 @@ body{
   .as3-stat{border-right:0!important;border-bottom:1px solid rgba(28,35,42,.08)!important}
 }
 </style>
-
-<style id="apple-seed-phone-showcase-02">
-/* =========================================================
-   APPLE SEED PHONE SHOWCASE 02 — FALLBACK ONLY
-   Khi Admin chưa có ảnh Hero tùy chỉnh, giữ ảnh mẫu 02 cũ.
-   Khi Admin đã lưu ảnh Hero, body sẽ nhận class
-   .as-cms-hero-images để tắt fallback và dùng ảnh từ Supabase.
-   ========================================================= */
-body:not(.as-cms-hero-images) .as3-stage{
-  background-image:url('apple-seed-phone-showcase-02.png')!important;
-  background-repeat:no-repeat!important;
-  background-position:center center!important;
-  background-size:112% auto!important;
-}
-body:not(.as-cms-hero-images) .as3-stage > .as3-phone{
-  display:none!important;
-}
-.as3-stage > .as3-benefits{
-  z-index:30!important;
-}
-@media(max-width:1100px){
-  body:not(.as-cms-hero-images) .as3-stage{background-size:116% auto!important}
-}
-@media(max-width:760px){
-  body:not(.as-cms-hero-images) .as3-stage{background-size:116% auto!important}
-}
-@media(max-width:480px){
-  body:not(.as-cms-hero-images) .as3-stage{background-size:125% auto!important}
-}
-</style>
-
 </head>
 
 <body>
@@ -1987,19 +1956,6 @@ body:not(.as-cms-hero-images) .as3-stage > .as3-phone{
     });
   }
 
-  function normalizeHeroCssOrder(css){
-    let out=String(css||'');
-    const imageStart='/* APPLESEED_HERO_IMAGES_START */',imageEnd='/* APPLESEED_HERO_IMAGES_END */';
-    const ia=out.indexOf(imageStart),ib=out.indexOf(imageEnd);
-    if(ia<0||ib<ia)return out;
-    const imageBlock=out.slice(ia,ib+imageEnd.length);
-    out=(out.slice(0,ia)+out.slice(ib+imageEnd.length)).trim();
-    const presetEnd='/* APPLESEED_HERO_PRESET_END */';
-    const pe=out.indexOf(presetEnd);
-    if(pe<0)return (out?out+'\n\n':'')+imageBlock;
-    return out.slice(0,pe+presetEnd.length)+'\n\n'+imageBlock+out.slice(pe+presetEnd.length);
-  }
-
   async function load(){
     if(!sb){staticFallback();bindProductCards();fixNavigation();return}
     try{
@@ -2011,24 +1967,23 @@ body:not(.as-cms-hero-images) .as3-stage > .as3-phone{
       const t={data:themeRows?.[0]||null};
       const n={data:Array.isArray(navRows)?navRows:[],error:null};
       const s={data:Array.isArray(sectionRows)?sectionRows:[],error:null};
-      if(t.data){
-        cssVars(t.data);
-        if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;
-        if(t.data.meta_title)document.title=t.data.meta_title;
-        const m=document.querySelector('meta[name="description"]');
-        if(m&&t.data.meta_description)m.content=t.data.meta_description;
-        const themeCss=String(t.data.custom_css||'');
-        const hasHeroImageBlock=themeCss.includes('/* APPLESEED_HERO_IMAGES_START */')&&themeCss.includes('/* APPLESEED_HERO_IMAGES_END */');
-        document.body.classList.toggle('as-cms-hero-images',hasHeroImageBlock);
-        if(themeCss){
+      if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){
+          const themeCss=String(t.data.custom_css||'');
           const st=document.createElement('style');
           st.setAttribute('data-apple-seed-theme','1');
-          st.textContent=normalizeHeroCssOrder(themeCss);
+          st.textContent=themeCss;
           document.head.appendChild(st);
-        }
-        if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;
-        if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url;
-      }if(n.data?.length){
+          // Khi Admin đã chọn Ảnh nền Hero, lớp overlay mặc định của Hero
+          // phải tắt; nếu không nó phủ kín background-image và người dùng
+          // chỉ thấy gradient cũ dù ảnh đã lưu đúng trong Supabase.
+          const hasHeroBackground=/#apple-seed-premium-home\{[^}]*background-image:url\("/i.test(themeCss);
+          if(hasHeroBackground){
+            const fix=document.createElement('style');
+            fix.setAttribute('data-apple-seed-hero-image-layer','1');
+            fix.textContent='#apple-seed-premium-home:before{background:transparent!important}#apple-seed-premium-home:after{background:none!important}';
+            document.head.appendChild(fix);
+          }
+        }if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){
       const menu=document.querySelector('.menu');
       const memberAuth=document.getElementById('memberAuthButtons');
       menu.querySelectorAll(':scope > a').forEach(a=>a.remove());
@@ -2886,10 +2841,6 @@ function apply(){
 let n=0;const t=setInterval(()=>{if(apply()||++n>50)clearInterval(t)},400);
 })();
 </script>
-<style id="apple-seed-hero-image-compat">
-/* HERO IMAGE CMS: custom image rules are supplied through site_theme_settings.custom_css.
-   This compatibility layer keeps the original phone structure and JS intact. */
-</style>
 </body>
 </html>
 <footer class="apple-seed-copyright" aria-label="Bản quyền Apple Seed">
