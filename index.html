@@ -860,6 +860,327 @@ body.as-premium-v2 #homeRenderer,body.as-premium-v2 #homeRenderer .hero{backgrou
 @media(max-width:760px){.site-header{height:auto!important}.site-header .nav{height:auto!important}.as3-hero,.as3-wrap{min-height:0}.as3-wrap{padding:44px 18px 20px}.as3-main{display:block;min-height:0}.as3-copy{text-align:center;padding:0}.as3-title{font-size:49px!important}.as3-sub{font-size:11px;letter-spacing:2.5px}.as3-desc{font-size:13px;margin-left:auto;margin-right:auto}.as3-actions{justify-content:center}.as3-stage{height:455px;transform:scale(.72);transform-origin:center top;margin:0 -18% -100px}.as3-benefits{display:none}.as3-services{grid-template-columns:repeat(2,1fr);margin-top:0}.as3-bottom{margin-top:12px}.as3-stats{grid-template-columns:repeat(2,1fr)}.as3-stat:nth-child(even){border-right:0}.as3-store{min-height:190px}.as3-store img{min-height:190px}}
 @media(max-width:480px){.as3-title{font-size:40px!important}.as3-stage{transform:scale(.55);margin:0 -31% -160px}.as3-services{grid-template-columns:1fr}.as3-stats{grid-template-columns:1fr}.as3-stat{border-right:0!important;border-bottom:1px solid rgba(255,255,255,.08)}.as3-stat:last-child{border:0}}
 </style>
+<style id="apple-seed-light-premium-v4">
+/* APPLE SEED LIGHT PREMIUM V4
+   UI-only redesign of the existing premium homepage.
+   Keeps existing IDs, links, dynamic product data, Supabase/AI/CMS and lower-page sections intact.
+*/
+:root{
+  --as-light-bg:#f7f7f5;
+  --as-light-card:rgba(255,255,255,.92);
+  --as-light-ink:#17202b;
+  --as-light-muted:#68717d;
+  --as-light-gold:#c89b3c;
+  --as-light-gold-2:#f0d28a;
+  --as-light-line:rgba(30,38,48,.12);
+}
+html{background:var(--as-light-bg)!important}
+body{
+  background:var(--as-light-bg)!important;
+  color:var(--as-light-ink)!important;
+  padding-top:76px!important;
+}
+.site-header{
+  height:76px!important;
+  background:rgba(255,255,255,.94)!important;
+  border-bottom:1px solid rgba(22,30,40,.09)!important;
+  box-shadow:0 8px 28px rgba(25,32,40,.07)!important;
+  backdrop-filter:blur(18px)!important;
+  -webkit-backdrop-filter:blur(18px)!important;
+}
+.site-header .nav{
+  height:76px!important;
+  max-width:1450px!important;
+  padding:0 34px!important;
+}
+.site-header .brand{min-width:275px!important;gap:10px!important}
+.site-header .brand img{
+  width:54px!important;height:54px!important;
+  object-fit:contain!important;
+  filter:none!important;
+}
+.site-header .brand-title{
+  color:#161b22!important;
+  font-size:22px!important;
+  letter-spacing:1.2px!important;
+  text-transform:uppercase!important;
+}
+.site-header .brand-sub{
+  color:#7a8088!important;
+  font-size:8px!important;
+  letter-spacing:2px!important;
+}
+.site-header .menu{
+  color:#20252b!important;
+  font-size:12px!important;
+  font-weight:850!important;
+  gap:25px!important;
+}
+.site-header .menu a{color:#20252b!important}
+.site-header .menu a:hover{color:#b98221!important}
+.site-header .booking-nav{
+  background:linear-gradient(135deg,#d3a34a,#f2d38e)!important;
+  color:#17130b!important;
+  border:0!important;
+  box-shadow:0 8px 22px rgba(200,155,60,.20)!important;
+}
+.site-header .member-auth-btn{
+  background:#fff!important;
+  color:#3b4148!important;
+  border-color:#d9dce0!important;
+}
+.site-header .member-auth-btn.primary{
+  background:#1d232b!important;
+  color:#fff!important;
+  border-color:#1d232b!important;
+}
+
+/* Main visual area: light luxury iPhone presentation */
+.as3-hero{
+  min-height:0!important;
+  background:#f7f7f5!important;
+  color:var(--as-light-ink)!important;
+  overflow:hidden!important;
+  isolation:isolate!important;
+}
+.as3-hero:before{
+  content:""!important;
+  position:absolute!important;
+  inset:0!important;
+  z-index:-2!important;
+  background:
+    radial-gradient(circle at 67% 35%,rgba(232,195,112,.28),transparent 22%),
+    radial-gradient(circle at 82% 48%,rgba(205,218,234,.34),transparent 31%),
+    radial-gradient(circle at 50% 95%,rgba(255,255,255,.95),transparent 45%),
+    linear-gradient(180deg,#fbfbfa 0%,#f3f4f2 100%)!important;
+}
+.as3-hero:after{
+  content:""!important;
+  position:absolute!important;
+  inset:0!important;
+  z-index:-1!important;
+  pointer-events:none!important;
+  background:
+    linear-gradient(90deg,rgba(40,45,52,.035) 1px,transparent 1px),
+    linear-gradient(rgba(40,45,52,.025) 1px,transparent 1px)!important;
+  background-size:72px 72px!important;
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,.45),transparent 76%)!important;
+}
+.as3-wrap{
+  max-width:1500px!important;
+  min-height:0!important;
+  padding:54px 48px 30px!important;
+}
+.as3-main{
+  grid-template-columns:40% 60%!important;
+  min-height:600px!important;
+  align-items:center!important;
+}
+.as3-copy{
+  padding:0 0 26px 16px!important;
+  z-index:10!important;
+}
+.as3-kicker{
+  color:#b68124!important;
+  font-size:11px!important;
+  letter-spacing:3.6px!important;
+  margin-bottom:18px!important;
+}
+.as3-title{
+  color:#151a20!important;
+  font-size:clamp(56px,5.5vw,82px)!important;
+  line-height:.98!important;
+  letter-spacing:-4px!important;
+  font-weight:950!important;
+}
+.as3-title span{
+  color:transparent!important;
+  background:linear-gradient(105deg,#151a20,#5e6369 56%,#a07a30)!important;
+  -webkit-background-clip:text!important;
+  background-clip:text!important;
+}
+.as3-sub{
+  color:#3f454c!important;
+  font-size:15px!important;
+  letter-spacing:4.2px!important;
+  margin:20px 0!important;
+}
+.as3-sub b{color:#bd8a2c!important}
+.as3-desc{
+  max-width:530px!important;
+  color:#66707b!important;
+  font-size:14px!important;
+  line-height:1.8!important;
+  margin:0 0 26px!important;
+}
+.as3-actions{gap:12px!important}
+.as3-btn{
+  min-height:47px!important;
+  padding:12px 22px!important;
+  border-radius:12px!important;
+  border:1px solid #c9cdd2!important;
+  background:rgba(255,255,255,.72)!important;
+  color:#20252b!important;
+  box-shadow:0 7px 20px rgba(42,48,55,.06)!important;
+}
+.as3-btn.gold{
+  background:linear-gradient(135deg,#d19f3d,#f2d38d)!important;
+  border-color:#d5aa58!important;
+  color:#18130a!important;
+  box-shadow:0 12px 28px rgba(193,145,49,.20)!important;
+}
+.as3-note{color:#8a9096!important}
+
+/* Phones: keep the existing dynamic product images, only rebuild their presentation */
+.as3-stage{
+  height:610px!important;
+  perspective:1500px!important;
+}
+.as3-stage:before{
+  width:690px!important;height:690px!important;
+  left:50%!important;top:-30px!important;
+  background:
+    radial-gradient(circle,rgba(229,196,125,.34),rgba(212,220,231,.18) 38%,transparent 69%)!important;
+}
+.as3-phone{
+  width:198px!important;
+  height:424px!important;
+  padding:7px!important;
+  border-radius:38px!important;
+  background:linear-gradient(145deg,#f7f7f6,#c9cbd0 26%,#7f858d 52%,#e4e6e7 83%,#a5a8ad)!important;
+  box-shadow:0 34px 70px rgba(42,48,56,.23),inset 0 0 0 1px rgba(255,255,255,.95)!important;
+}
+.as3-phone:before{
+  background:#111318!important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)!important;
+}
+.as3-screen{
+  inset:11px!important;
+  border-radius:29px!important;
+  background:linear-gradient(160deg,#0e1827,#2b3543 48%,#080b10)!important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.10)!important;
+}
+.as3-screen img{
+  object-fit:contain!important;
+  padding:5px!important;
+  background:transparent!important;
+  border-radius:29px!important;
+  mix-blend-mode:normal!important;
+}
+.as3-island{
+  width:62px!important;height:19px!important;top:9px!important;
+}
+.as3-label{
+  color:#5f6770!important;
+  font-size:9px!important;
+  font-weight:850!important;
+}
+.as3-p1{left:0!important;top:190px!important;transform:rotateY(24deg) rotateZ(-9deg) scale(.78)!important;filter:brightness(.90)!important}
+.as3-p2{left:15%!important;top:66px!important;transform:rotateY(16deg) rotateZ(-5deg) scale(.92)!important;filter:brightness(.96)!important}
+.as3-p3{left:31%!important;top:-6px!important;transform:translateZ(110px) rotateZ(-1deg) scale(1.23)!important;z-index:8!important}
+.as3-p4{left:49%!important;top:78px!important;transform:rotateY(-16deg) rotateZ(5deg) scale(.92)!important;filter:brightness(.96)!important}
+.as3-p5{left:65%!important;top:172px!important;transform:rotateY(-23deg) rotateZ(9deg) scale(.79)!important;filter:brightness(.90)!important}
+.as3-p6{left:78%!important;top:112px!important;transform:rotateY(-27deg) rotateZ(12deg) scale(.70)!important;filter:brightness(.86)!important}
+.as3-benefits{
+  right:2px!important;top:48px!important;width:92px!important;
+  background:rgba(255,255,255,.76)!important;
+  border:1px solid rgba(28,35,42,.12)!important;
+  box-shadow:0 15px 35px rgba(50,55,60,.10)!important;
+}
+.as3-benefit{
+  color:#4f5760!important;
+  border-bottom-color:rgba(30,38,46,.09)!important;
+}
+.as3-benefit i{color:#bd8a2c!important}
+.as3-discover{bottom:18px!important;color:#555d65!important}
+.as3-play{
+  border-color:#c4953c!important;
+  color:#9c7021!important;
+  background:rgba(255,255,255,.78)!important;
+  box-shadow:0 0 25px rgba(200,155,60,.18)!important;
+}
+
+/* Service strip */
+.as3-services{
+  grid-template-columns:repeat(5,1fr) 1.08fr!important;
+  gap:8px!important;
+  margin-top:-4px!important;
+}
+.as3-service{
+  min-height:112px!important;
+  border:1px solid rgba(28,35,42,.13)!important;
+  border-radius:15px!important;
+  background:rgba(255,255,255,.86)!important;
+  box-shadow:0 15px 34px rgba(45,52,60,.08)!important;
+}
+.as3-service .ico{
+  border-color:rgba(191,146,57,.35)!important;
+  color:#b78324!important;
+  background:linear-gradient(180deg,#fff,#f6f2e9)!important;
+}
+.as3-service h3{color:#20252b!important}
+.as3-service p{color:#7b838b!important}
+.as3-more{background:#20252b!important;border-color:#20252b!important}
+.as3-more h3{color:#fff!important}.as3-more p{color:#c7cbd0!important}
+
+/* Stats/store stay in the same structure, but match the new light visual system */
+.as3-bottom{
+  margin-top:24px!important;
+  padding-bottom:18px!important;
+}
+.as3-stats{
+  border:1px solid rgba(28,35,42,.12)!important;
+  border-radius:15px!important;
+  background:rgba(255,255,255,.88)!important;
+  box-shadow:0 14px 30px rgba(45,52,60,.07)!important;
+}
+.as3-stat{border-right-color:rgba(28,35,42,.08)!important}
+.as3-stat b{color:#b78324!important}
+.as3-stat span{color:#747c84!important}
+.as3-store{
+  border-color:rgba(28,35,42,.12)!important;
+  box-shadow:0 14px 30px rgba(45,52,60,.07)!important;
+}
+.as3-store img{opacity:.92!important}
+.as3-store-label{color:#fff!important;text-shadow:0 2px 12px rgba(0,0,0,.45)!important}
+.as3-store-label small{color:#f1f2f3!important}
+
+/* Prevent the placeholder renderer from creating a second visual system */
+#homeRenderer .hero{background:var(--as-light-bg)!important;color:var(--as-light-ink)!important}
+
+/* Responsive */
+@media(max-width:1100px){
+  .site-header .nav{padding:0 22px!important}
+  .as3-wrap{padding-left:30px!important;padding-right:30px!important}
+  .as3-main{grid-template-columns:43% 57%!important}
+  .as3-p6{display:none!important}
+  .as3-benefits{right:-4px!important}
+  .as3-services{grid-template-columns:repeat(3,1fr)!important}
+  .as3-bottom{grid-template-columns:1fr!important}
+}
+@media(max-width:760px){
+  body{padding-top:0!important}
+  .site-header{height:auto!important}
+  .site-header .nav{height:auto!important}
+  .as3-wrap{padding:42px 18px 20px!important}
+  .as3-main{display:block!important;min-height:0!important}
+  .as3-copy{text-align:center!important;padding:0!important}
+  .as3-title{font-size:49px!important;letter-spacing:-2.6px!important}
+  .as3-desc{margin-left:auto!important;margin-right:auto!important}
+  .as3-actions{justify-content:center!important}
+  .as3-stage{height:470px!important;transform:scale(.72)!important;transform-origin:center top!important;margin:0 -18% -100px!important}
+  .as3-benefits{display:none!important}
+  .as3-services{grid-template-columns:repeat(2,1fr)!important;margin-top:0!important}
+}
+@media(max-width:480px){
+  .site-header .brand img{width:48px!important;height:48px!important}
+  .as3-title{font-size:40px!important}
+  .as3-stage{transform:scale(.55)!important;margin:0 -31% -160px!important}
+  .as3-services{grid-template-columns:1fr!important}
+  .as3-stats{grid-template-columns:1fr!important}
+  .as3-stat{border-right:0!important;border-bottom:1px solid rgba(28,35,42,.08)!important}
+}
+</style>
 </head>
 
 <body>
