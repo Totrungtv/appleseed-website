@@ -2673,7 +2673,7 @@ async function askAppleSeedAI(message,onDelta){
         "apikey":anonKey,
         "Authorization":"Bearer "+anonKey
       },
-      body:JSON.stringify({message:String(message),source:"website-chatbot"}),
+      body:JSON.stringify({message:String(message),source:"homepage-chat"}),
       signal:controller.signal
     });
 
@@ -2880,7 +2880,7 @@ form.onsubmit=async e=>{
         },
         body:JSON.stringify({
           message:"PING",
-          source:"apple-seed-home-robot",
+          source:"homepage-chat",
           mode:"healthcheck"
         }),
         signal:controller.signal
