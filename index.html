@@ -3799,6 +3799,92 @@ let n=0;const t=setInterval(()=>{if(apply()||++n>50)clearInterval(t)},400);
 }
 </style>
 
+
+<style id="apple-seed-hero-motion-v5">
+/* HERO MOTION V5
+   The visible Hero on mobile is one PNG background, so the animation must
+   sit above that image. This overlay is intentionally obvious but premium. */
+.as3-stage{overflow:hidden!important}
+.as3-stage .as3-live-light{
+  position:absolute!important;
+  top:-20%!important;
+  left:-35%!important;
+  width:22%!important;
+  height:145%!important;
+  z-index:40!important;
+  pointer-events:none!important;
+  transform:rotate(17deg)!important;
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(255,255,255,.04) 28%,
+    rgba(255,255,255,.72) 50%,
+    rgba(255,214,126,.22) 58%,
+    rgba(255,255,255,.04) 72%,
+    transparent 100%)!important;
+  filter:blur(6px)!important;
+  mix-blend-mode:screen!important;
+  animation:appleSeedHeroLightSweep 3.8s ease-in-out infinite!important;
+}
+.as3-stage .as3-live-pulse{
+  position:absolute!important;
+  inset:12%!important;
+  z-index:39!important;
+  pointer-events:none!important;
+  border-radius:45%!important;
+  background:radial-gradient(circle at 50% 45%,
+    rgba(255,224,157,.24),
+    rgba(255,224,157,.07) 30%,
+    transparent 65%)!important;
+  mix-blend-mode:screen!important;
+  animation:appleSeedHeroPulse 2.8s ease-in-out infinite!important;
+}
+@keyframes appleSeedHeroLightSweep{
+  0%,18%{left:-35%;opacity:0}
+  25%{opacity:.25}
+  48%{opacity:.95}
+  65%{opacity:.35}
+  82%,100%{left:118%;opacity:0}
+}
+@keyframes appleSeedHeroPulse{
+  0%,100%{opacity:.18;transform:scale(.92)}
+  50%{opacity:.72;transform:scale(1.08)}
+}
+@media(max-width:760px){
+  .as3-stage .as3-live-light{
+    width:24%!important;
+    filter:blur(5px)!important;
+    animation-duration:3.4s!important;
+  }
+  .as3-stage .as3-live-pulse{
+    inset:8%!important;
+    animation-duration:2.4s!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .as3-stage .as3-live-light,.as3-stage .as3-live-pulse{animation:none!important}
+}
+</style>
+<script id="apple-seed-hero-motion-v5-js">
+(function(){
+  function mount(){
+    document.querySelectorAll('.as3-stage').forEach(function(stage){
+      if(stage.querySelector('.as3-live-light')) return;
+      var light=document.createElement('span');
+      light.className='as3-live-light';
+      light.setAttribute('aria-hidden','true');
+      var pulse=document.createElement('span');
+      pulse.className='as3-live-pulse';
+      pulse.setAttribute('aria-hidden','true');
+      stage.appendChild(pulse);
+      stage.appendChild(light);
+    });
+  }
+  mount();
+  window.addEventListener('load',mount,{once:true});
+  setTimeout(mount,300);
+  setTimeout(mount,1000);
+})();
+</script>
 </body>
 </html>
 <footer class="apple-seed-copyright" aria-label="Bản quyền Apple Seed">
