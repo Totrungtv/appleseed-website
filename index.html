@@ -2850,54 +2850,9 @@ form.onsubmit=async e=>{
     }
   },true);
 
-  /* Soft robot friend: one appearance per browser session. */
+  /* Robot friend: temporarily disabled. Keep the main chatbot fully functional. */
   function initRobot(){
-    try{if(sessionStorage.getItem("asrf_final_seen")==="1")return;sessionStorage.setItem("asrf_final_seen","1")}catch(_){}
-    const target=document.getElementById("chatBtn");
-    if(!target||document.getElementById("asRobotFriend"))return;
-
-    const el=document.createElement("div");
-    el.id="asRobotFriend";
-    el.innerHTML=
-      '<div class="asrf-body">'+
-        '<div class="asrf-antenna"></div>'+
-        '<div class="asrf-head"><span class="asrf-eye l"></span><span class="asrf-eye r"></span><span class="asrf-mouth"></span></div>'+
-        '<div class="asrf-arm l"></div><div class="asrf-arm r"></div>'+
-        '<div class="asrf-torso"></div>'+
-        '<div class="asrf-leg l"></div><div class="asrf-leg r"></div>'+
-        '<div class="asrf-shadow"></div>'+
-      '</div>'+
-      '<div class="asrf-bubble">Xin chào 👋</div>';
-    document.body.appendChild(el);
-
-    const vw=innerWidth,vh=innerHeight;
-    el.style.left=(vw*.50)+"px";
-    el.style.top=(vh*.42)+"px";
-    el.classList.add("asrf-show");
-
-    const move=(x,y,d)=>el.animate(
-      [{left:el.style.left,top:el.style.top},{left:x+"px",top:y+"px"}],
-      {duration:d,easing:"cubic-bezier(.2,.75,.25,1)",fill:"forwards"}
-    ).finished.then(()=>{el.style.left=x+"px";el.style.top=y+"px"});
-
-    const home=()=>{
-      const r=target.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
-      el.classList.remove("asrf-walk");el.classList.add("asrf-fly");
-      el.animate(
-        [{left:el.style.left,top:el.style.top},{left:(x-65)+"px",top:(y-95)+"px"},{left:x+"px",top:y+"px"}],
-        {duration:900,easing:"cubic-bezier(.22,.75,.18,1)",fill:"forwards"}
-      ).finished.then(()=>el.remove()).catch(()=>el.remove());
-    };
-
-    setTimeout(()=>{
-      el.classList.add("asrf-walk");
-      move(vw*.32,vh*.40,650)
-      .then(()=>move(vw*.58,vh*.32,700))
-      .then(()=>move(vw*.72,vh*.48,700))
-      .then(()=>move(vw*.64,vh*.60,650))
-      .then(()=>setTimeout(home,180))
-      .catch(()=>el.remove());
-    },500);
+    return;
   }
 
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>setTimeout(initRobot,250));
