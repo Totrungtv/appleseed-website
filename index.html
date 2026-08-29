@@ -2694,7 +2694,7 @@ async function askAppleSeedAI(message,onDelta){
     let text=raw;
     try{
       const data=JSON.parse(raw);
-      text=data?.answer||data?.content||data?.text||data?.message||raw;
+      text=data?.reply||data?.answer||data?.content||data?.text||data?.message||raw;
     }catch(_){}
 
     text=String(text)
