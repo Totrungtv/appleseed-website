@@ -12,13 +12,7 @@ window.supabaseClient =
         window.SUPABASE_ANON_KEY
     );
 
-/*
- * Apple Seed Admin compatibility bridge.
- * Hero Studio preview remains compatible with both single- and double-quoted
- * CSS url(...) values, and the AI management link is restored on Admin.
- * The public homepage intentionally does NOT apply custom Theme CSS here,
- * so the Hero returns to its stable index.html presentation during rollback.
- */
+/* Apple Seed Admin compatibility bridge. */
 (function appleSeedAdminCompatibility(){
     if (location.pathname.split('/').pop().toLowerCase() !== 'admin.html') return;
 
@@ -45,13 +39,11 @@ window.supabaseClient =
                 const readUrl = function(selector){
                     const escaped = selector.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&');
                     const re = new RegExp(
-                        escaped + '\\s*\\{[^}]*background-image\\s*:\\s*url\\(\\s*[\"\\\']?([^\"\\\'\\)]+)[\"\\\']?\\s*\\)',
+                        escaped + '\\s*\\{[^}]*background-image\\s*:\\s*url\\(\\s*["\\\']?([^"\\\'\\)]+)["\\\']?\\s*\\)',
                         'i'
                     );
                     const m = block.match(re);
-                    return m
-                        ? String(m[1]).replace(/\\\\([\"\\\'])/g, '$1').trim()
-                        : '';
+                    return m ? String(m[1]).replace(/\\\\(["\\\'])/g, '$1').trim() : '';
                 };
 
                 const bg = readUrl('#apple-seed-premium-home');
@@ -63,9 +55,7 @@ window.supabaseClient =
                 return out;
             };
 
-            if (typeof window.renderHeroImageFields === 'function') {
-                window.renderHeroImageFields(css);
-            }
+            if (typeof window.renderHeroImageFields === 'function') window.renderHeroImageFields(css);
 
             const actions = document.querySelector('.admin-top .admin-actions');
             if (actions && !actions.querySelector('a[href="ai-admin.html"]')) {
@@ -84,4 +74,99 @@ window.supabaseClient =
     }, 100);
 
     setTimeout(function(){ clearInterval(timer); }, 20000);
+})();
+
+/* Public homepage: apply the Hero images saved by Admin. */
+(function appleSeedPublicHeroImages(){
+    const file = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+    if (file !== 'index.html') return;
+
+    const HERO = '#apple-seed-premium-home';
+    const START = '/* APPLESEED_HERO_IMAGES_START */';
+    const END = '/* APPLESEED_HERO_IMAGES_END */';
+
+    function parseImages(css){
+        const s = String(css || '');
+        const a = s.indexOf(START);
+        const b = s.indexOf(END);
+        if (a < 0 || b <= a) return {};
+        const block = s.slice(a, b + END.length);
+        const out = {};
+
+        function read(selector){
+            const esc = selector.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&');
+            const re = new RegExp(esc + '\\s*\\{[^}]*background-image\\s*:\\s*url\\(\\s*["\\\']?([^"\\\'\\)]+)["\\\']?\\s*\\)', 'i');
+            const m = block.match(re);
+            return m ? String(m[1]).trim() : '';
+        }
+
+        out.background = read(HERO);
+        for (let i = 1; i <= 6; i++) out['phone' + i] = read(HERO + ' .as3-p' + i);
+        return out;
+    }
+
+    function applyHero(img){
+        const hero = document.querySelector(HERO);
+        if (!hero || !img) return false;
+
+        if (img.background) {
+            hero.style.setProperty('background-image', 'url("' + img.background.replace(/"/g, '\\"') + '")', 'important');
+            hero.style.setProperty('background-size', 'cover', 'important');
+            hero.style.setProperty('background-position', 'center center', 'important');
+            hero.style.setProperty('background-repeat', 'no-repeat', 'important');
+        }
+
+        const stage = hero.querySelector('.as3-stage');
+        if (stage) stage.style.setProperty('background-image', 'none', 'important');
+
+        for (let i = 1; i <= 6; i++) {
+            const phone = hero.querySelector('.as3-p' + i);
+            const url = img['phone' + i];
+            if (!phone) continue;
+
+            phone.style.setProperty('background-image', url ? 'url("' + url.replace(/"/g, '\\"') + '")' : 'none', 'important');
+            phone.style.setProperty('background-repeat', 'no-repeat', 'important');
+            phone.style.setProperty('background-position', 'center center', 'important');
+            phone.style.setProperty('background-size', 'contain', 'important');
+            phone.style.setProperty('filter', 'none', 'important');
+
+            phone.querySelector('.as3-screen')?.style.setProperty('background', 'transparent', 'important');
+            phone.querySelector('.as3-screen')?.style.setProperty('background-image', 'none', 'important');
+            phone.querySelector('.as3-island')?.style.setProperty('display', 'none', 'important');
+            phone.querySelector('.as3-label')?.style.setProperty('display', 'none', 'important');
+            phone.style.setProperty('border-radius', '0', 'important');
+            phone.style.setProperty('padding', '0', 'important');
+            phone.style.setProperty('background-color', 'transparent', 'important');
+        }
+        return true;
+    }
+
+    async function loadTheme(){
+        try {
+            const base = String(window.SUPABASE_URL || '').replace(/\\/+$/, '');
+            const key = String(window.SUPABASE_ANON_KEY || '');
+            if (!base || !key) return;
+
+            const res = await fetch(base + '/rest/v1/site_theme_settings?id=eq.1&select=custom_css', {
+                method:'GET',
+                cache:'no-store',
+                headers:{apikey:key, Authorization:'Bearer ' + key}
+            });
+            if (!res.ok) return;
+            const rows = await res.json();
+            const css = String(rows?.[0]?.custom_css || '');
+            const img = parseImages(css);
+            if (!Object.values(img).some(Boolean)) return;
+
+            let tries = 0;
+            const timer = setInterval(function(){
+                if (applyHero(img) || ++tries >= 80) clearInterval(timer);
+            }, 100);
+        } catch (err) {
+            console.warn('Apple Seed public Hero images:', err);
+        }
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadTheme, {once:true});
+    else loadTheme();
 })();
