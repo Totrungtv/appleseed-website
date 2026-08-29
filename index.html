@@ -1260,6 +1260,122 @@ body{
 @media(max-width:1100px){.as3-discover{bottom:-8px!important;}}
 @media(max-width:760px){.as3-discover{bottom:-8px!important;}}
 </style>
+<style id="apple-seed-mobile-header-hero-hard-fix-v4">
+/* APPLE SEED MOBILE HEADER / HERO HARD FIX V4
+   Mobile Safari/iOS: header must stay in document flow.
+   Hero must NEVER begin underneath the header. */
+@media (pointer:coarse){
+  html,body{width:100%!important;max-width:100%!important;overflow-x:hidden!important}
+  body{padding-top:0!important;margin:0!important}
+
+  .site-header{
+    position:relative!important;top:auto!important;left:auto!important;right:auto!important;
+    width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;
+    overflow:visible!important;z-index:5000!important;
+  }
+  .site-header .nav{
+    width:100%!important;max-width:none!important;height:auto!important;min-height:0!important;
+    margin:0!important;padding:8px 10px 10px!important;
+    display:flex!important;flex-direction:column!important;align-items:center!important;
+    justify-content:flex-start!important;gap:7px!important;flex-wrap:nowrap!important;
+  }
+  .site-header .brand{
+    width:auto!important;min-width:0!important;height:50px!important;min-height:50px!important;
+    margin:0!important;display:flex!important;align-items:center!important;justify-content:center!important;
+    flex:0 0 50px!important;gap:8px!important;
+  }
+  .site-header .brand img{width:46px!important;height:46px!important;flex:none!important}
+  .site-header .brand-title{font-size:20px!important;line-height:1!important}
+  .site-header .brand-sub{font-size:8px!important;line-height:1!important;letter-spacing:1.5px!important;margin-top:5px!important}
+
+  .site-header .menu{
+    width:100%!important;height:40px!important;min-height:40px!important;margin:0!important;padding:0!important;
+    display:flex!important;align-items:center!important;justify-content:space-around!important;gap:0!important;
+    flex:0 0 40px!important;flex-wrap:nowrap!important;overflow:visible!important;
+  }
+  .site-header .menu>a{
+    flex:0 0 44px!important;width:44px!important;height:40px!important;margin:0!important;padding:0!important;
+    display:flex!important;align-items:center!important;justify-content:center!important;
+  }
+  .site-header .menu>a .mi{width:30px!important;height:30px!important;display:grid!important;place-items:center!important;font-size:21px!important}
+  .site-header .menu>a span:last-child{display:none!important}
+  .site-header .booking-nav{width:48px!important;height:40px!important;flex:0 0 48px!important;padding:0!important;border-radius:11px!important}
+
+  .site-header .member-auth-buttons{
+    width:100%!important;height:42px!important;min-height:42px!important;margin:0!important;
+    display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;
+    flex:0 0 42px!important;overflow:visible!important;
+  }
+  .site-header .member-auth-btn{
+    width:auto!important;min-width:0!important;height:40px!important;min-height:40px!important;
+    padding:7px 16px!important;border-radius:11px!important;font-size:13px!important;line-height:1!important;
+  }
+
+  /* Absolute/negative positioning from older patches is neutralized here. */
+  #apple-seed-premium-home,.as3-hero{
+    position:relative!important;top:auto!important;left:auto!important;right:auto!important;
+    width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;
+    margin:0!important;padding:0!important;transform:none!important;clear:both!important;
+    overflow:hidden!important;
+  }
+  .as3-wrap{
+    width:100%!important;max-width:none!important;min-height:0!important;margin:0!important;
+    padding:26px 12px 12px!important;box-sizing:border-box!important;
+  }
+  .as3-main{
+    width:100%!important;min-height:0!important;margin:0!important;padding:0!important;
+    display:flex!important;flex-direction:column!important;gap:0!important;
+  }
+  .as3-copy{
+    width:100%!important;min-height:0!important;margin:0!important;padding:0!important;
+    position:relative!important;z-index:20!important;text-align:center!important;transform:none!important;
+  }
+  .as3-kicker{margin:0 0 9px!important;font-size:8px!important;line-height:1.2!important;letter-spacing:2.4px!important}
+  .as3-title{
+    display:block!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:30!important;
+    margin:0!important;padding:0!important;font-size:31px!important;line-height:1.02!important;
+    letter-spacing:-1.5px!important;transform:none!important;
+  }
+  .as3-sub{margin:12px 0 10px!important;font-size:9px!important;line-height:1.35!important;letter-spacing:1.7px!important}
+  .as3-desc{max-width:410px!important;margin:0 auto 13px!important;font-size:11px!important;line-height:1.55!important}
+  .as3-actions{width:100%!important;margin:0!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important}
+  .as3-btn{min-height:40px!important;padding:9px 12px!important;font-size:9px!important;border-radius:10px!important}
+  .as3-note{margin:10px auto 0!important;font-size:7px!important;line-height:1.45!important;letter-spacing:1.45px!important}
+
+  .as3-stage{
+    width:100%!important;height:285px!important;min-height:285px!important;margin:0!important;padding:0!important;
+    position:relative!important;transform:none!important;overflow:visible!important;
+    background-position:center center!important;background-size:contain!important;background-repeat:no-repeat!important;
+  }
+  .as3-stage>.as3-phone{display:none!important}
+  .as3-benefits{display:none!important}
+  /* Remove the old floating Discover label on mobile so it cannot appear in a second location. */
+  .as3-discover{display:none!important}
+
+  .as3-services{width:100%!important;grid-template-columns:1fr 1fr!important;gap:7px!important;margin:8px 0 0!important}
+  .as3-service{min-height:78px!important;padding:8px!important;border-radius:11px!important}
+  .as3-service .ico{width:32px!important;height:50px!important;font-size:17px!important}
+  .as3-service h3{font-size:8px!important;margin:0 0 3px!important}
+  .as3-service p{font-size:6.5px!important;line-height:1.35!important}
+  .as3-more{display:flex!important}
+  .as3-bottom{width:100%!important;grid-template-columns:1fr!important;gap:7px!important;margin-top:8px!important}
+}
+@media (pointer:coarse) and (max-width:480px){
+  .site-header .nav{padding:7px 8px 9px!important;gap:6px!important}
+  .site-header .brand{height:48px!important;min-height:48px!important;flex-basis:48px!important}
+  .site-header .brand img{width:44px!important;height:44px!important}
+  .site-header .brand-title{font-size:20px!important}
+  .site-header .menu{height:38px!important;min-height:38px!important;flex-basis:38px!important}
+  .site-header .menu>a{width:42px!important;height:38px!important;flex-basis:42px!important}
+  .site-header .menu>a .mi{font-size:21px!important}
+  .site-header .booking-nav{width:46px!important;height:38px!important;flex-basis:46px!important}
+  .site-header .member-auth-buttons{height:40px!important;min-height:40px!important;flex-basis:40px!important}
+  .site-header .member-auth-btn{height:38px!important;min-height:38px!important;padding:6px 14px!important;font-size:13px!important}
+  .as3-wrap{padding:22px 10px 10px!important}
+  .as3-title{font-size:30px!important}
+  .as3-stage{height:275px!important;min-height:275px!important}
+}
+</style>
 </head>
 
 <body>
