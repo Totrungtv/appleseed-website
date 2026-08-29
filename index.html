@@ -725,11 +725,15 @@ body{
   gap:62px!important;
 }
 .shop-photo{
+  width:100%!important;
+  height:auto!important;
+  aspect-ratio:auto!important;
+  object-fit:contain!important;
+  object-position:center!important;
   border-radius:24px!important;
   box-shadow:
     0 28px 70px rgba(0,0,0,.32),
     0 0 0 1px rgba(255,255,255,.16)!important;
-  aspect-ratio:1.62/1!important;
   transition:transform .45s ease,box-shadow .45s ease;
 }
 .shop-photo:hover{
@@ -1255,7 +1259,10 @@ button,a,input,textarea{ -webkit-tap-highlight-color:transparent }
   }
   .hero .shop-photo{
     width:100%!important;
-    aspect-ratio:1.45/1!important;
+    height:auto!important;
+    aspect-ratio:auto!important;
+    object-fit:contain!important;
+    object-position:center!important;
   }
 }
 </style>
