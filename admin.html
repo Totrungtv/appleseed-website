@@ -620,9 +620,12 @@ async function applyHeroPreset(id){
   try{
     await ensureThemeRow();
     const payload={id:1,site_name:$('themeSiteName').value.trim()||'Apple Seed',font_family:$('themeFont').value||'system',primary_color:colorOr($('themePrimary').value,'#2563eb'),secondary_color:colorOr($('themeSecondary').value,'#0f172a'),page_bg:colorOr($('themeBg').value,'#f6f8fb'),surface_color:colorOr($('themeSurface').value,'#ffffff'),text_color:colorOr($('themeText').value,'#111827'),muted_color:colorOr($('themeMuted').value,'#667085'),radius_px:Number($('themeRadius').value)||16,container_width:Number($('themeWidth').value)||1180,section_spacing:Number($('themeSpacing').value)||64,hero_height:Number($('themeHeroHeight').value)||420,button_style:$('themeButton').value||'rounded',card_style:$('themeCard').value||'soft',icon_style:$('themeIcon').value||'emoji',image_default_fit:$('themeImageFit').value||'cover',logo_url:$('themeLogo').value.trim(),favicon_url:$('themeFavicon').value.trim(),meta_title:$('themeMetaTitle').value.trim(),meta_description:$('themeMetaDescription').value.trim(),og_image:$('themeOgImage').value.trim(),custom_css:css};
-    const r=await sb.from('site_theme_settings').upsert(payload,{onConflict:'id'}).select('id,updated_at').single();
+    const r=await sb.from('site_theme_settings').upsert(payload,{onConflict:'id'}).select('id,updated_at,custom_css').single();
     if(r.error)throw r.error;
-    status(`✅ Đã áp dụng Mẫu ${id}. Chỉ phần đầu trang đổi giao diện; cấu trúc bên dưới giữ nguyên.`);
+    if(!r.data || !String(r.data.custom_css||'').includes('/* preset:'+id+' */')){
+      throw new Error('Đã gửi dữ liệu nhưng Supabase không trả lại CSS Mẫu '+id+'. Kiểm tra quyền RLS của tài khoản quản trị.');
+    }
+    status(`✅ Đã lưu Mẫu ${id} vào Supabase. Website sẽ đọc giao diện này khi tải lại.`);
     renderHeroPresets(id);
     $('heroPresetCurrent').textContent=`Đã áp dụng: Mẫu ${id} — ${HERO_PRESETS[id].name}`;
   }catch(e){
