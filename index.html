@@ -571,479 +571,6 @@ img{-webkit-user-drag:none}
 </style>
 
 
-<style id="apple-seed-premium-v2">
-/* =========================================================
-   APPLE SEED PREMIUM V2 — VISUAL SKIN ONLY
-   Không đổi HTML structure / ID / JS / Supabase / API.
-   Chỉ nâng cấp giao diện.
-   ========================================================= */
-
-:root{
-  --blue:#1769ff;
-  --blue-2:#4aa3ff;
-  --ink:#0d1830;
-  --muted:#64748b;
-  --bg:#f5f8ff;
-  --line:#e4eaf4;
-  --navy:#08142b;
-  --card:#ffffff;
-}
-
-/* Page foundation */
-html{scroll-behavior:smooth}
-body{
-  background:
-    radial-gradient(circle at 10% 0%,rgba(23,105,255,.06),transparent 28%),
-    linear-gradient(180deg,#f8fbff 0%,#fff 38%,#f7faff 100%);
-  color:var(--ink);
-}
-
-/* Header — premium glass, still fixed and same structure */
-.site-header{
-  height:86px!important;
-  background:rgba(255,255,255,.88)!important;
-  border-bottom:1px solid rgba(210,220,235,.72)!important;
-  box-shadow:0 8px 30px rgba(15,35,70,.06)!important;
-  backdrop-filter:blur(18px) saturate(150%)!important;
-  -webkit-backdrop-filter:blur(18px) saturate(150%)!important;
-}
-.nav{
-  max-width:1320px!important;
-  padding:0 30px!important;
-  gap:24px!important;
-}
-.brand{gap:12px!important}
-.brand img{
-  width:60px!important;
-  height:60px!important;
-  filter:drop-shadow(0 6px 12px rgba(23,105,255,.10));
-}
-.brand-title{
-  font-size:25px!important;
-  font-weight:900!important;
-  letter-spacing:-.8px!important;
-  color:#0c1830!important;
-}
-.brand-sub{
-  color:#718096!important;
-  font-size:10px!important;
-  letter-spacing:1.35px!important;
-  font-weight:800!important;
-}
-.menu{
-  gap:22px!important;
-  color:#1c5fe0!important;
-  font-size:15px!important;
-  font-weight:800!important;
-}
-.menu>a{
-  position:relative;
-  padding:10px 2px;
-  transition:color .2s ease,transform .2s ease;
-}
-.menu>a:after{
-  content:"";
-  position:absolute;
-  left:8px;
-  right:8px;
-  bottom:2px;
-  height:2px;
-  border-radius:999px;
-  background:linear-gradient(90deg,var(--blue),var(--blue-2));
-  transform:scaleX(0);
-  transform-origin:center;
-  transition:transform .22s ease;
-}
-.menu>a:hover{
-  color:#0d4fc9!important;
-  transform:translateY(-1px);
-}
-.menu>a:hover:after{transform:scaleX(1)}
-
-.booking-nav{
-  border-radius:13px!important;
-  padding:12px 17px!important;
-  box-shadow:0 10px 24px rgba(23,105,255,.20)!important;
-}
-
-/* Member buttons */
-.member-auth-btn{
-  border-radius:12px!important;
-  padding:10px 13px!important;
-  border-color:#dce4f1!important;
-  box-shadow:0 4px 12px rgba(20,40,80,.04);
-  transition:.2s ease;
-}
-.member-auth-btn:hover{transform:translateY(-1px);box-shadow:0 8px 18px rgba(20,40,80,.09)}
-.member-auth-btn.primary{
-  background:linear-gradient(135deg,#1769ff,#3b94ff)!important;
-  border-color:transparent!important;
-}
-
-/* AI Engineering Center — premium, in document flow */
-.apple-seed-ai-float{
-  padding:10px 30px 8px!important;
-  background:linear-gradient(180deg,rgba(248,251,255,.95),rgba(248,251,255,.72));
-}
-.apple-seed-ai-float a{
-  padding:10px 16px!important;
-  border-radius:999px!important;
-  background:linear-gradient(135deg,#0c55d8,#3da8ff)!important;
-  box-shadow:0 10px 26px rgba(23,105,255,.20)!important;
-  font-size:11px!important;
-  letter-spacing:.06em!important;
-}
-
-/* Hero — premium engineering look */
-.hero{
-  position:relative;
-  overflow:hidden;
-  padding:78px 24px 70px!important;
-  background:
-    radial-gradient(circle at 80% 15%,rgba(63,150,255,.18),transparent 30%),
-    radial-gradient(circle at 12% 90%,rgba(23,105,255,.12),transparent 30%),
-    linear-gradient(135deg,#07152e 0%,#0b2145 52%,#0d3568 100%)!important;
-  color:#fff!important;
-}
-.hero:before{
-  content:"";
-  position:absolute;
-  width:520px;height:520px;
-  right:-180px;top:-220px;
-  border:1px solid rgba(255,255,255,.10);
-  border-radius:50%;
-  box-shadow:
-    0 0 0 70px rgba(255,255,255,.025),
-    0 0 0 140px rgba(255,255,255,.018);
-  pointer-events:none;
-}
-.hero-inner{
-  position:relative;
-  z-index:1;
-  max-width:1260px!important;
-  grid-template-columns:minmax(0,1.05fr) minmax(360px,.95fr)!important;
-  gap:62px!important;
-}
-.shop-photo{
-  width:100%!important;
-  height:auto!important;
-  aspect-ratio:auto!important;
-  object-fit:contain!important;
-  object-position:center!important;
-  border-radius:24px!important;
-  box-shadow:
-    0 28px 70px rgba(0,0,0,.32),
-    0 0 0 1px rgba(255,255,255,.16)!important;
-  transition:transform .45s ease,box-shadow .45s ease;
-}
-.shop-photo:hover{
-  transform:translateY(-5px) scale(1.008);
-  box-shadow:0 34px 82px rgba(0,0,0,.38),0 0 0 1px rgba(255,255,255,.22)!important;
-}
-.eyebrow{
-  color:#66b5ff!important;
-  font-size:12px!important;
-  letter-spacing:3.5px!important;
-  font-weight:900!important;
-}
-.hero h1,
-.hero h1 *{
-  color:#fff!important;
-}
-.hero h1{
-  font-size:clamp(44px,5vw,68px)!important;
-  line-height:.98!important;
-  letter-spacing:-2.8px!important;
-  text-shadow:0 8px 30px rgba(0,0,0,.20);
-}
-.hero .lead{
-  color:rgba(235,243,255,.80)!important;
-  font-size:18px!important;
-  line-height:1.7!important;
-}
-.hero .cta{
-  border-radius:13px!important;
-  padding:14px 21px!important;
-  background:linear-gradient(135deg,#1769ff,#4aa3ff)!important;
-  box-shadow:0 14px 30px rgba(0,0,0,.20)!important;
-  transition:transform .2s ease,box-shadow .2s ease;
-}
-.hero .cta:hover{
-  transform:translateY(-2px);
-  box-shadow:0 18px 36px rgba(0,0,0,.28)!important;
-}
-.hero .cta+ .cta{
-  background:rgba(255,255,255,.08)!important;
-  border:1px solid rgba(255,255,255,.22);
-  backdrop-filter:blur(10px);
-}
-.trust{
-  gap:12px!important;
-}
-.trust-item{
-  padding:12px 13px;
-  border:1px solid rgba(255,255,255,.10);
-  border-radius:14px;
-  background:rgba(255,255,255,.055);
-  color:rgba(235,243,255,.70)!important;
-  backdrop-filter:blur(8px);
-}
-.trust b{color:#fff!important}
-.trust-icon{
-  border-color:#4aa3ff!important;
-  color:#72beff!important;
-}
-
-/* Section rhythm */
-.services{
-  position:relative;
-  padding:76px 24px 82px!important;
-  background:#fff!important;
-}
-.services:before{
-  content:"";
-  display:block;
-  width:70px;
-  height:4px;
-  margin:0 auto 24px;
-  border-radius:99px;
-  background:linear-gradient(90deg,#1769ff,#58b1ff);
-}
-.section-kicker{
-  color:#1769ff!important;
-  letter-spacing:2.8px!important;
-  font-size:11px!important;
-}
-.services h2{
-  font-size:34px!important;
-  letter-spacing:-1.2px!important;
-  color:#0c1830!important;
-  margin-bottom:34px!important;
-}
-
-/* Service cards */
-.service-grid{
-  max-width:1180px!important;
-  gap:18px!important;
-}
-.service-card{
-  position:relative;
-  min-height:150px!important;
-  padding:22px!important;
-  border:1px solid #e4eaf4!important;
-  border-radius:20px!important;
-  background:
-    linear-gradient(145deg,#fff 0%,#fbfdff 100%)!important;
-  box-shadow:0 12px 32px rgba(18,45,90,.07)!important;
-  overflow:hidden;
-  transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;
-}
-.service-card:before{
-  content:"";
-  position:absolute;
-  left:0;top:0;bottom:0;
-  width:4px;
-  background:linear-gradient(180deg,#1769ff,#64b7ff);
-  opacity:.85;
-}
-.service-card:after{
-  content:"";
-  position:absolute;
-  width:90px;height:90px;
-  right:-35px;bottom:-35px;
-  border-radius:50%;
-  background:rgba(23,105,255,.045);
-}
-.service-card:hover{
-  transform:translateY(-6px);
-  border-color:#cbdcff!important;
-  box-shadow:0 22px 45px rgba(18,45,90,.12)!important;
-}
-.service-icon{
-  width:54px!important;height:54px!important;
-  border-radius:16px;
-  background:#eef5ff;
-  font-size:29px!important;
-  box-shadow:inset 0 0 0 1px rgba(23,105,255,.08);
-}
-.service-card h3{
-  font-size:16px!important;
-  color:#10203c!important;
-}
-.service-card p{
-  font-size:12px!important;
-  color:#6b7b93!important;
-}
-
-/* Products */
-.products-home-grid{gap:18px!important}
-.product-home-card{
-  border-radius:18px!important;
-  padding:16px!important;
-  box-shadow:0 10px 28px rgba(18,45,90,.07)!important;
-  border-color:#e4eaf4!important;
-}
-.product-home-card:hover{
-  transform:translateY(-5px)!important;
-  box-shadow:0 20px 40px rgba(18,45,90,.12)!important;
-}
-.product-home-photo{
-  width:90px!important;height:90px!important;
-  border-radius:14px!important;
-  background:#f1f5fb!important;
-}
-.product-home-price{color:#1769ff!important;font-size:14px!important}
-
-/* Dynamic service/article cards */
-.dynamic-pages-section{
-  padding-top:72px!important;
-  padding-bottom:78px!important;
-  background:#f7faff!important;
-}
-.dynamic-pages-section .dynamic-pages-grid{gap:18px!important}
-.dynamic-pages-section .page-card{
-  border-radius:18px!important;
-  padding:22px!important;
-  box-shadow:0 10px 28px rgba(18,45,90,.06)!important;
-  transition:.25s ease;
-}
-.dynamic-pages-section .page-card:hover{
-  transform:translateY(-5px)!important;
-  box-shadow:0 20px 40px rgba(18,45,90,.11)!important;
-}
-
-/* Contact */
-.contact{
-  padding:76px 24px!important;
-  background:
-    radial-gradient(circle at 100% 0%,rgba(23,105,255,.08),transparent 32%),
-    #f4f8ff!important;
-}
-.contact-inner{
-  max-width:1180px!important;
-  gap:22px!important;
-}
-.contact-card,.map-card{
-  border-radius:20px!important;
-  border-color:#e2e9f3!important;
-  box-shadow:0 14px 35px rgba(18,45,90,.07)!important;
-}
-.contact-card{
-  padding:30px!important;
-}
-.contact-card h2{
-  font-size:30px!important;
-  letter-spacing:-.8px!important;
-}
-.map-card{padding:10px!important}
-.map-card iframe{height:360px!important;border-radius:14px!important}
-
-/* Chatbot — smaller, cleaner, less aggressive */
-.chat-btn{
-  width:56px!important;height:56px!important;
-  right:22px!important;bottom:22px!important;
-  background:linear-gradient(135deg,#1769ff,#3da8ff)!important;
-  box-shadow:0 14px 32px rgba(23,105,255,.25)!important;
-  font-size:25px!important;
-  transition:transform .2s ease,box-shadow .2s ease;
-}
-.chat-btn:hover{
-  transform:translateY(-3px) scale(1.03);
-  box-shadow:0 18px 38px rgba(23,105,255,.32)!important;
-}
-.chat-box{
-  border-radius:22px!important;
-  box-shadow:0 28px 70px rgba(11,31,64,.22)!important;
-}
-
-/* Modals — same behavior, more premium */
-.member-auth-box,.customer-lead-box,.product-modal-box{
-  border-radius:22px!important;
-  box-shadow:0 30px 90px rgba(4,20,45,.28)!important;
-}
-.member-auth-tabs button,
-.member-auth-form input,
-.member-auth-submit{
-  border-radius:12px!important;
-}
-
-/* Keep all forms comfortable on touch devices */
-button,a,input,textarea{ -webkit-tap-highlight-color:transparent }
-
-/* Mobile */
-@media(max-width:900px){
-  .site-header{height:auto!important}
-  .nav{padding:12px 18px!important}
-  .menu{gap:12px!important}
-  .hero{
-    padding:54px 18px 56px!important;
-  }
-  .hero-inner{
-    gap:34px!important;
-  }
-  .hero h1{font-size:46px!important}
-  .services{padding:60px 18px 66px!important}
-  .contact{padding:60px 18px!important}
-}
-@media(max-width:560px){
-  .site-header{box-shadow:0 5px 20px rgba(15,35,70,.07)!important}
-  .nav{padding:10px 12px 8px!important}
-  .brand img{width:50px!important;height:50px!important}
-  .brand-title{font-size:21px!important}
-  .brand-sub{font-size:9px!important}
-  .menu{gap:6px!important}
-  .menu>a{padding:8px 0!important}
-  .booking-nav{padding:9px 10px!important}
-  .apple-seed-ai-float{
-    padding:8px 10px 6px!important;
-    justify-content:flex-end!important;
-  }
-  .apple-seed-ai-float a{
-    font-size:9px!important;
-    padding:9px 12px!important;
-  }
-  .hero{
-    padding:38px 14px 48px!important;
-  }
-  .hero-inner{
-    gap:28px!important;
-  }
-  .shop-photo{
-    border-radius:18px!important;
-  }
-  .hero h1{
-    font-size:38px!important;
-    letter-spacing:-1.8px!important;
-  }
-  .hero .lead{
-    font-size:15px!important;
-  }
-  .trust{
-    grid-template-columns:1fr!important;
-  }
-  .services{
-    padding:50px 14px 58px!important;
-  }
-  .services h2{
-    font-size:28px!important;
-  }
-  .service-card{
-    min-height:132px!important;
-    border-radius:17px!important;
-  }
-  .contact{
-    padding:52px 14px!important;
-  }
-  .map-card iframe{height:300px!important}
-  .chat-btn{
-    width:52px!important;height:52px!important;
-    right:16px!important;bottom:16px!important;
-    font-size:23px!important;
-  }
-}
-</style>
-
-
 <style id="apple-seed-mobile-final-fix">
 /* =========================================================
    APPLE SEED MOBILE FINAL FIX
@@ -1302,31 +829,36 @@ body{background:linear-gradient(180deg,#eef4fb 0,#f8fbff 24%,#fff 62%,#f3f7fd 10
 @media(max-width:900px){.asph-inner{grid-template-columns:1fr;gap:12px}.asph-copy{text-align:center}.asph-text{margin-left:auto;margin-right:auto}.asph-actions{justify-content:center}.asph-stage{min-height:470px;transform:scale(.9);transform-origin:center top;margin-bottom:-40px}}
 @media(max-width:560px){.apple-seed-premium-hero{padding:48px 16px 38px;min-height:680px}.asph-title{font-size:43px!important;letter-spacing:-2.4px!important}.asph-text{font-size:15px}.asph-stage{min-height:410px;transform:scale(.63);margin-left:-24%;margin-right:-24%;margin-bottom:-130px}.asph-caption{bottom:5px;font-size:9px}}
 </style>
-<style id="apple-seed-premium-consistency-v3">
-body{background:linear-gradient(180deg,#eef4fb 0,#f8fbff 24%,#fff 62%,#f3f7fd 100%)!important;color:#0a1224!important}.entertainment-home-hero{background:linear-gradient(180deg,#eef4fb,#f6f9fd)!important}.entertainment-home-inner{background:rgba(255,255,255,.92)!important;border-color:#dfe8f5!important;box-shadow:0 14px 36px rgba(17,48,92,.07)!important}.entertainment-home-btn,.video-add-btn{background:linear-gradient(135deg,#1769ff,#4aa3ff)!important}.apple-seed-ai-float{background:linear-gradient(180deg,#f4f8ff,#eef5ff)!important}.apple-seed-ai-float a{background:linear-gradient(135deg,#0d55d8,#3da8ff)!important}.youtube-top-section{background:transparent!important}.youtube-top-section .apple-seed-youtube-search{background:rgba(255,255,255,.94)!important;border-color:#dfe8f5!important;box-shadow:0 14px 36px rgba(17,48,92,.07)!important}.youtube-top-section input{background:#fff!important;border-color:#d9e3f0!important}
-#homeRenderer .hero{background:linear-gradient(135deg,#f7faff,#edf4ff)!important;color:#0a1224!important;border-top:1px solid #e1e9f5;border-bottom:1px solid #e1e9f5}#homeRenderer .hero:before{display:none!important}#homeRenderer .hero h1,#homeRenderer .hero h1 *{color:#0a1224!important;text-shadow:none!important}#homeRenderer .hero .lead{color:#60718b!important}#homeRenderer .hero .cta+ .cta{background:#fff!important;color:#1769ff!important;border:1px solid #d5e0ef!important}
-#homeRenderer .service-card,#homeRenderer .product-home-card,#homeRenderer .contact-card,#homeRenderer .map-card,.dynamic-pages-section .page-card{border-color:#dfe7f2!important;box-shadow:0 12px 32px rgba(17,48,92,.065)!important}#homeRenderer .service-card:hover,#homeRenderer .product-home-card:hover,.dynamic-pages-section .page-card:hover{border-color:#c8d9f2!important;box-shadow:0 20px 42px rgba(17,48,92,.11)!important}#homeRenderer .shop-photo{border-radius:22px!important;box-shadow:0 22px 55px rgba(17,48,92,.14)!important}.contact-list a,.product-home-price,.page-more{color:#1769ff!important}.chat-head,.chat-input button,.chat-booking{background:linear-gradient(135deg,#1769ff,#4aa3ff)!important}.apple-seed-copyright{background:#07152e!important;color:#aebed4!important;border-top:1px solid #17345e!important}.apple-seed-copyright strong{color:#fff!important}.apple-seed-copyright .copy-warning{color:#ff9d9d!important}
-</style>
-<style id="apple-seed-premium-black-gold-v2">
-:root{--as-gold:#d9ad5c;--as-gold2:#f1d18f}
-body.as-premium-v2{padding-top:86px!important;background:#050505!important;color:#f7f7f5!important}
-body.as-premium-v2 .site-header{height:86px!important;background:rgba(5,5,5,.97)!important;border-bottom:1px solid rgba(217,173,92,.16)!important;box-shadow:0 10px 30px rgba(0,0,0,.45)!important;backdrop-filter:blur(18px)}
-body.as-premium-v2 .nav{max-width:1460px;height:86px;padding:0 34px}
-body.as-premium-v2 .brand img{width:52px;height:52px;filter:grayscale(1) brightness(1.7)}body.as-premium-v2 .brand-title{font-size:22px;color:#f4f1ea;letter-spacing:1.5px;text-transform:uppercase}body.as-premium-v2 .brand-sub{color:#8e8a83;font-size:9px;letter-spacing:2px}
-body.as-premium-v2 .menu{gap:27px;color:#eee9df;font-size:12px;font-weight:800;text-transform:uppercase}body.as-premium-v2 .menu a{color:#eee9df!important}.menu a:not(.booking-nav):after{background:var(--as-gold)!important}
-body.as-premium-v2 .booking-nav,body.as-premium-v2 .member-auth-btn.primary{background:linear-gradient(135deg,#b98635,#f0ce8d)!important;color:#080808!important;border:0!important}
-body.as-premium-v2 .member-auth-btn{background:#080808;border-color:#3b352b;color:#eee9df}
-.asv2-hero{position:relative;isolation:isolate;overflow:hidden;min-height:730px;background:#050505;color:#fff}.asv2-hero:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 61% 40%,rgba(202,147,65,.14),transparent 25%),radial-gradient(circle at 78% 54%,rgba(71,91,145,.13),transparent 30%),linear-gradient(180deg,#030303,#070707 72%,#050505);z-index:-2}.asv2-hero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px);background-size:68px 68px;mask-image:linear-gradient(to bottom,rgba(0,0,0,.42),transparent 80%);pointer-events:none;z-index:-1}
-.asv2-inner{max-width:1460px;min-height:730px;margin:auto;padding:58px 56px 22px;display:grid;grid-template-columns:36% 64%;align-items:center}.asv2-copy{z-index:10;padding-bottom:74px}.asv2-kicker{font-size:12px;letter-spacing:3.6px;color:var(--as-gold2);font-weight:900;margin-bottom:22px}.asv2-title{font-size:clamp(54px,5.4vw,82px)!important;line-height:1.02!important;letter-spacing:-2.8px!important;text-transform:uppercase!important;color:#f7f7f5!important;font-weight:950!important;margin:0!important}.asv2-title span{display:block;color:transparent;background:linear-gradient(100deg,#fff,#e7e1d7 48%,#b9b0a1);-webkit-background-clip:text;background-clip:text}.asv2-sub{margin:20px 0 23px;color:#e9e5de;font-size:15px;line-height:1.8;letter-spacing:5px;font-weight:750}.asv2-sub em{font-style:normal;color:var(--as-gold2)}.asv2-text{max-width:530px;margin:0 0 28px;color:#b9b5ae;font-size:15px;line-height:1.75}.asv2-actions{display:flex;gap:14px;flex-wrap:wrap}.asv2-btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:13px 24px;border-radius:9px;border:1px solid #4b4439;font-size:13px;font-weight:900;text-transform:uppercase;color:#fff!important;background:#0b0b0b}.asv2-btn.gold{border-color:#cda45c;background:linear-gradient(135deg,#b8863b,#f0cd8a);color:#0b0b0b!important;box-shadow:0 10px 28px rgba(217,173,92,.18)}.asv2-note{margin-top:21px;color:#77736c;font-size:9px;letter-spacing:2px}
-.asv2-stage{height:610px;position:relative;perspective:1500px}.asv2-stage:before{content:"";position:absolute;width:560px;height:560px;left:42%;top:25px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(circle,rgba(220,171,90,.16),rgba(47,64,103,.08) 34%,transparent 68%);filter:blur(5px)}
-.asv2-phone{position:absolute;width:184px;height:380px;border-radius:34px;padding:7px;background:linear-gradient(145deg,#f0eadf,#806a4e 28%,#171717 52%,#d1b27d 86%,#62523d);box-shadow:0 42px 80px rgba(0,0,0,.65),inset 0 0 0 1px rgba(255,255,255,.55);transform-style:preserve-3d}.asv2-phone:before{content:"";position:absolute;inset:6px;border-radius:29px;background:linear-gradient(145deg,#202020,#020202 65%,#111);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}.asv2-screen{position:absolute;inset:12px;border-radius:25px;overflow:hidden;background:linear-gradient(150deg,#2a241b,#090909 65%,#1d1309);z-index:2}.asv2-screen img{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:contain!important;padding:9px!important;background:#070707!important;border-radius:25px!important}.asv2-island{position:absolute;z-index:4;top:9px;left:50%;transform:translateX(-50%);width:56px;height:17px;border-radius:12px;background:#010101}.asv2-label{position:absolute;left:50%;bottom:-29px;transform:translateX(-50%);white-space:nowrap;font-size:9px;color:#a8a097;letter-spacing:1.3px;font-weight:800}.asv2-p1{left:2%;top:190px;transform:rotateY(23deg) rotateZ(-9deg) scale(.78);filter:brightness(.62)}.asv2-p2{left:17%;top:80px;transform:rotateY(18deg) rotateZ(-5deg) scale(.92);filter:brightness(.82)}.asv2-p3{left:33%;top:12px;transform:translateZ(90px) rotateZ(-1deg) scale(1.18);z-index:7}.asv2-p4{left:51%;top:92px;transform:rotateY(-16deg) rotateZ(5deg) scale(.92);filter:brightness(.82)}.asv2-p5{left:66%;top:172px;transform:rotateY(-23deg) rotateZ(9deg) scale(.78);filter:brightness(.63)}.asv2-p6{left:79%;top:112px;transform:rotateY(-27deg) rotateZ(12deg) scale(.70);filter:brightness(.58)}
-.asv2-rail{position:absolute;right:0;top:82px;width:92px;padding:18px 8px;border:1px solid rgba(255,255,255,.11);border-radius:19px;background:rgba(9,9,9,.76);backdrop-filter:blur(12px);z-index:12;text-align:center}.asv2-rail-item{padding:8px 0 17px;border-bottom:1px solid rgba(255,255,255,.08);color:#ded7ca;font-size:9px;line-height:1.5}.asv2-rail-item:last-child{border:0}.asv2-rail-icon{display:block;color:var(--as-gold2);font-size:22px;margin-bottom:6px}.asv2-explore{position:absolute;left:3%;bottom:34px;display:flex;align-items:center;gap:12px;color:#eee5d7;text-transform:uppercase;letter-spacing:2.3px;font-size:9px}.asv2-play{width:46px;height:46px;border:1px solid #b88b45;border-radius:50%;display:grid;place-items:center}
-.asv2-services{position:relative;z-index:20;max-width:1390px;margin:-16px auto 0;padding:0 16px;display:grid;grid-template-columns:repeat(5,1fr) 1.05fr;gap:7px}.asv2-service{min-height:122px;border:1px solid rgba(255,255,255,.13);border-radius:14px;background:linear-gradient(145deg,#0d0d0d,#080808);display:flex;align-items:center;gap:13px;padding:14px 15px;box-shadow:0 15px 34px rgba(0,0,0,.25)}.asv2-icon{width:55px;height:84px;flex:none;border:1px solid #302b24;border-radius:9px;display:grid;place-items:center;font-size:29px;color:#d6ad63}.asv2-service h3{margin:0 0 7px;color:#f3efe8;font-size:13px;text-transform:uppercase}.asv2-service p{margin:0;color:#8f8a82;font-size:10px;line-height:1.55}.asv2-more{justify-content:center;text-align:center}
-.asv2-bottom{max-width:1390px;margin:28px auto 0;padding:0 16px 35px;display:grid;grid-template-columns:1.55fr .55fr;gap:12px}.asv2-statbar{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid rgba(255,255,255,.11);border-radius:14px;background:#0b0b0b;overflow:hidden}.asv2-stat{padding:24px 20px;border-right:1px solid rgba(255,255,255,.08)}.asv2-stat:last-child{border:0}.asv2-stat b{display:block;color:#e3b96d;font-size:19px;margin-bottom:7px}.asv2-stat span{color:#9b968e;font-size:10px;line-height:1.45}.asv2-store{border:1px solid rgba(255,255,255,.11);border-radius:14px;overflow:hidden;background:#0c0c0c;min-height:130px;position:relative}.asv2-store img{width:100%;height:100%;min-height:130px;object-fit:cover;opacity:.78}.asv2-store:after{content:"";position:absolute;inset:45% 0 0;background:linear-gradient(transparent,#050505)}.asv2-store-caption{position:absolute;z-index:2;left:17px;bottom:14px;color:#f4f0e8;font-size:11px;font-weight:850}.asv2-store-caption span{display:block;color:#aaa39a;font-size:9px;margin-top:5px}
-body.as-premium-v2 #iphone-experience{display:none!important}body.as-premium-v2 .entertainment-home-hero{display:none!important}body.as-premium-v2 .youtube-top-section{background:#050505!important}body.as-premium-v2 #homeRenderer,body.as-premium-v2 #homeRenderer>.hero,body.as-premium-v2 #homeRenderer>.services,body.as-premium-v2 .contact{background:#050505!important;color:#eee!important}body.as-premium-v2 .service-card,body.as-premium-v2 .product-home-card,body.as-premium-v2 .dynamic-pages-section .page-card,body.as-premium-v2 .contact-card,body.as-premium-v2 .map-card{background:#0b0b0b!important;border-color:#28231c!important;color:#eee!important;box-shadow:0 16px 40px rgba(0,0,0,.28)!important}body.as-premium-v2 .service-card h3,body.as-premium-v2 .product-home-card h3,body.as-premium-v2 .contact-card h2,body.as-premium-v2 .dynamic-pages-section .page-card h3{color:#f4f0e8!important}body.as-premium-v2 .section-kicker,body.as-premium-v2 .eyebrow,body.as-premium-v2 .product-home-price,body.as-premium-v2 .contact-list a{color:#d9ad5c!important}body.as-premium-v2 .map-card iframe{filter:grayscale(.85) contrast(1.05)}body.as-premium-v2 .apple-seed-copyright{background:#030303!important;border-top-color:#252018!important;color:#77736b!important}body.as-premium-v2 .apple-seed-copyright strong{color:#d9ad5c!important}
-@media(max-width:1100px){.asv2-inner{grid-template-columns:39% 61%;padding-left:30px;padding-right:30px}.asv2-p6{display:none}.asv2-rail{right:-8px}.asv2-services{grid-template-columns:repeat(3,1fr)}.asv2-bottom{grid-template-columns:1fr}}
-@media(max-width:760px){body.as-premium-v2{padding-top:150px!important}body.as-premium-v2 .site-header{height:auto!important}.asv2-inner{display:block;min-height:780px;padding:46px 20px 0}.asv2-copy{text-align:center;padding:0}.asv2-title{font-size:48px!important}.asv2-sub{letter-spacing:2.4px;font-size:11px}.asv2-text{margin-left:auto;margin-right:auto;font-size:13px}.asv2-stage{height:420px;transform:scale(.72);transform-origin:center top;margin-left:-20%;margin-right:-20%}.asv2-rail{display:none}.asv2-explore{left:50%;transform:translateX(-50%)}.asv2-services{grid-template-columns:repeat(2,1fr);margin-top:-40px}.asv2-statbar{grid-template-columns:repeat(2,1fr)}.asv2-stat:nth-child(even){border-right:0}.asv2-store{min-height:180px}.asv2-store img{min-height:180px}}
-@media(max-width:480px){.asv2-inner{min-height:730px}.asv2-title{font-size:40px!important}.asv2-stage{transform:scale(.56);margin-left:-32%;margin-right:-32%}.asv2-services{grid-template-columns:1fr;margin-top:-75px}.asv2-statbar{grid-template-columns:1fr}.asv2-stat{border-right:0!important;border-bottom:1px solid rgba(255,255,255,.08)}.asv2-stat:last-child{border:0}}
+<style id="apple-seed-premium-black-gold-v3">
+:root{--as-gold:#d8aa58;--as-gold-light:#f2d08d}
+body{background:#fff!important;color:#17233d}
+.site-header{height:76px!important;background:rgba(4,4,4,.96)!important;border-bottom:1px solid rgba(216,170,88,.2)!important;box-shadow:0 8px 28px rgba(0,0,0,.35)!important;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.site-header .nav{height:76px!important;max-width:1450px!important;padding:0 28px!important}
+.site-header .brand{min-width:300px!important;gap:10px!important}.site-header .brand img{width:48px!important;height:48px!important;filter:grayscale(1) brightness(2)!important}
+.site-header .brand-title{font-size:21px!important;color:#f5f2eb!important;letter-spacing:1.5px!important;text-transform:uppercase!important}.site-header .brand-sub{font-size:8px!important;color:#858078!important;letter-spacing:2px!important}
+.site-header .menu{gap:23px!important;color:#f0ede7!important;font-size:11px!important;font-weight:850!important;text-transform:uppercase!important}.site-header .menu a{color:#eeeae2!important}.site-header .menu a:hover{color:var(--as-gold-light)!important}.site-header .booking-nav{background:linear-gradient(135deg,#b98435,#f1ce8a)!important;color:#080808!important;border:0!important;box-shadow:0 8px 22px rgba(216,170,88,.16)!important}
+.site-header .member-auth-btn{background:#090909!important;color:#eeeae2!important;border-color:#40392e!important}.site-header .member-auth-btn.primary{background:linear-gradient(135deg,#b98435,#f1ce8a)!important;color:#080808!important;border-color:transparent!important}
+
+.as3-hero{position:relative;overflow:hidden;isolation:isolate;min-height:790px;background:#030303;color:#fff}
+.as3-hero:before{content:"";position:absolute;inset:0;z-index:-2;background:radial-gradient(circle at 67% 45%,rgba(209,158,74,.15),transparent 22%),radial-gradient(circle at 83% 48%,rgba(55,74,112,.18),transparent 30%),linear-gradient(180deg,#020202 0%,#070707 70%,#030303 100%)}
+.as3-hero:after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px);background-size:72px 72px;mask-image:linear-gradient(to bottom,rgba(0,0,0,.45),transparent 78%)}
+.as3-wrap{max-width:1500px;margin:auto;padding:60px 52px 0;min-height:790px;position:relative}
+.as3-main{display:grid;grid-template-columns:39% 61%;align-items:center;min-height:640px}
+.as3-copy{padding:0 0 30px 14px;z-index:10}.as3-kicker{color:var(--as-gold-light);font-size:11px;font-weight:950;letter-spacing:3.8px;margin-bottom:20px}.as3-title{font-size:clamp(56px,5.4vw,82px)!important;line-height:.98!important;letter-spacing:-3.8px!important;font-weight:950!important;text-transform:uppercase!important;color:#f7f6f3!important;margin:0!important}.as3-title span{display:block;color:transparent;background:linear-gradient(105deg,#fff,#ddd7cc 55%,#a9a096);-webkit-background-clip:text;background-clip:text}.as3-sub{margin:20px 0 20px;color:#eee9e1;font-size:15px;letter-spacing:4.5px;font-weight:800}.as3-sub b{color:var(--as-gold-light)}.as3-desc{max-width:520px;color:#aaa59d;font-size:14px;line-height:1.75;margin:0 0 26px}.as3-actions{display:flex;gap:12px}.as3-btn{min-height:46px;padding:12px 22px;border-radius:9px;border:1px solid #403a32;background:#080808;color:#f4f0e9!important;font-size:12px;font-weight:900;text-transform:uppercase;display:inline-flex;align-items:center;justify-content:center}.as3-btn.gold{background:linear-gradient(135deg,#b98435,#f1ce8a);border-color:#d5a958;color:#090909!important;box-shadow:0 12px 26px rgba(216,170,88,.15)}.as3-note{margin-top:18px;color:#68645e;font-size:8px;letter-spacing:2px}
+
+.as3-stage{height:600px;position:relative;perspective:1400px}.as3-stage:before{content:"";position:absolute;width:620px;height:620px;left:48%;top:-12px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(circle,rgba(213,163,79,.14),rgba(45,57,80,.06) 36%,transparent 69%)}
+.as3-phone{position:absolute;width:188px;height:392px;padding:7px;border-radius:35px;background:linear-gradient(145deg,#eee8dd,#75624b 26%,#121212 52%,#d7b87d 84%,#5c4a34);box-shadow:0 38px 75px rgba(0,0,0,.72),inset 0 0 0 1px rgba(255,255,255,.58);transform-style:preserve-3d}.as3-phone:before{content:"";position:absolute;inset:6px;border-radius:30px;background:#080808;box-shadow:inset 0 0 0 1px rgba(255,255,255,.11)}.as3-screen{position:absolute;inset:12px;border-radius:25px;overflow:hidden;z-index:2;background:radial-gradient(circle at 50% 35%,#342d23,#090909 65%)}.as3-screen img{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:contain!important;padding:8px!important;background:#050505!important;border-radius:25px!important}.as3-island{position:absolute;z-index:4;left:50%;top:9px;transform:translateX(-50%);width:58px;height:18px;border-radius:13px;background:#000}.as3-label{position:absolute;left:50%;bottom:-28px;transform:translateX(-50%);white-space:nowrap;color:#969088;font-size:8px;letter-spacing:1.2px;font-weight:800}.as3-p1{left:0;top:182px;transform:rotateY(24deg) rotateZ(-10deg) scale(.75);filter:brightness(.58)}.as3-p2{left:15%;top:70px;transform:rotateY(17deg) rotateZ(-5deg) scale(.9);filter:brightness(.78)}.as3-p3{left:31%;top:0;transform:translateZ(100px) rotateZ(-1deg) scale(1.2);z-index:8}.as3-p4{left:49%;top:82px;transform:rotateY(-16deg) rotateZ(5deg) scale(.9);filter:brightness(.8)}.as3-p5{left:65%;top:166px;transform:rotateY(-23deg) rotateZ(9deg) scale(.76);filter:brightness(.6)}.as3-p6{left:78%;top:108px;transform:rotateY(-27deg) rotateZ(12deg) scale(.68);filter:brightness(.5)}
+
+.as3-benefits{position:absolute;right:0;top:65px;width:86px;border:1px solid rgba(255,255,255,.11);background:rgba(8,8,8,.72);border-radius:18px;padding:9px 7px;backdrop-filter:blur(10px);z-index:20}.as3-benefit{text-align:center;padding:12px 1px 14px;border-bottom:1px solid rgba(255,255,255,.08);color:#d9d3c8;font-size:8px;line-height:1.45}.as3-benefit:last-child{border:0}.as3-benefit i{display:block;font-style:normal;color:var(--as-gold-light);font-size:21px;margin-bottom:5px}.as3-discover{position:absolute;left:4%;bottom:33px;display:flex;align-items:center;gap:11px;text-transform:uppercase;letter-spacing:2px;color:#e7dfd2;font-size:8px}.as3-play{width:45px;height:45px;border-radius:50%;display:grid;place-items:center;border:1px solid #bb8e49;box-shadow:0 0 24px rgba(216,170,88,.15)}
+
+.as3-services{position:relative;z-index:30;display:grid;grid-template-columns:repeat(5,1fr) 1.08fr;gap:6px;margin-top:-6px}.as3-service{min-height:112px;border:1px solid rgba(255,255,255,.13);border-radius:13px;background:linear-gradient(145deg,#0e0e0e,#070707);display:flex;align-items:center;gap:11px;padding:12px 13px;box-shadow:0 18px 35px rgba(0,0,0,.3)}.as3-service .ico{width:49px;height:78px;border-radius:8px;border:1px solid #312b22;display:grid;place-items:center;color:#d9ad61;font-size:24px;flex:none}.as3-service h3{margin:0 0 6px;color:#f0ece5;font-size:11px;text-transform:uppercase}.as3-service p{margin:0;color:#8d8982;font-size:8px;line-height:1.5}.as3-more{justify-content:center;text-align:center}.as3-more .ico{display:none}
+.as3-bottom{display:grid;grid-template-columns:1.6fr .52fr;gap:10px;margin-top:28px;padding-bottom:30px}.as3-stats{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid rgba(255,255,255,.11);border-radius:13px;background:#0a0a0a;overflow:hidden}.as3-stat{padding:21px 18px;border-right:1px solid rgba(255,255,255,.08)}.as3-stat:last-child{border:0}.as3-stat b{display:block;color:#e2b76a;font-size:17px;margin-bottom:7px}.as3-stat span{color:#96918a;font-size:9px;line-height:1.45}.as3-store{position:relative;min-height:122px;border:1px solid rgba(255,255,255,.11);border-radius:13px;overflow:hidden;background:#090909}.as3-store img{width:100%;height:100%;min-height:122px;object-fit:cover;opacity:.76}.as3-store:after{content:"";position:absolute;inset:45% 0 0;background:linear-gradient(transparent,#050505)}.as3-store-label{position:absolute;z-index:3;left:15px;bottom:12px;color:#f3eee5;font-size:10px;font-weight:900}.as3-store-label small{display:block;color:#aaa39a;font-size:8px;margin-top:4px}
+
+body.as-premium-v2 .asv2-hero{display:none!important}
+body.as-premium-v2 #homeRenderer,body.as-premium-v2 #homeRenderer .hero{background:inherit!important;color:inherit!important}
+@media(max-width:1100px){.as3-main{grid-template-columns:42% 58%}.as3-p6{display:none}.as3-benefits{right:-4px}.as3-services{grid-template-columns:repeat(3,1fr)}.as3-bottom{grid-template-columns:1fr}.as3-store{min-height:180px}.as3-store img{min-height:180px}}
+@media(max-width:760px){.site-header{height:auto!important}.site-header .nav{height:auto!important}.as3-hero,.as3-wrap{min-height:0}.as3-wrap{padding:44px 18px 20px}.as3-main{display:block;min-height:0}.as3-copy{text-align:center;padding:0}.as3-title{font-size:49px!important}.as3-sub{font-size:11px;letter-spacing:2.5px}.as3-desc{font-size:13px;margin-left:auto;margin-right:auto}.as3-actions{justify-content:center}.as3-stage{height:455px;transform:scale(.72);transform-origin:center top;margin:0 -18% -100px}.as3-benefits{display:none}.as3-services{grid-template-columns:repeat(2,1fr);margin-top:0}.as3-bottom{margin-top:12px}.as3-stats{grid-template-columns:repeat(2,1fr)}.as3-stat:nth-child(even){border-right:0}.as3-store{min-height:190px}.as3-store img{min-height:190px}}
+@media(max-width:480px){.as3-title{font-size:40px!important}.as3-stage{transform:scale(.55);margin:0 -31% -160px}.as3-services{grid-template-columns:1fr}.as3-stats{grid-template-columns:1fr}.as3-stat{border-right:0!important;border-bottom:1px solid rgba(255,255,255,.08)}.as3-stat:last-child{border:0}}
 </style>
 </head>
 
@@ -1358,6 +890,36 @@ body.as-premium-v2 #iphone-experience{display:none!important}body.as-premium-v2 
 </div>
 </nav>
 </header>
+<section class="as3-hero" id="apple-seed-premium-home" aria-label="Apple Seed Premium iPhone">
+<div class="as3-wrap">
+<div class="as3-main">
+<div class="as3-copy">
+<div class="as3-kicker">PREMIUM IPHONE REPAIR</div>
+<h1 class="as3-title">ĐẲNG CẤP <span>XỨNG TẦM</span></h1>
+<div class="as3-sub">MỖI CHIẾC <b>iPHONE</b> — MỘT TUYỆT TÁC</div>
+<p class="as3-desc">Apple Seed chăm sóc và phục hồi iPhone bằng kỹ thuật chuyên sâu, kiểm tra minh bạch và quy trình được thiết kế để giữ trọn giá trị của thiết bị.</p>
+<div class="as3-actions"><a class="as3-btn gold" href="booking.html">ĐẶT LỊCH NGAY →</a><a class="as3-btn" href="#dich-vu">XEM DỊCH VỤ ▶</a></div>
+<div class="as3-note">IPHONE · FACE ID · MAINBOARD · DIAGNOSTICS · PREMIUM CARE</div>
+</div>
+<div class="as3-stage">
+<div class="as3-phone as3-p1"><div class="as3-screen" data-phone-slot="0"></div><div class="as3-island"></div><div class="as3-label">iPhone Pro</div></div><div class="as3-phone as3-p2"><div class="as3-screen" data-phone-slot="1"></div><div class="as3-island"></div><div class="as3-label">iPhone Pro Max</div></div><div class="as3-phone as3-p3"><div class="as3-screen" data-phone-slot="2"></div><div class="as3-island"></div><div class="as3-label">iPhone 16 Pro Max</div></div><div class="as3-phone as3-p4"><div class="as3-screen" data-phone-slot="3"></div><div class="as3-island"></div><div class="as3-label">iPhone 15 Pro Max</div></div><div class="as3-phone as3-p5"><div class="as3-screen" data-phone-slot="4"></div><div class="as3-island"></div><div class="as3-label">iPhone 14 Pro Max</div></div><div class="as3-phone as3-p6"><div class="as3-screen" data-phone-slot="5"></div><div class="as3-island"></div><div class="as3-label">iPhone</div></div>
+<div class="as3-benefits"><div class="as3-benefit"><i>◇</i>LINH KIỆN<br>CHÍNH HÃNG</div><div class="as3-benefit"><i>⚙</i>KỸ THUẬT<br>CHUYÊN SÂU</div><div class="as3-benefit"><i>✓</i>BẢO HÀNH<br>DÀI HẠN</div><div class="as3-benefit"><i>♙</i>BẢO MẬT<br>TUYỆT ĐỐI</div></div>
+<div class="as3-discover"><span class="as3-play">▶</span><span>KHÁM PHÁ<br>APPLE SEED</span></div>
+</div></div>
+<div class="as3-services">
+<a class="as3-service" href="#dich-vu"><div class="ico">◐</div><div><h3>THAY MÀN HÌNH</h3><p>OLED · Zin chuẩn Apple<br>Hiển thị sắc nét</p></div></a>
+<a class="as3-service" href="#dich-vu"><div class="ico">▣</div><div><h3>THAY PIN</h3><p>Pin chất lượng cao<br>Hiệu suất tối ưu</p></div></a>
+<a class="as3-service" href="#dich-vu"><div class="ico">⌘</div><div><h3>SỬA CHỮA MAIN</h3><p>Vi xử lý chuyên sâu<br>Công nghệ hiện đại</p></div></a>
+<a class="as3-service" href="#dich-vu"><div class="ico">◉</div><div><h3>FACE ID</h3><p>Sửa chữa & hiệu chỉnh<br>Chuẩn xác 100%</p></div></a>
+<a class="as3-service" href="#dich-vu"><div class="ico">▤</div><div><h3>VỆ SINH BÊN TRONG</h3><p>Làm sạch chuyên sâu<br>Tản nhiệt tối ưu</p></div></a>
+<a class="as3-service as3-more" href="#dich-vu"><div><h3>XEM TẤT CẢ DỊCH VỤ</h3><p>Khám phá toàn bộ dịch vụ →</p></div></a>
+</div>
+<div class="as3-bottom">
+<div class="as3-stats"><div class="as3-stat"><b>iPhone</b><span>Chuyên sâu dòng máy Apple</span></div><div class="as3-stat"><b>Face ID</b><span>Kiểm tra & xử lý chính xác</span></div><div class="as3-stat"><b>Main</b><span>Chẩn đoán cấp bo mạch</span></div><div class="as3-stat"><b>Bảo hành</b><span>Chính sách rõ ràng</span></div><div class="as3-stat"><b>30–60'</b><span>Ưu tiên xử lý nhanh khi phù hợp</span></div></div>
+<a class="as3-store" href="#lien-he"><img src="shop.jpg" alt="Cửa hàng Apple Seed Trà Vinh" loading="lazy"><div class="as3-store-label">APPLE SEED<small>📍 292 Phạm Ngũ Lão, Trà Vinh</small></div></a>
+</div>
+</div>
+</section>
 <section class="entertainment-home-hero" aria-label="Apple Seed Entertainment Center">
   <div class="entertainment-home-inner">
     <div>
@@ -2956,16 +2518,24 @@ form.onsubmit=async e=>{
   };
 })();
 </script>
-<script id="apple-seed-premium-iphone-v1">(function(){const hero="<section class=\"apple-seed-premium-hero\" id=\"iphone-experience\" aria-label=\"Apple Seed Premium iPhone Experience\"><div class=\"asph-inner\"><div class=\"asph-copy\"><div class=\"asph-kicker\">APPLE SEED · PREMIUM IPHONE EXPERIENCE</div><h1 class=\"asph-title\">Đẳng cấp của <span>iPhone.</span></h1><p class=\"asph-text\">Những chiếc iPhone cao cấp luôn là tâm điểm. Apple Seed chăm sóc chúng bằng kỹ thuật chính xác, kiểm tra minh bạch và trải nghiệm chuyên nghiệp.</p><div class=\"asph-actions\"><a class=\"asph-btn\" href=\"booking.html\">📅 Đặt lịch sửa iPhone</a><a class=\"asph-btn secondary\" href=\"#dich-vu\">Khám phá dịch vụ →</a></div><div class=\"asph-note\">IPHONE · FACE ID · MAINBOARD · DIAGNOSTICS · CARE</div></div><div class=\"asph-stage\" aria-label=\"Bộ sưu tập iPhone cao cấp\"><div class=\"asph-glow\"></div><div class=\"asph-phone asph-phone-1\"><div class=\"asph-phone-screen\"></div><div class=\"asph-phone-label\">iPhone Pro</div></div><div class=\"asph-phone asph-phone-2\"><div class=\"asph-phone-screen\"></div><div class=\"asph-phone-label\">iPhone Pro Max</div></div><div class=\"asph-phone asph-phone-3\"><div class=\"asph-phone-screen\"></div><div class=\"asph-phone-label\">iPhone 16 Pro Max</div></div><div class=\"asph-phone asph-phone-4\"><div class=\"asph-phone-screen\"></div><div class=\"asph-phone-label\">iPhone 15 Pro Max</div></div><div class=\"asph-phone asph-phone-5\"><div class=\"asph-phone-screen\"></div><div class=\"asph-phone-label\">iPhone 14 Pro Max</div></div><div class=\"asph-caption\">PREMIUM DEVICE CARE · APPLE SEED</div></div></div></section>";function boot(){if(document.getElementById("iphone-experience"))return;const marker=document.querySelector(".entertainment-home-hero")||document.getElementById("homeRenderer");if(!marker)return;marker.insertAdjacentHTML("beforebegin",hero)}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot()})();</script>
 <script id="apple-seed-premium-phone-assets-v1">(function(){function apply(){const list=Array.isArray(window.appleSeedProducts)?window.appleSeedProducts:[];const candidates=list.filter(x=>/iphone/i.test(x?.product?.name||"")&&x?.images?.[0]?.url);const slots=[...document.querySelectorAll("#iphone-experience .asph-phone")];if(!candidates.length||!slots.length)return false;candidates.slice(0,slots.length).forEach((item,i)=>{const screen=slots[i]?.querySelector(".asph-phone-screen"),url=item.images[0].url;if(!screen||!url||screen.dataset.assetApplied)return;const img=document.createElement("img");img.src=url;img.alt=item.product?.name||"iPhone";img.loading="lazy";img.decoding="async";img.onerror=()=>img.remove();screen.appendChild(img);screen.dataset.assetApplied="1";const label=slots[i].querySelector(".asph-phone-label");if(label&&item.product?.name)label.textContent=item.product.name});return true}let tries=0;const timer=setInterval(()=>{tries++;if(apply()||tries>=30)clearInterval(timer)},500)})();</script>
-<script id="apple-seed-premium-black-gold-v2">
+<script id="apple-seed-premium-black-gold-v3-loader">
 (function(){
-  "use strict";document.body.classList.add("as-premium-v2");
-  const h=document.createElement("section");h.className="asv2-hero";h.id="apple-seed-premium-v2";
-  h.innerHTML=`<div class="asv2-inner"><div class="asv2-copy"><div class="asv2-kicker">PREMIUM IPHONE REPAIR</div><h1 class="asv2-title">Đẳng cấp <span>xứng tầm</span></h1><div class="asv2-sub">MỖI CHIẾC <em>iPHONE</em> — MỘT TUYỆT TÁC</div><p class="asv2-text">Apple Seed chăm sóc và phục hồi iPhone bằng kỹ thuật chuyên sâu, quy trình kiểm tra rõ ràng và sự tôn trọng tuyệt đối với dữ liệu của khách hàng.</p><div class="asv2-actions"><a class="asv2-btn gold" href="booking.html">Đặt lịch ngay →</a><a class="asv2-btn" href="#dich-vu">Xem dịch vụ ▶</a></div><div class="asv2-note">IPHONE · FACE ID · MAINBOARD · DIAGNOSTICS · PREMIUM CARE</div></div><div class="asv2-stage"><div class="asv2-phone asv2-p1"><div class="asv2-screen"></div><div class="asv2-island"></div><div class="asv2-label">iPhone Pro</div></div><div class="asv2-phone asv2-p2"><div class="asv2-screen"></div><div class="asv2-island"></div><div class="asv2-label">iPhone Pro Max</div></div><div class="asv2-phone asv2-p3"><div class="asv2-screen"></div><div class="asv2-island"></div><div class="asv2-label">iPhone 16 Pro Max</div></div><div class="asv2-phone asv2-p4"><div class="asv2-screen"></div><div class="asv2-island"></div><div class="asv2-label">iPhone 15 Pro Max</div></div><div class="asv2-phone asv2-p5"><div class="asv2-screen"></div><div class="asv2-island"></div><div class="asv2-label">iPhone 14 Pro Max</div></div><div class="asv2-phone asv2-p6"><div class="asv2-screen"></div><div class="asv2-island"></div><div class="asv2-label">iPhone</div></div><div class="asv2-rail"><div class="asv2-rail-item"><span class="asv2-rail-icon">◇</span>LINH KIỆN<br>CHÍNH HÃNG</div><div class="asv2-rail-item"><span class="asv2-rail-icon">⚙</span>KỸ THUẬT<br>CHUYÊN SÂU</div><div class="asv2-rail-item"><span class="asv2-rail-icon">✓</span>BẢO HÀNH<br>DÀI HẠN</div><div class="asv2-rail-item"><span class="asv2-rail-icon">♙</span>BẢO MẬT<br>TUYỆT ĐỐI</div></div><div class="asv2-explore"><span class="asv2-play">▶</span><span>KHÁM PHÁ<br>APPLE SEED</span></div></div></div><div class="asv2-services"><a class="asv2-service" href="#dich-vu"><div class="asv2-icon">◐</div><div><h3>Thay màn hình</h3><p>OLED · Zin chuẩn Apple<br>Hiển thị sắc nét</p></div></a><a class="asv2-service" href="#dich-vu"><div class="asv2-icon">▣</div><div><h3>Thay pin</h3><p>Pin chất lượng cao<br>Hiệu suất tối ưu</p></div></a><a class="asv2-service" href="#dich-vu"><div class="asv2-icon">⌘</div><div><h3>Sửa chữa main</h3><p>Vi xử lý chuyên sâu<br>Công nghệ hiện đại</p></div></a><a class="asv2-service" href="#dich-vu"><div class="asv2-icon">◉</div><div><h3>Face ID</h3><p>Sửa chữa & hiệu chỉnh<br>Kiểm tra chuẩn xác</p></div></a><a class="asv2-service" href="#dich-vu"><div class="asv2-icon">▤</div><div><h3>Vệ sinh bên trong</h3><p>Làm sạch chuyên sâu<br>Tản nhiệt tối ưu</p></div></a><a class="asv2-service asv2-more" href="#dich-vu"><div><h3>Xem tất cả dịch vụ</h3><p>Khám phá toàn bộ dịch vụ →</p></div></a></div><div class="asv2-bottom"><div class="asv2-statbar"><div class="asv2-stat"><b>iPhone</b><span>Chuyên sâu dòng máy Apple</span></div><div class="asv2-stat"><b>Face ID</b><span>Kiểm tra & xử lý chính xác</span></div><div class="asv2-stat"><b>Main</b><span>Chẩn đoán cấp bo mạch</span></div><div class="asv2-stat"><b>Bảo hành</b><span>Chính sách rõ ràng</span></div><div class="asv2-stat"><b>30–60'</b><span>Ưu tiên xử lý nhanh khi phù hợp</span></div></div><a class="asv2-store" href="#lien-he"><img src="shop.jpg" alt="Cửa hàng Apple Seed Trà Vinh" loading="lazy"><div class="asv2-store-caption">APPLE SEED<span>📍 292 Phạm Ngũ Lão, Trà Vinh</span></div></a></div>`;
-  const header=document.querySelector(".site-header");if(header)header.insertAdjacentElement("afterend",h);
-  function imgs(){const list=Array.isArray(window.appleSeedProducts)?window.appleSeedProducts:[],phones=list.filter(x=>/iphone/i.test(x?.product?.name||"")&&x?.images?.[0]?.url),slots=[...h.querySelectorAll(".asv2-phone")];if(!phones.length)return false;slots.forEach((slot,i)=>{const item=phones[i%phones.length],s=slot.querySelector(".asv2-screen");if(!s||s.dataset.bound)return;const im=document.createElement("img");im.src=item.images[0].url;im.alt=item.product?.name||"iPhone";im.loading="lazy";im.onerror=()=>im.remove();s.appendChild(im);s.dataset.bound="1";const l=slot.querySelector(".asv2-label");if(l&&item.product?.name)l.textContent=item.product.name});return true}
-  let n=0,t=setInterval(()=>{if(imgs()||++n>45)clearInterval(t)},400);
+"use strict";
+function apply(){
+ const list=Array.isArray(window.appleSeedProducts)?window.appleSeedProducts:[];
+ const phones=list.filter(x=>/iphone/i.test(x?.product?.name||"")&&x?.images?.[0]?.url);
+ if(!phones.length)return false;
+ document.querySelectorAll(".as3-screen").forEach((screen,i)=>{
+   if(screen.dataset.bound)return;
+   const item=phones[i%phones.length], url=item.images[0].url;
+   const img=document.createElement("img"); img.src=url; img.alt=item.product?.name||"iPhone"; img.loading="lazy"; img.decoding="async";
+   img.onerror=()=>img.remove(); screen.appendChild(img); screen.dataset.bound="1";
+   const label=screen.parentElement.querySelector(".as3-label"); if(label&&item.product?.name)label.textContent=item.product.name;
+ });
+ return true;
+}
+let n=0;const t=setInterval(()=>{if(apply()||++n>50)clearInterval(t)},400);
 })();
 </script>
 </body>
