@@ -1181,6 +1181,38 @@ body{
   .as3-stat{border-right:0!important;border-bottom:1px solid rgba(28,35,42,.08)!important}
 }
 </style>
+
+<style id="apple-seed-phone-showcase-02">
+/* =========================================================
+   APPLE SEED PHONE SHOWCASE 02
+   UI-only patch: replaces the empty CSS phone shells with the
+   selected phone composition from mẫu 02.
+   IMPORTANT: do not alter page structure, routes, CMS or Supabase.
+   The real Apple Seed logo remains the existing logo.png asset.
+   ========================================================= */
+.as3-stage{
+  background-image:url('apple-seed-phone-showcase-02.png')!important;
+  background-repeat:no-repeat!important;
+  background-position:center center!important;
+  background-size:112% auto!important;
+}
+.as3-stage > .as3-phone{
+  display:none!important;
+}
+.as3-stage > .as3-benefits{
+  z-index:30!important;
+}
+@media(max-width:1100px){
+  .as3-stage{background-size:116% auto!important}
+}
+@media(max-width:760px){
+  .as3-stage{background-size:116% auto!important}
+}
+@media(max-width:480px){
+  .as3-stage{background-size:125% auto!important}
+}
+</style>
+
 </head>
 
 <body>
@@ -2825,6 +2857,10 @@ function apply(){
 let n=0;const t=setInterval(()=>{if(apply()||++n>50)clearInterval(t)},400);
 })();
 </script>
+<style id="apple-seed-hero-image-compat">
+/* HERO IMAGE CMS: custom image rules are supplied through site_theme_settings.custom_css.
+   This compatibility layer keeps the original phone structure and JS intact. */
+</style>
 </body>
 </html>
 <footer class="apple-seed-copyright" aria-label="Bản quyền Apple Seed">
