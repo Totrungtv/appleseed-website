@@ -1184,32 +1184,31 @@ body{
 
 <style id="apple-seed-phone-showcase-02">
 /* =========================================================
-   APPLE SEED PHONE SHOWCASE 02
-   UI-only patch: replaces the empty CSS phone shells with the
-   selected phone composition from mẫu 02.
-   IMPORTANT: do not alter page structure, routes, CMS or Supabase.
-   The real Apple Seed logo remains the existing logo.png asset.
+   APPLE SEED PHONE SHOWCASE 02 — FALLBACK ONLY
+   Khi Admin chưa có ảnh Hero tùy chỉnh, giữ ảnh mẫu 02 cũ.
+   Khi Admin đã lưu ảnh Hero, body sẽ nhận class
+   .as-cms-hero-images để tắt fallback và dùng ảnh từ Supabase.
    ========================================================= */
-.as3-stage{
+body:not(.as-cms-hero-images) .as3-stage{
   background-image:url('apple-seed-phone-showcase-02.png')!important;
   background-repeat:no-repeat!important;
   background-position:center center!important;
   background-size:112% auto!important;
 }
-.as3-stage > .as3-phone{
+body:not(.as-cms-hero-images) .as3-stage > .as3-phone{
   display:none!important;
 }
 .as3-stage > .as3-benefits{
   z-index:30!important;
 }
 @media(max-width:1100px){
-  .as3-stage{background-size:116% auto!important}
+  body:not(.as-cms-hero-images) .as3-stage{background-size:116% auto!important}
 }
 @media(max-width:760px){
-  .as3-stage{background-size:116% auto!important}
+  body:not(.as-cms-hero-images) .as3-stage{background-size:116% auto!important}
 }
 @media(max-width:480px){
-  .as3-stage{background-size:125% auto!important}
+  body:not(.as-cms-hero-images) .as3-stage{background-size:125% auto!important}
 }
 </style>
 
@@ -1990,9 +1989,6 @@ body{
 
   function normalizeHeroCssOrder(css){
     let out=String(css||'');
-    // Backward compatibility: các bản cũ đã lưu url(\\"...\\") làm CSS không hợp lệ.
-    const slash=String.fromCharCode(92);
-    out=out.split('url('+slash+'"').join('url("').split(slash+'")').join('")');
     const imageStart='/* APPLESEED_HERO_IMAGES_START */',imageEnd='/* APPLESEED_HERO_IMAGES_END */';
     const ia=out.indexOf(imageStart),ib=out.indexOf(imageEnd);
     if(ia<0||ib<ia)return out;
@@ -2015,7 +2011,24 @@ body{
       const t={data:themeRows?.[0]||null};
       const n={data:Array.isArray(navRows)?navRows:[],error:null};
       const s={data:Array.isArray(sectionRows)?sectionRows:[],error:null};
-      if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){const st=document.createElement('style');st.textContent=normalizeHeroCssOrder(t.data.custom_css);document.head.appendChild(st)}if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){
+      if(t.data){
+        cssVars(t.data);
+        if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;
+        if(t.data.meta_title)document.title=t.data.meta_title;
+        const m=document.querySelector('meta[name="description"]');
+        if(m&&t.data.meta_description)m.content=t.data.meta_description;
+        const themeCss=String(t.data.custom_css||'');
+        const hasHeroImageBlock=themeCss.includes('/* APPLESEED_HERO_IMAGES_START */')&&themeCss.includes('/* APPLESEED_HERO_IMAGES_END */');
+        document.body.classList.toggle('as-cms-hero-images',hasHeroImageBlock);
+        if(themeCss){
+          const st=document.createElement('style');
+          st.setAttribute('data-apple-seed-theme','1');
+          st.textContent=normalizeHeroCssOrder(themeCss);
+          document.head.appendChild(st);
+        }
+        if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;
+        if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url;
+      }if(n.data?.length){
       const menu=document.querySelector('.menu');
       const memberAuth=document.getElementById('memberAuthButtons');
       menu.querySelectorAll(':scope > a').forEach(a=>a.remove());
