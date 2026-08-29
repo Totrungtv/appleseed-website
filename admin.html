@@ -73,6 +73,23 @@ label{font-weight:700;font-size:14px;display:block}input,textarea,select{width:1
 .hero-image-manager{margin-top:18px;padding:16px;border:1px solid #dbe3ef;border-radius:16px;background:linear-gradient(180deg,#fbfdff,#f6f9fd)}
 .hero-image-manager h3{margin:0 0 6px}.hero-image-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}.hero-image-card{border:1px solid #dbe3ef;border-radius:14px;background:#fff;padding:10px}.hero-image-card h4{margin:0 0 8px;font-size:13px}.hero-image-preview{height:150px;border:1px dashed #cbd5e1;border-radius:10px;background:#f8fafc;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:8px}.hero-image-preview img{width:100%;height:100%;object-fit:contain;display:block}.hero-image-preview.empty{color:#98a2b3;font-size:12px;text-align:center;padding:12px}.hero-image-actions{display:flex;gap:7px;flex-wrap:wrap}.hero-image-actions .btn2{font-size:12px}.hero-image-card small{display:block;color:#667085;line-height:1.4;margin-top:6px}.hero-image-manager-note{padding:10px 12px;border-radius:10px;background:#fff7ed;color:#9a3412;border:1px solid #fed7aa;font-size:12px;line-height:1.5;margin-top:12px}.hero-image-options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.hero-image-options label{font-size:13px}@media(max-width:750px){.hero-image-grid{grid-template-columns:1fr 1fr}.hero-image-options{grid-template-columns:1fr}}@media(max-width:520px){.hero-image-grid{grid-template-columns:1fr}}
 </style>
+<style>.hero-file-input{position:fixed;left:-10000px;top:0;width:1px;height:1px;opacity:0;pointer-events:none}</style>
+
+
+<style id="apple-seed-hero-ui-admin">
+.hero-ui-editor{margin:18px 0;padding:18px;border:1px solid #dbe3ef;border-radius:16px;background:#fbfdff}
+.hero-ui-editor h3{margin:0 0 7px}
+.hero-ui-section{margin-top:15px;padding:14px;border:1px solid #e4e9f0;border-radius:13px;background:#fff}
+.hero-ui-section h4{margin:0 0 10px;color:#17202b}
+.hero-ui-repeat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.hero-ui-repeat-grid>div{display:grid;gap:7px;padding:11px;border:1px solid #e8edf3;border-radius:11px;background:#fafbfd}
+.hero-ui-repeat-grid input{width:100%}
+.hero-ui-service-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.hero-ui-stats-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media(max-width:900px){.hero-ui-service-grid,.hero-ui-stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.hero-ui-repeat-grid{grid-template-columns:1fr}}
+</style>
+
 </head>
 <body>
 <div id="loginView" class="panel login">
@@ -200,9 +217,97 @@ label{font-weight:700;font-size:14px;display:block}input,textarea,select{width:1
       <label>Cách hiển thị ảnh nền<select id="heroBackgroundFit"><option value="cover">Cover — phủ toàn Hero</option><option value="contain">Contain — giữ trọn ảnh</option></select></label>
     </div>
     <div class="hero-image-manager-note">⚠️ Khi ông đổi ảnh ở đây, hệ thống chỉ thay lớp hình ảnh của Hero. Không thay HTML cấu trúc và không xóa nội dung bên dưới. Logo vẫn lấy từ <b>Logo URL</b> trong Theme và không bị thay bằng logo khác.</div>
-    <input id="heroImageFileInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden>
+    <input id="heroImageFileInput" class="hero-file-input" type="file" accept="image/png,image/jpeg,image/webp,image/gif">
   </div>
-  <div class="hero-studio-actions"><div><strong id="heroPresetCurrent">Đang dùng: —</strong><div class="small">Chọn mẫu → <b>Áp dụng</b>. Mẫu được lưu cùng Theme.</div></div><div class="admin-actions"><button class="plus" type="button" id="applyHeroPreset">✨ Áp dụng mẫu đã chọn</button><button class="plus" type="button" id="saveHeroImagesBtn">💾 Lưu ảnh Hero</button><button class="btn2" type="button" id="openHeroPreview">↗ Xem website</button></div></div>
+  
+<div class="hero-ui-editor" id="heroUiEditor">
+  <h3>🎛️ Nội dung & giao diện Hero — quản lý toàn bộ phần đang thấy trên đầu trang</h3>
+  <div class="small">Phần này chỉ quản lý nội dung/giao diện của Hero và các thẻ ngay bên dưới Hero. Không thay đổi dữ liệu dịch vụ, sản phẩm, Member hoặc các chức năng khác.</div>
+
+  <div class="hero-ui-section">
+    <h4>① Tiêu đề & mô tả</h4>
+    <div class="form-row">
+      <label>Dòng nhỏ<input id="heroUiKicker"></label>
+      <label>Tiêu đề chính<input id="heroUiTitle"></label>
+    </div>
+    <div class="form-row">
+      <label>Tiêu đề nhấn<input id="heroUiTitleAccent"></label>
+      <label>Ghi chú dưới nút<input id="heroUiNote"></label>
+    </div>
+    <div class="form-row">
+      <label>Dòng phụ — trước chữ đậm<input id="heroUiSubPrefix"></label>
+      <label>Chữ đậm<input id="heroUiSubBold"></label>
+    </div>
+    <label>Dòng phụ — sau chữ đậm<input id="heroUiSubSuffix"></label>
+    <label>Mô tả Hero<textarea id="heroUiDescription" rows="3"></textarea></label>
+  </div>
+
+  <div class="hero-ui-section">
+    <h4>② Hai nút Hero</h4>
+    <div class="form-row">
+      <label>Nút 1 — chữ<input id="heroUiButton1Text"></label>
+      <label>Nút 1 — liên kết<input id="heroUiButton1Url"></label>
+    </div>
+    <div class="form-row">
+      <label>Nút 2 — chữ<input id="heroUiButton2Text"></label>
+      <label>Nút 2 — liên kết<input id="heroUiButton2Url"></label>
+    </div>
+  </div>
+
+  <div class="hero-ui-section">
+    <h4>③ 4 ô nổi bên phải Hero</h4>
+    <div class="hero-ui-repeat-grid">
+      <div><b>Ô 1</b><input id="heroUiBenefit0Icon" placeholder="Icon"><input id="heroUiBenefit0Line1" placeholder="Dòng 1"><input id="heroUiBenefit0Line2" placeholder="Dòng 2"></div>
+      <div><b>Ô 2</b><input id="heroUiBenefit1Icon" placeholder="Icon"><input id="heroUiBenefit1Line1" placeholder="Dòng 1"><input id="heroUiBenefit1Line2" placeholder="Dòng 2"></div>
+      <div><b>Ô 3</b><input id="heroUiBenefit2Icon" placeholder="Icon"><input id="heroUiBenefit2Line1" placeholder="Dòng 1"><input id="heroUiBenefit2Line2" placeholder="Dòng 2"></div>
+      <div><b>Ô 4</b><input id="heroUiBenefit3Icon" placeholder="Icon"><input id="heroUiBenefit3Line1" placeholder="Dòng 1"><input id="heroUiBenefit3Line2" placeholder="Dòng 2"></div>
+    </div>
+  </div>
+
+  <div class="hero-ui-section">
+    <h4>④ Nút khám phá dưới cụm iPhone</h4>
+    <div class="form-row">
+      <label>Dòng 1<input id="heroUiDiscover1"></label>
+      <label>Dòng 2<input id="heroUiDiscover2"></label>
+    </div>
+  </div>
+
+  <div class="hero-ui-section">
+    <h4>⑤ 6 thẻ dịch vụ ngay dưới Hero</h4>
+    <div class="hero-ui-repeat-grid hero-ui-service-grid">
+      <div><b>Thẻ 1</b><input id="heroUiService0Icon" placeholder="Icon"><input id="heroUiService0Title" placeholder="Tiêu đề"><input id="heroUiService0Line1" placeholder="Mô tả dòng 1"><input id="heroUiService0Line2" placeholder="Mô tả dòng 2"><input id="heroUiService0Url" placeholder="Liên kết"></div>
+      <div><b>Thẻ 2</b><input id="heroUiService1Icon" placeholder="Icon"><input id="heroUiService1Title" placeholder="Tiêu đề"><input id="heroUiService1Line1" placeholder="Mô tả dòng 1"><input id="heroUiService1Line2" placeholder="Mô tả dòng 2"><input id="heroUiService1Url" placeholder="Liên kết"></div>
+      <div><b>Thẻ 3</b><input id="heroUiService2Icon" placeholder="Icon"><input id="heroUiService2Title" placeholder="Tiêu đề"><input id="heroUiService2Line1" placeholder="Mô tả dòng 1"><input id="heroUiService2Line2" placeholder="Mô tả dòng 2"><input id="heroUiService2Url" placeholder="Liên kết"></div>
+      <div><b>Thẻ 4</b><input id="heroUiService3Icon" placeholder="Icon"><input id="heroUiService3Title" placeholder="Tiêu đề"><input id="heroUiService3Line1" placeholder="Mô tả dòng 1"><input id="heroUiService3Line2" placeholder="Mô tả dòng 2"><input id="heroUiService3Url" placeholder="Liên kết"></div>
+      <div><b>Thẻ 5</b><input id="heroUiService4Icon" placeholder="Icon"><input id="heroUiService4Title" placeholder="Tiêu đề"><input id="heroUiService4Line1" placeholder="Mô tả dòng 1"><input id="heroUiService4Line2" placeholder="Mô tả dòng 2"><input id="heroUiService4Url" placeholder="Liên kết"></div>
+      <div><b>Thẻ 6 — xem tất cả</b><input id="heroUiService5Title" placeholder="Tiêu đề"><input id="heroUiService5Line1" placeholder="Mô tả"><input id="heroUiService5Url" placeholder="Liên kết"></div>
+    </div>
+  </div>
+
+  <div class="hero-ui-section">
+    <h4>⑥ 5 ô thông tin + ảnh cửa hàng</h4>
+    <div class="hero-ui-repeat-grid hero-ui-stats-grid">
+      <div><b>Ô 1</b><input id="heroUiStat0Title" placeholder="Tiêu đề"><input id="heroUiStat0Desc" placeholder="Mô tả"></div>
+      <div><b>Ô 2</b><input id="heroUiStat1Title" placeholder="Tiêu đề"><input id="heroUiStat1Desc" placeholder="Mô tả"></div>
+      <div><b>Ô 3</b><input id="heroUiStat2Title" placeholder="Tiêu đề"><input id="heroUiStat2Desc" placeholder="Mô tả"></div>
+      <div><b>Ô 4</b><input id="heroUiStat3Title" placeholder="Tiêu đề"><input id="heroUiStat3Desc" placeholder="Mô tả"></div>
+      <div><b>Ô 5</b><input id="heroUiStat4Title" placeholder="Tiêu đề"><input id="heroUiStat4Desc" placeholder="Mô tả"></div>
+    </div>
+    <div class="form-row">
+      <label>Nhãn ảnh cửa hàng<input id="heroUiStoreLabel"></label>
+      <label>Địa chỉ dưới ảnh<input id="heroUiStoreAddress"></label>
+    </div>
+    <label>Liên kết ảnh cửa hàng<input id="heroUiStoreUrl"></label>
+    <div class="small">Ảnh cửa hàng vẫn dùng ô ảnh hiện có của trang; phần này chỉ đổi chữ/liên kết. Muốn đổi ảnh, dùng CSS/ảnh cửa hàng hiện có hoặc công cụ ảnh riêng.</div>
+  </div>
+
+  <div class="admin-actions">
+    <button class="plus" type="button" id="saveHeroUiBtn">💾 Lưu nội dung Hero</button>
+    <button class="btn2" type="button" id="resetHeroUiBtn">↺ Nạp lại nội dung hiện tại</button>
+  </div>
+</div>
+
+<div class="hero-studio-actions"><div><strong id="heroPresetCurrent">Đang dùng: —</strong><div class="small">Chọn mẫu → <b>Áp dụng</b>. Mẫu được lưu cùng Theme.</div></div><div class="admin-actions"><button class="plus" type="button" id="applyHeroPreset">✨ Áp dụng mẫu đã chọn</button><button class="plus" type="button" id="saveHeroImagesBtn">💾 Lưu ảnh Hero</button><button class="btn2" type="button" id="openHeroPreview">↗ Xem website</button></div></div>
 </section>
 
 <section class="panel">
@@ -404,6 +509,7 @@ async function checkSession(){
   if(typeof loadVideoAdmin==='function') await loadVideoAdmin();
   try{
     initHeroStudio();
+    initHeroUiEditor();
     initHeroImageManager();
   }catch(e){
     console.warn("Hero Studio init",e);
@@ -737,7 +843,95 @@ async function saveHeroImages(){
   }
 }
 
-function initHeroImageManager(){const input=$('heroImageFileInput');document.querySelectorAll('[data-hero-upload]').forEach(btn=>btn.onclick=()=>{input.dataset.slot=btn.dataset.heroUpload;input.click()});input.onchange=e=>{const slot=input.dataset.slot;uploadHeroImageSlot(slot,e.target.files?.[0]);input.value=''};document.querySelectorAll('[data-hero-clear]').forEach(btn=>btn.onclick=()=>clearHeroImageSlot(btn.dataset.heroClear));$('heroPhoneFit').onchange=()=>{$('themeCustomCss').value=replaceHeroImages($('themeCustomCss').value||'',heroImagesFromCss($('themeCustomCss').value||''),$('heroPhoneFit').value,$('heroBackgroundFit').value);renderHeroImageFields($('themeCustomCss').value)};$('heroBackgroundFit').onchange=()=>{$('themeCustomCss').value=replaceHeroImages($('themeCustomCss').value||'',heroImagesFromCss($('themeCustomCss').value||''),$('heroPhoneFit').value,$('heroBackgroundFit').value);renderHeroImageFields($('themeCustomCss').value)};$('saveHeroImagesBtn').onclick=saveHeroImages;renderHeroImageFields($('themeCustomCss').value||'')}
+
+const HERO_UI_START='/* APPLESEED_HERO_UI_START */';
+const HERO_UI_END='/* APPLESEED_HERO_UI_END */';
+const HERO_UI_DEFAULTS={"kicker": "PREMIUM IPHONE REPAIR", "title": "ĐẲNG CẤP", "titleAccent": "XỨNG TẦM", "subPrefix": "MỖI CHIẾC", "subBold": "iPHONE", "subSuffix": "— MỘT TUYỆT TÁC", "description": "Apple Seed chăm sóc và phục hồi iPhone bằng kỹ thuật chuyên sâu, kiểm tra minh bạch và quy trình được thiết kế để giữ trọn giá trị của thiết bị.", "button1Text": "ĐẶT LỊCH NGAY →", "button1Url": "booking.html", "button2Text": "XEM DỊCH VỤ ▶", "button2Url": "#dich-vu", "note": "IPHONE · FACE ID · MAINBOARD · DIAGNOSTICS · PREMIUM CARE", "benefits": [{"icon": "◇", "line1": "LINH KIỆN", "line2": "CHÍNH HÃNG"}, {"icon": "⚙", "line1": "KỸ THUẬT", "line2": "CHUYÊN SÂU"}, {"icon": "✓", "line1": "BẢO HÀNH", "line2": "DÀI HẠN"}, {"icon": "♙", "line1": "BẢO MẬT", "line2": "TUYỆT ĐỐI"}], "discoverLine1": "KHÁM PHÁ", "discoverLine2": "APPLE SEED", "services": [{"icon": "◐", "title": "THAY MÀN HÌNH", "line1": "OLED · Zin chuẩn Apple", "line2": "Hiển thị sắc nét", "url": "#dich-vu"}, {"icon": "▣", "title": "THAY PIN", "line1": "Pin chất lượng cao", "line2": "Hiệu suất tối ưu", "url": "#dich-vu"}, {"icon": "⌘", "title": "SỬA CHỮA MAIN", "line1": "Vi xử lý chuyên sâu", "line2": "Công nghệ hiện đại", "url": "#dich-vu"}, {"icon": "◉", "title": "FACE ID", "line1": "Sửa chữa & hiệu chỉnh", "line2": "Chuẩn xác 100%", "url": "#dich-vu"}, {"icon": "▤", "title": "VỆ SINH BÊN TRONG", "line1": "Làm sạch chuyên sâu", "line2": "Tản nhiệt tối ưu", "url": "#dich-vu"}, {"icon": "", "title": "XEM TẤT CẢ DỊCH VỤ", "line1": "Khám phá toàn bộ dịch vụ →", "line2": "", "url": "#dich-vu"}], "stats": [{"title": "iPhone", "desc": "Chuyên sâu dòng máy Apple"}, {"title": "Face ID", "desc": "Kiểm tra & xử lý chính xác"}, {"title": "Main", "desc": "Chẩn đoán cấp bo mạch"}, {"title": "Bảo hành", "desc": "Chính sách rõ ràng"}, {"title": "30–60'", "desc": "Ưu tiên xử lý nhanh khi phù hợp"}], "storeLabel": "APPLE SEED", "storeAddress": "📍 292 Phạm Ngũ Lão, Trà Vinh", "storeUrl": "#lien-he"};
+
+function heroUiRead(css){
+  const s=String(css||''),a=s.indexOf(HERO_UI_START),b=s.indexOf(HERO_UI_END);
+  if(a<0||b<a)return JSON.parse(JSON.stringify(HERO_UI_DEFAULTS));
+  const raw=s.slice(a+HERO_UI_START.length,b).trim();
+  try{return Object.assign(JSON.parse(JSON.stringify(HERO_UI_DEFAULTS)),JSON.parse(raw))}catch(_){return JSON.parse(JSON.stringify(HERO_UI_DEFAULTS))}
+}
+function heroUiReplaceCss(css,data){
+  let s=String(css||'').trim();
+  const a=s.indexOf(HERO_UI_START),b=s.indexOf(HERO_UI_END);
+  if(a>=0&&b>=a)s=(s.slice(0,a)+s.slice(b+HERO_UI_END.length)).trim();
+  const block=HERO_UI_START+'\n'+JSON.stringify(data,null,2)+'\n'+HERO_UI_END;
+  return (s?s+'\n\n':'')+block;
+}
+function heroUiSet(id,value){const e=$(id);if(e)e.value=value??''}
+function heroUiLoadFields(){
+  const d=heroUiRead($('themeCustomCss')?.value||'');
+  heroUiSet('heroUiKicker',d.kicker);heroUiSet('heroUiTitle',d.title);heroUiSet('heroUiTitleAccent',d.titleAccent);
+  heroUiSet('heroUiSubPrefix',d.subPrefix);heroUiSet('heroUiSubBold',d.subBold);heroUiSet('heroUiSubSuffix',d.subSuffix);
+  heroUiSet('heroUiDescription',d.description);heroUiSet('heroUiButton1Text',d.button1Text);heroUiSet('heroUiButton1Url',d.button1Url);
+  heroUiSet('heroUiButton2Text',d.button2Text);heroUiSet('heroUiButton2Url',d.button2Url);heroUiSet('heroUiNote',d.note);
+  (d.benefits||[]).slice(0,4).forEach((x,i)=>{heroUiSet(`heroUiBenefit${i}Icon`,x.icon);heroUiSet(`heroUiBenefit${i}Line1`,x.line1);heroUiSet(`heroUiBenefit${i}Line2`,x.line2)});
+  heroUiSet('heroUiDiscover1',d.discoverLine1);heroUiSet('heroUiDiscover2',d.discoverLine2);
+  (d.services||[]).slice(0,6).forEach((x,i)=>{
+    heroUiSet(`heroUiService${i}Icon`,x.icon);heroUiSet(`heroUiService${i}Title`,x.title);
+    heroUiSet(`heroUiService${i}Line1`,x.line1);heroUiSet(`heroUiService${i}Line2`,x.line2);heroUiSet(`heroUiService${i}Url`,x.url)
+  });
+  (d.stats||[]).slice(0,5).forEach((x,i)=>{heroUiSet(`heroUiStat${i}Title`,x.title);heroUiSet(`heroUiStat${i}Desc`,x.desc)});
+  heroUiSet('heroUiStoreLabel',d.storeLabel);heroUiSet('heroUiStoreAddress',d.storeAddress);heroUiSet('heroUiStoreUrl',d.storeUrl);
+}
+function heroUiCollect(){
+  const d=heroUiRead($('themeCustomCss')?.value||'');
+  d.kicker=$('heroUiKicker').value.trim();d.title=$('heroUiTitle').value.trim();d.titleAccent=$('heroUiTitleAccent').value.trim();
+  d.subPrefix=$('heroUiSubPrefix').value.trim();d.subBold=$('heroUiSubBold').value.trim();d.subSuffix=$('heroUiSubSuffix').value.trim();
+  d.description=$('heroUiDescription').value.trim();d.button1Text=$('heroUiButton1Text').value.trim();d.button1Url=$('heroUiButton1Url').value.trim();
+  d.button2Text=$('heroUiButton2Text').value.trim();d.button2Url=$('heroUiButton2Url').value.trim();d.note=$('heroUiNote').value.trim();
+  d.benefits=(d.benefits||[]).slice(0,4);while(d.benefits.length<4)d.benefits.push({icon:'',line1:'',line2:''});
+  d.benefits.forEach((x,i)=>{x.icon=$(`heroUiBenefit${i}Icon`).value.trim();x.line1=$(`heroUiBenefit${i}Line1`).value.trim();x.line2=$(`heroUiBenefit${i}Line2`).value.trim()});
+  d.discoverLine1=$('heroUiDiscover1').value.trim();d.discoverLine2=$('heroUiDiscover2').value.trim();
+  d.services=(d.services||[]).slice(0,6);while(d.services.length<6)d.services.push({icon:'',title:'',line1:'',line2:'',url:'#dich-vu'});
+  d.services.forEach((x,i)=>{x.icon=$(`heroUiService${i}Icon`)?.value.trim()||'';x.title=$(`heroUiService${i}Title`).value.trim();x.line1=$(`heroUiService${i}Line1`)?.value.trim()||'';x.line2=$(`heroUiService${i}Line2`)?.value.trim()||'';x.url=$(`heroUiService${i}Url`)?.value.trim()||'#dich-vu'});
+  d.stats=(d.stats||[]).slice(0,5);while(d.stats.length<5)d.stats.push({title:'',desc:''});
+  d.stats.forEach((x,i)=>{x.title=$(`heroUiStat${i}Title`).value.trim();x.desc=$(`heroUiStat${i}Desc`).value.trim()});
+  d.storeLabel=$('heroUiStoreLabel').value.trim();d.storeAddress=$('heroUiStoreAddress').value.trim();d.storeUrl=$('heroUiStoreUrl').value.trim();
+  return d;
+}
+async function saveHeroUi(){
+  const btn=$('saveHeroUiBtn');
+  try{
+    const data=heroUiCollect();
+    const css=heroUiReplaceCss($('themeCustomCss').value||'',data);
+    $('themeCustomCss').value=css;
+    await ensureThemeRow();
+    if(btn){btn.disabled=true;btn.textContent='⏳ Đang lưu...'}
+    const r=await sb.from('site_theme_settings').update({custom_css:css}).eq('id',1).select('id,updated_at').single();
+    if(r.error)throw r.error;
+    status('✅ Đã lưu toàn bộ nội dung giao diện Hero. F5 website để xem.');
+  }catch(e){
+    console.error('Hero UI save:',e);status('❌ Lưu nội dung Hero lỗi: '+(e?.message||e),true);
+  }finally{if(btn){btn.disabled=false;btn.textContent='💾 Lưu nội dung Hero'}}
+}
+function initHeroUiEditor(){
+  heroUiLoadFields();
+  $('saveHeroUiBtn').onclick=saveHeroUi;
+  $('resetHeroUiBtn').onclick=heroUiLoadFields;
+}
+
+function initHeroImageManager(){
+  const input=$('heroImageFileInput');
+  if(!input){console.error('Hero upload input not found');return;}
+  document.querySelectorAll('[data-hero-upload]').forEach(btn=>{
+    btn.type='button';
+    btn.onclick=(ev)=>{
+      ev.preventDefault();ev.stopPropagation();
+      input.dataset.slot=btn.dataset.heroUpload||'background';
+      input.value='';
+      try{input.click()}catch(err){status('Không mở được hộp chọn ảnh: '+(err?.message||err),true)}
+    };
+  });
+  input.onchange=e=>{
+    const slot=input.dataset.slot||'background';
+    const file=e.target.files?.[0];
+    if(file)uploadHeroImageSlot(slot,file);
+    input.value='';
+  };document.querySelectorAll('[data-hero-clear]').forEach(btn=>btn.onclick=()=>clearHeroImageSlot(btn.dataset.heroClear));$('heroPhoneFit').onchange=()=>{$('themeCustomCss').value=replaceHeroImages($('themeCustomCss').value||'',heroImagesFromCss($('themeCustomCss').value||''),$('heroPhoneFit').value,$('heroBackgroundFit').value);renderHeroImageFields($('themeCustomCss').value)};$('heroBackgroundFit').onchange=()=>{$('themeCustomCss').value=replaceHeroImages($('themeCustomCss').value||'',heroImagesFromCss($('themeCustomCss').value||''),$('heroPhoneFit').value,$('heroBackgroundFit').value);renderHeroImageFields($('themeCustomCss').value)};$('saveHeroImagesBtn').onclick=saveHeroImages;renderHeroImageFields($('themeCustomCss').value||'')}
 function initHeroStudio(){const css=$('themeCustomCss')?.value||'',current=heroPresetFromCss(css)||'01';renderHeroPresets(current);$('heroPresetCurrent').textContent=`Đang dùng: Mẫu ${current} — ${HERO_PRESETS[current].name}`;$('applyHeroPreset').onclick=()=>applyHeroPreset(document.querySelector('.hero-preset.selected')?.dataset.preset||current);$('openHeroPreview').onclick=()=>window.open('index.html','_blank')}
 
 async function loadProductGallery(productId){
