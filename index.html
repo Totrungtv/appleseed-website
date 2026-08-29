@@ -2012,7 +2012,7 @@ body{
       const t={data:themeRows?.[0]||null};
       const n={data:Array.isArray(navRows)?navRows:[],error:null};
       const s={data:Array.isArray(sectionRows)?sectionRows:[],error:null};
-      if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){const normalizedHeroCss=normalizeHeroCssOrder(t.data.custom_css);const st=document.createElement('style');st.textContent=normalizedHeroCss;document.head.appendChild(st);requestAnimationFrame(()=>{const stage=document.querySelector('#apple-seed-premium-home .as3-stage');if(!stage)return;const marker=normalizedHeroCss.match(/\/\* APPLESEED_HERO_IMAGES_START \*\/([\s\S]*?)\/\* APPLESEED_HERO_IMAGES_END \*\//i);const block=marker?marker[1]:normalizedHeroCss;const bg=block.match(/(?:^|})\s*(?:#apple-seed-premium-home\s+)?\.as3-stage\s*\{[\s\S]*?background(?:-image)?\s*:\s*[^;]*url\(\s*[\"']([^\"']+)[\"']\s*\)/i);if(bg&&bg[1]){stage.style.setProperty('background-image',`url(\"${bg[1].replace(/\"/g,'\\\"')}\")`,'important');stage.style.setProperty('background-repeat','no-repeat','important');stage.style.setProperty('background-position','center center','important');}})}if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){
+      if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){const normalizedHeroCss=normalizeHeroCssOrder(t.data.custom_css);const st=document.createElement('style');st.textContent=normalizedHeroCss;document.head.appendChild(st);requestAnimationFrame(()=>{const hero=document.querySelector('#apple-seed-premium-home');if(!hero)return;const marker=normalizedHeroCss.match(/\/\* APPLESEED_HERO_IMAGES_START \*\/([\s\S]*?)\/\* APPLESEED_HERO_IMAGES_END \*\//i);const block=marker?marker[1]:normalizedHeroCss;const bg=block.match(/(?:^|})\s*(?:#apple-seed-premium-home\s+)?\.as3-stage\s*\{[\s\S]*?background(?:-image)?\s*:\s*[^;]*url\(\s*[\"']([^\"']+)[\"']\s*\)/i)||block.match(/(?:^|})\s*(?:#apple-seed-premium-home\s+)?\.as3-hero\s*\{[\s\S]*?background(?:-image)?\s*:\s*[^;]*url\(\s*[\"']([^\"']+)[\"']\s*\)/i);if(bg&&bg[1]){hero.style.setProperty('background-image',`url(\"${bg[1].replace(/\"/g,'\\\"')}\")`,'important');hero.style.setProperty('background-size','cover','important');hero.style.setProperty('background-position','center center','important');hero.style.setProperty('background-repeat','no-repeat','important');hero.style.setProperty('background-color','#f7f7f5','important');hero.style.setProperty('--hero-cms-image','1');hero.classList.add('has-cms-hero-bg');}})}if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){
       const menu=document.querySelector('.menu');
       const memberAuth=document.getElementById('memberAuthButtons');
       menu.querySelectorAll(':scope > a').forEach(a=>a.remove());
@@ -2871,8 +2871,14 @@ let n=0;const t=setInterval(()=>{if(apply()||++n>50)clearInterval(t)},400);
 })();
 </script>
 <style id="apple-seed-hero-image-compat">
-/* HERO IMAGE CMS: custom image rules are supplied through site_theme_settings.custom_css.
-   This compatibility layer keeps the original phone structure and JS intact. */
+/* HERO IMAGE CMS: background image belongs to the Hero container, not the phone stage. */
+#apple-seed-premium-home.has-cms-hero-bg{background-color:#f7f7f5!important;}
+#apple-seed-premium-home.has-cms-hero-bg:before{
+  background:
+    radial-gradient(circle at 67% 35%,rgba(232,195,112,.18),transparent 22%),
+    radial-gradient(circle at 82% 48%,rgba(205,218,234,.18),transparent 31%),
+    linear-gradient(180deg,rgba(251,251,250,.28) 0%,rgba(243,244,242,.34) 100%)!important;
+}
 </style>
 </body>
 </html>
