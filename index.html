@@ -1988,6 +1988,19 @@ body{
     });
   }
 
+  function normalizeHeroCssOrder(css){
+    let out=String(css||'');
+    const imageStart='/* APPLESEED_HERO_IMAGES_START */',imageEnd='/* APPLESEED_HERO_IMAGES_END */';
+    const ia=out.indexOf(imageStart),ib=out.indexOf(imageEnd);
+    if(ia<0||ib<ia)return out;
+    const imageBlock=out.slice(ia,ib+imageEnd.length);
+    out=(out.slice(0,ia)+out.slice(ib+imageEnd.length)).trim();
+    const presetEnd='/* APPLESEED_HERO_PRESET_END */';
+    const pe=out.indexOf(presetEnd);
+    if(pe<0)return (out?out+'\n\n':'')+imageBlock;
+    return out.slice(0,pe+presetEnd.length)+'\n\n'+imageBlock+out.slice(pe+presetEnd.length);
+  }
+
   async function load(){
     if(!sb){staticFallback();bindProductCards();fixNavigation();return}
     try{
@@ -1999,7 +2012,7 @@ body{
       const t={data:themeRows?.[0]||null};
       const n={data:Array.isArray(navRows)?navRows:[],error:null};
       const s={data:Array.isArray(sectionRows)?sectionRows:[],error:null};
-      if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){const st=document.createElement('style');st.textContent=t.data.custom_css;document.head.appendChild(st)}if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){
+      if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){const st=document.createElement('style');st.textContent=normalizeHeroCssOrder(t.data.custom_css);document.head.appendChild(st)}if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){
       const menu=document.querySelector('.menu');
       const memberAuth=document.getElementById('memberAuthButtons');
       menu.querySelectorAll(':scope > a').forEach(a=>a.remove());
