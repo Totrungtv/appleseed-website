@@ -396,7 +396,9 @@ async function checkSession(){
     return;
   }
   $("userEmail").textContent=(session.user.email||'')+' · '+profile.role.toUpperCase();
-  show($("loginView"),false); show($("app"),true); await refreshAll(); await loadVideoAdmin();
+  show($("loginView"),false); show($("app"),true); await refreshAll();
+  // Một số bản Admin cũ không còn có loadVideoAdmin; không để lỗi đó chặn phần Theme/ Hero Studio.
+  if(typeof loadVideoAdmin==='function') await loadVideoAdmin();
 }
 $("loginBtn").onclick=async()=>{
   const btn=$("loginBtn"), msg=$("loginStatus");
@@ -407,13 +409,8 @@ $("loginBtn").onclick=async()=>{
     if(!email || !password) throw new Error("Vui lòng nhập email và mật khẩu.");
     const {error}=await sb.auth.signInWithPassword({email,password});
     if(error) throw error;
-    await checkSession();
-  }catch(err){
-    msg.textContent="Lỗi đăng nhập: "+(err?.message || String(err));
-  }finally{
-    btn.disabled=false; btn.textContent="Đăng nhập";
-  }
-};
+    await 
+
 /* ===== APPLE SEED VIDEO ADMIN V1 ===== */
 function extractYouTubeId(value){
   try{
@@ -498,8 +495,15 @@ $('saveVideoBtn').onclick=async e=>{
   const existingId=Number($('videoId').value||0);let r=existingId?await sb.from('apple_seed_videos').update(payload).eq('id',existingId):await sb.from('apple_seed_videos').insert({...payload,author_user_id:(await sb.auth.getUser()).data.user?.id||null});
   if(r.error){status('Lưu video lỗi: '+r.error.message,true);return}show($('videoForm'),false);status('✅ Đã lưu video.');await loadVideos();
 };
-window.loadVideoAdmin=async function(){await loadVideoCategories();await loadVideos();};
+async function loadVideoAdmin(){await loadVideoCategories();await loadVideos();}
 
+checkSession();
+  }catch(err){
+    msg.textContent="Lỗi đăng nhập: "+(err?.message || String(err));
+  }finally{
+    btn.disabled=false; btn.textContent="Đăng nhập";
+  }
+};
 $("logoutBtn").onclick=async()=>{await sb.auth.signOut();location.reload();};
 
 async function refreshAll(){await loadProducts();await loadPages();await loadNavItems();await loadHomeSections();await loadTheme();await loadPaymentAndOrders()}
@@ -545,8 +549,47 @@ $('homeImageBtn').onclick=()=>$('homeImageFile').click();$('homeImageFile').onch
 window.editHomeSection=s=>{$('homeSectionId').value=s.id;$('homeSectionKey').value=s.section_key||'';$('homeSectionType').value=s.section_type||'custom';$('homeEyebrow').value=s.eyebrow||'';$('homeTitle').value=s.title||'';$('homeSubtitle').value=s.subtitle||'';$('homeIcon').value=s.icon||'';$('homeImageUrl').value=s.image_url||'';previewHomeImage(s.image_url||'');setHomeEditorHtml(s.content_html||'');$('homeButtonText').value=s.button_text||'';$('homeButtonUrl').value=s.button_url||'';$('homeBg').value=s.bg_color||'';$('homeText').value=s.text_color||'';$('homeAccent').value=s.accent_color||'';$('homeColumns').value=s.columns||2;$('homeSort').value=s.sort_order||10;$('homeActive').value=String(s.is_active);show($('homeSectionForm'))};
 $('saveHomeSection').onclick=async()=>{const key=$('homeSectionKey').value.trim().toLowerCase().replace(/[^a-z0-9_-]+/g,'-');if(!key||!$('homeTitle').value.trim()){status('Cần nhập khóa khối và tiêu đề.',true);return}const payload={section_key:key,section_type:$('homeSectionType').value,eyebrow:$('homeEyebrow').value.trim(),title:$('homeTitle').value.trim(),subtitle:$('homeSubtitle').value.trim(),content_html:homeEditorHtml(),icon:$('homeIcon').value.trim(),image_url:$('homeImageUrl').value.trim(),image_alt:$('homeTitle').value.trim(),button_text:$('homeButtonText').value.trim(),button_url:$('homeButtonUrl').value.trim(),bg_color:$('homeBg').value.trim(),text_color:$('homeText').value.trim(),accent_color:$('homeAccent').value.trim(),columns:Number($('homeColumns').value)||2,sort_order:Number($('homeSort').value)||0,is_active:$('homeActive').value==='true'};let r=$('homeSectionId').value?await sb.from('site_home_sections').update(payload).eq('id',Number($('homeSectionId').value)):await sb.from('site_home_sections').insert(payload);if(r.error){status('Lưu trang chủ lỗi: '+r.error.message,true);return}show($('homeSectionForm'),false);status('Đã lưu khối trang chủ.');await loadHomeSections()};
 window.deleteHomeSection=async id=>{if(!confirm('Xóa khối này khỏi trang chủ?'))return;const r=await sb.from('site_home_sections').delete().eq('id',id);if(r.error){status('Xóa khối lỗi: '+r.error.message,true);return}status('Đã xóa khối.');loadHomeSections()};
-async function loadTheme(){const {data,error}=await sb.from('site_theme_settings').select('*').eq('id',1).maybeSingle();if(error||!data){status('Theme CMS lỗi: '+(error?.message||'chưa có dữ liệu'),true);return}const m={'themeSiteName':'site_name','themeFont':'font_family','themePrimary':'primary_color','themeSecondary':'secondary_color','themeBg':'page_bg','themeSurface':'surface_color','themeText':'text_color','themeMuted':'muted_color','themeRadius':'radius_px','themeWidth':'container_width','themeSpacing':'section_spacing','themeHeroHeight':'hero_height','themeIcon':'icon_style','themeImageFit':'image_default_fit','themeButton':'button_style','themeCard':'card_style','themeLogo':'logo_url','themeFavicon':'favicon_url','themeMetaTitle':'meta_title','themeMetaDescription':'meta_description','themeOgImage':'og_image','themeCustomCss':'custom_css'};Object.entries(m).forEach(([id,k])=>$(id).value=data[k]??'')}
-$('themeForm').onsubmit=async e=>{e.preventDefault();const btn=e.submitter||$('themeForm').querySelector('button[type=submit]');if(btn){btn.disabled=true;btn.textContent='⏳ Đang lưu...'};try{const payload={id:1,site_name:$('themeSiteName').value.trim(),font_family:$('themeFont').value,primary_color:colorOr($('themePrimary').value,'#2563eb'),secondary_color:colorOr($('themeSecondary').value,'#0f172a'),page_bg:colorOr($('themeBg').value,'#f6f8fb'),surface_color:colorOr($('themeSurface').value,'#ffffff'),text_color:colorOr($('themeText').value,'#111827'),muted_color:colorOr($('themeMuted').value,'#667085'),radius_px:Number($('themeRadius').value)||16,container_width:Number($('themeWidth').value)||1180,section_spacing:Number($('themeSpacing').value)||64,hero_height:Number($('themeHeroHeight').value)||420,button_style:$('themeButton').value,card_style:$('themeCard').value,icon_style:$('themeIcon').value,image_default_fit:$('themeImageFit').value,logo_url:$('themeLogo').value.trim(),favicon_url:$('themeFavicon').value.trim(),meta_title:$('themeMetaTitle').value.trim(),meta_description:$('themeMetaDescription').value.trim(),og_image:$('themeOgImage').value.trim(),custom_css:$('themeCustomCss').value};const r=await sb.from('site_theme_settings').upsert(payload,{onConflict:'id'});if(r.error){status('Lưu theme lỗi: '+r.error.message,true);return}status('✅ Đã lưu giao diện. F5 website để xem.');}catch(err){status('Lưu theme lỗi: '+(err?.message||err),true)}finally{if(btn){btn.disabled=false;btn.textContent='💾 Lưu giao diện'}}};
+async function ensureThemeRow(){
+  const {data,error}=await sb.from('site_theme_settings').select('id').eq('id',1).maybeSingle();
+  if(error) throw error;
+  if(data) return;
+  const defaults={id:1,site_name:'Apple Seed',primary_color:'#2563eb',secondary_color:'#0f172a',page_bg:'#f6f8fb',surface_color:'#ffffff',text_color:'#111827',muted_color:'#667085',header_bg:'#ffffff',radius_px:16,container_width:1180,section_spacing:64,hero_height:420,font_family:'system',button_style:'rounded',card_style:'soft',icon_style:'emoji',image_default_fit:'cover',logo_url:'',favicon_url:'',meta_title:'',meta_description:'',og_image:'',custom_css:''};
+  const r=await sb.from('site_theme_settings').insert(defaults);
+  if(r.error && r.error.code!=='23505') throw r.error;
+}
+async function loadTheme(){
+  try{
+    await ensureThemeRow();
+    const {data,error}=await sb.from('site_theme_settings').select('*').eq('id',1).maybeSingle();
+    if(error) throw error;
+    if(!data) throw new Error('Không tìm thấy bản ghi Theme #1.');
+    const m={'themeSiteName':'site_name','themeFont':'font_family','themePrimary':'primary_color','themeSecondary':'secondary_color','themeBg':'page_bg','themeSurface':'surface_color','themeText':'text_color','themeMuted':'muted_color','themeRadius':'radius_px','themeWidth':'container_width','themeSpacing':'section_spacing','themeHeroHeight':'hero_height','themeIcon':'icon_style','themeImageFit':'image_default_fit','themeButton':'button_style','themeCard':'card_style','themeLogo':'logo_url','themeFavicon':'favicon_url','themeMetaTitle':'meta_title','themeMetaDescription':'meta_description','themeOgImage':'og_image','themeCustomCss':'custom_css'};
+    Object.entries(m).forEach(([id,k])=>{const el=$(id);if(el)el.value=data[k]??''});
+  }catch(err){
+    status('Theme CMS lỗi: '+(err?.message||err),true);
+    console.error('Apple Seed Theme load:',err);
+  }
+}
+
+$('themeForm').onsubmit=async e=>{
+  e.preventDefault();
+  const btn=e.submitter||$('themeForm').querySelector('button[type=submit]');
+  if(btn){btn.disabled=true;btn.textContent='⏳ Đang lưu...'}
+  try{
+    await ensureThemeRow();
+    const payload={id:1,site_name:$('themeSiteName').value.trim()||'Apple Seed',font_family:$('themeFont').value||'system',primary_color:colorOr($('themePrimary').value,'#2563eb'),secondary_color:colorOr($('themeSecondary').value,'#0f172a'),page_bg:colorOr($('themeBg').value,'#f6f8fb'),surface_color:colorOr($('themeSurface').value,'#ffffff'),text_color:colorOr($('themeText').value,'#111827'),muted_color:colorOr($('themeMuted').value,'#667085'),radius_px:Number($('themeRadius').value)||16,container_width:Number($('themeWidth').value)||1180,section_spacing:Number($('themeSpacing').value)||64,hero_height:Number($('themeHeroHeight').value)||420,button_style:$('themeButton').value||'rounded',card_style:$('themeCard').value||'soft',icon_style:$('themeIcon').value||'emoji',image_default_fit:$('themeImageFit').value||'cover',logo_url:$('themeLogo').value.trim(),favicon_url:$('themeFavicon').value.trim(),meta_title:$('themeMetaTitle').value.trim(),meta_description:$('themeMetaDescription').value.trim(),og_image:$('themeOgImage').value.trim(),custom_css:$('themeCustomCss').value||''};
+    const r=await sb.from('site_theme_settings').upsert(payload,{onConflict:'id'}).select('id,updated_at').single();
+    if(r.error) throw r.error;
+    if(!r.data) throw new Error('Supabase không trả về bản ghi sau khi lưu.');
+    status('✅ Đã lưu giao diện. F5 website để xem.');
+  }catch(err){
+    console.error('Apple Seed Theme save:',err);
+    status('❌ Lưu giao diện lỗi: '+(err?.message||err),true);
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='💾 Lưu giao diện'}
+  }
+};
+
 $('resetTheme').onclick=async()=>{if(!confirm('Khôi phục giao diện mặc định?'))return;const d={site_name:'Apple Seed',primary_color:'#2563eb',secondary_color:'#0f172a',page_bg:'#f6f8fb',surface_color:'#ffffff',text_color:'#111827',muted_color:'#667085',radius_px:16,container_width:1180,section_spacing:64,hero_height:420,font_family:'system',button_style:'rounded',card_style:'soft',icon_style:'emoji',image_default_fit:'cover',logo_url:'',favicon_url:'',meta_title:'',meta_description:'',og_image:'',custom_css:''};const r=await sb.from('site_theme_settings').update(d).eq('id',1);if(r.error){status('Khôi phục theme lỗi: '+r.error.message,true);return}await loadTheme();status('Đã khôi phục theme mặc định.');};
 
 
@@ -569,7 +612,27 @@ ${HERO_PRESET_END}`:''}
 function replaceHeroPreset(existing,id){let css=String(existing||'');const a=css.indexOf(HERO_PRESET_START),b=css.indexOf(HERO_PRESET_END);if(a>=0&&b>=a)css=(css.slice(0,a)+css.slice(b+HERO_PRESET_END.length)).trim();const block=heroPresetBlock(id);return (css?css+'\n\n':'')+block}
 function heroPresetFromCss(css){const m=String(css||'').match(/\/\* preset:(\d{2}) \*\//);return m&&HERO_PRESETS[m[1]]?m[1]:''}
 function renderHeroPresets(selected){const grid=$('heroPresetGrid');if(!grid)return;grid.innerHTML=Object.entries(HERO_PRESETS).map(([id,p])=>`<button type="button" class="hero-preset ${id===selected?'selected':''}" data-preset="${id}"><span class="hero-preset-badge">Mẫu ${id}</span><div class="hero-preset-preview"><div class="hero-mini-copy"><div class="hero-mini-kicker"></div><div class="hero-mini-title"></div><div class="hero-mini-title second"></div><div class="hero-mini-btn"></div></div><div class="hero-mini-phones"><i class="hero-mini-phone"></i><i class="hero-mini-phone"></i><i class="hero-mini-phone"></i><i class="hero-mini-phone"></i><i class="hero-mini-phone"></i></div></div><div class="hero-preset-info"><strong>${esc(p.name)}</strong><span>${esc(p.desc)}</span></div></button>`).join('');grid.querySelectorAll('.hero-preset').forEach(b=>b.onclick=()=>{grid.querySelectorAll('.hero-preset').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');$('heroPresetCurrent').textContent=`Đang chọn: Mẫu ${b.dataset.preset} — ${HERO_PRESETS[b.dataset.preset].name}`})}
-async function applyHeroPreset(id){if(!id||!HERO_PRESETS[id])return;const btn=$('applyHeroPreset'),css=replaceHeroPreset($('themeCustomCss').value||'',id);$('themeCustomCss').value=css;if(btn){btn.disabled=true;btn.textContent='⏳ Đang áp dụng...'}try{const payload={id:1,site_name:$('themeSiteName').value.trim(),font_family:$('themeFont').value,primary_color:colorOr($('themePrimary').value,'#2563eb'),secondary_color:colorOr($('themeSecondary').value,'#0f172a'),page_bg:colorOr($('themeBg').value,'#f6f8fb'),surface_color:colorOr($('themeSurface').value,'#ffffff'),text_color:colorOr($('themeText').value,'#111827'),muted_color:colorOr($('themeMuted').value,'#667085'),radius_px:Number($('themeRadius').value)||16,container_width:Number($('themeWidth').value)||1180,section_spacing:Number($('themeSpacing').value)||64,hero_height:Number($('themeHeroHeight').value)||420,button_style:$('themeButton').value,card_style:$('themeCard').value,icon_style:$('themeIcon').value,image_default_fit:$('themeImageFit').value,logo_url:$('themeLogo').value.trim(),favicon_url:$('themeFavicon').value.trim(),meta_title:$('themeMetaTitle').value.trim(),meta_description:$('themeMetaDescription').value.trim(),og_image:$('themeOgImage').value.trim(),custom_css:css};const r=await sb.from('site_theme_settings').upsert(payload,{onConflict:'id'});if(r.error){status('Áp dụng mẫu lỗi: '+r.error.message,true);return}renderHeroPresets(id);$('heroPresetCurrent').textContent=`Đã áp dụng: Mẫu ${id} — ${HERO_PRESETS[id].name}`;status(`✅ Đã áp dụng Mẫu ${id}. Chỉ phần đầu trang đổi giao diện; cấu trúc bên dưới giữ nguyên.`)}finally{if(btn){btn.disabled=false;btn.textContent='✨ Áp dụng mẫu đã chọn'}}}
+async function applyHeroPreset(id){
+  if(!id||!HERO_PRESETS[id])return;
+  const btn=$('applyHeroPreset'),css=replaceHeroPreset($('themeCustomCss').value||'',id);
+  $('themeCustomCss').value=css;
+  if(btn){btn.disabled=true;btn.textContent='⏳ Đang áp dụng...'}
+  try{
+    await ensureThemeRow();
+    const payload={id:1,site_name:$('themeSiteName').value.trim()||'Apple Seed',font_family:$('themeFont').value||'system',primary_color:colorOr($('themePrimary').value,'#2563eb'),secondary_color:colorOr($('themeSecondary').value,'#0f172a'),page_bg:colorOr($('themeBg').value,'#f6f8fb'),surface_color:colorOr($('themeSurface').value,'#ffffff'),text_color:colorOr($('themeText').value,'#111827'),muted_color:colorOr($('themeMuted').value,'#667085'),radius_px:Number($('themeRadius').value)||16,container_width:Number($('themeWidth').value)||1180,section_spacing:Number($('themeSpacing').value)||64,hero_height:Number($('themeHeroHeight').value)||420,button_style:$('themeButton').value||'rounded',card_style:$('themeCard').value||'soft',icon_style:$('themeIcon').value||'emoji',image_default_fit:$('themeImageFit').value||'cover',logo_url:$('themeLogo').value.trim(),favicon_url:$('themeFavicon').value.trim(),meta_title:$('themeMetaTitle').value.trim(),meta_description:$('themeMetaDescription').value.trim(),og_image:$('themeOgImage').value.trim(),custom_css:css};
+    const r=await sb.from('site_theme_settings').upsert(payload,{onConflict:'id'}).select('id,updated_at').single();
+    if(r.error)throw r.error;
+    status(`✅ Đã áp dụng Mẫu ${id}. Chỉ phần đầu trang đổi giao diện; cấu trúc bên dưới giữ nguyên.`);
+    renderHeroPresets(id);
+    $('heroPresetCurrent').textContent=`Đã áp dụng: Mẫu ${id} — ${HERO_PRESETS[id].name}`;
+  }catch(e){
+    console.error('Apple Seed Hero preset:',e);
+    status('❌ Áp dụng mẫu lỗi: '+(e?.message||e),true);
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='✨ Áp dụng mẫu đã chọn'}
+  }
+}
+
 const HERO_IMAGE_START='/* APPLESEED_HERO_IMAGES_START */',HERO_IMAGE_END='/* APPLESEED_HERO_IMAGES_END */';
 function heroImageBlock(images,phoneFit='contain',backgroundFit='cover'){
   const lines=[HERO_IMAGE_START,'/* hero-image-fit:'+phoneFit+' */','/* hero-background-fit:'+backgroundFit+' */'];
@@ -604,7 +667,27 @@ function renderHeroImageFields(css){
 }
 async function uploadHeroImageSlot(slot,file){if(!file)return;try{if(file.size>8*1024*1024)throw new Error('Ảnh vượt quá 8MB.');if(!/^image\/(png|jpeg|webp|gif)$/i.test(file.type))throw new Error('Chỉ nhận PNG, JPG, WebP hoặc GIF.');status('⏳ Đang tải ảnh giao diện...');const path=`hero/${Date.now()}-${Math.random().toString(36).slice(2,8)}-${file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,'-')}`;const r=await sb.storage.from('site-images').upload(path,file,{cacheControl:'31536000',upsert:false,contentType:file.type});if(r.error)throw r.error;const url=sb.storage.from('site-images').getPublicUrl(path).data.publicUrl;const images=heroImagesFromCss($('themeCustomCss').value||'');images[slot]=url;$('themeCustomCss').value=replaceHeroImages($('themeCustomCss').value||'',images,$('heroPhoneFit').value,$('heroBackgroundFit').value);renderHeroImageFields($('themeCustomCss').value);status('✅ Đã tải ảnh. Bấm “Lưu ảnh Hero” để xuất bản lên website.')}catch(e){status('Upload ảnh Hero lỗi: '+(e?.message||e),true)}}
 function clearHeroImageSlot(slot){const images=heroImagesFromCss($('themeCustomCss').value||'');delete images[slot];$('themeCustomCss').value=replaceHeroImages($('themeCustomCss').value||'',images,$('heroPhoneFit').value,$('heroBackgroundFit').value);renderHeroImageFields($('themeCustomCss').value);}
-async function saveHeroImages(){const btn=$('saveHeroImagesBtn');try{const images=heroImagesFromCss($('themeCustomCss').value||'');const css=replaceHeroImages($('themeCustomCss').value||'',images,$('heroPhoneFit').value,$('heroBackgroundFit').value);$('themeCustomCss').value=css;const payload={id:1,site_name:$('themeSiteName').value.trim(),font_family:$('themeFont').value,primary_color:colorOr($('themePrimary').value,'#2563eb'),secondary_color:colorOr($('themeSecondary').value,'#0f172a'),page_bg:colorOr($('themeBg').value,'#f6f8fb'),surface_color:colorOr($('themeSurface').value,'#ffffff'),text_color:colorOr($('themeText').value,'#111827'),muted_color:colorOr($('themeMuted').value,'#667085'),radius_px:Number($('themeRadius').value)||16,container_width:Number($('themeWidth').value)||1180,section_spacing:Number($('themeSpacing').value)||64,hero_height:Number($('themeHeroHeight').value)||420,button_style:$('themeButton').value,card_style:$('themeCard').value,icon_style:$('themeIcon').value,image_default_fit:$('themeImageFit').value,logo_url:$('themeLogo').value.trim(),favicon_url:$('themeFavicon').value.trim(),meta_title:$('themeMetaTitle').value.trim(),meta_description:$('themeMetaDescription').value.trim(),og_image:$('themeOgImage').value.trim(),custom_css:css};if(btn){btn.disabled=true;btn.textContent='⏳ Đang lưu...'}const r=await sb.from('site_theme_settings').upsert(payload,{onConflict:'id'});if(r.error)throw r.error;status('✅ Đã lưu ảnh Hero. Website chỉ đổi phần hình ảnh Hero.');}catch(e){status('Lưu ảnh Hero lỗi: '+(e?.message||e),true)}finally{if(btn){btn.disabled=false;btn.textContent='💾 Lưu ảnh Hero'}}}
+async function saveHeroImages(){
+  const btn=$('saveHeroImagesBtn');
+  try{
+    await ensureThemeRow();
+    const images=heroImagesFromCss($('themeCustomCss').value||'');
+    const css=replaceHeroImages($('themeCustomCss').value||'',images,$('heroPhoneFit').value,$('heroBackgroundFit').value);
+    $('themeCustomCss').value=css;
+    const payload={id:1,site_name:$('themeSiteName').value.trim()||'Apple Seed',font_family:$('themeFont').value||'system',primary_color:colorOr($('themePrimary').value,'#2563eb'),secondary_color:colorOr($('themeSecondary').value,'#0f172a'),page_bg:colorOr($('themeBg').value,'#f6f8fb'),surface_color:colorOr($('themeSurface').value,'#ffffff'),text_color:colorOr($('themeText').value,'#111827'),muted_color:colorOr($('themeMuted').value,'#667085'),radius_px:Number($('themeRadius').value)||16,container_width:Number($('themeWidth').value)||1180,section_spacing:Number($('themeSpacing').value)||64,hero_height:Number($('themeHeroHeight').value)||420,button_style:$('themeButton').value||'rounded',card_style:$('themeCard').value||'soft',icon_style:$('themeIcon').value||'emoji',image_default_fit:$('themeImageFit').value||'cover',logo_url:$('themeLogo').value.trim(),favicon_url:$('themeFavicon').value.trim(),meta_title:$('themeMetaTitle').value.trim(),meta_description:$('themeMetaDescription').value.trim(),og_image:$('themeOgImage').value.trim(),custom_css:css};
+    if(btn){btn.disabled=true;btn.textContent='⏳ Đang lưu...'}
+    const r=await sb.from('site_theme_settings').upsert(payload,{onConflict:'id'}).select('id,updated_at').single();
+    if(r.error)throw r.error;
+    if(!r.data)throw new Error('Supabase không trả về bản ghi sau khi lưu.');
+    status('✅ Đã lưu ảnh Hero. F5 website để xem thay đổi.');
+  }catch(e){
+    console.error('Apple Seed Hero save:',e);
+    status('❌ Lưu ảnh Hero lỗi: '+(e?.message||e),true);
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='💾 Lưu ảnh Hero'}
+  }
+}
+
 function initHeroImageManager(){const input=$('heroImageFileInput');document.querySelectorAll('[data-hero-upload]').forEach(btn=>btn.onclick=()=>{input.dataset.slot=btn.dataset.heroUpload;input.click()});input.onchange=e=>{const slot=input.dataset.slot;uploadHeroImageSlot(slot,e.target.files?.[0]);input.value=''};document.querySelectorAll('[data-hero-clear]').forEach(btn=>btn.onclick=()=>clearHeroImageSlot(btn.dataset.heroClear));$('heroPhoneFit').onchange=()=>{$('themeCustomCss').value=replaceHeroImages($('themeCustomCss').value||'',heroImagesFromCss($('themeCustomCss').value||''),$('heroPhoneFit').value,$('heroBackgroundFit').value);renderHeroImageFields($('themeCustomCss').value)};$('heroBackgroundFit').onchange=()=>{$('themeCustomCss').value=replaceHeroImages($('themeCustomCss').value||'',heroImagesFromCss($('themeCustomCss').value||''),$('heroPhoneFit').value,$('heroBackgroundFit').value);renderHeroImageFields($('themeCustomCss').value)};$('saveHeroImagesBtn').onclick=saveHeroImages;renderHeroImageFields($('themeCustomCss').value||'')}
 function initHeroStudio(){const css=$('themeCustomCss')?.value||'',current=heroPresetFromCss(css)||'01';renderHeroPresets(current);$('heroPresetCurrent').textContent=`Đang dùng: Mẫu ${current} — ${HERO_PRESETS[current].name}`;$('applyHeroPreset').onclick=()=>applyHeroPreset(document.querySelector('.hero-preset.selected')?.dataset.preset||current);$('openHeroPreview').onclick=()=>window.open('index.html','_blank')}
 
