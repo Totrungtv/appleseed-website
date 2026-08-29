@@ -1506,6 +1506,44 @@ body{
 })();
 </script>
 
+
+<style id="apple-seed-mobile-person-visibility-v1">
+/* APPLE SEED MOBILE HERO — KEEP PERSON VISIBLE V1
+   Mobile-only, UI/CSS patch.
+   Keep the existing phone artwork; reduce its crop so the technician
+   remains visible and the service cards do not overlap the Hero.
+*/
+@media (pointer:coarse) and (max-width:760px){
+  .as3-stage{
+    height:300px!important;
+    min-height:300px!important;
+    margin:0!important;
+    transform:none!important;
+    overflow:visible!important;
+    background-size:108% auto!important;
+    background-position:45% top!important;
+    background-repeat:no-repeat!important;
+  }
+
+  .as3-stage > .as3-phone{
+    display:none!important;
+  }
+
+  .as3-services{
+    margin-top:8px!important;
+  }
+}
+
+@media (pointer:coarse) and (max-width:480px){
+  .as3-stage{
+    height:292px!important;
+    min-height:292px!important;
+    background-size:108% auto!important;
+    background-position:45% top!important;
+  }
+}
+</style>
+
 </head>
 
 <body>
