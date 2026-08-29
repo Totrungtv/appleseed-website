@@ -396,9 +396,18 @@ async function checkSession(){
     return;
   }
   $("userEmail").textContent=(session.user.email||'')+' · '+profile.role.toUpperCase();
-  show($("loginView"),false); show($("app"),true); await refreshAll();
-  // Một số bản Admin cũ không còn có loadVideoAdmin; không để lỗi đó chặn phần Theme/ Hero Studio.
+  show($("loginView"),false); show($("app"),true);
+  // Chờ CMS Theme tải xong rồi mới khởi tạo Hero Studio.
+  // Tránh race-condition: timer 700ms có thể chạy trước loadTheme(),
+  // làm các ô ảnh hiện "Chưa chọn ảnh" dù ảnh đã có trong Supabase.
+  await refreshAll();
   if(typeof loadVideoAdmin==='function') await loadVideoAdmin();
+  try{
+    initHeroStudio();
+    initHeroImageManager();
+  }catch(e){
+    console.warn("Hero Studio init",e);
+  }
 }
 $("loginBtn").onclick=async()=>{
   const btn=$("loginBtn"), msg=$("loginStatus");
@@ -1068,7 +1077,6 @@ window.deletePage=async id=>{
 };
 
 checkSession();
-setTimeout(()=>{try{initHeroStudio();initHeroImageManager()}catch(e){console.warn("Hero Studio init",e)}},700);
 </script>
 
 
