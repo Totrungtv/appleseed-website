@@ -65,10 +65,49 @@ window.supabaseClient =
             color:#667085;
             font-weight:500;
           }
+
+          /* --- New: make the preview box hug the uploaded image ---
+             No oversized white frame. The actual image determines the preview size.
+          */
+          .hero-image-manager .hero-image-card[data-hero-slot^="phone"] .hero-image-preview,
+          .hero-image-manager .hero-image-card[data-hero-slot="background"] .hero-image-preview{
+            aspect-ratio:auto!important;
+            height:auto!important;
+            min-height:0!important;
+            max-height:none!important;
+            display:block!important;
+            width:100%!important;
+            overflow:visible!important;
+            background:#f8fafc!important;
+            padding:0!important;
+            text-align:center!important;
+          }
+          .hero-image-manager .hero-image-card[data-hero-slot^="phone"] .hero-image-preview img,
+          .hero-image-manager .hero-image-card[data-hero-slot="background"] .hero-image-preview img{
+            display:block!important;
+            width:auto!important;
+            height:auto!important;
+            max-width:100%!important;
+            max-height:420px!important;
+            margin:0 auto!important;
+            padding:0!important;
+            object-fit:contain!important;
+            object-position:center!important;
+          }
+          .hero-image-manager .hero-image-card[data-hero-slot="background"] .hero-image-preview img{
+            max-height:260px!important;
+            max-width:100%!important;
+          }
+          .hero-image-manager .hero-image-card[data-hero-slot^="phone"] .hero-image-preview.empty,
+          .hero-image-manager .hero-image-card[data-hero-slot="background"] .hero-image-preview.empty{
+            min-height:150px!important;
+            display:flex!important;
+            align-items:center!important;
+            justify-content:center!important;
+          }
           @media(max-width:750px){
-            .hero-image-manager .hero-image-card[data-hero-slot^="phone"] .hero-image-preview{
-              min-height:270px!important;
-              max-height:320px!important;
+            .hero-image-manager .hero-image-card[data-hero-slot^="phone"] .hero-image-preview img{
+              max-height:360px!important;
             }
           }
         `;
@@ -155,7 +194,6 @@ window.supabaseClient =
 
     let wrappedSave = null;
     let originalSave = null;
-    let stopped = false;
 
     function stripAllHeroImageBlocks(css){
         const start = '/* APPLESEED_HERO_IMAGES_START */';
@@ -217,7 +255,6 @@ window.supabaseClient =
             }
 
             originalSave = fn;
-
             wrappedSave = async function(){
                 try {
                     await mergeLatestThemeBeforeSave();
