@@ -1213,6 +1213,31 @@ body{
 }
 </style>
 
+<style id="apple-seed-discover-position-fix">
+/* Fix: KHÁM PHÁ APPLE SEED must stay below the phone composition and remain readable. */
+.as3-stage{position:relative!important;overflow:visible!important;}
+.as3-discover{
+  position:absolute!important;
+  left:8%!important;
+  bottom:4px!important;
+  z-index:100!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:11px!important;
+  white-space:nowrap!important;
+  pointer-events:auto!important;
+}
+.as3-discover > span:last-child{
+  position:relative!important;
+  z-index:101!important;
+  display:block!important;
+  line-height:1.45!important;
+  white-space:nowrap!important;
+}
+.as3-play{position:relative!important;z-index:101!important;flex:0 0 auto!important;}
+@media(max-width:1100px){.as3-discover{left:6%!important;bottom:4px!important;}}
+@media(max-width:760px){.as3-discover{left:50%!important;bottom:0!important;transform:translateX(-50%)!important;}}
+</style>
 </head>
 
 <body>
