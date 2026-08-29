@@ -2077,6 +2077,66 @@ body{
     setBg(hero);
     return true;
   }
+  // ===== APPLE SEED CMS HERO IMAGE BRIDGE =====
+  // Đọc trực tiếp các URL đã lưu trong APPLESEED_HERO_IMAGES và áp dụng
+  // vào Hero thật, không phụ thuộc riêng vào CSS injection.
+  function applyAppleSeedCmsHeroImages(css){
+    const raw=String(css||'');
+    const start='/* APPLESEED_HERO_IMAGES_START */';
+    const end='/* APPLESEED_HERO_IMAGES_END */';
+    const a=raw.indexOf(start), b=raw.indexOf(end);
+    if(a<0 || b<=a)return false;
+    const block=raw.slice(a,b+end.length);
+    const hero=document.querySelector('#apple-seed-premium-home');
+    const stage=hero?.querySelector('.as3-stage');
+    if(!hero || !stage)return false;
+
+    const readUrl=(selector)=>{
+      const esc=selector.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+      const re=new RegExp(esc+"\\s*\\{[\\s\\S]*?background(?:-image)?\\s*:\s*[^;]*?url\\(\\s*[\"']?([^\"')]+)[\"']?\\s*\\)",'i');
+      const m=block.match(re);
+      return m?.[2]||'';
+    };
+    const setBg=(el,url,fit='contain')=>{
+      if(!el||!url)return;
+      const safe=String(url).replace(/\\/g,'\\\\').replace(/"/g,'\\"');
+      el.style.setProperty('background-image',`url("${safe}")`,'important');
+      el.style.setProperty('background-size',fit,'important');
+      el.style.setProperty('background-position','center center','important');
+      el.style.setProperty('background-repeat','no-repeat','important');
+    };
+
+    const fit=(block.match(/\/\\* hero-image-fit:([^*]+) \\*\//i)||[])[1]?.trim()||'contain';
+    const bgFit=(block.match(/\/\\* hero-background-fit:([^*]+) \\*\//i)||[])[1]?.trim()||'cover';
+    const bg=readUrl('.as3-stage') || readUrl('.as3-hero') || readUrl('#apple-seed-premium-home');
+    if(bg)setBg(hero,bg,bgFit);
+    if(bg){
+      hero.classList.add('has-cms-hero-bg');
+      stage.classList.remove('has-cms-hero-bg');
+      stage.style.removeProperty('background-image');
+      stage.style.removeProperty('background-size');
+      stage.style.removeProperty('background-position');
+      stage.style.removeProperty('background-repeat');
+    }
+
+    for(let i=1;i<=6;i++){
+      const phone=hero.querySelector('.as3-p'+i);
+      if(!phone)continue;
+      const url=readUrl('#apple-seed-premium-home .as3-p'+i) || readUrl('.as3-hero .as3-p'+i);
+      if(!url)continue;
+      setBg(phone,url,fit);
+      phone.style.setProperty('background-color','transparent','important');
+      const screen=phone.querySelector('.as3-screen');
+      if(screen){
+        screen.style.setProperty('background','transparent','important');
+        screen.querySelectorAll('img').forEach(img=>img.style.setProperty('display','none','important'));
+      }
+      phone.querySelector('.as3-island')?.style.setProperty('display','none','important');
+      phone.querySelector('.as3-label')?.style.setProperty('display','none','important');
+    }
+    return true;
+  }
+
   async function load(){
     if(!sb){staticFallback();bindProductCards();fixNavigation();return}
     try{
@@ -2085,10 +2145,10 @@ body{
         publicCmsFetch('site_nav_items','?select=label,icon,url,is_active,sort_order&is_active=eq.true&order=sort_order.asc'),
         publicCmsFetch('site_home_sections','?select=*&is_active=eq.true&order=sort_order.asc,id.asc')
       ]);
-      const t={data:themeRows?.[0]||null};
+      const t={data:themeRows?.[0]||null}; window.__appleSeedThemeCustomCss=String(t.data?.custom_css||'');
       const n={data:Array.isArray(navRows)?navRows:[],error:null};
       const s={data:Array.isArray(sectionRows)?sectionRows:[],error:null};
-      if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){const normalizedHeroCss=normalizeHeroCssOrder(t.data.custom_css);const st=document.createElement('style');st.textContent=normalizedHeroCss;document.head.appendChild(st);applyAppleSeedCmsHeroBackground(normalizedHeroCss);requestAnimationFrame(()=>{const hero=document.querySelector('#apple-seed-premium-home');if(!hero)return;const marker=normalizedHeroCss.match(/\/\* APPLESEED_HERO_IMAGES_START \*\/([\s\S]*?)\/\* APPLESEED_HERO_IMAGES_END \*\//i);const block=marker?marker[1]:normalizedHeroCss;const bg=block.match(/(?:^|})\s*(?:#apple-seed-premium-home\s+)?\.as3-stage\s*\{[\s\S]*?background(?:-image)?\s*:\s*[^;]*url\(\s*[\"']([^\"']+)[\"']\s*\)/i)||block.match(/(?:^|})\s*(?:#apple-seed-premium-home\s+)?\.as3-hero\s*\{[\s\S]*?background(?:-image)?\s*:\s*[^;]*url\(\s*[\"']([^\"']+)[\"']\s*\)/i);if(bg&&bg[1]){const heroUrl=bg[1];hero.style.setProperty('--cms-hero-bg',`url(\"${heroUrl.replace(/\"/g,'\\\"')}\")`,'important');hero.style.setProperty('background-image',`url(\"${heroUrl.replace(/\"/g,'\\\"')}\")`,'important');hero.style.setProperty('background-size','cover','important');hero.style.setProperty('background-position','center center','important');hero.style.setProperty('background-repeat','no-repeat','important');hero.style.setProperty('background-color','#f7f7f5','important');hero.classList.add('has-cms-hero-bg');const stage=hero.querySelector('.as3-stage');if(stage){stage.style.removeProperty('--cms-hero-bg');stage.style.removeProperty('background-image');stage.style.removeProperty('background-size');stage.style.removeProperty('background-position');stage.style.removeProperty('background-repeat');stage.classList.remove('has-cms-hero-bg');}}})}if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){
+      if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){const normalizedHeroCss=normalizeHeroCssOrder(t.data.custom_css);const st=document.createElement('style');st.textContent=normalizedHeroCss;document.head.appendChild(st);applyAppleSeedCmsHeroBackground(normalizedHeroCss);applyAppleSeedCmsHeroImages(normalizedHeroCss);requestAnimationFrame(()=>{const hero=document.querySelector('#apple-seed-premium-home');if(!hero)return;const marker=normalizedHeroCss.match(/\/\* APPLESEED_HERO_IMAGES_START \*\/([\s\S]*?)\/\* APPLESEED_HERO_IMAGES_END \*\//i);const block=marker?marker[1]:normalizedHeroCss;const bg=block.match(/(?:^|})\s*(?:#apple-seed-premium-home\s+)?\.as3-stage\s*\{[\s\S]*?background(?:-image)?\s*:\s*[^;]*url\(\s*[\"']([^\"']+)[\"']\s*\)/i)||block.match(/(?:^|})\s*(?:#apple-seed-premium-home\s+)?\.as3-hero\s*\{[\s\S]*?background(?:-image)?\s*:\s*[^;]*url\(\s*[\"']([^\"']+)[\"']\s*\)/i);if(bg&&bg[1]){const heroUrl=bg[1];hero.style.setProperty('--cms-hero-bg',`url(\"${heroUrl.replace(/\"/g,'\\\"')}\")`,'important');hero.style.setProperty('background-image',`url(\"${heroUrl.replace(/\"/g,'\\\"')}\")`,'important');hero.style.setProperty('background-size','cover','important');hero.style.setProperty('background-position','center center','important');hero.style.setProperty('background-repeat','no-repeat','important');hero.style.setProperty('background-color','#f7f7f5','important');hero.classList.add('has-cms-hero-bg');const stage=hero.querySelector('.as3-stage');if(stage){stage.style.removeProperty('--cms-hero-bg');stage.style.removeProperty('background-image');stage.style.removeProperty('background-size');stage.style.removeProperty('background-position');stage.style.removeProperty('background-repeat');stage.classList.remove('has-cms-hero-bg');}}})}if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){
       const menu=document.querySelector('.menu');
       const memberAuth=document.getElementById('memberAuthButtons');
       menu.querySelectorAll(':scope > a').forEach(a=>a.remove());
@@ -3019,6 +3079,17 @@ let n=0;const t=setInterval(()=>{if(apply()||++n>50)clearInterval(t)},400);
   setTimeout(finalCmsHeroFix,1000);
 })();
 </script>
+
+<script id="apple-seed-discover-relocation">
+(function(){
+ function move(){
+   const hero=document.querySelector('#apple-seed-premium-home'), d=hero?.querySelector('.as3-discover'), main=hero?.querySelector('.as3-main');
+   if(hero&&d&&main&&d.parentElement!==main) main.appendChild(d);
+ }
+ move(); window.addEventListener('load',move,{once:true}); setTimeout(move,250); setTimeout(move,1000);
+})();
+</script>
+
 </body>
 </html>
 <footer class="apple-seed-copyright" aria-label="Bản quyền Apple Seed">

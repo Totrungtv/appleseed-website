@@ -768,7 +768,7 @@ async function applyHeroPreset(id){
 const HERO_IMAGE_START='/* APPLESEED_HERO_IMAGES_START */',HERO_IMAGE_END='/* APPLESEED_HERO_IMAGES_END */';
 function heroImageBlock(images,phoneFit='contain',backgroundFit='cover'){
   const lines=[HERO_IMAGE_START,'/* hero-image-fit:'+phoneFit+' */','/* hero-background-fit:'+backgroundFit+' */'];
-  if(images.background) lines.push(".as3-stage{background-image:url('"+images.background.replace(/'/g,"\\'")+"')!important;background-size:"+backgroundFit+"!important;background-position:center center!important;background-repeat:no-repeat!important}");
+  if(images.background) lines.push("#apple-seed-premium-home{background-image:url('"+images.background.replace(/'/g,"\\'")+"')!important;background-size:"+backgroundFit+"!important;background-position:center center!important;background-repeat:no-repeat!important}");
   const slots=['phone0','phone1','phone2','phone3','phone4','phone5'];
   slots.forEach((slot,i)=>{
     const url=images[slot]; if(!url)return;
