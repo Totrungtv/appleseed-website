@@ -662,7 +662,7 @@ async function applyHeroPreset(id){
 const HERO_IMAGE_START='/* APPLESEED_HERO_IMAGES_START */',HERO_IMAGE_END='/* APPLESEED_HERO_IMAGES_END */';
 function heroImageBlock(images,phoneFit='contain',backgroundFit='cover'){
   const lines=[HERO_IMAGE_START,'/* hero-image-fit:'+phoneFit+' */','/* hero-background-fit:'+backgroundFit+' */'];
-  if(images.background) lines.push("#apple-seed-premium-home{background-image:url('"+images.background.replace(/'/g,"\\'")+"')!important;background-size:"+backgroundFit+"!important;background-position:center!important;background-repeat:no-repeat!important}");
+  if(images.background) lines.push(".as3-hero{background-image:url('"+images.background.replace(/'/g,"\\'")+"')!important;background-size:"+backgroundFit+"!important;background-position:center!important;background-repeat:no-repeat!important}");
   const slots=['phone0','phone1','phone2','phone3','phone4','phone5'];
   slots.forEach((slot,i)=>{
     const url=images[slot]; if(!url)return;
@@ -678,27 +678,31 @@ function heroImageBlock(images,phoneFit='contain',backgroundFit='cover'){
 function heroImagesFromCss(css){
   const out={};
   const raw=String(css||'');
-  const readSelectorUrl=(text,selector)=>{
-    // Đồng bộ đúng selector Hero của index.html, không phụ thuộc dấu nháy.
-    const esc=selector.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-    const re=new RegExp(esc+"\\s*\\{[\\s\\S]*?(?:background-image|background)\\s*:[\\s\\S]*?url\\(\\s*([\"'])(.*?)\\1\\s*\\)","i");
-    const m=text.match(re);
-    return m?m[2]:'';
-  };
-  const readPhoneUrl=(text,index)=>readSelectorUrl(text,'#apple-seed-premium-home .as3-p'+index+'');
-
-  // 1) Ưu tiên block ảnh do Admin quản lý.
   const a=raw.indexOf(HERO_IMAGE_START),b=raw.indexOf(HERO_IMAGE_END);
   const block=(a>=0&&b>=a)?raw.slice(a,b+HERO_IMAGE_END.length):'';
 
-  // 2) Nếu block chưa tồn tại hoặc background chưa nằm trong block,
-  //    đọc trực tiếp CSS hiện tại mà index.html đang dùng.
-  //    Đây là phần trước đây làm Admin hiện "Chưa chọn ảnh".
-  const bg=readSelectorUrl(block,'#apple-seed-premium-home') || readSelectorUrl(raw,'#apple-seed-premium-home');
+  const readSelectorUrl=(text,selectors)=>{
+    for(const selector of selectors){
+      const esc=selector.replace(/[.*+?^${}()|[\\]\\]/g,'\\$&');
+      const re=new RegExp(esc+"\\s*\\{[\\s\\S]*?background(?:-image)?\\s*:\\s*[^;]*?url\\(\\s*([\"'])(.*?)\\1\\s*\\)",'i');
+      const m=text.match(re);
+      if(m&&m[2])return m[2];
+    }
+    return '';
+  };
+
+  // Current index.html Hero selector is .as3-hero.
+  // Keep the old selector as a compatibility fallback for previously saved CSS.
+  const bg=readSelectorUrl(block,['.as3-hero','#apple-seed-premium-home']) ||
+           readSelectorUrl(raw,['.as3-hero','#apple-seed-premium-home']);
   if(bg)out.background=bg;
 
   ['phone0','phone1','phone2','phone3','phone4','phone5'].forEach((slot,i)=>{
-    const url=readPhoneUrl(block,i+1) || readPhoneUrl(raw,i+1);
+    const selectors=[
+      '#apple-seed-premium-home .as3-p'+(i+1),
+      '.as3-hero .as3-p'+(i+1)
+    ];
+    const url=readSelectorUrl(block,selectors) || readSelectorUrl(raw,selectors);
     if(url)out[slot]=url;
   });
   return out;
