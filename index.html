@@ -3351,6 +3351,188 @@ let n=0;const t=setInterval(()=>{if(apply()||++n>50)clearInterval(t)},400);
 }
 </style>
 
+
+<style id="apple-seed-touch-device-override">
+/* APPLE SEED TOUCH DEVICE OVERRIDE V2
+   Do not depend on CSS viewport width: iOS can be in "Request Desktop Website".
+   Target touch devices directly so the header can never cover the Hero.
+*/
+@media (pointer:coarse){
+  html,body{overflow-x:hidden!important}
+  body{padding-top:0!important}
+
+  .site-header{
+    position:relative!important;
+    top:auto!important;left:auto!important;right:auto!important;
+    width:100%!important;
+    height:156px!important;
+    min-height:156px!important;
+    max-height:156px!important;
+    overflow:hidden!important;
+  }
+  .site-header .nav{
+    width:100%!important;
+    height:156px!important;
+    min-height:156px!important;
+    max-width:none!important;
+    padding:8px 10px!important;
+    margin:0!important;
+    display:flex!important;
+    flex-direction:column!important;
+    justify-content:flex-start!important;
+    align-items:center!important;
+    gap:7px!important;
+  }
+  .site-header .brand{
+    width:auto!important;
+    min-width:0!important;
+    height:48px!important;
+    flex:0 0 48px!important;
+    margin:0!important;
+    justify-content:center!important;
+    gap:8px!important;
+  }
+  .site-header .brand img{width:44px!important;height:44px!important}
+  .site-header .brand-title{font-size:20px!important;line-height:1!important}
+  .site-header .brand-sub{font-size:8px!important;letter-spacing:1.5px!important;margin-top:4px!important}
+
+  .site-header .menu{
+    width:100%!important;
+    height:38px!important;
+    min-height:38px!important;
+    flex:0 0 38px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-around!important;
+    gap:0!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:hidden!important;
+  }
+  .site-header .menu>a{
+    flex:0 0 44px!important;
+    width:44px!important;height:38px!important;
+    display:flex!important;align-items:center!important;justify-content:center!important;
+    padding:0!important;margin:0!important;
+  }
+  .site-header .menu>a span:last-child{display:none!important}
+  .site-header .menu>a .mi{
+    display:grid!important;place-items:center!important;
+    width:30px!important;height:30px!important;font-size:21px!important;
+  }
+  .site-header .booking-nav{
+    width:48px!important;height:38px!important;
+    flex-basis:48px!important;border-radius:10px!important;
+  }
+
+  .site-header .member-auth-buttons{
+    width:100%!important;
+    height:42px!important;
+    min-height:42px!important;
+    flex:0 0 42px!important;
+    margin:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:8px!important;
+    overflow:hidden!important;
+  }
+  .site-header .member-auth-btn{
+    height:40px!important;
+    min-height:40px!important;
+    padding:6px 16px!important;
+    border-radius:11px!important;
+    font-size:13px!important;
+    line-height:1!important;
+  }
+
+  .as3-hero{
+    position:relative!important;
+    top:auto!important;
+    width:100%!important;
+    min-height:0!important;
+    margin:0!important;
+    overflow:hidden!important;
+  }
+  .as3-wrap{
+    width:100%!important;
+    max-width:none!important;
+    min-height:0!important;
+    padding:24px 12px 12px!important;
+    margin:0!important;
+  }
+  .as3-main{
+    width:100%!important;
+    display:flex!important;
+    flex-direction:column!important;
+    min-height:0!important;
+    align-items:stretch!important;
+  }
+  .as3-copy{
+    width:100%!important;
+    padding:0!important;
+    margin:0!important;
+    text-align:center!important;
+  }
+  .as3-kicker{font-size:8px!important;letter-spacing:2.4px!important;margin-bottom:9px!important}
+  .as3-title{
+    font-size:31px!important;
+    line-height:1.02!important;
+    letter-spacing:-1.5px!important;
+    margin:0!important;
+  }
+  .as3-sub{font-size:9px!important;line-height:1.35!important;letter-spacing:1.7px!important;margin:12px 0 10px!important}
+  .as3-desc{font-size:11px!important;line-height:1.55!important;max-width:410px!important;margin:0 auto 13px!important}
+  .as3-actions{display:flex!important;justify-content:center!important;gap:8px!important}
+  .as3-btn{min-height:40px!important;padding:9px 12px!important;font-size:9px!important;border-radius:10px!important}
+  .as3-note{font-size:7px!important;line-height:1.45!important;letter-spacing:1.45px!important;margin-top:10px!important}
+
+  .as3-stage{
+    width:100%!important;
+    height:285px!important;
+    margin:0!important;
+    transform:none!important;
+    transform-origin:center center!important;
+    overflow:visible!important;
+    background-size:contain!important;
+    background-position:center center!important;
+    background-repeat:no-repeat!important;
+  }
+  .as3-stage > .as3-phone{display:none!important}
+  .as3-benefits{display:none!important}
+  .as3-discover{
+    left:50%!important;
+    right:auto!important;
+    bottom:0!important;
+    transform:translateX(-50%)!important;
+    z-index:100!important;
+  }
+
+  .as3-services{
+    width:100%!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:7px!important;
+    margin:8px 0 0!important;
+  }
+  .as3-service{min-height:78px!important;padding:8px!important;border-radius:11px!important}
+  .as3-service .ico{width:32px!important;height:50px!important;font-size:17px!important}
+  .as3-service h3{font-size:8px!important;margin:0 0 3px!important}
+  .as3-service p{font-size:6.5px!important;line-height:1.35!important}
+  .as3-more{display:flex!important}
+
+  .as3-bottom{
+    width:100%!important;
+    grid-template-columns:1fr!important;
+    gap:7px!important;
+    margin-top:8px!important;
+  }
+}
+@supports (-webkit-touch-callout:none){
+  .site-header{position:relative!important}
+  body{padding-top:0!important}
+}
+</style>
+
 </body>
 </html>
 <footer class="apple-seed-copyright" aria-label="Bản quyền Apple Seed">
