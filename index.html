@@ -1990,6 +1990,9 @@ body{
 
   function normalizeHeroCssOrder(css){
     let out=String(css||'');
+    // Backward compatibility: các bản cũ đã lưu url(\\"...\\") làm CSS không hợp lệ.
+    const slash=String.fromCharCode(92);
+    out=out.split('url('+slash+'"').join('url("').split(slash+'")').join('")');
     const imageStart='/* APPLESEED_HERO_IMAGES_START */',imageEnd='/* APPLESEED_HERO_IMAGES_END */';
     const ia=out.indexOf(imageStart),ib=out.indexOf(imageEnd);
     if(ia<0||ib<ia)return out;

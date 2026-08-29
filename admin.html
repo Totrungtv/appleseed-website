@@ -662,11 +662,11 @@ async function applyHeroPreset(id){
 const HERO_IMAGE_START='/* APPLESEED_HERO_IMAGES_START */',HERO_IMAGE_END='/* APPLESEED_HERO_IMAGES_END */';
 function heroImageBlock(images,phoneFit='contain',backgroundFit='cover'){
   const lines=[HERO_IMAGE_START,'/* hero-image-fit:'+phoneFit+' */','/* hero-background-fit:'+backgroundFit+' */'];
-  if(images.background) lines.push('#apple-seed-premium-home{background-image:url("'+images.background.replace(/"/g,'\\"')+'")!important;background-size:'+backgroundFit+'!important;background-position:center!important;background-repeat:no-repeat!important}');
+  if(images.background) lines.push("#apple-seed-premium-home{background-image:url('"+images.background.replace(/'/g,"\\'")+"')!important;background-size:"+backgroundFit+"!important;background-position:center!important;background-repeat:no-repeat!important}");
   const slots=['phone0','phone1','phone2','phone3','phone4','phone5'];
   slots.forEach((slot,i)=>{
     const url=images[slot]; if(!url)return;
-    lines.push('#apple-seed-premium-home .as3-p'+(i+1)+'{background-image:url("'+url.replace(/"/g,'\\"')+'")!important;background-size:'+phoneFit+'!important;background-position:center!important;background-repeat:no-repeat!important}');
+    lines.push("#apple-seed-premium-home .as3-p"+(i+1)+"{background-image:url('"+url.replace(/'/g,"\\'")+"')!important;background-size:"+phoneFit+"!important;background-position:center!important;background-repeat:no-repeat!important}");
     lines.push('#apple-seed-premium-home .as3-p'+(i+1)+'::before{display:none!important}');
     lines.push('#apple-seed-premium-home .as3-p'+(i+1)+' .as3-screen{background:transparent!important}');
     lines.push('#apple-seed-premium-home .as3-p'+(i+1)+' .as3-screen img{display:none!important}');
