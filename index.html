@@ -1410,6 +1410,16 @@ body{
 #asRobotFriend .asrf-torso{background:linear-gradient(#fff,#e8eef4)!important;border-color:#aebbc7!important}
 #asRobotFriend .asrf-antenna,#asRobotFriend .asrf-arm,#asRobotFriend .asrf-leg{border-color:#aebbc7!important;background:#e4ebf2!important}
 </style>
+
+<style id="apple-seed-chat-icon-3-final">
+/* OPTION 3 FINAL — Apple Bot: bạc/trắng + visor đen + điểm nhấn xanh */
+.chat-btn{padding:5px!important;display:grid!important;place-items:center!important;overflow:visible!important}
+.as-chat-svg{display:block!important;width:48px!important;height:48px!important;filter:drop-shadow(0 3px 7px rgba(0,0,0,.18))}
+.as-chat-svg-mini{width:26px!important;height:26px!important;flex:0 0 26px!important;margin-right:7px!important;filter:none!important}
+.chat-head{display:flex!important;align-items:center!important;gap:0!important}
+.chat-head>span:nth-of-type(1){flex:1!important}
+@media(max-width:560px){.chat-btn{width:62px!important;height:62px!important;right:16px!important;bottom:16px!important}.as-chat-svg{width:50px!important;height:50px!important}}
+</style>
 </head>
 
 <body>
@@ -1610,9 +1620,29 @@ body{
   </div>
 </div>
 
-<button class="chat-btn" id="chatBtn" aria-label="Mở trợ lý Apple Seed"><span class="as-chat-icon" aria-hidden="true"><span class="as-chat-eye">●</span><span class="as-chat-eye">●</span><span class="as-chat-mouth">⌣</span><span class="as-chat-apple"></span></span></button>
+<button class="chat-btn" id="chatBtn" aria-label="Mở trợ lý Apple Seed">
+<svg class="as-chat-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+<circle cx="50" cy="50" r="47" fill="#fff"/>
+<circle cx="50" cy="50" r="45" fill="url(#asBotBg)"/>
+<rect x="28" y="10" width="4" height="13" rx="2" fill="#7c8b99"/>
+<circle cx="30" cy="8" r="5" fill="#2aa9ff"/>
+<rect x="18" y="22" width="64" height="43" rx="17" fill="url(#asBotSilver)" stroke="#aebbc7" stroke-width="2"/>
+<rect x="25" y="29" width="50" height="27" rx="11" fill="#0b1118"/>
+<circle cx="39" cy="42" r="4.2" fill="#25b5ff"/>
+<circle cx="61" cy="42" r="4.2" fill="#25b5ff"/>
+<path d="M44 48 Q50 54 56 48" fill="none" stroke="#25b5ff" stroke-width="2.5" stroke-linecap="round"/>
+<rect x="25" y="65" width="50" height="25" rx="10" fill="url(#asBotSilver)" stroke="#aebbc7" stroke-width="2"/>
+<path d="M50 71c-4-5-12-1-9 5 2 4 6 7 9 10 3-3 7-6 9-10 3-6-5-10-9-5z" fill="#1677ff"/>
+<path d="M51 69c1-4 4-5 7-5-1 3-3 5-6 6" fill="#1677ff"/>
+<path d="M25 70l-8 8" stroke="#aebbc7" stroke-width="7" stroke-linecap="round"/>
+<path d="M75 70l8 8" stroke="#aebbc7" stroke-width="7" stroke-linecap="round"/>
+<defs>
+<linearGradient id="asBotBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f8fcff"/><stop offset="1" stop-color="#dce8f2"/></linearGradient>
+<linearGradient id="asBotSilver" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="0.58" stop-color="#eef3f7"/><stop offset="1" stop-color="#c9d3dc"/></linearGradient>
+</defs>
+</svg></button>
 <div class="chat-box" id="chatBox" aria-label="Trợ lý Apple Seed">
-<div class="chat-head"><span class="chat-title-icon as-chat-icon as-chat-icon-mini" aria-hidden="true"><span class="as-chat-eye">●</span><span class="as-chat-eye">●</span><span class="as-chat-mouth">⌣</span><span class="as-chat-apple"></span></span><span>Trợ lý Apple Seed</span><button class="chat-close" id="chatClose">×</button></div>
+<div class="chat-head"><svg class="as-chat-svg as-chat-svg-mini" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="50" cy="50" r="47" fill="#fff"/><circle cx="50" cy="50" r="45" fill="#e9f2f9"/><rect x="28" y="10" width="4" height="13" rx="2" fill="#7c8b99"/><circle cx="30" cy="8" r="5" fill="#2aa9ff"/><rect x="18" y="22" width="64" height="43" rx="17" fill="#f5f8fb" stroke="#aebbc7" stroke-width="2"/><rect x="25" y="29" width="50" height="27" rx="11" fill="#0b1118"/><circle cx="39" cy="42" r="4.2" fill="#25b5ff"/><circle cx="61" cy="42" r="4.2" fill="#25b5ff"/><path d="M44 48 Q50 54 56 48" fill="none" stroke="#25b5ff" stroke-width="2.5" stroke-linecap="round"/><rect x="25" y="65" width="50" height="25" rx="10" fill="#eef3f7" stroke="#aebbc7" stroke-width="2"/><path d="M50 71c-4-5-12-1-9 5 2 4 6 7 9 10 3-3 7-6 9-10 3-6-5-10-9-5z" fill="#1677ff"/><path d="M51 69c1-4 4-5 7-5-1 3-3 5-6 6" fill="#1677ff"/></svg><span>Trợ lý Apple Seed</span><button class="chat-close" id="chatClose">×</button></div>
 <div class="chat-body" id="chatBody">
 <div class="msg bot">Xin chào 👋 Tôi là trợ lý Apple Seed. Bạn cần hỏi về sửa iPhone, Face ID, main, linh kiện hay địa chỉ cửa hàng?</div>
 <a class="chat-booking" href="booking.html">📅 Đặt lịch sửa</a>
