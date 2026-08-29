@@ -2977,6 +2977,48 @@ let n=0;const t=setInterval(()=>{if(apply()||++n>50)clearInterval(t)},400);
   background-color:transparent!important;
 }
 </style>
+
+<style id="apple-seed-hero-final-layout">
+/* FINAL HERO: CMS uploaded image belongs to the whole Hero, never the phone stage. */
+#apple-seed-premium-home.has-cms-hero-bg{
+  background-image:var(--cms-hero-bg)!important;
+  background-repeat:no-repeat!important;
+  background-position:center center!important;
+  background-size:cover!important;
+}
+#apple-seed-premium-home.has-cms-hero-bg .as3-stage,
+#apple-seed-premium-home.has-cms-hero-bg .as3-stage:before{
+  background-image:none!important;
+}
+#apple-seed-premium-home.has-cms-hero-bg .as3-stage{
+  background:transparent!important;
+}
+</style>
+<script>
+(function(){
+  function finalCmsHeroFix(){
+    const hero=document.querySelector('#apple-seed-premium-home');
+    if(!hero) return;
+    const raw=getComputedStyle(hero).getPropertyValue('--cms-hero-bg').trim();
+    if(raw){
+      hero.classList.add('has-cms-hero-bg');
+      hero.style.setProperty('background-image',raw,'important');
+      hero.style.setProperty('background-size','cover','important');
+      hero.style.setProperty('background-position','center center','important');
+      hero.style.setProperty('background-repeat','no-repeat','important');
+    }
+    const stage=hero.querySelector('.as3-stage');
+    if(stage){
+      stage.style.setProperty('background-image','none','important');
+      stage.style.setProperty('background-color','transparent','important');
+    }
+  }
+  finalCmsHeroFix();
+  window.addEventListener('load',finalCmsHeroFix,{once:true});
+  setTimeout(finalCmsHeroFix,300);
+  setTimeout(finalCmsHeroFix,1000);
+})();
+</script>
 </body>
 </html>
 <footer class="apple-seed-copyright" aria-label="Bản quyền Apple Seed">
