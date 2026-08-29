@@ -136,3 +136,105 @@ window.supabaseClient =
 
     setTimeout(function(){ clearInterval(timer); }, 20000);
 })();
+
+/*
+ * Hero Save Guard
+ *
+ * The Admin image manager stores Hero images inside site_theme_settings.custom_css.
+ * Its normal save routine rebuilds that CSS from the Admin textarea.  When another
+ * layout patch has been added to the live Theme, that textarea can be stale and
+ * saving an image can therefore erase the working phone layout.
+ *
+ * This guard always takes the latest custom_css from Supabase, replaces only the
+ * Hero image block with the images currently selected in Admin, and then lets the
+ * existing save routine persist the merged CSS.  Layout CSS outside the image block
+ * is therefore preserved across every image save.
+ */
+(function appleSeedHeroSaveGuard(){
+    if (location.pathname.split('/').pop().toLowerCase() !== 'admin.html') return;
+
+    let wrappedSave = null;
+    let originalSave = null;
+    let stopped = false;
+
+    function stripAllHeroImageBlocks(css){
+        const start = '/* APPLESEED_HERO_IMAGES_START */';
+        const end = '/* APPLESEED_HERO_IMAGES_END */';
+        let s = String(css || '');
+        let guard = 0;
+        while (guard++ < 20) {
+            const a = s.indexOf(start);
+            if (a < 0) break;
+            const b = s.indexOf(end, a);
+            if (b < 0) break;
+            s = (s.slice(0, a) + s.slice(b + end.length)).trim();
+        }
+        return s;
+    }
+
+    async function mergeLatestThemeBeforeSave(){
+        const field = document.getElementById('themeCustomCss');
+        const client = window.supabaseClient;
+        if (!field || !client) return;
+
+        const localCss = String(field.value || '');
+        const images = typeof window.heroImagesFromCss === 'function'
+            ? window.heroImagesFromCss(localCss)
+            : {};
+        const phoneFit = document.getElementById('heroPhoneFit')?.value || 'contain';
+        const backgroundFit = document.getElementById('heroBackgroundFit')?.value || 'cover';
+
+        const remote = await client
+            .from('site_theme_settings')
+            .select('custom_css')
+            .eq('id', 1)
+            .maybeSingle();
+
+        if (remote.error || !remote.data) return;
+
+        let css = stripAllHeroImageBlocks(String(remote.data.custom_css || ''));
+        let block = '';
+
+        if (typeof window.heroImageBlock === 'function') {
+            block = Object.keys(images).length
+                ? window.heroImageBlock(images, phoneFit, backgroundFit)
+                : '';
+        }
+
+        field.value = (css ? css + '\n\n' : '') + block;
+    }
+
+    const timer = setInterval(function(){
+        try {
+            const fn = window.saveHeroImages;
+            const btn = document.getElementById('saveHeroImagesBtn');
+
+            if (typeof fn !== 'function' || !btn) return;
+
+            if (fn.__appleSeedHeroSaveGuard) {
+                if (wrappedSave && btn.onclick !== wrappedSave) btn.onclick = wrappedSave;
+                return;
+            }
+
+            originalSave = fn;
+
+            wrappedSave = async function(){
+                try {
+                    await mergeLatestThemeBeforeSave();
+                } catch (err) {
+                    console.warn('Apple Seed Hero Save Guard merge:', err);
+                }
+                return originalSave.apply(this, arguments);
+            };
+
+            wrappedSave.__appleSeedHeroSaveGuard = true;
+            wrappedSave.__appleSeedOriginal = originalSave;
+            window.saveHeroImages = wrappedSave;
+            btn.onclick = wrappedSave;
+        } catch (err) {
+            console.warn('Apple Seed Hero Save Guard:', err);
+        }
+    }, 100);
+
+    setTimeout(function(){ clearInterval(timer); }, 30000);
+})();
