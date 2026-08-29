@@ -678,21 +678,27 @@ function heroImageBlock(images,phoneFit='contain',backgroundFit='cover'){
 function heroImagesFromCss(css){
   const out={};
   const raw=String(css||'');
-  const a=raw.indexOf(HERO_IMAGE_START),b=raw.indexOf(HERO_IMAGE_END);
-  if(a<0||b<a)return out;
-  const block=raw.slice(a,b+HERO_IMAGE_END.length);
-  // Hỗ trợ cả url("...") và url('...'). Bản Hero hiện tại có thể dùng nháy đơn.
-  const readUrl=(text,selector)=>{
-    const pos=text.indexOf(selector);
-    if(pos<0)return '';
-    const tail=text.slice(pos);
-    const m=tail.match(/background-image\s*:\s*url\(\s*(['\"])(.*?)\1\s*\)/i);
+  const readSelectorUrl=(text,selector)=>{
+    // Đồng bộ đúng selector Hero của index.html, không phụ thuộc dấu nháy.
+    const esc=selector.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    const re=new RegExp(esc+"\\s*\\{[\\s\\S]*?(?:background-image|background)\\s*:[\\s\\S]*?url\\(\\s*([\"'])(.*?)\\1\\s*\\)","i");
+    const m=text.match(re);
     return m?m[2]:'';
   };
-  const bg=readUrl(block,'#apple-seed-premium-home{');
+  const readPhoneUrl=(text,index)=>readSelectorUrl(text,'#apple-seed-premium-home .as3-p'+index+'');
+
+  // 1) Ưu tiên block ảnh do Admin quản lý.
+  const a=raw.indexOf(HERO_IMAGE_START),b=raw.indexOf(HERO_IMAGE_END);
+  const block=(a>=0&&b>=a)?raw.slice(a,b+HERO_IMAGE_END.length):'';
+
+  // 2) Nếu block chưa tồn tại hoặc background chưa nằm trong block,
+  //    đọc trực tiếp CSS hiện tại mà index.html đang dùng.
+  //    Đây là phần trước đây làm Admin hiện "Chưa chọn ảnh".
+  const bg=readSelectorUrl(block,'#apple-seed-premium-home') || readSelectorUrl(raw,'#apple-seed-premium-home');
   if(bg)out.background=bg;
+
   ['phone0','phone1','phone2','phone3','phone4','phone5'].forEach((slot,i)=>{
-    const url=readUrl(block,'#apple-seed-premium-home .as3-p'+(i+1)+'{');
+    const url=readPhoneUrl(block,i+1) || readPhoneUrl(raw,i+1);
     if(url)out[slot]=url;
   });
   return out;
