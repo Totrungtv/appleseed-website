@@ -677,11 +677,24 @@ function heroImageBlock(images,phoneFit='contain',backgroundFit='cover'){
 }
 function heroImagesFromCss(css){
   const out={};
-  const a=String(css||'').indexOf(HERO_IMAGE_START),b=String(css||'').indexOf(HERO_IMAGE_END);
+  const raw=String(css||'');
+  const a=raw.indexOf(HERO_IMAGE_START),b=raw.indexOf(HERO_IMAGE_END);
   if(a<0||b<a)return out;
-  const block=String(css||'').slice(a,b+HERO_IMAGE_END.length);
-  const bg=block.match(/#apple-seed-premium-home\{[^}]*background-image:url\("([^"]+)"\)/); if(bg)out.background=bg[1];
-  ['phone0','phone1','phone2','phone3','phone4','phone5'].forEach((slot,i)=>{const re=new RegExp('#apple-seed-premium-home \.as3-p'+(i+1)+'\\{[^}]*background-image:url\\("([^\"]+)"\\)');const m=block.match(re);if(m)out[slot]=m[1]});
+  const block=raw.slice(a,b+HERO_IMAGE_END.length);
+  // Hỗ trợ cả url("...") và url('...'). Bản Hero hiện tại có thể dùng nháy đơn.
+  const readUrl=(text,selector)=>{
+    const pos=text.indexOf(selector);
+    if(pos<0)return '';
+    const tail=text.slice(pos);
+    const m=tail.match(/background-image\s*:\s*url\(\s*(['\"])(.*?)\1\s*\)/i);
+    return m?m[2]:'';
+  };
+  const bg=readUrl(block,'#apple-seed-premium-home{');
+  if(bg)out.background=bg;
+  ['phone0','phone1','phone2','phone3','phone4','phone5'].forEach((slot,i)=>{
+    const url=readUrl(block,'#apple-seed-premium-home .as3-p'+(i+1)+'{');
+    if(url)out[slot]=url;
+  });
   return out;
 }
 function heroImageOptionsFromCss(css){const s=String(css||'');return{phoneFit:(s.match(/\/\* hero-image-fit:([^*]+) \*\//)||[])[1]?.trim()||'contain',backgroundFit:(s.match(/\/\* hero-background-fit:([^*]+) \*\//)||[])[1]?.trim()||'cover'}}
