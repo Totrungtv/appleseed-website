@@ -1376,6 +1376,40 @@ body{
   .as3-stage{height:275px!important;min-height:275px!important}
 }
 </style>
+<style id="apple-seed-robot-icon-3">
+/* OPTION 3 — APPLE BOT: silver robot + blue Apple mark */
+.chat-btn{display:grid!important;place-items:center!important;padding:0!important}
+.as-chat-icon{
+  position:relative;display:block;width:38px;height:38px;border-radius:12px;
+  background:linear-gradient(145deg,#ffffff 0%,#edf3f8 58%,#c9d3dc 100%);
+  border:2px solid rgba(255,255,255,.95);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 4px 10px rgba(0,0,0,.16);
+}
+.as-chat-icon:before{
+  content:"";position:absolute;left:6px;right:6px;top:6px;height:20px;
+  border-radius:8px;background:linear-gradient(145deg,#18222d,#05080c);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.16);
+}
+.as-chat-eye{position:absolute;top:12px;z-index:2;color:#25a9ff;font-size:7px;line-height:1}
+.as-chat-eye:nth-child(1){left:11px}.as-chat-eye:nth-child(2){right:11px}
+.as-chat-mouth{position:absolute;z-index:2;left:50%;top:16px;transform:translateX(-50%);color:#29b2ff;font-size:11px;font-weight:900;line-height:1}
+.as-chat-apple{position:absolute;z-index:2;left:50%;bottom:2px;transform:translateX(-50%);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;color:#1677ff;font-size:16px;font-weight:600;line-height:1}
+.as-chat-icon-mini{display:inline-block!important;width:25px!important;height:25px!important;border-radius:8px!important;vertical-align:middle;margin-right:6px}
+.as-chat-icon-mini:before{left:4px;right:4px;top:4px;height:13px;border-radius:5px}
+.as-chat-icon-mini .as-chat-eye{top:8px;font-size:5px}.as-chat-icon-mini .as-chat-eye:nth-child(1){left:7px}.as-chat-icon-mini .as-chat-eye:nth-child(2){right:7px}
+.as-chat-icon-mini .as-chat-mouth{top:10px;font-size:7px}.as-chat-icon-mini .as-chat-apple{bottom:1px;font-size:10px}
+.chat-head{gap:0!important}.chat-head>span:nth-child(2){flex:1}
+
+#asRobotFriend .asrf-torso{display:grid!important;place-items:center!important}
+#asRobotFriend .asrf-torso:after{display:none!important}
+#asRobotFriend .asrf-apple{
+  color:#1677ff;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;
+  font-size:20px;font-weight:600;line-height:1;text-shadow:0 1px 2px rgba(0,0,0,.12)
+}
+#asRobotFriend .asrf-head{background:linear-gradient(#fff,#e8eef4)!important;border-color:#aebbc7!important}
+#asRobotFriend .asrf-torso{background:linear-gradient(#fff,#e8eef4)!important;border-color:#aebbc7!important}
+#asRobotFriend .asrf-antenna,#asRobotFriend .asrf-arm,#asRobotFriend .asrf-leg{border-color:#aebbc7!important;background:#e4ebf2!important}
+</style>
 </head>
 
 <body>
@@ -1576,9 +1610,9 @@ body{
   </div>
 </div>
 
-<button class="chat-btn" id="chatBtn" aria-label="Mở trợ lý Apple Seed">🤖</button>
+<button class="chat-btn" id="chatBtn" aria-label="Mở trợ lý Apple Seed"><span class="as-chat-icon" aria-hidden="true"><span class="as-chat-eye">●</span><span class="as-chat-eye">●</span><span class="as-chat-mouth">⌣</span><span class="as-chat-apple"></span></span></button>
 <div class="chat-box" id="chatBox" aria-label="Trợ lý Apple Seed">
-<div class="chat-head"><span>🤖 Trợ lý Apple Seed</span><button class="chat-close" id="chatClose">×</button></div>
+<div class="chat-head"><span class="chat-title-icon as-chat-icon as-chat-icon-mini" aria-hidden="true"><span class="as-chat-eye">●</span><span class="as-chat-eye">●</span><span class="as-chat-mouth">⌣</span><span class="as-chat-apple"></span></span><span>Trợ lý Apple Seed</span><button class="chat-close" id="chatClose">×</button></div>
 <div class="chat-body" id="chatBody">
 <div class="msg bot">Xin chào 👋 Tôi là trợ lý Apple Seed. Bạn cần hỏi về sửa iPhone, Face ID, main, linh kiện hay địa chỉ cửa hàng?</div>
 <a class="chat-booking" href="booking.html">📅 Đặt lịch sửa</a>
@@ -2965,7 +2999,7 @@ form.onsubmit=async e=>{
         '<div class="asrf-head">'+
           '<span class="asrf-eye l"></span><span class="asrf-eye r"></span><span class="asrf-mouth"></span>'+
         '</div>'+
-        '<div class="asrf-torso"></div>'+
+        '<div class="asrf-torso"><span class="asrf-apple"></span></div>'+
         '<div class="asrf-arm l"></div><div class="asrf-arm r"></div>'+
         '<div class="asrf-leg l"></div><div class="asrf-leg r"></div>'+
         '<div class="asrf-shadow"></div>'+
