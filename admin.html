@@ -618,7 +618,21 @@ function heroPresetBlock(id){const p=HERO_PRESETS[id];return p?`${HERO_PRESET_ST
 /* preset:${id} */
 ${p.css}
 ${HERO_PRESET_END}`:''}
-function replaceHeroPreset(existing,id){let css=String(existing||'');const a=css.indexOf(HERO_PRESET_START),b=css.indexOf(HERO_PRESET_END);if(a>=0&&b>=a)css=(css.slice(0,a)+css.slice(b+HERO_PRESET_END.length)).trim();const block=heroPresetBlock(id);return (css?css+'\n\n':'')+block}
+function replaceHeroPreset(existing,id){
+  let css=String(existing||'');
+  const imageStart='/* APPLESEED_HERO_IMAGES_START */',imageEnd='/* APPLESEED_HERO_IMAGES_END */';
+  let imageBlock='';
+  const ia=css.indexOf(imageStart),ib=css.indexOf(imageEnd);
+  if(ia>=0&&ib>=ia){
+    imageBlock=css.slice(ia,ib+imageEnd.length);
+    css=(css.slice(0,ia)+css.slice(ib+imageEnd.length)).trim();
+  }
+  const a=css.indexOf(HERO_PRESET_START),b=css.indexOf(HERO_PRESET_END);
+  if(a>=0&&b>=a)css=(css.slice(0,a)+css.slice(b+HERO_PRESET_END.length)).trim();
+  const block=heroPresetBlock(id);
+  css=(css?css+'\n\n':'')+block;
+  return imageBlock?(css+'\n\n'+imageBlock):css;
+}
 function heroPresetFromCss(css){const m=String(css||'').match(/\/\* preset:(\d{2}) \*\//);return m&&HERO_PRESETS[m[1]]?m[1]:''}
 function renderHeroPresets(selected){const grid=$('heroPresetGrid');if(!grid)return;grid.innerHTML=Object.entries(HERO_PRESETS).map(([id,p])=>`<button type="button" class="hero-preset ${id===selected?'selected':''}" data-preset="${id}"><span class="hero-preset-badge">Mẫu ${id}</span><div class="hero-preset-preview"><div class="hero-mini-copy"><div class="hero-mini-kicker"></div><div class="hero-mini-title"></div><div class="hero-mini-title second"></div><div class="hero-mini-btn"></div></div><div class="hero-mini-phones"><i class="hero-mini-phone"></i><i class="hero-mini-phone"></i><i class="hero-mini-phone"></i><i class="hero-mini-phone"></i><i class="hero-mini-phone"></i></div></div><div class="hero-preset-info"><strong>${esc(p.name)}</strong><span>${esc(p.desc)}</span></div></button>`).join('');grid.querySelectorAll('.hero-preset').forEach(b=>b.onclick=()=>{grid.querySelectorAll('.hero-preset').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');$('heroPresetCurrent').textContent=`Đang chọn: Mẫu ${b.dataset.preset} — ${HERO_PRESETS[b.dataset.preset].name}`})}
 async function applyHeroPreset(id){
