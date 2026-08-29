@@ -2654,16 +2654,13 @@ function answerFallback(q){
   return "Tôi chưa hiểu rõ câu hỏi. Bạn thử ghi model + lỗi, ví dụ: “iPhone 13 Pro Max mất nguồn”, “iPhone 12 đơ cảm ứng” hoặc “Apple Seed ở đâu?”";
 }
 
-async function askAppleSeedAI(message, onDelta){
+async function askAppleSeedAI(message,onDelta){
   const sb=window.supabaseClient;
   if(!sb) throw new Error("Chưa khởi tạo Supabase.");
 
   const baseUrl=String(sb.supabaseUrl||"").replace(/\/+$/,"");
   const anonKey=sb.supabaseKey;
-
-  if(!baseUrl || !anonKey){
-    throw new Error("Thiếu cấu hình Supabase.");
-  }
+  if(!baseUrl||!anonKey) throw new Error("Thiếu cấu hình Supabase.");
 
   const controller=new AbortController();
   const timeout=setTimeout(()=>controller.abort(),60000);
@@ -2676,51 +2673,41 @@ async function askAppleSeedAI(message, onDelta){
         "apikey":anonKey,
         "Authorization":"Bearer "+anonKey
       },
-      body:JSON.stringify({message}),
+      body:JSON.stringify({message:String(message),source:"website-chatbot"}),
       signal:controller.signal
     });
 
+    const raw=await response.text();
+
     if(!response.ok){
-      const raw=await response.text();
-      let msg="Apple Seed AI đang gặp lỗi.";
+      let detail="";
       try{
         const data=JSON.parse(raw);
-        msg=data?.error||msg;
+        detail=data?.error||data?.message||"";
       }catch(_){}
-      throw new Error(msg);
+      throw new Error(detail||("Apple Seed AI HTTP "+response.status));
     }
 
-    if(!response.body){
-      throw new Error("AI không trả về dữ liệu stream.");
-    }
+    if(!raw.trim()) throw new Error("AI không trả về nội dung.");
 
-    const reader=response.body.getReader();
-    const decoder=new TextDecoder("utf-8");
-    let received=false;
+    // Accept normal JSON responses, plain text, or SSE/data chunks.
+    let text=raw;
+    try{
+      const data=JSON.parse(raw);
+      text=data?.answer||data?.content||data?.text||data?.message||raw;
+    }catch(_){}
 
-    while(true){
-      const {value,done}=await reader.read();
-      if(done) break;
+    text=String(text)
+      .replace(/^data:\s*/gm,"")
+      .replace(/\n\s*\n/g,"\n")
+      .trim();
 
-      const chunk=decoder.decode(value,{stream:true});
-      if(chunk){
-        received=true;
-        onDelta(chunk);
-      }
-    }
-
-    const tail=decoder.decode();
-    if(tail){
-      received=true;
-      onDelta(tail);
-    }
-
-    if(!received) throw new Error("AI chưa trả về nội dung.");
+    if(!text) throw new Error("AI không trả về nội dung.");
+    onDelta(text);
   }finally{
     clearTimeout(timeout);
   }
 }
-
 form.onsubmit=async e=>{
   e.preventDefault();
   const q=input.value.trim();
@@ -2749,7 +2736,7 @@ form.onsubmit=async e=>{
       body.scrollTop=body.scrollHeight;
     });
   }catch(error){
-    console.error("AppleSeed AI:",error);
+    console.error("AppleSeed AI SERVER ERROR:",error);
 
     // Nếu AI thật lỗi, giữ chatbot không bị chết:
     // dùng bộ trả lời cục bộ cũ làm phương án dự phòng.
@@ -2850,13 +2837,74 @@ form.onsubmit=async e=>{
     }
   },true);
 
-  /* Robot friend: temporarily disabled. Keep the main chatbot fully functional. */
-  function initRobot(){
-    return;
+  /* Robot friend — connected through the SAME Supabase client used by the chatbot. */
+  async function initRobot(){
+    if(document.getElementById("asRobotFriend")) return;
+
+    const robot=document.createElement("div");
+    robot.id="asRobotFriend";
+    robot.innerHTML=
+      '<div class="asrf-body">'+
+        '<div class="asrf-antenna"></div>'+
+        '<div class="asrf-head">'+
+          '<span class="asrf-eye l"></span><span class="asrf-eye r"></span><span class="asrf-mouth"></span>'+
+        '</div>'+
+        '<div class="asrf-torso"></div>'+
+        '<div class="asrf-arm l"></div><div class="asrf-arm r"></div>'+
+        '<div class="asrf-leg l"></div><div class="asrf-leg r"></div>'+
+        '<div class="asrf-shadow"></div>'+
+      '</div>'+
+      '<div class="asrf-bubble">Apple Seed AI</div>';
+    document.body.appendChild(robot);
+
+    const sb=window.supabaseClient;
+    const baseUrl=String(sb?.supabaseUrl||"").replace(/\\/+$/,"");
+    const anonKey=sb?.supabaseKey||"";
+    if(!baseUrl || !anonKey){
+      robot.remove();
+      console.warn("[Apple Seed Robot] Supabase client chưa sẵn sàng.");
+      return;
+    }
+
+    try{
+      robot.classList.add("asrf-show","asrf-walk");
+      const controller=new AbortController();
+      const timer=setTimeout(()=>controller.abort(),7000);
+
+      const res=await fetch(baseUrl+"/functions/v1/appleseed-ai",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "apikey":anonKey,
+          "Authorization":"Bearer "+anonKey
+        },
+        body:JSON.stringify({
+          message:"PING",
+          source:"apple-seed-home-robot",
+          mode:"healthcheck"
+        }),
+        signal:controller.signal
+      });
+      clearTimeout(timer);
+
+      if(!res.ok) throw new Error("Server AI HTTP "+res.status);
+
+      robot.dataset.server="connected";
+      setTimeout(()=>{
+        robot.classList.remove("asrf-walk");
+        robot.classList.add("asrf-fly");
+        setTimeout(()=>robot.remove(),750);
+      },1800);
+    }catch(err){
+      console.warn("[Apple Seed Robot] Server chưa kết nối:",err);
+      robot.classList.remove("asrf-walk");
+      robot.classList.add("asrf-fly");
+      setTimeout(()=>robot.remove(),750);
+    }
   }
 
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>setTimeout(initRobot,250));
-  else setTimeout(initRobot,250);
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>setTimeout(initRobot,900));
+  else setTimeout(initRobot,900);
 })();
 </script>
 
@@ -3044,6 +3092,7 @@ let n=0;const t=setInterval(()=>{if(apply()||++n>50)clearInterval(t)},400);
  move(); window.addEventListener('load',move,{once:true}); setTimeout(move,250); setTimeout(move,1000);
 })();
 </script>
+
 
 </body>
 </html>
