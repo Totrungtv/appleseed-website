@@ -68,6 +68,20 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
 }
 
 .as-analysis-wait{display:flex;align-items:center;gap:10px;margin-top:14px;padding:12px 14px;border:1px solid #cfe2f7;border-radius:12px;background:#eef7ff;color:#145ca8;font-weight:800}.as-analysis-hourglass{display:inline-grid;place-items:center;width:24px;height:24px;font-size:19px;animation:asHourglassSpin 1s linear infinite;transform-origin:center}@keyframes asHourglassSpin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}.as-analysis-wait small{display:block;font-weight:600;color:#647b98;margin-top:2px}
+
+/* Apple Seed iCloud / Activation Lock checker */
+.icloud-card{grid-column:1/-1;position:relative;overflow:hidden}
+.icloud-card:before{content:"";position:absolute;inset:0 auto auto 0;width:100%;height:3px;background:linear-gradient(90deg,#1479e8,#55c7ff,#1479e8);opacity:.9}
+.icloud-note{margin-top:14px;padding:12px 14px;border:1px solid #d7e7f7;background:#f7fbff;border-radius:12px;color:#46617f;font-size:13px;line-height:1.5}
+.icloud-result{margin-top:14px;padding:16px;border:1px solid #d5e5f5;background:#f8fbff;border-radius:14px;min-height:64px}
+.icloud-result.ok{border-color:#b8e0c2;background:#f3fff5;color:#155724}
+.icloud-result.warn{border-color:#f1d58b;background:#fffaf0;color:#7a5b00}
+.icloud-result.danger{border-color:#f1b8b8;background:#fff5f5;color:#9f1c1c}
+.icloud-result.loading{border-color:#b9d8f6;background:#f5faff;color:#145ca8}
+.icloud-result p{margin:7px 0 0;line-height:1.5}
+.icloud-checklist{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;font-size:12px;color:#46617f}
+.icloud-checklist strong{width:100%;color:#10233f;font-size:13px}
+.icloud-checklist span{padding:6px 9px;border:1px solid #d5e5f5;background:#fff;border-radius:999px}
 </style>
 
 <style id="apple-seed-full-fix-css">
@@ -85,6 +99,21 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
 </style>
 </head>
 <body><main class="wrap">
+<section class="card icloud-card" id="icloudChecker">
+<div class="kicker">APPLE SEED • DEVICE STATUS</div>
+<h2>☁️ Kiểm tra iCloud / Activation Lock</h2>
+<div class="muted">Kiểm tra tình trạng liên kết tài khoản trước khi nhận máy, restore hoặc giao máy.</div>
+<div class="icloud-note"><strong>⚠️ Không nhập mật khẩu Apple Account.</strong> Công cụ chỉ nhận Serial hoặc IMEI. Không tự kết luận LOCKED/UNLOCKED nếu chưa có nguồn xác minh hợp lệ.</div>
+<div class="fields">
+<div class="field"><label>Kiểu định danh</label><select id="icloudIdType"><option value="serial">Serial Number</option><option value="imei">IMEI</option></select></div>
+<div class="field"><label>Model (không bắt buộc)</label><select id="icloudModel"><option value="">Tự nhận diện / chưa rõ</option><option>iPhone 16 Pro Max</option><option>iPhone 16 Pro</option><option>iPhone 16</option><option>iPhone 15 Pro Max</option><option>iPhone 15 Pro</option><option>iPhone 15</option><option>iPhone 14 Pro Max</option><option>iPhone 14 Pro</option><option>iPhone 14</option><option>iPhone 13 Pro Max</option><option>iPhone 13 Pro</option><option>iPhone 13</option><option>iPhone 12 Pro Max</option><option>iPhone 12 Pro</option><option>iPhone 12</option></select></div>
+<div class="field full"><label id="icloudIdLabel">Serial Number</label><input id="icloudIdentifier" autocomplete="off" spellcheck="false" placeholder="Nhập Serial Number"></div>
+</div>
+<div class="actions"><button class="btn primary" id="icloudCheckBtn" type="button">☁️ KIỂM TRA ICLOUD</button><button class="btn secondary" id="icloudClearBtn" type="button">Xóa</button></div>
+<div id="icloudResult" class="icloud-result"><strong>Chưa kiểm tra</strong><p>Nhập Serial hoặc IMEI rồi bấm kiểm tra.</p></div>
+<div class="icloud-checklist"><strong>Checklist kỹ thuật</strong><span>① Find My</span><span>② Activation Lock</span><span>③ “iPhone bị khóa cho chủ sở hữu”</span><span>④ Xóa máy / kích hoạt lại trước khi nhận máy cũ</span></div>
+</section>
+
 <!-- ===== APPLE SEED FULL MEMBER / COMMUNITY / CHAT RESTORE ===== -->
 <div class="as-fullbar" id="asFullBar">
   <div class="as-member-summary">
@@ -693,6 +722,38 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
    if(x.error){st.textContent='❌ Không đăng được ca PANIC: '+x.error.message;return;}
    st.textContent='✅ Đã đăng ca PANIC #'+x.data.id+' vào PANIC Control Center.';
  });
+})();
+</script>
+
+<script>
+/* Apple Seed — iCloud checker UI. Does not fabricate Activation Lock results. */
+(function(){
+  const typeEl=document.getElementById('icloudIdType'), input=document.getElementById('icloudIdentifier'), label=document.getElementById('icloudIdLabel');
+  const model=document.getElementById('icloudModel'), result=document.getElementById('icloudResult'), check=document.getElementById('icloudCheckBtn'), clear=document.getElementById('icloudClearBtn');
+  if(!typeEl||!input||!result||!check)return;
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const show=(kind,title,msg)=>{result.className='icloud-result '+(kind||'');result.innerHTML='<strong>'+esc(title)+'</strong><p>'+esc(msg)+'</p>';};
+  const normalize=()=>input.value.trim().replace(/[\s-]/g,'').toUpperCase();
+  function sync(){const imei=typeEl.value==='imei';label.textContent=imei?'IMEI':'Serial Number';input.placeholder=imei?'Nhập IMEI':'Nhập Serial Number';input.inputMode=imei?'numeric':'text';show('','Chưa kiểm tra','Nhập '+(imei?'IMEI':'Serial Number')+' rồi bấm kiểm tra.');}
+  typeEl.addEventListener('change',()=>{input.value='';sync();});
+  clear?.addEventListener('click',()=>{input.value='';model.value='';sync();input.focus();});
+  check.addEventListener('click',async()=>{
+    const type=typeEl.value,v=normalize();
+    if((type==='imei'&&!/^\d{14,16}$/.test(v))||(type==='serial'&&!/^[A-Z0-9]{8,20}$/.test(v))){show('danger','❌ Định dạng không hợp lệ',type==='imei'?'IMEI phải là chuỗi số hợp lệ.':'Serial phải là chuỗi ký tự định danh hợp lệ.');return;}
+    if(!window.supabaseClient){show('warn','⚠️ CHƯA SẴN SÀNG','Supabase client chưa được nạp.');return;}
+    const session=(await window.supabaseClient.auth.getSession())?.data?.session;
+    if(!session?.user){show('warn','🔐 CẦN ĐĂNG NHẬP','Vui lòng đăng nhập Apple Seed Member trước khi kiểm tra.');return;}
+    check.disabled=true;show('loading','⏳ ĐANG KIỂM TRA','Đang gửi định danh an toàn tới bộ kiểm tra iCloud của Apple Seed…');
+    try{
+      const call=await window.supabaseClient.functions.invoke('check-icloud-status',{body:{identifier_type:type,identifier:v,device_model:model?.value||null}});
+      if(call.error) throw call.error;
+      const data=call.data||{};
+      if(data.status==='LOCKED')show('danger','🔒 ACTIVATION LOCK: ĐANG KHÓA',data.message||'Nguồn xác minh trả về trạng thái LOCKED.');
+      else if(data.status==='UNLOCKED')show('ok','✅ ACTIVATION LOCK: ĐÃ TẮT',data.message||'Nguồn xác minh trả về trạng thái UNLOCKED.');
+      else show('warn','⚠️ CHƯA XÁC MINH',data.message||'Nguồn kiểm tra chưa trả về trạng thái chắc chắn. Không tự kết luận.');
+    }catch(e){show('warn','⚠️ CHƯA CÓ NGUỒN TRA CỨU','Khung đã được nạp vào AI Board, nhưng backend kiểm tra iCloud chưa được triển khai nên tôi không giả lập kết quả LOCKED/UNLOCKED.');}
+    finally{check.disabled=false;}
+  });
 })();
 </script>
 </body></html>
