@@ -8,7 +8,7 @@
 <style>
 :root{--gold:#d7aa4d;--blue:#1769ff;--ink:#18212b;--muted:#667085;--line:#e1e6ee}
 *{box-sizing:border-box}html,body{margin:0;height:100%;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:#edf1f5}button,input,textarea{font:inherit}
-.app{height:100vh;display:grid;grid-template-rows:60px 1fr;overflow:hidden}.top{height:60px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;padding:0 12px;z-index:10}.brand{font-weight:900;letter-spacing:.6px;white-space:nowrap}.brand small{display:block;font-size:8px;letter-spacing:2px;color:#8a94a2}.spacer{flex:1}.status{font-size:11px;color:var(--muted);max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.btn{border:1px solid #d5dce5;background:#fff;color:var(--ink);border-radius:9px;padding:8px 11px;font-weight:800;cursor:pointer}.btn:hover{border-color:#b9c5d4}.btn.active{box-shadow:inset 0 0 0 2px #e4c579}.btn.primary{background:var(--gold);border-color:var(--gold);color:#18130a}.workspace{min-height:0;display:grid;grid-template-columns:235px minmax(0,1fr) 300px}.side{background:#fff;overflow:auto;padding:11px}.left{border-right:1px solid var(--line)}.right{border-left:1px solid var(--line)}.panel{border:1px solid var(--line);border-radius:12px;padding:11px;margin-bottom:10px;background:#fff}.panel h3{font-size:12px;margin:0 0 9px}.muted{font-size:11px;color:var(--muted);line-height:1.5}.canvas{min-width:0;min-height:0;display:flex;justify-content:center;overflow:auto;background:#cbd2db;padding:0}.frame{height:max-content;min-height:100%;width:1440px;max-width:100%;background:#fff;box-shadow:0 0 35px #0002;transition:width .15s}.frame.mobile{width:390px}.frame iframe{display:block;width:100%;height:1400px;min-height:1400px;border:0;background:#fff;opacity:1;visibility:visible}.hint{background:#fff8e9;border:1px solid #eed8a6;border-radius:9px;padding:9px;font-size:10px;line-height:1.5;color:#735719}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:7px}.field{margin-bottom:8px}.field label{display:flex;justify-content:space-between;font-size:10px;font-weight:850;color:#475467;margin-bottom:4px}.field input,.field textarea{width:100%;border:1px solid #d5dce5;border-radius:8px;padding:7px 8px;background:#fff;outline:0}.field textarea{min-height:74px;resize:vertical}.image-preview{max-width:100%;max-height:130px;display:block;margin:4px auto 8px;object-fit:contain}.drop{border:1px dashed #b9c4d1;border-radius:8px;padding:8px;text-align:center;font-size:10px;cursor:pointer}.layers{max-height:310px;overflow:auto;display:grid;gap:4px}.layer{width:100%;text-align:left;border:1px solid #e5e9ef;background:#fafbfc;border-radius:7px;padding:7px;font-size:10px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.layer.active{border-color:#8eb0ff;background:#eff5ff}.history{display:grid;gap:5px;max-height:230px;overflow:auto}.history-item{display:grid;grid-template-columns:1fr auto;gap:5px;align-items:center;border:1px solid #e5e9ef;border-radius:7px;padding:6px}.history-item small{font-size:9px;color:var(--muted)}.overlay{position:fixed;display:none;border:2px solid var(--blue);pointer-events:none;z-index:50}.overlay .label{position:absolute;left:-2px;top:-21px;background:var(--blue);color:#fff;padding:3px 6px;border-radius:4px 4px 0 0;font-size:9px;font-weight:850}.handle{position:absolute;width:9px;height:9px;background:#fff;border:2px solid var(--blue);border-radius:2px;pointer-events:auto}.nw{left:-6px;top:-6px;cursor:nwse-resize}.ne{right:-6px;top:-6px;cursor:nesw-resize}.sw{left:-6px;bottom:-6px;cursor:nesw-resize}.se{right:-6px;bottom:-6px;cursor:nwse-resize}.toast{position:fixed;right:16px;bottom:16px;background:#17202a;color:#fff;padding:9px 12px;border-radius:8px;font-size:11px;display:none;z-index:100}.login{position:fixed;inset:0;background:#101828dd;display:flex;align-items:center;justify-content:center;z-index:200}.login-card{width:min(390px,calc(100% - 24px));background:#fff;border-radius:15px;padding:20px;box-shadow:0 25px 70px #0005}.login-card h2{margin:0 0 6px}.danger{color:#b42318;font-size:10px;margin-top:7px}.simple-mode .advanced-only{display:none!important}.block-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.block-btn{border:1px solid #e3e8ef;background:#fbfcfe;border-radius:9px;padding:8px 7px;text-align:left;font-size:10px;font-weight:800;cursor:pointer}.block-btn:hover{border-color:#d7aa4d;background:#fffaf0}.ai-modal{position:fixed;inset:0;background:#10182888;display:none;align-items:center;justify-content:center;z-index:180}.ai-card{width:min(620px,calc(100% - 24px));max-height:min(760px,calc(100vh - 30px));overflow:auto;background:#fff;border-radius:16px;box-shadow:0 30px 90px #0006;padding:16px}.ai-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}.ai-head h2{margin:0;font-size:17px}.ai-close{margin-left:auto}.ai-log{min-height:160px;max-height:330px;overflow:auto;background:#f7f9fc;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:11px;line-height:1.55}.ai-msg{margin:0 0 9px;padding:8px 10px;border-radius:9px;white-space:pre-wrap}.ai-user{background:#fff4d9}.ai-bot{background:#fff;border:1px solid #e6eaf0}.ai-row{display:flex;gap:7px;margin-top:9px}.ai-row textarea{flex:1;min-height:66px;border:1px solid #d5dce5;border-radius:9px;padding:8px;resize:vertical}.ai-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.ai-chip{border:1px solid #dfe5ed;background:#fff;border-radius:999px;padding:6px 9px;font-size:10px;font-weight:800;cursor:pointer}.section-list{display:grid;gap:5px;max-height:220px;overflow:auto}.preset-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.preset{border:1px solid #e3e8ef;background:#fff;border-radius:8px;padding:7px;font-size:10px;font-weight:800;cursor:pointer}.preset:hover{border-color:#d7aa4d}
+.app{height:100vh;display:grid;grid-template-rows:60px 1fr;overflow:hidden}.top{height:60px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;padding:0 12px;z-index:10}.brand{font-weight:900;letter-spacing:.6px;white-space:nowrap}.brand small{display:block;font-size:8px;letter-spacing:2px;color:#8a94a2}.spacer{flex:1}.status{font-size:11px;color:var(--muted);max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.btn{border:1px solid #d5dce5;background:#fff;color:var(--ink);border-radius:9px;padding:8px 11px;font-weight:800;cursor:pointer}.btn:hover{border-color:#b9c5d4}.btn.active{box-shadow:inset 0 0 0 2px #e4c579}.btn.primary{background:var(--gold);border-color:var(--gold);color:#18130a}.workspace{min-height:0;display:grid;grid-template-columns:235px minmax(0,1fr) 300px}.side{background:#fff;overflow:auto;padding:11px}.left{border-right:1px solid var(--line)}.right{border-left:1px solid var(--line)}.panel{border:1px solid var(--line);border-radius:12px;padding:11px;margin-bottom:10px;background:#fff}.panel h3{font-size:12px;margin:0 0 9px}.muted{font-size:11px;color:var(--muted);line-height:1.5}.canvas{min-width:0;min-height:0;display:flex;justify-content:center;overflow:auto;background:#cbd2db;padding:0}.frame{height:max-content;min-height:100%;width:1440px;max-width:100%;background:#fff;box-shadow:0 0 35px #0002;transition:width .15s}.frame.mobile{width:390px}.frame iframe{display:block;width:100%;height:1400px;min-height:1400px;border:0;background:#fff;opacity:1;visibility:visible}.hint{background:#fff8e9;border:1px solid #eed8a6;border-radius:9px;padding:9px;font-size:10px;line-height:1.5;color:#735719}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:7px}.field{margin-bottom:8px}.field label{display:flex;justify-content:space-between;font-size:10px;font-weight:850;color:#475467;margin-bottom:4px}.field input,.field textarea,.field select{width:100%;border:1px solid #d5dce5;border-radius:8px;padding:7px 8px;background:#fff;outline:0}.field textarea{min-height:74px;resize:vertical}.image-preview{max-width:100%;max-height:130px;display:block;margin:4px auto 8px;object-fit:contain}.drop{border:1px dashed #b9c4d1;border-radius:8px;padding:8px;text-align:center;font-size:10px;cursor:pointer}.layers{max-height:310px;overflow:auto;display:grid;gap:4px}.layer{width:100%;text-align:left;border:1px solid #e5e9ef;background:#fafbfc;border-radius:7px;padding:7px;font-size:10px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.layer.active{border-color:#8eb0ff;background:#eff5ff}.history{display:grid;gap:5px;max-height:230px;overflow:auto}.history-item{display:grid;grid-template-columns:1fr auto;gap:5px;align-items:center;border:1px solid #e5e9ef;border-radius:7px;padding:6px}.history-item small{font-size:9px;color:var(--muted)}.overlay{position:fixed;display:none;border:2px solid var(--blue);pointer-events:none;z-index:50}.overlay .label{position:absolute;left:-2px;top:-21px;background:var(--blue);color:#fff;padding:3px 6px;border-radius:4px 4px 0 0;font-size:9px;font-weight:850}.handle{position:absolute;width:9px;height:9px;background:#fff;border:2px solid var(--blue);border-radius:2px;pointer-events:auto}.nw{left:-6px;top:-6px;cursor:nwse-resize}.ne{right:-6px;top:-6px;cursor:nesw-resize}.sw{left:-6px;bottom:-6px;cursor:nesw-resize}.se{right:-6px;bottom:-6px;cursor:nwse-resize}.toast{position:fixed;right:16px;bottom:16px;background:#17202a;color:#fff;padding:9px 12px;border-radius:8px;font-size:11px;display:none;z-index:100}.login{position:fixed;inset:0;background:#101828dd;display:flex;align-items:center;justify-content:center;z-index:200}.login-card{width:min(390px,calc(100% - 24px));background:#fff;border-radius:15px;padding:20px;box-shadow:0 25px 70px #0005}.login-card h2{margin:0 0 6px}.danger{color:#b42318;font-size:10px;margin-top:7px}.simple-mode .advanced-only{display:none!important}.block-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.block-btn{border:1px solid #e3e8ef;background:#fbfcfe;border-radius:9px;padding:8px 7px;text-align:left;font-size:10px;font-weight:800;cursor:pointer}.block-btn:hover{border-color:#d7aa4d;background:#fffaf0}.ai-modal{position:fixed;inset:0;background:#10182888;display:none;align-items:center;justify-content:center;z-index:180}.ai-card{width:min(620px,calc(100% - 24px));max-height:min(760px,calc(100vh - 30px));overflow:auto;background:#fff;border-radius:16px;box-shadow:0 30px 90px #0006;padding:16px}.ai-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}.ai-head h2{margin:0;font-size:17px}.ai-close{margin-left:auto}.ai-log{min-height:160px;max-height:330px;overflow:auto;background:#f7f9fc;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:11px;line-height:1.55}.ai-msg{margin:0 0 9px;padding:8px 10px;border-radius:9px;white-space:pre-wrap}.ai-user{background:#fff4d9}.ai-bot{background:#fff;border:1px solid #e6eaf0}.ai-row{display:flex;gap:7px;margin-top:9px}.ai-row textarea{flex:1;min-height:66px;border:1px solid #d5dce5;border-radius:9px;padding:8px;resize:vertical}.ai-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.ai-chip{border:1px solid #dfe5ed;background:#fff;border-radius:999px;padding:6px 9px;font-size:10px;font-weight:800;cursor:pointer}.section-list{display:grid;gap:5px;max-height:220px;overflow:auto}.preset-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.preset{border:1px solid #e3e8ef;background:#fff;border-radius:8px;padding:7px;font-size:10px;font-weight:800;cursor:pointer}.preset:hover{border-color:#d7aa4d}
 @media(max-width:980px){.workspace{grid-template-columns:200px minmax(0,1fr)}.right{display:none}.status{display:none}}@media(max-width:650px){.left{display:none}.workspace{grid-template-columns:1fr}.top .btn{padding:7px 8px}.brand small{display:none}}
 </style>
 </head>
@@ -34,11 +34,21 @@
   <div class="panel"><h3>📦 Bản nháp</h3><button class="btn" id="reload" style="width:100%;margin-bottom:6px">↻ Nạp lại</button><button class="btn" id="clear" style="width:100%">Xóa nháp máy</button></div>
   <div class="panel"><h3>🛡 An toàn</h3><div class="muted">Builder dùng cấu hình riêng trong Supabase. Không sửa HTML gốc. Publish tạo version mới; bản cũ được giữ để rollback.</div></div>
 </aside>
-<main class="canvas"><div class="frame" id="frame"><iframe id="preview" title="Apple Seed Builder Preview" loading="eager" src="index.html?appleSeedBuilderPreview=1&builderCanvas=1&v=20260830-1515"></iframe></div></main>
+<main class="canvas"><div class="frame" id="frame"><iframe id="preview" title="Apple Seed Builder Preview" loading="eager" src="index.html?appleSeedBuilderPreview=1&builderCanvas=1&v=builder-live-20260830"></iframe></div></main>
 <aside class="side right">
   <div class="panel"><h3>🖱 Đối tượng</h3><div id="info" class="selected-name">Chưa chọn</div><span id="tag" class="tag" hidden></span></div>
   <div class="panel" id="contentPanel" hidden><h3>✏️ Nội dung</h3><div class="field"><label>Chữ</label><textarea id="text"></textarea></div><button class="btn primary" id="applyText" style="width:100%">Áp dụng chữ</button></div>
   <div class="panel" id="imagePanel" hidden><h3>🖼 Hình ảnh</h3><img id="imagePreview" class="image-preview" alt=""><div class="drop" id="pick">Chọn ảnh từ máy</div><input id="file" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden><div class="field" style="margin-top:8px"><label>URL ảnh</label><input id="imageUrl" placeholder="https://…"></div><button class="btn primary" id="applyImage" style="width:100%">Áp dụng hình</button></div>
+  <div class="panel" id="pageDesignPanel"><h3>🖼️ Thiết kế Trang / Hero</h3>
+    <div class="muted" style="margin-bottom:8px">Chỉnh nền Hero/trang mà không cần chọn đúng ảnh. Mỗi Desktop/Mobile có nền riêng.</div>
+    <div class="grid2"><button class="btn" id="targetHero">🎯 Hero</button><button class="btn" id="targetMain">📄 Main</button></div>
+    <div class="field" style="margin-top:8px"><label>URL ảnh nền</label><input id="pageBgUrl" placeholder="https://…"></div>
+    <div class="grid2"><div class="field"><label>Màu nền</label><input id="pageBgColor" type="text" placeholder="#ffffff"></div><div class="field"><label>Lớp phủ</label><input id="pageOverlay" type="text" placeholder="transparent"></div></div>
+    <div class="grid2"><div class="field"><label>Kích thước</label><select id="pageBgSize" style="width:100%;border:1px solid #d5dce5;border-radius:8px;padding:7px"><option value="cover">Cover</option><option value="contain">Contain</option><option value="100% 100%">100% 100%</option></select></div><div class="field"><label>Vị trí</label><select id="pageBgPosition" style="width:100%;border:1px solid #d5dce5;border-radius:8px;padding:7px"><option value="center">Center</option><option value="center top">Center top</option><option value="center bottom">Center bottom</option><option value="left center">Left center</option><option value="right center">Right center</option></select></div></div>
+    <div class="field"><label>Ảnh nền từ máy</label><div class="drop" id="pagePick">Chọn ảnh nền</div><input id="pageFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden></div>
+    <button class="btn primary" id="applyPageDesign" style="width:100%">Áp dụng nền Hero / Trang</button>
+    <button class="btn" id="reloadCanvas" style="width:100%;margin-top:6px">↻ Nạp lại ảnh & trang gốc</button>
+  </div>
   <div class="panel" id="stylePanel" hidden><h3>🎨 Giao diện — <span id="deviceLabel">Desktop</span></h3>
     <div class="grid2"><div class="field"><label>X (px)</label><input id="x" type="number"></div><div class="field"><label>Y (px)</label><input id="y" type="number"></div></div>
     <div class="grid2"><div class="field"><label>Rộng</label><input id="w" type="number" min="1"></div><div class="field"><label>Cao</label><input id="h" type="number" min="1"></div></div>
@@ -57,7 +67,7 @@
 <script>
 const $=id=>document.getElementById(id);
 const DRAFT_KEY='appleSeedVisualBuilderV2';
-let doc=null,selected=null,selector='',device='desktop',draft={items:{}},history=[],future=[],drag=null,pendingFile=null,allowed=false,groupPhones=false,simpleMode=false;
+let doc=null,selected=null,selector='',device='desktop',draft={items:{},page:{desktop:{},mobile:{}}},history=[],future=[],drag=null,pendingFile=null,pagePendingFile=null,allowed=false,groupPhones=false,simpleMode=false;
 
 function toast(msg){$('toast').textContent=msg;$('toast').style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>{$('toast').style.display='none'},2200)}
 function setStatus(msg){$('status').textContent=msg}
@@ -84,6 +94,44 @@ function textEditable(el){return editable(el)&&el.tagName!=='IMG'&&el.children.l
 function getItem(){if(!draft.items[selector])draft.items[selector]={styles:{desktop:{},mobile:{}}};const i=draft.items[selector];i.styles=i.styles||{};i.styles.desktop=i.styles.desktop||{};i.styles.mobile=i.styles.mobile||{};return i}
 function styleObject(el){const s=el.style,r=el.getBoundingClientRect(),tr=(s.translate||'').trim().split(/\s+/);return{x:parseFloat(tr[0])||0,y:parseFloat(tr[1])||0,w:parseFloat(s.width)||Math.round(r.width),h:parseFloat(s.height)||Math.round(r.height),fontSize:parseFloat(s.fontSize)||'',radius:parseFloat(s.borderRadius)||'',color:s.color||'',background:s.backgroundColor||''}}
 function currentStyle(){return getItem().styles[deviceKey()]||{}}
+function ensurePage(){draft.page=draft.page||{};draft.page.desktop=draft.page.desktop||{};draft.page.mobile=draft.page.mobile||{};return draft.page[deviceKey()]}
+function findPageTarget(kind='hero'){
+  if(!doc)return null;
+  const map=kind==='main'?['main','#main','.main']:['.as3-hero','.hero','section:first-of-type','main'];
+  for(const s of map){try{const el=doc.querySelector(s);if(el)return el}catch{}}
+  return doc.body;
+}
+function pageStyleTarget(){return $('pageDesignPanel').dataset.target||ensurePage().target||'hero'}
+function refreshPageDesign(){
+  const p=ensurePage();
+  $('pageBgUrl').value=p.bgImage||'';
+  $('pageBgColor').value=p.bgColor||'';
+  $('pageOverlay').value=p.overlay||'transparent';
+  $('pageBgSize').value=p.bgSize||'cover';
+  $('pageBgPosition').value=p.bgPosition||'center';
+  $('pageDesignPanel').dataset.target=p.target||'hero';
+}
+function applyPageDesign(){
+  const target=findPageTarget(pageStyleTarget());if(!target){toast('Không tìm thấy Hero/Trang');return}
+  checkpoint();
+  const p=ensurePage();
+  p.bgImage=$('pageBgUrl').value.trim();
+  p.bgColor=$('pageBgColor').value.trim();
+  p.overlay=$('pageOverlay').value.trim()||'transparent';
+  p.bgSize=$('pageBgSize').value||'cover';
+  p.bgPosition=$('pageBgPosition').value||'center';
+  p.target=pageStyleTarget();
+  applyPageToTarget(target,p);saveDraft();toast('🖼️ Đã áp dụng nền '+(pageStyleTarget()==='main'?'Main':'Hero'));
+}
+function applyPageToTarget(target,p){
+  if(!target)return;
+  if(p.bgImage)target.style.backgroundImage='url("'+p.bgImage+'")';else if(p.bgImage==='')target.style.backgroundImage='';
+  if(p.bgColor)target.style.backgroundColor=p.bgColor;
+  if(p.bgSize)target.style.backgroundSize=p.bgSize;
+  if(p.bgPosition)target.style.backgroundPosition=p.bgPosition;
+  target.style.backgroundRepeat='no-repeat';
+}
+
 function refreshOverlay(){
   const o=$('overlay');if(!selected){o.style.display='none';return}
   const r=selected.getBoundingClientRect(),fr=$('preview').getBoundingClientRect();
@@ -130,6 +178,9 @@ function renderLayers(){
 function applyAll(){
   if(!doc)return;
   const dk=deviceKey();
+  const page=ensurePage();
+  const pageTarget=findPageTarget(page.target||pageStyleTarget());
+  applyPageToTarget(pageTarget,page);
   const controlled=['translate','width','height','fontSize','borderRadius','color','backgroundColor'];
   for(const [s,item] of Object.entries(draft.items||{})){
     let el;try{el=doc.querySelector(s)}catch{continue}if(!el)continue;
@@ -150,7 +201,7 @@ function applyAll(){
   }
   refreshInspector();
 }
-function loadDraft(){try{const raw=localStorage.getItem(DRAFT_KEY);if(raw){draft=JSON.parse(raw);if(!draft.items)draft={items:{}}}}catch{draft={items:{}}}}
+function loadDraft(){try{const raw=localStorage.getItem(DRAFT_KEY);if(raw){draft=JSON.parse(raw);if(!draft.items)draft.items={};if(!draft.page)draft.page={desktop:{},mobile:{}};draft.page.desktop=draft.page.desktop||{};draft.page.mobile=draft.page.mobile||{}}}catch{draft={items:{},page:{desktop:{},mobile:{}}}}}
 function saveDraft(){localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));toast('💾 Đã lưu nháp trên máy')}
 async function loadPublished(){
   // Builder always reloads the CURRENT index.html as its canvas.
@@ -159,7 +210,7 @@ async function loadPublished(){
   // Reloading it recursively causes the Builder canvas to stay blank/loading forever.
   const r=await window.supabaseClient.from('site_builder_versions').select('id,version_no,config,created_at').eq('site_key','default').eq('status','published').maybeSingle();
   if(r.error){$('history').innerHTML='<div class="muted">CMS chưa có Builder V2. Chạy migration trước khi Publish.</div>';return}
-  if(r.data?.config?.items&&!localStorage.getItem(DRAFT_KEY))draft=r.data.config;
+  if(r.data?.config&&!localStorage.getItem(DRAFT_KEY)){draft=r.data.config;if(!draft.items)draft.items={};if(!draft.page)draft.page={desktop:{},mobile:{}};draft.page.desktop=draft.page.desktop||{};draft.page.mobile=draft.page.mobile||{}}
   const h=await window.supabaseClient.from('site_builder_versions').select('id,version_no,status,created_at').eq('site_key','default').order('version_no',{ascending:false}).limit(15);
   if(h.error){$('history').innerHTML='<div class="muted">Không đọc được lịch sử.</div>';return}
   $('history').innerHTML=h.data?.length?h.data.map(v=>'<div class="history-item"><div><b>V'+v.version_no+'</b> <small>'+v.status+' · '+new Date(v.created_at).toLocaleString('vi-VN')+'</small></div>'+(v.status!=='published'?'<button class="btn" data-version="'+v.id+'">Khôi phục</button>':'<small>LIVE</small>')+'</div>').join(''):'<div class="muted">Chưa có version.</div>';
@@ -307,7 +358,7 @@ async function askBuilderAI(message){
       'Authorization':'Bearer '+session.access_token
     },
     body:JSON.stringify({
-      message:'Bạn là AI Designer + Editor của Apple Seed Visual Site Builder. Khi người dùng yêu cầu sửa thiết kế/code giao diện, KHÔNG chỉ tư vấn: hãy tạo thay đổi có thể áp dụng trực tiếp vào Builder. Chỉ sửa selector có trong Context. Không tạo JavaScript nguy hiểm, không đụng auth/payment/security. Trả JSON DUY NHẤT theo schema: {reply:giải thích ngắn,changes:[{selector:selector trong Context,device:desktop|mobile|both,text:nội dung mới tùy chọn,styles:{x,y,w,h,fontSize,radius,color,background}}]}. Chỉ đưa field cần đổi. Nếu không chắc selector thì changes=[]. '+message+'\\nContext: '+JSON.stringify(context),
+      message:'Bạn là AI Designer + Editor của Apple Seed Visual Site Builder. Khi người dùng yêu cầu sửa thiết kế/code giao diện, KHÔNG chỉ tư vấn: hãy tạo thay đổi có thể áp dụng trực tiếp vào Builder. Chỉ sửa selector có trong Context. Không tạo JavaScript nguy hiểm, không đụng auth/payment/security. Trả JSON DUY NHẤT theo schema: {reply:giải thích ngắn,changes:[{selector:selector trong Context,device:desktop|mobile|both,text:nội dung mới tùy chọn,styles:{x,y,w,h,fontSize,radius,color,background},page:{target:hero|main,bgImage,bgColor,overlay,bgSize,bgPosition}}]}. Chỉ đưa field cần đổi. Nếu không chắc selector thì changes=[]. '+message+'\\nContext: '+JSON.stringify(context),
       history:[],
       source:'ai-admin',
       mode:'robot_workspace',
@@ -326,7 +377,8 @@ function aiAdd(role,text){const d=document.createElement('div');d.className='ai-
 function parseAIEditor(raw){let s=String(raw||'').trim();s=s.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();try{return JSON.parse(s)}catch{const a=s.indexOf('{'),b=s.lastIndexOf('}');if(a>=0&&b>a){try{return JSON.parse(s.slice(a,b+1))}catch{}}return null}}
 function applyAIChanges(result){const changes=Array.isArray(result?.changes)?result.changes:[];if(!changes.length)return 0;checkpoint();let applied=0;
 for(const ch of changes){if(!ch?.selector)continue;let el;try{el=doc.querySelector(ch.selector)}catch{continue}if(!el||!editable(el))continue;
-const devices=ch.device==='both'?['desktop','mobile']:[ch.device||device];
+if(ch.page&&typeof ch.page==='object'){const targets=ch.page.target==='main'?'main':'hero';for(const dk of (ch.device==='both'?['desktop','mobile']:[ch.device||device])){draft.page=draft.page||{desktop:{},mobile:{}};draft.page[dk]=draft.page[dk]||{};Object.assign(draft.page[dk],ch.page,{target:targets})}}
+ const devices=ch.device==='both'?['desktop','mobile']:[ch.device||device];
 for(const dk of devices){selector=ch.selector;const item=getItem();const st=item.styles[dk]=item.styles[dk]||{};const src=ch.styles||{};
 for(const k of ['x','y','w','h','fontSize','radius'])if(src[k]!==undefined&&Number.isFinite(Number(src[k])))st[k]=Number(src[k]);
 for(const k of ['color','background'])if(typeof src[k]==='string'&&src[k])st[k]=src[k];
@@ -341,6 +393,20 @@ document.querySelectorAll('[data-block]').forEach(b=>b.onclick=()=>blockAction(b
 $('simpleMode').onclick=()=>{simpleMode=!simpleMode;document.body.classList.toggle('simple-mode',simpleMode);$('simpleMode').classList.toggle('active',simpleMode);toast(simpleMode?'✨ Chế độ đơn giản':'🔧 Chế độ nâng cao')};
 $('groupPhones').onclick=()=>{groupPhones=!groupPhones;$('groupPhones').classList.toggle('active',groupPhones);toast(groupPhones?'📱 Đã bật kéo cả cụm iPhone':'📱 Đã tắt kéo cả cụm')};
 $('centerSelected').onclick=()=>{if(!selected){toast('Chọn đối tượng trước');return}checkpoint();const v=getItem().styles[deviceKey()];v.x=0;selected.style.translate='0px '+(v.y||0)+'px';$('x').value=0;saveDraft();refreshOverlay();toast('↔️ Đã căn giữa')};
+$('targetHero').onclick=()=>{$('pageDesignPanel').dataset.target='hero';refreshPageDesign();toast('🎯 Đang chỉnh nền Hero')};
+$('targetMain').onclick=()=>{$('pageDesignPanel').dataset.target='main';refreshPageDesign();toast('🎯 Đang chỉnh nền Main')};
+$('applyPageDesign').onclick=async()=>{
+  if(pagePendingFile){try{$('pageBgUrl').value=await upload(pagePendingFile);pagePendingFile=null;$('pageFile').value=''}catch(e){toast('Upload nền lỗi: '+e.message);return}}
+  applyPageDesign();applyAll();refreshOverlay();
+};
+$('pagePick').onclick=()=>$('pageFile').click();
+$('pageFile').onchange=e=>{pagePendingFile=e.target.files[0]||null;if(pagePendingFile){$('pageBgUrl').value='';toast('🖼️ Đã chọn ảnh nền — bấm Áp dụng nền Hero / Trang')};};
+$('reloadCanvas').onclick=()=>{
+  const p=$('preview');p.dataset.builderRetry='1';
+  p.src='index.html?appleSeedBuilderPreview=1&builderCanvas=1&v='+Date.now();
+  toast('↻ Đang nạp lại trang gốc và ảnh mới');
+};
+refreshPageDesign();
 $('applyText').onclick=()=>{if(!selected||!textEditable(selected))return;checkpoint();selected.textContent=$('text').value;getItem().text=selected.textContent;saveDraft();refreshInspector();toast('Đã đổi chữ')};
 $('applyStyle').onclick=()=>{if(!selected)return;checkpoint();const v=getItem().styles[deviceKey()];for(const k of ['x','y','w','h']){const n=parseFloat($(k).value);if(Number.isFinite(n))v[k]=n}for(const k of ['fontSize','radius']){const n=parseFloat($(k).value);if(Number.isFinite(n))v[k]=n}v.color=$('color').value.trim();v.background=$('background').value.trim();selected.style.translate=(v.x||0)+'px '+(v.y||0)+'px';if(v.w)selected.style.width=v.w+'px';if(v.h)selected.style.height=v.h+'px';if(v.fontSize)selected.style.fontSize=v.fontSize+'px';if(v.radius!==undefined)selected.style.borderRadius=v.radius+'px';if(v.color)selected.style.color=v.color;if(v.background)selected.style.backgroundColor=v.background;saveDraft();refreshOverlay();toast('Đã áp dụng giao diện')};
 $('pick').onclick=()=>$('file').click();$('file').onchange=e=>{pendingFile=e.target.files[0]||null;if(pendingFile)$('imagePreview').src=URL.createObjectURL(pendingFile)};
