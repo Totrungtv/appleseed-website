@@ -149,10 +149,22 @@ function refreshInspector(){
   if(!selected){$('info').textContent='Chưa chọn';$('tag').hidden=true;$('contentPanel').hidden=true;$('imagePanel').hidden=true;$('stylePanel').hidden=true;$('layerList').innerHTML='<div class="muted">Chưa chọn đối tượng.</div>';refreshOverlay();return}
   $('info').textContent=selector;$('tag').hidden=false;$('tag').textContent=selected.tagName.toLowerCase();
   $('contentPanel').hidden=!textEditable(selected);
-  $('imagePanel').hidden=!(selected.tagName==='IMG'||getComputedStyle(selected).backgroundImage!=='none');
+  const item=draft.items?.[selector]||{};
+  const phone=selected.closest?.('.as3-phone');
+  const phoneImage=item.bgImage ||
+    (selected.tagName==='IMG'?(selected.currentSrc||selected.src):'') ||
+    (phone?.querySelector('.as3-screen > img')?.currentSrc||phone?.querySelector('.as3-screen > img')?.src||'');
+  const isHeroPhone=!!phone || selected.matches?.('.as3-screen');
+  const computedBg=getComputedStyle(selected).backgroundImage;
+  $('imagePanel').hidden=!(selected.tagName==='IMG'||isHeroPhone||computedBg!=='none');
   $('stylePanel').hidden=false;
   if(textEditable(selected))$('text').value=selected.textContent;
   if(selected.tagName==='IMG'){$('imagePreview').src=selected.currentSrc||selected.src;$('imageUrl').value=selected.src}
+  else if(isHeroPhone){$('imagePreview').src=phoneImage||'';$('imageUrl').value=phoneImage||''}
+  else if(computedBg!=='none'){
+    const m=computedBg.match(/url\(["']?(.+?)["']?\)/i);
+    $('imagePreview').src=m?.[1]||'';$('imageUrl').value=m?.[1]||'';
+  }
   const st=styleObject(selected),v=currentStyle();
   $('x').value=v.x??st.x;$('y').value=v.y??st.y;$('w').value=v.w??st.w;$('h').value=v.h??st.h;$('fontSize').value=v.fontSize??st.fontSize;$('radius').value=v.radius??st.radius;$('color').value=/^#[0-9a-f]{6}$/i.test(v.color??st.color)?(v.color??st.color):'#17233d';$('backgroundColor').value=/^#[0-9a-f]{6}$/i.test(v.background??st.background)?(v.background??st.background):'#ffffff';$('deviceLabel').textContent=device==='mobile'?'Mobile':'Desktop';
   refreshOverlay();renderLayers();
@@ -183,6 +195,41 @@ function renderLayers(){
   $('layerList').innerHTML=uniq.slice(0,80).map(x=>'<button class="layer '+(x[1]===selector?'active':'')+'" data-s="'+encodeURIComponent(x[1])+'">'+x[0].tagName.toLowerCase()+' — '+((x[0].textContent||x[0].alt||'').trim().replace(/\\s+/g,' ').slice(0,42)||'(hình)')+'</button>').join('');
   $('layerList').querySelectorAll('.layer').forEach(b=>b.onclick=()=>{try{choose(doc.querySelector(decodeURIComponent(b.dataset.s)))}catch{}});
 }
+function applyHeroPhoneImage(el,url){
+  if(!el)return false;
+  const phone=el.matches?.('.as3-phone')?el:el.closest?.('.as3-phone');
+  const screen=el.matches?.('.as3-screen')?el:phone?.querySelector('.as3-screen');
+  if(!phone&&!screen)return false;
+  if(url){
+    phone?.querySelectorAll(':scope > .as3-screen > img').forEach(img=>img.remove());
+    if(screen){
+      screen.style.setProperty('background','transparent','important');
+      screen.style.setProperty('background-image','none','important');
+      screen.querySelectorAll(':scope > img').forEach(img=>img.remove());
+    }
+    phone?.querySelectorAll(':scope > .as3-island,:scope > .as3-label').forEach(x=>x.style.setProperty('display','none','important'));
+    const safe=String(url).replace(/\\/g,'\\\\').replace(/"/g,'\\\"');
+    phone?.style.setProperty('background-image','url("'+safe+'")','important');
+    phone?.style.setProperty('background-size','contain','important');
+    phone?.style.setProperty('background-position','center','important');
+    phone?.style.setProperty('background-repeat','no-repeat','important');
+    phone?.style.setProperty('background-color','transparent','important');
+    phone?.style.setProperty('box-shadow','none','important');
+    phone?.style.setProperty('border','0','important');
+    phone?.style.setProperty('padding','0','important');
+  }else if(phone){
+    phone.style.removeProperty('background-image');
+    phone.style.removeProperty('background-size');
+    phone.style.removeProperty('background-position');
+    phone.style.removeProperty('background-repeat');
+    phone.style.removeProperty('background-color');
+    phone.style.removeProperty('box-shadow');
+    phone.style.removeProperty('border');
+    phone.style.removeProperty('padding');
+    phone.querySelectorAll(':scope > .as3-island,:scope > .as3-label').forEach(x=>x.style.removeProperty('display'));
+  }
+  return true;
+}
 function applyAll(){
   if(!doc)return;
   const dk=deviceKey();
@@ -193,9 +240,10 @@ function applyAll(){
     let el;try{el=doc.querySelector(s)}catch{continue}if(!el)continue;
     if(item.text!==undefined&&textEditable(el))el.textContent=item.text;
     if(item.src!==undefined&&el.tagName==='IMG')el.src=item.src;
-    if(item.bgImage!==undefined&&el.tagName!=='IMG')el.style.backgroundImage=item.bgImage?'url("'+item.bgImage+'")':'';
-    // Important: Desktop and Mobile are independent. Clear only Builder-controlled
-    // inline styles first, then apply the selected device's draft values.
+    if(item.bgImage!==undefined&&el.tagName!=='IMG'){
+      if(el.matches?.('.as3-phone,.as3-screen')) applyHeroPhoneImage(el,item.bgImage);
+      else el.style.backgroundImage=item.bgImage?'url("'+item.bgImage+'")':'';
+    }
     controlled.forEach(k=>{el.style[k]=''});
     const st=(item.styles||{})[dk]||{};
     if(st.x!==undefined||st.y!==undefined)el.style.translate=(st.x||0)+'px '+(st.y||0)+'px';
@@ -538,5 +586,17 @@ async function checkRole(){
     if(drag&&/^(nw|ne|sw|se)$/.test(drag.type))drag=null;
   });
 })();
-(async()=>{await checkRole()})();
+(async()=>{
+  await checkRole();
+  // Always start the Builder from a fresh copy of the real index.html so an
+  // older cached canvas cannot become a second, different homepage.
+  try{
+    const p=$('preview');
+    if(p && !p.dataset.builderBooted){
+      p.dataset.builderBooted='1';
+      p.dataset.builderRetry='';
+      p.src='index.html?appleSeedBuilderPreview=1&builderCanvas=1&v=builder-'+Date.now();
+    }
+  }catch(_){}
+})();
 </script></body></html>
