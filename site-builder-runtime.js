@@ -25,10 +25,12 @@
           var viewKey=String(r.data.version_no)+'-'+deviceKey();
           if(viewKey===appliedVersion)return;
           var mobile=deviceKey()==='mobile';
+          var matched=0;
           Object.keys(r.data.config.items).forEach(function(sel){
             var item=r.data.config.items[sel],el;
             try{el=document.querySelector(sel)}catch(_){el=null}
             if(!el)return;
+            matched++;
             if(item.text!==undefined && el.children.length===0 && !/^(SCRIPT|STYLE)$/.test(el.tagName))el.textContent=item.text;
             if(item.src!==undefined && el.tagName==='IMG')el.setAttribute('src',item.src);
             if(item.bgImage!==undefined && el.tagName!=='IMG')el.style.backgroundImage=item.bgImage?'url("'+item.bgImage+'")':'';
@@ -41,7 +43,13 @@
             if(st.color)el.style.color=st.color;
             if(st.background)el.style.backgroundColor=st.background;
           });
-          appliedVersion=viewKey;
+          /*
+           * CMS content is rendered asynchronously into #homeRenderer.
+           * Do NOT mark the published version as applied when its selectors
+           * were not in the DOM yet; otherwise the later CMS render would
+           * permanently wipe the Builder changes until a version/device change.
+           */
+          if(matched>0)appliedVersion=viewKey;
         });
     }catch(_){}
   }
@@ -73,7 +81,11 @@
     apply();
     setTimeout(apply,600);setTimeout(apply,1600);setTimeout(apply,3200);
     window.addEventListener('resize',function(){setTimeout(apply,80)});
-    setInterval(apply,5000);
+    setInterval(apply,1500);
+    var homeRenderer=document.getElementById('homeRenderer');
+    if(homeRenderer){
+      new MutationObserver(function(){apply()}).observe(homeRenderer,{childList:true,subtree:true});
+    }
     document.addEventListener('visibilitychange',function(){if(!document.hidden)apply()});
 
     var chatBtn=document.getElementById('chatBtn');
