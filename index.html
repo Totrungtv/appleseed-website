@@ -3409,8 +3409,18 @@ body.apple-seed-chat-open #apple-seed-ai-board-float{
 
     if(item.bgImage!==undefined && el.tagName!=="IMG"){
       if(item.bgImage){
+        /* A custom Builder image owns this phone slot. Remove any legacy
+           product image injected by the old dynamic Hero loaders. */
+        if(el.matches && el.matches(".as3-screen")){
+          el.querySelectorAll(":scope > img").forEach(function(img){img.remove()});
+        }
         var bg=String(item.bgImage).replace(/\\/g,"\\\\").replace(/"/g,'\\\"');
         el.style.setProperty("background-image",'url("'+bg+'")',"important");
+        if(el.matches && el.matches(".as3-screen")){
+          el.style.setProperty("background-size","contain","important");
+          el.style.setProperty("background-position","center","important");
+          el.style.setProperty("background-repeat","no-repeat","important");
+        }
       }else{
         el.style.removeProperty("background-image");
       }
@@ -3479,6 +3489,8 @@ body.apple-seed-chat-open #apple-seed-ai-board-float{
       }
       if(!r.data || !r.data.config || !r.data.config.items) return;
       currentConfig=r.data.config;
+      window.appleSeedBuilderPublishedConfig=currentConfig;
+      window.dispatchEvent(new CustomEvent("appleSeedBuilderConfigReady"));
       applyConfig();
       window.setTimeout(applyConfig,500);
       window.setTimeout(applyConfig,1500);
