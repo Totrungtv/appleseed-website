@@ -2813,7 +2813,7 @@ async function askAppleSeedAI(message, onDelta){
         "apikey":anonKey,
         "Authorization":"Bearer "+anonKey
       },
-      body:JSON.stringify({message}),
+      body:JSON.stringify({message,source:"homepage-chat"}),
       signal:controller.signal
     });
 
