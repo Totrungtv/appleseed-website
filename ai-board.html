@@ -641,7 +641,11 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
    const area=$('asSchematicArea')?.value.trim()||'';
    const boardCode=area||'I2C compass / PP_VDD';
    const n=notes();
-   status.textContent='⏳ Đang upload ảnh và gọi AI…';
+   const analyzeBtn=mode==='schematic'?$('asAnalyzeSchematic'):$('analyze');
+   const originalBtnText=analyzeBtn?.textContent||'⚡ PHÂN TÍCH AI';
+   if(analyzeBtn){analyzeBtn.disabled=true;analyzeBtn.style.opacity='.72';analyzeBtn.textContent='⏳ AI ĐANG PHÂN TÍCH…';}
+   status.textContent='🧠 AI đang phân tích dữ liệu, xin chờ trong giây lát…';
+   out.innerHTML='<div style="display:flex;align-items:center;gap:10px"><span style="font-size:22px">🧠</span><div><strong>AI đang phân tích…</strong><div class="muted" style="margin-top:4px">⏳ Đang xử lý PANIC Log, hình ảnh và dữ liệu kỹ thuật. Xin chờ trong giây lát…</div></div></div>';
    try{
      const safe=file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,'-');
      const path=`pan-ai/${se.user.id}/${Date.now()}-${crypto.randomUUID().slice(0,8)}-${safe}`;
@@ -653,8 +657,14 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
      const text=call.data?.analysis||'AI không trả về kết quả.';
      out.innerHTML='<strong>'+esc(mode==='schematic'?'📐 Schematic Intelligence':'🧠 AI Board Diagnosis')+'</strong><pre style="white-space:pre-wrap;font:inherit;margin:10px 0 0">'+esc(text)+'</pre>';
      status.textContent='✅ Phân tích hoàn tất.';
+     if(analyzeBtn){analyzeBtn.disabled=false;analyzeBtn.style.opacity='';analyzeBtn.textContent=originalBtnText;}
      out.scrollIntoView({behavior:'smooth',block:'nearest'});
-   }catch(e){console.error('Apple Seed AI Board:',e);status.textContent='❌ '+(e?.message||String(e));}
+   }catch(e){
+     console.error('Apple Seed AI Board:',e);
+     status.textContent='❌ '+(e?.message||String(e));
+     if(analyzeBtn){analyzeBtn.disabled=false;analyzeBtn.style.opacity='';analyzeBtn.textContent=originalBtnText;}
+     out.innerHTML='<strong>❌ AI phân tích chưa hoàn tất</strong><div class="muted" style="margin-top:7px">'+esc(e?.message||String(e))+'</div>';
+   }
  }
  $('analyze').onclick=()=>run(mainFile,'panic');
  $('asAnalyzeSchematic').onclick=()=>run(schematicFile,'schematic');
