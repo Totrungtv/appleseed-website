@@ -681,12 +681,15 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
      const path=`pan-ai/${se.user.id}/${Date.now()}-${crypto.randomUUID().slice(0,8)}-${safe}`;
      const up=await sb.storage.from('ai-schematics').upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type});
      if(up.error)throw up.error;
-     const call=await sb.functions.invoke('analyze-schematic',{body:{analysis_id:crypto.randomUUID(),file_path:path,device_model:model,board_code:boardCode,notes:n,mime_type:file.type}});
+     const analysisId=crypto.randomUUID();
+     const action=mode==='schematic'?'schematic_analysis':'ai_analysis';
+     const call=await sb.functions.invoke('analyze-schematic',{body:{analysis_id:analysisId,action,file_path:path,device_model:model,board_code:boardCode,notes:n,mime_type:file.type}});
      if(call.error)throw call.error;
      if(call.data?.error)throw new Error(call.data.error);
      const text=call.data?.analysis||'AI không trả về kết quả.';
      out.innerHTML='<strong>'+esc(mode==='schematic'?'📐 Schematic Intelligence':'🧠 AI Board Diagnosis')+'</strong><pre style="white-space:pre-wrap;font:inherit;margin:10px 0 0">'+esc(text)+'</pre>';
-     status.innerHTML='✅ <strong>Phân tích hoàn tất · đã trừ 20 Coin.</strong>';
+     const chargedCost=Number(call.data?.coin_cost||0);
+     status.innerHTML='✅ <strong>Phân tích hoàn tất · đã trừ '+chargedCost+' Coin.</strong>';
      try{ if(typeof refreshAccount==='function') await refreshAccount(); }catch(_){ }
      out.scrollIntoView({behavior:'smooth',block:'nearest'});
    }catch(e){console.error('Apple Seed AI Board:',e);status.innerHTML='❌ <strong>Phân tích lỗi:</strong> '+esc(e?.message||String(e));}
