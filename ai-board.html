@@ -4,12 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Apple Seed AI Board</title>
-<script id="apple-seed-chat-legacy-compat-v1">
-  // Compatibility guard for older cached AI Board markup.
-  // The current Technician Network no longer depends on this array, but defining
-  // it prevents a stale script from aborting the entire chat controller.
-  window.groupMemberNames = Array.isArray(window.groupMemberNames) ? window.groupMemberNames : [];
-</script>
 <style>
 body{margin:0;font-family:Inter,system-ui,sans-serif;background:linear-gradient(135deg,#f7fbff,#eef7ff 52%,#e8f2ff);color:#10233f}
 .wrap{max-width:1180px;margin:auto;padding:30px}.top{display:flex;justify-content:space-between;gap:20px;align-items:center;flex-wrap:wrap}
@@ -486,9 +480,6 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
   if(!sb) return;
   let session=null,user=null,currentConversation=null,currentContactId=null,realtime=null,notifyChannel=null;
   let conversations=[], friendships=[], notifications=[];
-  let conversationLoadSeq=0;
-  let networkRefreshPromise=null;
-  let loadedMessageIds=new Set();
   const chatForm=$('asChatForm'), chatInput=$('asChatInput'), sendBtn=$('asChatSendBtn');
   const status=(t,ok=false)=>{const e=$('asAuthStatus');if(!e)return;e.textContent=t;e.className='as-status show '+(ok?'ok':'err');};
   const profileStatus=(t,ok=false)=>{const e=$('asProfileStatus');if(!e)return;e.textContent=t;e.className='as-status show '+(ok?'ok':'err');};
@@ -572,143 +563,14 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
     const p=await sb.rpc('chat_start_direct',{p_other_user_id:targetId,p_other_name:'Cuộc trò chuyện'});if(p.error){alert(friendlyError(p.error));return;}await loadConversations();const c=conversations.find(x=>x.id===p.data);openConversation(p.data,c?.name||'Chat riêng');
   }
   async function openConversation(id,title){
-    if(!id||!user)return;
-    const seq=++conversationLoadSeq;
-    currentConversation=id;
-    currentContactId=null;
-    loadedMessageIds=new Set();
-    $('asChatTitle').textContent=title||'Cuộc trò chuyện';
-    $('asChatMeta').textContent='Đang tải…';
-    chatInput.disabled=false;
-    sendBtn.disabled=false;
-    renderConversationList();
-
-    // Switch the realtime room first so a message sent while history loads is not lost.
-    if(realtime){await sb.removeChannel(realtime);realtime=null;}
-    realtime=sb.channel('ai-board-chat-'+id)
-      .on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages',filter:'conversation_id=eq.'+id},payload=>{
-        if(seq!==conversationLoadSeq||currentConversation!==id||!payload.new?.id)return;
-        appendMessage(payload.new,true);
-      })
-      .subscribe();
-
-    // Do not let a slow participant RPC block the message history.
-    const [participantResult,messageResult]=await Promise.allSettled([
-      sb.rpc('chat_get_participants',{p_conversation_id:id}),
-      loadMessages(id,seq)
-    ]);
-    if(seq!==conversationLoadSeq||currentConversation!==id)return;
-
-    if(participantResult.status==='fulfilled'&&!participantResult.value.error){
-      const parts=participantResult.value.data||[];
-      const other=parts.find(x=>x.user_id!==user.id);
-      currentContactId=other?.user_id||null;
-      if(other)$('asChatMeta').textContent=other.online?'🟢 Đang online':'⚪ Ngoại tuyến';
-      else $('asChatMeta').textContent='Nhóm kỹ thuật';
-      if(other?.avatar_url)$('asChatAvatar').outerHTML=avatarHTML(other.avatar_url,other.full_name,'as-avatar as-avatar-lg');
-      else if(other)$('asChatAvatar').textContent=initials(other.full_name);
-    }else{
-      $('asChatMeta').textContent='Cuộc trò chuyện';
-    }
-
-    if(messageResult.status==='rejected'){
-      const box=$('asChatMessages');
-      if(!box.children.length)box.innerHTML='<div class="as-empty">Không tải được tin nhắn.</div>';
-    }
-    await sb.rpc('chat_mark_read',{p_conversation_id:id});
+    if(!id)return; currentConversation=id; currentContactId=null; $('asChatTitle').textContent=title||'Cuộc trò chuyện'; $('asChatMeta').textContent='Đang tải…'; chatInput.disabled=false;sendBtn.disabled=false;renderConversationList();
+    const p=await sb.rpc('chat_get_participants',{p_conversation_id:id}); const parts=p.data||[]; const other=parts.find(x=>x.user_id!==user.id); currentContactId=other?.user_id||null; if(other)$('asChatMeta').textContent=other.online?'🟢 Đang online':'⚪ Ngoại tuyến';else $('asChatMeta').textContent='Nhóm kỹ thuật';
+    await loadMessages(); await sb.rpc('chat_mark_read',{p_conversation_id:id});
+    if(realtime)sb.removeChannel(realtime); realtime=sb.channel('ai-board-chat-'+id).on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages',filter:'conversation_id=eq.'+id},payload=>{if(payload.new&&payload.new.id)appendMessage(payload.new,true);}).subscribe();
   }
-
-  function appendMessage(m,scroll){
-    if(!m?.id||m.conversation_id!==currentConversation)return;
-    if(loadedMessageIds.has(m.id))return;
-    loadedMessageIds.add(m.id);
-    const box=$('asChatMessages');
-    const empty=box.querySelector('.as-empty');
-    if(empty)box.innerHTML='';
-    const mine=m.sender_id===user?.id;
-    const div=document.createElement('div');
-    div.className='as-msg'+(mine?' mine':'');
-    div.dataset.messageId=String(m.id);
-    div.innerHTML=esc(m.body)+'<small>'+new Date(m.created_at).toLocaleString('vi-VN')+'</small>';
-    box.appendChild(div);
-    if(scroll)box.scrollTop=box.scrollHeight;
-  }
-
-  async function loadMessages(conversationId,seq){
-    const box=$('asChatMessages');
-    if(currentConversation!==conversationId||seq!==conversationLoadSeq)return;
-
-    // Không xóa khung chat khi tải lại cùng một cuộc trò chuyện.
-    // Đây là điểm sửa lỗi "chớp tắt" khi mở chat / gửi tin / realtime.
-    const sameRoom=box.dataset.conversationId===String(conversationId);
-    const hasMessages=!!box.querySelector('.as-msg');
-    if(!sameRoom||!hasMessages){
-      box.innerHTML='<div class="as-empty">Đang tải tin nhắn…</div>';
-    }
-
-    const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error('Hết thời gian tải tin nhắn.')),12000));
-    let r;
-    try{
-      r=await Promise.race([
-        sb.rpc('chat_get_messages',{p_conversation_id:conversationId,p_limit:300}),
-        timeout
-      ]);
-    }catch(e){
-      if(seq!==conversationLoadSeq||currentConversation!==conversationId)return;
-      if(!hasMessages) box.innerHTML='<div class="as-empty">Không tải được tin nhắn. Vui lòng thử lại.</div>';
-      console.error('chat_get_messages',e);
-      return;
-    }
-
-    if(seq!==conversationLoadSeq||currentConversation!==conversationId)return;
-    if(r.error){
-      if(!hasMessages) box.innerHTML='<div class="as-empty">Không tải được tin nhắn.</div>';
-      console.error('chat_get_messages',r.error);
-      return;
-    }
-
-    const rows=r.data||[];
-    box.dataset.conversationId=String(conversationId);
-
-    // Khi đã có lịch sử, chỉ append các tin chưa có; tuyệt đối không render lại toàn bộ box.
-    if(!sameRoom||!hasMessages){
-      box.innerHTML='';
-      loadedMessageIds=new Set();
-    }
-
-    if(!rows.length){
-      if(!box.querySelector('.as-msg')) box.innerHTML='<div class="as-empty">Chưa có tin nhắn. Gửi tin đầu tiên.</div>';
-      return;
-    }
-
-    rows.forEach(m=>appendMessage(m,false));
-    box.scrollTop=box.scrollHeight;
-  }
-
-  chatForm.onsubmit=async e=>{
-    e.preventDefault();
-    const body=chatInput.value.trim();
-    if(!body||!currentConversation||!user)return;
-    sendBtn.disabled=true;
-    try{
-      const conversationId=currentConversation;
-      const seq=conversationLoadSeq;
-      const r=await sb.rpc('chat_send_message_v2',{p_conversation_id:conversationId,p_body:body});
-      if(r.error)throw r.error;
-      chatInput.value='';
-      // Re-read without clearing the visible history. Realtime + this fallback
-      // guarantee the message appears even if the websocket is briefly late.
-      await Promise.allSettled([
-        loadMessages(conversationId,seq),
-        loadConversations()
-      ]);
-    }catch(x){
-      alert(friendlyError(x));
-    }finally{
-      sendBtn.disabled=false;
-      chatInput.focus();
-    }
-  };
+  function appendMessage(m,scroll){const box=$('asChatMessages');if(box.querySelector('.as-empty'))box.innerHTML='';const mine=m.sender_id===user?.id;const div=document.createElement('div');div.className='as-msg'+(mine?' mine':'');div.innerHTML=esc(m.body)+'<small>'+new Date(m.created_at).toLocaleString('vi-VN')+'</small>';box.appendChild(div);if(scroll)box.scrollTop=box.scrollHeight;}
+  async function loadMessages(){const box=$('asChatMessages');box.innerHTML='';if(!currentConversation)return;const r=await sb.rpc('chat_get_messages',{p_conversation_id:currentConversation,p_limit:300});if(r.error){box.innerHTML='<div class="as-empty">Không tải được tin nhắn.</div>';return;}if(!r.data?.length){box.innerHTML='<div class="as-empty">Chưa có tin nhắn. Gửi tin đầu tiên.</div>';return;}r.data.forEach(m=>appendMessage(m,false));box.scrollTop=box.scrollHeight;}
+  chatForm.onsubmit=async e=>{e.preventDefault();const body=chatInput.value.trim();if(!body||!currentConversation||!user)return;sendBtn.disabled=true;try{const r=await sb.rpc('chat_send_message_v2',{p_conversation_id:currentConversation,p_body:body});if(r.error)throw r.error;chatInput.value='';await loadConversations();}catch(x){alert(friendlyError(x));}finally{sendBtn.disabled=false;chatInput.focus();}};
 
   async function loadNotifications(){const r=await sb.rpc('chat_get_notifications_v2',{p_limit:50});if(r.error){notifications=[];}else notifications=r.data||[];renderNotifications();}
   function renderNotifications(){const unread=notifications.filter(n=>!n.read_at).length;const badge=$('asNotifyBadge');badge.textContent=String(unread);badge.style.display=unread?'grid':'none';const box=$('asNotificationList');if(!notifications.length){box.innerHTML='<div class="as-empty">Không có thông báo mới.</div>';return;}box.innerHTML=notifications.map(n=>`<div class="as-notification ${n.read_at?'':'unread'}" data-notify="${esc(n.id)}" data-chat="${esc(n.conversation_id)}"><div>${avatarHTML(n.sender_avatar_url,n.sender_name)}</div><div class="as-notification-body"><b>${esc(n.sender_name||'Thành viên')}</b><p>${esc(n.body)}</p><small>${new Date(n.created_at).toLocaleString('vi-VN')}</small></div></div>`).join('');box.querySelectorAll('[data-chat]').forEach(x=>x.onclick=async()=>{closeNotify();await openConversation(x.dataset.chat);});}
@@ -718,7 +580,7 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
 
   async function openProfile(id){if(!id)return;const r=await sb.rpc('chat_get_profile',{p_user_id:id});if(r.error||!r.data?.length){alert('Không tải được trang cá nhân.');return;}const x=r.data[0];
     $('asChatTitle').textContent=x.full_name||'Trang cá nhân';$('asChatMeta').textContent=x.online?'🟢 Đang online':'⚪ Ngoại tuyến';currentContactId=id;
-    const box=$('asChatMessages');box.dataset.conversationId='';box.innerHTML=`<div class="as-profile-card"><div class="as-profile-hero">${avatarHTML(x.avatar_url,x.full_name,'as-avatar-xl')}<div><div class="as-profile-name">${esc(x.full_name)}</div><div class="as-profile-meta">${x.online?'🟢 Đang online':'⚪ Ngoại tuyến'} · ${esc(x.role||'member')}</div></div></div><div class="as-profile-meta" style="margin-top:14px">📞 ${esc(x.phone||'Chưa cập nhật')}<br>✉️ ${esc(x.email||'')}</div><div class="as-profile-actions">${x.is_friend?`<button class="as-smallbtn danger" data-profile-remove="${esc(id)}">Hủy kết bạn</button>`:x.friend_status==='pending'&&x.requested_by_me?`<button class="as-smallbtn danger" data-profile-remove="${esc(id)}">Hủy lời mời</button>`:x.friend_status==='pending'&&!x.requested_by_me?`<button class="as-smallbtn primary" data-profile-accept="${esc(id)}">Chấp nhận</button><button class="as-smallbtn" data-profile-reject="${esc(id)}">Từ chối</button>`:`<button class="as-smallbtn primary" data-profile-add="${esc(id)}">🤝 Kết bạn</button>`}<button class="as-smallbtn" data-profile-chat="${esc(id)}">💬 Nhắn tin</button></div></div>`;
+    const box=$('asChatMessages');box.innerHTML=`<div class="as-profile-card"><div class="as-profile-hero">${avatarHTML(x.avatar_url,x.full_name,'as-avatar-xl')}<div><div class="as-profile-name">${esc(x.full_name)}</div><div class="as-profile-meta">${x.online?'🟢 Đang online':'⚪ Ngoại tuyến'} · ${esc(x.role||'member')}</div></div></div><div class="as-profile-meta" style="margin-top:14px">📞 ${esc(x.phone||'Chưa cập nhật')}<br>✉️ ${esc(x.email||'')}</div><div class="as-profile-actions">${x.is_friend?`<button class="as-smallbtn danger" data-profile-remove="${esc(id)}">Hủy kết bạn</button>`:x.friend_status==='pending'&&x.requested_by_me?`<button class="as-smallbtn danger" data-profile-remove="${esc(id)}">Hủy lời mời</button>`:x.friend_status==='pending'&&!x.requested_by_me?`<button class="as-smallbtn primary" data-profile-accept="${esc(id)}">Chấp nhận</button><button class="as-smallbtn" data-profile-reject="${esc(id)}">Từ chối</button>`:`<button class="as-smallbtn primary" data-profile-add="${esc(id)}">🤝 Kết bạn</button>`}<button class="as-smallbtn" data-profile-chat="${esc(id)}">💬 Nhắn tin</button></div></div>`;
     box.querySelector('[data-profile-remove]')?.addEventListener('click',()=>removeFriend(id));box.querySelector('[data-profile-add]')?.addEventListener('click',()=>sendFriend(id));box.querySelector('[data-profile-accept]')?.addEventListener('click',()=>respondFriend(id,true));box.querySelector('[data-profile-reject]')?.addEventListener('click',()=>respondFriend(id,false));box.querySelector('[data-profile-chat]')?.addEventListener('click',()=>startDirect(id));
   }
   $('asProfileBtn').onclick=()=>{if(currentContactId)openProfile(currentContactId);else alert('Hãy mở một cuộc trò chuyện hoặc chọn thành viên trước.');};
@@ -736,18 +598,7 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
 
   $('asSaveProfile').onclick=async()=>{if(!user)return;const b=$('asSaveProfile');b.disabled=true;try{let avatarUrl='';const file=$('asAvatarFile').files?.[0];if(file){if(!/^image\/(png|jpeg|webp)$/.test(file.type))throw new Error('Ảnh đại diện chỉ nhận PNG, JPG hoặc WEBP.');if(file.size>5*1024*1024)throw new Error('Ảnh đại diện tối đa 5 MB.');const path=`avatars/${user.id}/${Date.now()}-${file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,'-')}`;const up=await sb.storage.from('site-images').upload(path,file,{cacheControl:'3600',upsert:true,contentType:file.type});if(up.error)throw up.error;const pub=sb.storage.from('site-images').getPublicUrl(path);avatarUrl=pub.data.publicUrl;}else{const old=await sb.rpc('chat_get_profile',{p_user_id:user.id});avatarUrl=old.data?.[0]?.avatar_url||'';}const r=await sb.rpc('chat_update_my_profile',{p_full_name:$('asProfileName').value.trim(),p_avatar_url:avatarUrl,p_phone:$('asProfilePhone').value.trim()});if(r.error)throw r.error;profileStatus('Đã cập nhật hồ sơ và ảnh đại diện.',true);await refreshAccount();await loadConversations();}catch(x){profileStatus(friendlyError(x));}finally{b.disabled=false;}};
 
-  async function refreshNetwork(){
-    if(networkRefreshPromise)return networkRefreshPromise;
-    networkRefreshPromise=(async()=>{
-      await Promise.all([loadConversations(),loadFriendships(),loadNotifications()]);
-      if(!notifyChannel){
-        notifyChannel=sb.channel('ai-board-notifications-'+user.id)
-          .on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_notifications',filter:'user_id=eq.'+user.id},()=>loadNotifications())
-          .subscribe();
-      }
-    })().finally(()=>{networkRefreshPromise=null;});
-    return networkRefreshPromise;
-  }
+  async function refreshNetwork(){await loadConversations();await loadFriendships();await loadNotifications();if(!notifyChannel){notifyChannel=sb.channel('ai-board-notifications-'+user.id).on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_notifications',filter:'user_id=eq.'+user.id},()=>loadNotifications()).subscribe();}}
   if(sb?.auth){sb.auth.onAuthStateChange(()=>setTimeout(refreshAccount,0));refreshAccount();}else showLoggedOut();
 })();</script>
 
@@ -824,39 +675,6 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
    if(x.error){st.textContent='❌ Không đăng được ca PANIC: '+x.error.message;return;}
    st.textContent='✅ Đã đăng ca PANIC #'+x.data.id+' vào PANIC Control Center.';
  });
-})();
-</script>
-<script id="apple-seed-technician-network-final-stability-v1">
-(function(){
-  "use strict";
-  const $=id=>document.getElementById(id);
-  const modal=$("asChatModal"), win=$("asChatWindow"), messages=$("asChatMessages");
-
-  // Never allow the chat window to be left visually minimized after opening it.
-  const community=$("asCommunityBtn");
-  if(community){
-    community.addEventListener("click",()=>{
-      setTimeout(()=>{
-        win?.classList.remove("is-minimized");
-        modal?.classList.add("open");
-      },0);
-    },true);
-  }
-
-  // Keep the currently loaded conversation visible while background refreshes run.
-  if(messages){
-    const observer=new MutationObserver(()=>{
-      if(!modal?.classList.contains("open")) return;
-      const empty=messages.querySelector(".as-empty");
-      if(empty && messages.querySelector(".as-msg")) empty.remove();
-    });
-    observer.observe(messages,{childList:true});
-  }
-
-  // If the profile/info button is clicked, do not close the chat window.
-  $("asProfileBtn")?.addEventListener("click",()=>{
-    win?.classList.remove("is-minimized");
-  },true);
 })();
 </script>
 </body></html>
