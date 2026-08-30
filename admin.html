@@ -90,6 +90,14 @@ label{font-weight:700;font-size:14px;display:block}input,textarea,select{width:1
 @media(max-width:600px){.hero-ui-repeat-grid{grid-template-columns:1fr}}
 </style>
 
+
+<style id="apple-seed-visual-builder-style">
+.visual-builder{margin:18px 0;padding:18px;border:1px solid #dbe3ef;border-radius:18px;background:#f8fafc}
+.vb-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap}.vb-head h3{margin:0}.vb-tools{display:flex;gap:7px;flex-wrap:wrap;align-items:center}.vb-tools button,.vb-tools select{border:1px solid #d0d5dd;background:#fff;border-radius:9px;padding:8px 10px;font-weight:800;cursor:pointer}.vb-tools .active{background:#eef6ff;border-color:#60a5fa;color:#1d4ed8}
+.vb-layout{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:14px;margin-top:14px}.vb-canvas{position:relative;background:#dfe5ec;border:1px solid #cbd5e1;border-radius:15px;padding:12px;min-height:540px;overflow:hidden}.vb-frame{width:100%;height:650px;border:0;border-radius:10px;background:#fff;display:block;box-shadow:0 8px 25px rgba(16,24,40,.12)}.vb-frame.mobile{width:390px;max-width:100%;margin:auto}.vb-side{background:#fff;border:1px solid #dbe3ef;border-radius:14px;padding:13px}.vb-side h4{margin:0 0 10px}.vb-side label{display:grid;gap:5px;font-size:12px;font-weight:800;color:#475467;margin:10px 0}.vb-side input,.vb-side select{width:100%;box-sizing:border-box}.vb-coords{display:grid;grid-template-columns:1fr 1fr;gap:8px}.vb-status{margin-top:10px;padding:9px 10px;border-radius:9px;background:#f1f5f9;color:#475467;font-size:12px;line-height:1.45}.vb-hint{margin-top:10px;color:#667085;font-size:12px;line-height:1.5}.vb-save-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.vb-selection-badge{position:absolute;left:12px;top:12px;z-index:3;background:#111827;color:#fff;border-radius:999px;padding:7px 10px;font-size:11px;font-weight:800;pointer-events:none;opacity:.9}
+@media(max-width:900px){.vb-layout{grid-template-columns:1fr}.vb-frame{height:600px}.vb-side{order:-1}}
+</style>
+
 </head>
 <body>
 <div id="loginView" class="panel login">
@@ -108,7 +116,6 @@ label{font-weight:700;font-size:14px;display:block}input,textarea,select{width:1
   <div class="admin-top">
     <div><h1>⚙️ Quản trị Apple Seed</h1><div class="small" id="userEmail"></div></div>
     <div class="admin-actions">
-      <a class="btn2" href="site-builder.html" style="background:#fff8e7;border-color:#e6c77e;color:#7a5a14">🎨 Visual Builder</a>
       <a class="btn2" href="booking-admin.html" style="background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8">📅 Lịch hẹn</a>
       <a class="btn2 admin-shop-link" href="shop-admin.html">🏪 Quản lý cửa hàng</a>
       <a class="btn2" href="index.html">← Website</a>
@@ -309,6 +316,46 @@ label{font-weight:700;font-size:14px;display:block}input,textarea,select{width:1
 </div>
 
 <div class="hero-studio-actions"><div><strong id="heroPresetCurrent">Đang dùng: —</strong><div class="small">Chọn mẫu → <b>Áp dụng</b>. Mẫu được lưu cùng Theme.</div></div><div class="admin-actions"><button class="plus" type="button" id="applyHeroPreset">✨ Áp dụng mẫu đã chọn</button><button class="plus" type="button" id="saveHeroImagesBtn">💾 Lưu ảnh Hero</button><button class="btn2" type="button" id="openHeroPreview">↗ Xem website</button></div></div>
+</section>
+
+
+<section class="panel visual-builder" id="visualBuilderPanel">
+  <div class="vb-head">
+    <div><h2>🖱️ Visual Builder — chỉnh trang chủ bằng chuột</h2><div class="small">Đây là lớp chỉnh trực quan. Kéo phần tử, phóng to/thu nhỏ, sửa chữ, xem desktop/mobile rồi lưu. Dữ liệu được ghi vào <b>site_theme_settings.custom_css</b> nên trang chủ đọc lại cùng cấu hình.</div></div>
+    <div class="vb-tools">
+      <button type="button" id="vbDesktopBtn" class="active">🖥️ Desktop</button>
+      <button type="button" id="vbMobileBtn">📱 Mobile</button>
+      <button type="button" id="vbReloadBtn">↻ Nạp lại</button>
+      <button type="button" id="vbOpenBtn">↗ Mở trang chủ</button>
+    </div>
+  </div>
+  <div class="vb-layout">
+    <div class="vb-canvas">
+      <div class="vb-selection-badge" id="vbBadge">Chưa chọn phần tử</div>
+      <iframe id="vbFrame" class="vb-frame" title="Apple Seed Visual Builder"></iframe>
+    </div>
+    <aside class="vb-side">
+      <h4>🎯 Phần đang chọn</h4>
+      <label>Phần tử<select id="vbTarget">
+        <option value=".as3-copy">Khối chữ Hero</option>
+        <option value=".as3-stage">Cụm iPhone</option>
+        <option value=".as3-benefits">4 ô bên phải</option>
+        <option value=".as3-discover">Nút khám phá</option>
+        <option value=".as3-services">6 thẻ dịch vụ</option>
+        <option value=".as3-bottom">Khu vực thống kê + cửa hàng</option>
+        <option value=".as3-stats">5 ô thống kê</option>
+        <option value=".as3-store">Ảnh cửa hàng</option>
+        <option value=".as3-p1">iPhone 1</option><option value=".as3-p2">iPhone 2</option><option value=".as3-p3">iPhone 3</option><option value=".as3-p4">iPhone 4</option><option value=".as3-p5">iPhone 5</option><option value=".as3-p6">iPhone 6</option>
+      </select></label>
+      <div class="vb-coords"><label>X (px)<input id="vbX" type="number" step="1" value="0"></label><label>Y (px)<input id="vbY" type="number" step="1" value="0"></label></div>
+      <label>Thu phóng <input id="vbScale" type="range" min="0.5" max="1.8" step="0.01" value="1"><span id="vbScaleVal">1.00×</span></label>
+      <label>Góc xoay thêm <input id="vbRotate" type="range" min="-25" max="25" step="1" value="0"><span id="vbRotateVal">0°</span></label>
+      <div class="vb-save-row"><button class="plus" type="button" id="vbApplyBtn">✓ Áp dụng vị trí</button><button class="btn2" type="button" id="vbResetBtn">↺ Về 0</button></div>
+      <div class="vb-save-row"><button class="plus" type="button" id="vbSaveBtn">💾 Lưu Builder</button><button class="btn2" type="button" id="vbPreviewBtn">👁️ Xem trước</button></div>
+      <div class="vb-status" id="vbStatus">Chọn phần tử rồi kéo trực tiếp trên khung xem trước.</div>
+      <div class="vb-hint"><b>Mẹo:</b> click 1 lần để chọn · kéo bằng chuột để di chuyển · double-click chữ để sửa nhanh · đổi ảnh ở <b>Kho ảnh Hero</b> phía trên · sau khi lưu, website và Builder dùng chung cấu hình.</div>
+    </aside>
+  </div>
 </section>
 
 <section class="panel">
@@ -769,7 +816,7 @@ async function applyHeroPreset(id){
 const HERO_IMAGE_START='/* APPLESEED_HERO_IMAGES_START */',HERO_IMAGE_END='/* APPLESEED_HERO_IMAGES_END */';
 function heroImageBlock(images,phoneFit='contain',backgroundFit='cover'){
   const lines=[HERO_IMAGE_START,'/* hero-image-fit:'+phoneFit+' */','/* hero-background-fit:'+backgroundFit+' */'];
-  if(images.background) lines.push("#apple-seed-premium-home{background-image:url('"+images.background.replace(/'/g,"\\'")+"')!important;background-size:"+backgroundFit+"!important;background-position:center center!important;background-repeat:no-repeat!important}");
+  if(images.background) lines.push(".as3-stage{background-image:url('"+images.background.replace(/'/g,"\\'")+"')!important;background-size:"+backgroundFit+"!important;background-position:center center!important;background-repeat:no-repeat!important}");
   const slots=['phone0','phone1','phone2','phone3','phone4','phone5'];
   slots.forEach((slot,i)=>{
     const url=images[slot]; if(!url)return;
@@ -1346,7 +1393,97 @@ window.deletePage=async id=>{
   status("Đã xóa trang.");await loadPages();
 };
 
+
+
+/* Apple Seed Full Visual Builder */
+const VB_LAYOUT_START='/* APPLESEED_HERO_LAYOUT_START */',VB_LAYOUT_END='/* APPLESEED_HERO_LAYOUT_END */';
+const VB_TARGETS=['.as3-copy','.as3-stage','.as3-benefits','.as3-discover','.as3-services','.as3-bottom','.as3-stats','.as3-store','.as3-p1','.as3-p2','.as3-p3','.as3-p4','.as3-p5','.as3-p6'];
+function vbReadLayout(css){
+  const s=String(css||''),a=s.indexOf(VB_LAYOUT_START),b=s.indexOf(VB_LAYOUT_END);
+  if(a<0||b<a)return {};
+  try{return JSON.parse(s.slice(a+VB_LAYOUT_START.length,b).trim())||{}}catch{return {}}
+}
+function vbReplaceLayout(css,data){
+  let s=String(css||'').trim(),a=s.indexOf(VB_LAYOUT_START),b=s.indexOf(VB_LAYOUT_END);
+  if(a>=0&&b>=a)s=(s.slice(0,a)+s.slice(b+VB_LAYOUT_END.length)).trim();
+  const lines=[VB_LAYOUT_START,JSON.stringify(data,null,2),VB_LAYOUT_END].join('\n');
+  return (s?s+'\n\n':'')+lines;
+}
+function vbCssForLayout(data){
+  const lines=[];
+  Object.entries(data||{}).forEach(([sel,v])=>{
+    if(!v)return;
+    const x=Number(v.x)||0,y=Number(v.y)||0,scale=Number(v.scale)||1,rot=Number(v.rotate)||0;
+    lines.push(`#apple-seed-premium-home ${sel}{translate:${x}px ${y}px!important;scale:${scale}!important;rotate:${rot}deg!important}`);
+  });
+  return lines.join('\n');
+}
+function vbLayoutCssBlock(data){return [VB_LAYOUT_START,JSON.stringify(data,null,2),VB_LAYOUT_END,'/* APPLESEED_HERO_LAYOUT_CSS_START */',vbCssForLayout(data),'/* APPLESEED_HERO_LAYOUT_CSS_END */'].join('\n')}
+function vbSaveIntoCustomCss(data){
+  let css=String($('themeCustomCss')?.value||'').trim();
+  const starts=[VB_LAYOUT_START,'/* APPLESEED_HERO_LAYOUT_CSS_START */'],ends=[VB_LAYOUT_END,'/* APPLESEED_HERO_LAYOUT_CSS_END */'];
+  let a=css.indexOf(starts[0]),b=css.indexOf(ends[1]);
+  if(a>=0&&b>=a)css=(css.slice(0,a)+css.slice(b+ends[1].length)).trim();
+  const block=vbLayoutCssBlock(data);
+  $('themeCustomCss').value=(css?css+'\n\n':'')+block;
+  return $('themeCustomCss').value;
+}
+let vbFrameDoc=null,vbSelected=null,vbDragging=null,vbMode='desktop';
+function vbStatus(msg,err=false){const e=$('vbStatus');if(e){e.textContent=msg;e.style.background=err?'#fef2f2':'#f1f5f9';e.style.color=err?'#b42318':'#475467'}}
+function vbGetLayout(){return vbReadLayout($('themeCustomCss')?.value||'')}
+function vbSetControls(v){
+  $('vbX').value=Number(v?.x)||0;$('vbY').value=Number(v?.y)||0;$('vbScale').value=Number(v?.scale)||1;$('vbRotate').value=Number(v?.rotate)||0;
+  $('vbScaleVal').textContent=(Number(v?.scale)||1).toFixed(2)+'×';$('vbRotateVal').textContent=(Number(v?.rotate)||0)+'°';
+}
+function vbApplyVisual(sel,v){
+  if(!vbFrameDoc)return;const el=vbFrameDoc.querySelector(sel);if(!el)return;
+  el.style.setProperty('translate',(Number(v.x)||0)+'px '+(Number(v.y)||0)+'px','important');
+  el.style.setProperty('scale',String(Number(v.scale)||1),'important');
+  el.style.setProperty('rotate',(Number(v.rotate)||0)+'deg','important');
+}
+function vbSelect(sel){
+  if(!vbFrameDoc)return;vbSelected=sel;$('vbTarget').value=sel;const el=vbFrameDoc.querySelector(sel);if(!el)return;
+  const d=vbGetLayout()[sel]||{x:0,y:0,scale:1,rotate:0};vbSetControls(d);document.querySelectorAll('.vb-vb-selected').forEach(x=>x.classList.remove('vb-vb-selected'));el.classList.add('vb-vb-selected');$('vbBadge').textContent='Đang chọn: '+($('vbTarget').selectedOptions[0]?.textContent||sel);vbStatus('Đã chọn '+sel+' — kéo chuột để di chuyển.');
+}
+function vbBindFrame(){
+  const f=$('vbFrame');if(!f)return;
+  f.onload=()=>{
+    try{vbFrameDoc=f.contentDocument;const style=vbFrameDoc.createElement('style');style.id='vbInjectedStyle';style.textContent='.vb-vb-selected{outline:2px dashed #2563eb!important;outline-offset:5px;cursor:move!important}.vb-vb-editing{outline:2px solid #16a34a!important}';vbFrameDoc.head.appendChild(style);
+      const layout=vbGetLayout();Object.entries(layout).forEach(([sel,v])=>vbApplyVisual(sel,v));
+      VB_TARGETS.forEach(sel=>{vbFrameDoc.querySelectorAll(sel).forEach(el=>{
+        el.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();vbSelect(sel)});
+        el.addEventListener('pointerdown',e=>{if(e.button!==0)return;vbSelect(sel);vbDragging={sel,startX:e.clientX,startY:e.clientY,base:vbGetLayout()[sel]||{x:0,y:0,scale:1,rotate:0}};el.setPointerCapture?.(e.pointerId);e.preventDefault()});
+        el.addEventListener('pointermove',e=>{if(!vbDragging||vbDragging.sel!==sel)return;const dx=e.clientX-vbDragging.startX,dy=e.clientY-vbDragging.startY;const v={...vbDragging.base,x:Math.round(vbDragging.base.x+dx/(vbMode==='mobile'?1:1)),y:Math.round(vbDragging.base.y+dy/(vbMode==='mobile'?1:1))};vbApplyVisual(sel,v);vbSetControls(v)});
+        el.addEventListener('pointerup',()=>{if(vbDragging?.sel===sel){vbDragging=null;vbStatus('Đã kéo. Bấm “Lưu Builder” để ghi vào website.')}});
+        el.addEventListener('dblclick',e=>{if(!['.as3-kicker','.as3-title','.as3-sub','.as3-desc','.as3-note'].includes(sel))return;e.preventDefault();const text=el.innerText.trim();const val=prompt('Sửa nhanh nội dung phần này:',text);if(val===null)return;el.innerText=val;vbSyncQuickText(sel,val)});
+      })});
+      vbSelect($('vbTarget').value||'.as3-copy');
+    }catch(err){vbStatus('Không mở được Builder: '+(err.message||err),true)}
+  };
+  f.src='index.html?appleSeedBuilderCanvas=1&v='+Date.now();
+}
+function vbSyncQuickText(sel,val){
+  try{const d=heroUiCollect();if(sel==='.as3-kicker')d.kicker=val;else if(sel==='.as3-title'){const parts=val.split(/\n/);d.title=parts[0]||val;d.titleAccent=parts.slice(1).join(' ')||d.titleAccent}else if(sel==='.as3-sub')d.subPrefix=val;else if(sel==='.as3-desc')d.description=val;else if(sel==='.as3-note')d.note=val;heroUiSet('heroUiKicker',d.kicker);heroUiSet('heroUiTitle',d.title);heroUiSet('heroUiTitleAccent',d.titleAccent);heroUiSet('heroUiSubPrefix',d.subPrefix);heroUiSet('heroUiDescription',d.description);heroUiSet('heroUiNote',d.note)}catch(e){console.warn(e)}}
+function vbApplyControls(){
+  const sel=$('vbTarget').value,v={x:Number($('vbX').value)||0,y:Number($('vbY').value)||0,scale:Number($('vbScale').value)||1,rotate:Number($('vbRotate').value)||0};const d=vbGetLayout();d[sel]=v;$('vbScaleVal').textContent=v.scale.toFixed(2)+'×';$('vbRotateVal').textContent=v.rotate+'°';vbApplyVisual(sel,v);vbSelect(sel);vbStatus('Đã áp dụng vị trí tạm thời. Nhấn Lưu Builder để lưu.');
+}
+async function vbSave(){
+  try{const d=vbGetLayout();const sel=$('vbTarget').value;d[sel]={x:Number($('vbX').value)||0,y:Number($('vbY').value)||0,scale:Number($('vbScale').value)||1,rotate:Number($('vbRotate').value)||0};vbSaveIntoCustomCss(d);await ensureThemeRow();const r=await sb.from('site_theme_settings').update({custom_css:$('themeCustomCss').value}).eq('id',1).select('id,updated_at').single();if(r.error)throw r.error;status('✅ Đã lưu Builder. Trang chủ và Builder dùng cùng layout.');vbStatus('✅ Đã lưu. F5 trang chủ để kiểm tra desktop/mobile.');vbReload();}catch(e){console.error(e);vbStatus('❌ Lưu Builder lỗi: '+(e.message||e),true);status('Lưu Builder lỗi: '+(e.message||e),true)}}
+function vbReset(){const d=vbGetLayout(),sel=$('vbTarget').value;delete d[sel];vbSetControls({x:0,y:0,scale:1,rotate:0});vbApplyVisual(sel,{x:0,y:0,scale:1,rotate:0});vbStatus('Đã đưa phần tử về vị trí gốc. Chưa lưu.');}
+function vbReload(){if(vbFrameDoc){try{vbFrameDoc.defaultView?.location?.reload()}catch{}}else vbBindFrame()}
+function initVisualBuilder(){
+  if(!$('vbFrame'))return;
+  $('vbTarget').onchange=()=>vbSelect($('vbTarget').value);
+  $('vbApplyBtn').onclick=vbApplyControls;$('vbSaveBtn').onclick=vbSave;$('vbResetBtn').onclick=vbReset;$('vbReloadBtn').onclick=vbReload;
+  $('vbDesktopBtn').onclick=()=>{vbMode='desktop';$('vbDesktopBtn').classList.add('active');$('vbMobileBtn').classList.remove('active');$('vbFrame').classList.remove('mobile');vbReload()};
+  $('vbMobileBtn').onclick=()=>{vbMode='mobile';$('vbMobileBtn').classList.add('active');$('vbDesktopBtn').classList.remove('active');$('vbFrame').classList.add('mobile');vbReload()};
+  $('vbOpenBtn').onclick=()=>window.open('index.html','_blank');$('vbPreviewBtn').onclick=()=>window.open('index.html?appleSeedBuilderPreview=1','_blank');
+  ['vbX','vbY','vbScale','vbRotate'].forEach(id=>$(id).addEventListener('input',()=>{if(id==='vbScale')$('vbScaleVal').textContent=Number($(id).value).toFixed(2)+'×';if(id==='vbRotate')$('vbRotateVal').textContent=$(id).value+'°';vbApplyControls()}));
+  vbBindFrame();
+}
+
 checkSession();
+setTimeout(initVisualBuilder,900);
 </script>
 
 
