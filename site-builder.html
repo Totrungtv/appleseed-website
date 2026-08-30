@@ -29,5 +29,16 @@ async function loadPublished(){try{let r=await window.supabaseClient.from('site_
 $('draft').onclick=saveDraft;$('publish').onclick=async()=>{saveSel();let u=await window.supabaseClient.auth.getUser();if(!u.data.user){toast('Chưa đăng nhập');return}status('Đang xuất bản…');let r=await window.supabaseClient.from('site_builder_versions').upsert({site_key:'default',config:state,is_published:true,updated_by:u.data.user.id},{onConflict:'site_key'});if(r.error){toast('CMS lỗi: '+r.error.message);status('Lỗi');return}localStorage.setItem(KEY,JSON.stringify(state));status('Đã xuất bản');$('cms').textContent='Đã xuất bản: '+new Date().toLocaleString('vi-VN');toast('🚀 Xuất bản thành công')};
 $('undo').onclick=()=>{if(!hist.length)return;future.push(snapshot());state=hist.pop();apply();toast('Undo')};$('redo').onclick=()=>{if(!future.length)return;hist.push(snapshot());state=future.pop();apply();toast('Redo')};$('reload').onclick=()=>location.reload();$('clear').onclick=()=>{if(confirm('Xóa nháp trên máy?')){localStorage.removeItem(KEY);location.reload()}};$('resetView').onclick=()=>{$('frame').style.width='min(100%,1440px)';$('desk').click()};$('desk').onclick=()=>{$('frame').style.width='min(100%,1440px)';$('desk').classList.add('active');$('mob').classList.remove('active')};$('mob').onclick=()=>{$('frame').style.width='390px';$('mob').classList.add('active');$('desk').classList.remove('active')};
 $('loginBtn').onclick=async()=>{let r=await window.supabaseClient.auth.signInWithPassword({email:$('email').value.trim(),password:$('pass').value});if(r.error){$('loginMsg').textContent=r.error.message;return}$('login').style.display='none';location.reload()};
-(async()=>{let r=await window.supabaseClient.auth.getSession();if(r.data.session)$('login').style.display='none';else $('login').style.display='flex'})();
+async function requireBuilderRole(){
+  try{
+    const {data:{user}}=await window.supabaseClient.auth.getUser();
+    if(!user){$('login').style.display='flex';return false}
+    const {data,error}=await window.supabaseClient.from('profiles').select('role').eq('id',user.id).maybeSingle();
+    if(error||!data||!['admin','staff'].includes(data.role)){
+      $('login').style.display='flex';$('loginMsg').textContent='Tài khoản này không có quyền Visual Site Builder (chỉ Admin/Staff).';return false
+    }
+    $('login').style.display='none';return true
+  }catch(e){$('login').style.display='flex';$('loginMsg').textContent='Không kiểm tra được quyền tài khoản.';return false}
+}
+(async()=>{await requireBuilderRole()})();
 </script></body></html>
