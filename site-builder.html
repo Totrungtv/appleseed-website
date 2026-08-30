@@ -184,7 +184,7 @@ function refreshInspector(){
   refreshOverlay();renderLayers();
 }
 function choose(el){if(!editable(el))return;selected=el;selector=stableSelector(el);refreshInspector()}
-function findBlockTargetfunction findBlockTarget(type){
+function findBlockTarget(type){
   if(!doc)return null;
   const map={hero:['.hero','.as3-hero','header'],services:['#services','.services','.service-grid','.service-card'],why:['.why','.benefits','.features'],process:['.process','.repair-process'],cases:['.repair-case','.repair-cases','.articles','.posts'],booking:['#booking','.booking','.booking-section'],articles:['.articles','.posts','.blog'],map:['#map','.map','.contact-map','.contact']};
   for(const s of (map[type]||[])){try{const el=doc.querySelector(s);if(el)return el}catch{}}
