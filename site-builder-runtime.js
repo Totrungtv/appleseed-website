@@ -11,7 +11,7 @@
   var appliedVersion='';
 
   function deviceKey(){
-    return window.matchMedia && window.matchMedia('(max-width: 650px)') ? 'mobile' : 'desktop';
+    return window.matchMedia && window.matchMedia('(max-width: 650px)').matches ? 'mobile' : 'desktop';
   }
 
   function apply(){
