@@ -644,6 +644,14 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
     if(r.error){console.error('chat_create_group',r.error);alert('Không tạo được nhóm: '+r.error.message);return;}
     selectedGroupMembers.clear();$('asGroupNameInput').value='';$('asCreateGroupBox').style.display='none';renderSelectedGroupMembers();await loadGroups();await openConversation(r.data,'👥 '+name);
   }
+  async function loadGroups(){
+    if(!user)return;
+    const r=await sb.rpc('chat_list_conversations');
+    if(r.error){$('asGroupList').innerHTML='<div class="as-empty">Không tải được nhóm: '+esc(r.error.message)+'</div>';return;}
+    groups=(r.data||[]).filter(function(x){return x.type==='group';});
+    $('asGroupList').innerHTML=groups.length?groups.map(function(g){return '<button class="as-chat-item" data-chat="'+esc(g.id)+'"><b>👥 '+esc(g.name||'Nhóm kỹ thuật')+'</b><small>Cập nhật '+new Date(g.updated_at).toLocaleString('vi-VN')+'</small></button>';}).join(''):'<div class="as-empty">Chưa có nhóm kỹ thuật.</div>';
+    $('asGroupList').querySelectorAll('[data-chat]').forEach(function(b){b.onclick=function(){openConversation(b.dataset.chat,b.querySelector('b')?.textContent||'👥 Nhóm kỹ thuật');};});
+  }
   $('asMemberSearchBtn').onclick=loadMembers; $('asMemberSearch').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();loadMembers();}};
   $('asCreateGroupBtn').onclick=function(){$('asCreateGroupBox').style.display='block';renderSelectedGroupMembers();};
   $('asCreateGroupCancel').onclick=function(){$('asCreateGroupBox').style.display='none';};
