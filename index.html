@@ -3124,6 +3124,19 @@ let n=0;const t=setInterval(()=>{if(apply()||++n>50)clearInterval(t)},400);
   setTimeout(finalCmsHeroFix,1000);
 })();
 </script>
+<script>
+/* Visual Builder guard: the preview canvas is allowed only inside the Builder iframe.
+   If the preview URL is opened at top-level, return to the Builder instead of trapping
+   the user on a plain homepage canvas. */
+(function(){
+  try{
+    var q=new URLSearchParams(location.search);
+    if(q.get('appleSeedBuilderPreview')==='1' && window.top===window.self){
+      location.replace('site-builder.html');
+    }
+  }catch(_){}
+})();
+</script>
 <script src="site-builder-runtime.js?v=20260830-v2"></script>
 </body>
 </html>
