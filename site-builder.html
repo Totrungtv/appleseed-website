@@ -281,13 +281,39 @@ $('preview').addEventListener('load',async()=>{
   },1200);
 });
 async function askBuilderAI(message){
-  const sb=window.supabaseClient;if(!sb)throw new Error('Supabase chưa sẵn sàng');
-  const base=String(sb.supabaseUrl||'').replace(/\/+$/,'');const key=sb.supabaseKey;if(!base||!key)throw new Error('Thiếu cấu hình Supabase');
-  const context={page:'Apple Seed Visual Site Builder V3',device,selected:selected?{tag:selected.tagName,text:(selected.textContent||'').trim().slice(0,300),selector}:null,elementCount:doc?doc.querySelectorAll('*').length:0};
-  const res=await fetch(base+'/functions/v1/appleseed-ai',{method:'POST',headers:{'Content-Type':'application/json','apikey':key,'Authorization':'Bearer '+key},body:JSON.stringify({message:'Bạn là AI Designer của Apple Seed. Tư vấn thiết kế website đơn giản, cao cấp, responsive. Không tự ý viết code production. '+message+' Context: '+JSON.stringify(context),source:'visual-site-builder'})});
-  if(!res.ok)throw new Error((await res.text()).slice(0,500)||'AI lỗi');
-  if(!res.body)return await res.text();
-  const reader=res.body.getReader(),decoder=new TextDecoder(),parts=[];while(true){const x=await reader.read();if(x.done)break;parts.push(decoder.decode(x.value,{stream:true}))}return parts.join('').replace(/^data:\s*/gm,'').trim();
+  const sb=window.supabaseClient;
+  if(!sb)throw new Error('Supabase chưa sẵn sàng');
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session?.access_token)throw new Error('Phiên Admin đã hết hạn. Hãy đăng nhập lại.');
+  const context={
+    page:'Apple Seed Visual Site Builder V3',
+    device,
+    selected:selected?{tag:selected.tagName,text:(selected.textContent||'').trim().slice(0,300),selector}:null,
+    elementCount:doc?doc.querySelectorAll('*').length:0,
+    builderFeatures:['blocks','responsive','desktop-mobile','group-drag','presets','AI Designer']
+  };
+  const res=await fetch(window.SUPABASE_URL+'/functions/v1/appleseed-ai',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'apikey':window.SUPABASE_ANON_KEY,
+      'Authorization':'Bearer '+session.access_token
+    },
+    body:JSON.stringify({
+      message:'Bạn là AI Designer của Apple Seed. Tư vấn thiết kế website đơn giản, cao cấp, responsive. Không tự ý sửa production và không tự ý viết code production. '+message+'\\nContext: '+JSON.stringify(context),
+      history:[],
+      source:'ai-admin',
+      mode:'robot_workspace',
+      image_data:null
+    })
+  });
+  const raw=await res.text();
+  let data=null;
+  try{data=raw?JSON.parse(raw):null}catch{data=raw}
+  if(!res.ok)throw new Error((data&&typeof data==='object'&&data.error)||'AI server lỗi HTTP '+res.status);
+  const reply=(typeof data==='string'?data:(data?.reply||data?.message||data?.content||data?.answer||'')).trim();
+  if(!reply)throw new Error('AI không trả về nội dung.');
+  return reply;
 }
 function aiAdd(role,text){const d=document.createElement('div');d.className='ai-msg '+(role==='user'?'ai-user':'ai-bot');d.textContent=text;$('aiLog').appendChild(d);$('aiLog').scrollTop=$('aiLog').scrollHeight}
 async function runAI(message){aiAdd('user',message);$('aiSend').disabled=true;$('aiSend').textContent='Đang nghĩ…';try{aiAdd('bot',await askBuilderAI(message))}catch(e){aiAdd('bot','⚠️ '+e.message)}finally{$('aiSend').disabled=false;$('aiSend').textContent='Gửi AI'}}
