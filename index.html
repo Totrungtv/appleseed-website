@@ -2720,8 +2720,25 @@ const btn=document.getElementById("chatBtn"),box=document.getElementById("chatBo
 const close=document.getElementById("chatClose"),body=document.getElementById("chatBody");
 const form=document.getElementById("chatForm"),input=document.getElementById("chatInput");
 
-btn.onclick=()=>{box.classList.toggle("open");if(box.classList.contains("open"))input.focus()};
-close.onclick=()=>box.classList.remove("open");
+function setAppleSeedChatOpen(open){
+  box.classList.toggle("open",!!open);
+  document.body.classList.toggle("apple-seed-chat-open",!!open);
+  const aiBoard=document.getElementById("apple-seed-ai-board-float");
+  if(aiBoard){
+    if(open){
+      aiBoard.style.setProperty("display","none","important");
+      aiBoard.setAttribute("aria-hidden","true");
+      aiBoard.setAttribute("tabindex","-1");
+    }else{
+      aiBoard.style.setProperty("display","inline-flex","important");
+      aiBoard.removeAttribute("aria-hidden");
+      aiBoard.removeAttribute("tabindex");
+    }
+  }
+  if(open) input.focus();
+}
+btn.onclick=()=>setAppleSeedChatOpen(!box.classList.contains("open"));
+close.onclick=()=>setAppleSeedChatOpen(false);
 
 /*
  * APPLE SEED AI — STREAMING FRONTEND
@@ -3209,6 +3226,45 @@ let n=0;const t=setInterval(()=>{if(apply()||++n>50)clearInterval(t)},400);
       location.replace('site-builder.html');
     }
   }catch(_){}
+})();
+</script>
+<style id="apple-seed-chat-ai-board-exclusive">
+body.apple-seed-chat-open #apple-seed-ai-board-float{
+  display:none!important;
+  visibility:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+</style>
+<script>
+(function(){
+  "use strict";
+  function enforce(){
+    var box=document.getElementById("chatBox");
+    var board=document.getElementById("apple-seed-ai-board-float");
+    if(!box||!board)return;
+    var open=box.classList.contains("open");
+    document.body.classList.toggle("apple-seed-chat-open",open);
+    if(open){
+      board.style.setProperty("display","none","important");
+      board.style.setProperty("visibility","hidden","important");
+      board.style.setProperty("opacity","0","important");
+      board.style.setProperty("pointer-events","none","important");
+    }else{
+      board.style.setProperty("display","inline-flex","important");
+      board.style.removeProperty("visibility");
+      board.style.removeProperty("opacity");
+      board.style.removeProperty("pointer-events");
+    }
+  }
+  window.addEventListener("load",enforce,{once:true});
+  document.addEventListener("click",function(e){
+    if(e.target.closest && (e.target.closest("#chatBtn")||e.target.closest("#chatClose"))){
+      setTimeout(enforce,0);
+      setTimeout(enforce,30);
+    }
+  },true);
+  setInterval(enforce,250);
 })();
 </script>
 <script src="site-builder-runtime.js?v=20260830-v4"></script>
