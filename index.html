@@ -3363,7 +3363,7 @@ body.apple-seed-chat-open #apple-seed-ai-board-float{
  */
 (function(){
   "use strict";
-  if(/[?&](appleSeedBuilderPreview|builderCanvas)=1(?:&|$)/i.test(location.search)) return;
+  var isBuilderPreview=/[?&](appleSeedBuilderPreview|builderCanvas)=1(?:&|$)/i.test(location.search);
   var sb=window.supabaseClient;
   if(!sb) return;
 
@@ -3496,6 +3496,7 @@ body.apple-seed-chat-open #apple-seed-ai-board-float{
   }
 
   async function load(){
+    if(isBuilderPreview) return;
     try{
       var r=await sb.from("site_builder_versions")
         .select("version_no,config,created_at")
@@ -3519,6 +3520,20 @@ body.apple-seed-chat-open #apple-seed-ai-board-float{
       console.warn("[Apple Seed Builder] Runtime:",e);
     }
   }
+
+  function receiveBuilderDraft(event){
+    if(!isBuilderPreview) return;
+    if(event.origin!==location.origin) return;
+    var data=event.data||{};
+    if(data.source!=="apple-seed-builder" || data.type!=="draft-config" || !data.config) return;
+    currentConfig=data.config;
+    window.appleSeedBuilderPublishedConfig=currentConfig;
+    applyConfig();
+    window.setTimeout(applyConfig,120);
+    window.setTimeout(applyConfig,600);
+  }
+
+  window.addEventListener("message",receiveBuilderDraft);
 
   function init(){
     mobileQuery.addEventListener && mobileQuery.addEventListener("change",applyConfig);
