@@ -18,7 +18,7 @@
   <div class="brand">APPLE SEED <small>VISUAL SITE BUILDER V2</small></div>
   <button class="btn active" id="desktopBtn">🖥 Desktop</button><button class="btn" id="mobileBtn">📱 Mobile</button>
   <span class="spacer"></span><span class="status" id="status">Đang kiểm tra quyền…</span>
-  <button class="btn" id="undo">↶</button><button class="btn" id="redo">↷</button><button class="btn" id="save">💾 Nháp</button><button class="btn primary" id="publish">🚀 Xuất bản</button>
+  <button class="btn" id="backAdmin">← Admin</button><button class="btn" id="undo">↶</button><button class="btn" id="redo">↷</button><button class="btn" id="save">💾 Nháp</button><button class="btn primary" id="publish">🚀 Xuất bản</button>
 </header>
 <div class="workspace">
 <aside class="side left">
@@ -124,7 +124,8 @@ function saveDraft(){localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));toast
 async function loadPublished(){
   // Builder always reloads the CURRENT index.html as its canvas.
   // Published overrides are layered on top; no copied homepage is stored.
-  if($('preview').contentWindow) $('preview').contentWindow.location.reload();
+  // Do NOT reload the iframe here: this function is called from the iframe load event.
+  // Reloading it recursively causes the Builder canvas to stay blank/loading forever.
   const r=await window.supabaseClient.from('site_builder_versions').select('id,version_no,config,created_at').eq('site_key','default').eq('status','published').maybeSingle();
   if(r.error){$('history').innerHTML='<div class="muted">CMS chưa có Builder V2. Chạy migration trước khi Publish.</div>';return}
   if(r.data?.config?.items&&!localStorage.getItem(DRAFT_KEY))draft=r.data.config;
@@ -190,6 +191,7 @@ $('desktopBtn').onclick=()=>{device='desktop';$('desktopBtn').classList.add('act
 $('mobileBtn').onclick=()=>{device='mobile';$('mobileBtn').classList.add('active');$('desktopBtn').classList.remove('active');$('frame').classList.add('mobile');applyAll()};
 $('undo').onclick=()=>{if(!history.length)return;future.push(snapshot());draft=history.pop();saveDraft();applyAll();toast('↶ Undo')};
 $('redo').onclick=()=>{if(!future.length)return;history.push(snapshot());draft=future.pop();saveDraft();applyAll();toast('↷ Redo')};
+$('backAdmin').onclick=()=>{location.href='admin.html'};
 $('save').onclick=saveDraft;$('reload').onclick=()=>location.reload();$('clear').onclick=()=>{if(confirm('Xóa toàn bộ nháp Builder trên máy?')){localStorage.removeItem(DRAFT_KEY);location.reload()}};
 $('publish').onclick=async()=>{if(!allowed){toast('Tài khoản không có quyền');return}saveDraft();setStatus('Đang xuất bản version mới…');const r=await window.supabaseClient.rpc('apple_seed_builder_publish',{p_config:draft,p_site_key:'default'});if(r.error){toast('Publish lỗi: '+r.error.message);setStatus('Publish lỗi — website chưa đổi');return}toast('🚀 Đã xuất bản V'+(r.data?.version_no||''));setStatus('Đã xuất bản');await loadPublished()};
 $('loginBtn').onclick=async()=>{const r=await window.supabaseClient.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(r.error){$('loginMsg').textContent=r.error.message;return}location.reload()};
