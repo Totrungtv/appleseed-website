@@ -42,63 +42,25 @@
 
   /*
    * AI BOARD / CUSTOMER ROBOT VISIBILITY
-   * The AI BOARD launcher is a separate floating pill. Do NOT hide its
-   * text/icon children individually: hide the whole launcher container.
+   * Always target the real launcher by ID. The previous text/ancestor
+   * detection could select a child/partial element and leave the empty pill.
    */
-  function findAiBoardLauncher(){
-    var found=null;
-    var nodes=document.querySelectorAll('a,button,div,span');
-    for(var i=0;i<nodes.length;i++){
-      var el=nodes[i];
-      if(el.id==='chatBtn'||el.closest('#chatBox'))continue;
-      var txt=(el.textContent||'').replace(/\s+/g,' ').trim();
-      if(!txt || txt.indexOf('AI BOARD')===-1)continue;
-
-      var cur=el;
-      for(var level=0;level<5 && cur;level++,cur=cur.parentElement){
-        if(cur.id==='chatBox'||cur.id==='chatBtn')break;
-        var r=cur.getBoundingClientRect();
-        var cs=getComputedStyle(cur);
-        if(r.width>=100 && r.height>=35 && r.width<=420 && r.height<=130 &&
-           (cs.position==='fixed'||cs.position==='absolute'||cur.parentElement===document.body)){
-          found=cur;
-          break;
-        }
-      }
-      if(found)break;
-    }
-    return found;
-  }
-
   function syncAiBoardVisibility(){
     try{
       var chat=document.getElementById('chatBox');
+      var launcher=document.getElementById('apple-seed-ai-board-float');
+      if(!launcher)return;
       var chatOpen=!!(chat && chat.classList.contains('open'));
-      var launcher=findAiBoardLauncher();
-
-      if(launcher){
-        if(chatOpen){
-          if(!launcher.dataset.asAiBoardHidden){
-            launcher.dataset.asAiBoardHidden='1';
-            launcher.dataset.asAiBoardPrevDisplay=launcher.style.display||'';
-          }
-          launcher.style.setProperty('display','none','important');
-        }else if(launcher.dataset.asAiBoardHidden==='1'){
-          launcher.style.setProperty('display',launcher.dataset.asAiBoardPrevDisplay||'','important');
-          delete launcher.dataset.asAiBoardHidden;
-          delete launcher.dataset.asAiBoardPrevDisplay;
-        }
+      if(chatOpen){
+        launcher.style.setProperty('display','none','important');
+        launcher.setAttribute('aria-hidden','true');
+        launcher.setAttribute('tabindex','-1');
+      }else{
+        launcher.style.removeProperty('display');
+        launcher.removeAttribute('aria-hidden');
+        launcher.removeAttribute('tabindex');
       }
-
-      /* Recover from the previous buggy runtime if it hid a text/icon child. */
-      document.querySelectorAll('[data-as-ai-board-hidden]').forEach(function(el){
-        if(!launcher || el!==launcher){
-          el.style.removeProperty('display');
-          el.removeAttribute('data-as-ai-board-hidden');
-          el.removeAttribute('data-as-ai-board-prev-display');
-        }
-      });
-    }catch(_){}
+    }catch(_){ }
   }
 
   function boot(){
@@ -112,9 +74,10 @@
     if(chatBtn){
       chatBtn.addEventListener('click',function(){
         setTimeout(syncAiBoardVisibility,0);
-        setTimeout(syncAiBoardVisibility,100);
-        setTimeout(syncAiBoardVisibility,350);
+        setTimeout(syncAiBoardVisibility,50);
+        setTimeout(syncAiBoardVisibility,200);
       },true);
+    },true);
     }
 
     var chatBox=document.getElementById('chatBox');
@@ -127,7 +90,7 @@
       .observe(document.body,{childList:true,subtree:true});
 
     syncAiBoardVisibility();
-    setInterval(syncAiBoardVisibility,500);
+    setInterval(syncAiBoardVisibility,250);
   }
 
   if(document.readyState==='complete')boot();
