@@ -1403,6 +1403,52 @@ html,body{background:var(--apple-seed-page-bg)!important;color:var(--apple-seed-
 .services,.contact,.dynamic-pages-section{background:var(--apple-seed-page-bg)!important}
 /* Lower-page components using the original --blue/--ink variables follow automatically. */
 </style>
+
+<style id="apple-seed-premium-footer-v1">
+/* ===== APPLE SEED PREMIUM FOOTER V1 ===== */
+.apple-seed-footer{
+  position:relative;
+  background:linear-gradient(180deg,#111b2e 0%,#0b1424 100%);
+  color:#dbe5f5;
+  border-top:1px solid rgba(255,255,255,.08);
+  overflow:hidden;
+}
+.apple-seed-footer:before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 15% 10%,rgba(215,170,77,.14),transparent 34%),radial-gradient(circle at 85% 0%,rgba(23,105,255,.12),transparent 30%);
+}
+.apple-seed-footer-inner{position:relative;max-width:1220px;margin:0 auto;padding:58px 28px 30px;display:grid;grid-template-columns:1.45fr 1fr 1fr 1.15fr;gap:38px}
+.apple-seed-footer-brand{padding-right:10px}
+.apple-seed-footer-logo{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.apple-seed-footer-logo-mark{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(145deg,#fff,#dfe5ee);color:#17233d;font-size:22px;font-weight:950;box-shadow:0 8px 22px rgba(0,0,0,.18)}
+.apple-seed-footer-logo strong{display:block;color:#fff;font-size:20px;letter-spacing:.5px;line-height:1.05}
+.apple-seed-footer-logo small{display:block;margin-top:4px;color:#94a3b8;font-size:9px;font-weight:800;letter-spacing:1.6px}
+.apple-seed-footer-desc{margin:0;color:#9eacc0;font-size:13px;line-height:1.75;max-width:360px}
+.apple-seed-footer-social{display:flex;gap:9px;margin-top:20px}
+.apple-seed-footer-social a{width:38px;height:38px;border:1px solid rgba(255,255,255,.12);border-radius:11px;display:grid;place-items:center;color:#fff;text-decoration:none;background:rgba(255,255,255,.045);font-size:15px;font-weight:900;transition:.2s ease}
+.apple-seed-footer-social a:hover{transform:translateY(-2px);border-color:var(--apple-seed-primary,#d7aa4d);color:var(--apple-seed-primary,#d7aa4d);background:rgba(255,255,255,.08)}
+.apple-seed-footer h3{margin:2px 0 16px;color:#fff;font-size:14px;letter-spacing:.3px}
+.apple-seed-footer h3:after{content:"";display:block;width:30px;height:2px;margin-top:8px;border-radius:99px;background:var(--apple-seed-primary,#d7aa4d)}
+.apple-seed-footer-links{display:grid;gap:10px}
+.apple-seed-footer-links a,.apple-seed-footer-contact a{color:#aebbd0;text-decoration:none;font-size:13px;line-height:1.45;transition:.18s ease}
+.apple-seed-footer-links a:hover,.apple-seed-footer-contact a:hover{color:#fff;transform:translateX(3px)}
+.apple-seed-footer-contact{display:grid;gap:11px}
+.apple-seed-footer-contact .item{display:flex;gap:9px;align-items:flex-start;color:#aebbd0;font-size:13px;line-height:1.5}
+.apple-seed-footer-contact .icon{width:20px;flex:0 0 20px;text-align:center;color:var(--apple-seed-primary,#d7aa4d)}
+.apple-seed-footer-hours{margin-top:15px;padding-top:14px;border-top:1px solid rgba(255,255,255,.09)}
+.apple-seed-footer-hours b{display:block;color:#fff;font-size:12px;margin-bottom:6px}
+.apple-seed-footer-hours span{display:block;color:#94a3b8;font-size:12px;line-height:1.7}
+.apple-seed-footer-cta{margin-top:17px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 15px;border-radius:10px;background:var(--apple-seed-primary,#d7aa4d);color:#101828!important;font-size:12px!important;font-weight:900;box-shadow:0 8px 22px rgba(0,0,0,.18);text-decoration:none!important}
+.apple-seed-footer-bottom{position:relative;border-top:1px solid rgba(255,255,255,.09);max-width:1220px;margin:0 auto;padding:17px 28px 21px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;color:#7f8da3;font-size:11px;line-height:1.6}
+.apple-seed-footer-bottom strong{color:#cbd5e1}
+.apple-seed-footer-bottom-links{display:flex;gap:16px;flex-wrap:wrap}
+.apple-seed-footer-bottom-links a{color:#8d9bb0;text-decoration:none}
+.apple-seed-footer-bottom-links a:hover{color:#fff}
+.apple-seed-footer-warning{width:100%;text-align:center;color:#9aa8bb;font-size:10px;letter-spacing:.15px;padding-top:2px}
+@media(max-width:900px){.apple-seed-footer-inner{grid-template-columns:1fr 1fr;gap:30px}.apple-seed-footer-brand{grid-column:1/-1}}
+@media(max-width:560px){.apple-seed-footer-inner{grid-template-columns:1fr;padding:42px 20px 24px;gap:27px}.apple-seed-footer-brand{grid-column:auto}.apple-seed-footer-bottom{padding:16px 20px 20px;display:grid}.apple-seed-footer-bottom-links{gap:11px 15px}.apple-seed-footer-cta{width:100%}}
+</style>
+
 </head>
 
 <body>
@@ -3585,12 +3631,65 @@ body.apple-seed-chat-open #apple-seed-ai-board-float{
   else init();
 })();
 </script>
+
+<footer class="apple-seed-footer" aria-label="Chân trang Apple Seed">
+  <div class="apple-seed-footer-inner">
+    <div class="apple-seed-footer-brand">
+      <div class="apple-seed-footer-logo">
+        <div class="apple-seed-footer-logo-mark"></div>
+        <div><strong>APPLE SEED</strong><small>TRUNG TÂM SỬA CHỮA IPHONE</small></div>
+      </div>
+      <p class="apple-seed-footer-desc">Apple Seed chuyên sửa chữa iPhone chuyên sâu, minh bạch trong kiểm tra và đặt sự an tâm của khách hàng lên hàng đầu.</p>
+      <div class="apple-seed-footer-social" aria-label="Mạng xã hội">
+        <a href="https://www.facebook.com/appleseedvn" target="_blank" rel="noopener" aria-label="Facebook">f</a>
+        <a href="https://www.youtube.com/" target="_blank" rel="noopener" aria-label="YouTube">▶</a>
+        <a href="https://www.tiktok.com/" target="_blank" rel="noopener" aria-label="TikTok">♪</a>
+      </div>
+    </div>
+
+    <div>
+      <h3>Dịch vụ</h3>
+      <nav class="apple-seed-footer-links" aria-label="Dịch vụ">
+        <a href="#dich-vu">Sửa iPhone</a>
+        <a href="#dich-vu">Thay màn hình</a>
+        <a href="#dich-vu">Thay pin</a>
+        <a href="#dich-vu">Sửa Face ID</a>
+        <a href="#dich-vu">Sửa mainboard</a>
+        <a href="#dich-vu">Vệ sinh & kiểm tra</a>
+      </nav>
+    </div>
+
+    <div>
+      <h3>Hỗ trợ</h3>
+      <nav class="apple-seed-footer-links" aria-label="Hỗ trợ">
+        <a href="booking.html">Đặt lịch sửa chữa</a>
+        <a href="#lien-he">Liên hệ Apple Seed</a>
+        <a href="#gioi-thieu">Giới thiệu</a>
+        <a href="#dich-vu">Bảng dịch vụ</a>
+      </nav>
+      <a class="apple-seed-footer-cta" href="booking.html">📅 ĐẶT LỊCH NGAY →</a>
+    </div>
+
+    <div>
+      <h3>Liên hệ</h3>
+      <div class="apple-seed-footer-contact">
+        <div class="item"><span class="icon">☎</span><a href="tel:0898888269">0898 888 269</a></div>
+        <div class="item"><span class="icon">📍</span><span>292 Phạm Ngũ Lão, Trà Vinh, TP. Vĩnh Long</span></div>
+        <div class="item"><span class="icon">✉</span><a href="mailto:0898888269tv@gmail.com">0898888269tv@gmail.com</a></div>
+        <div class="item"><span class="icon">🗺</span><a href="https://maps.app.goo.gl/QEWg9owQidGW5ZyG7" target="_blank" rel="noopener">Mở Google Maps</a></div>
+      </div>
+      <div class="apple-seed-footer-hours"><b>Giờ làm việc</b><span>Thứ 2 – Thứ 7: 8:30 – 19:00</span><span>Chủ nhật: 8:30 – 17:00</span></div>
+    </div>
+  </div>
+  <div class="apple-seed-footer-bottom">
+    <div>© 2026 <strong>Apple Seed</strong>. All rights reserved.</div>
+    <div class="apple-seed-footer-bottom-links"><a href="#lien-he">Liên hệ</a><a href="#gioi-thieu">Giới thiệu</a><a href="booking.html">Đặt lịch</a></div>
+    <div class="apple-seed-footer-warning">Nội dung website thuộc Apple Seed · Vui lòng không sao chép, sử dụng lại hoặc phân phối khi chưa được phép.</div>
+  </div>
+</footer>
+
 </body>
 </html>
-<footer class="apple-seed-copyright" aria-label="Bản quyền Apple Seed">
-  <div>Website được viết và phát triển bởi <strong>Tô Thanh Trung</strong> – Apple Seed</div>
-  <span class="copy-warning">🚫 NGHIÊM CẤM SAO CHÉP, SỬ DỤNG LẠI, ĐĂNG LẠI HOẶC PHÂN PHỐI NỘI DUNG DƯỚI MỌI HÌNH THỨC KHI CHƯA ĐƯỢC PHÉP.</span>
-</footer>
 
 
 
