@@ -3141,7 +3141,7 @@ function apply(){
  const phones=list.filter(x=>/iphone/i.test(x?.product?.name||"")&&x?.images?.[0]?.url);
  if(!phones.length)return false;
  document.querySelectorAll(".as3-screen").forEach((screen,i)=>{
-   if(screen.dataset.bound)return;
+   if(screen.dataset.bound||screen.dataset.builderCustomImage)return;
    const item=phones[i%phones.length], url=item.images[0].url;
    const img=document.createElement("img"); img.src=url; img.alt=item.product?.name||"iPhone"; img.loading="lazy"; img.decoding="async";
    img.onerror=()=>img.remove(); screen.appendChild(img); screen.dataset.bound="1";
@@ -3356,6 +3356,31 @@ body.apple-seed-chat-open #apple-seed-ai-board-float{
 })();
 </script>
 
+<script id="apple-seed-builder-preview-assets-v4">
+(function(){
+  "use strict";
+  var q=new URLSearchParams(location.search);
+  var preview=q.get("appleSeedBuilderPreview")==="1"||q.get("builderCanvas")==="1";
+  if(!preview)return;
+  function apply(){
+    try{
+      var products=Array.isArray(window.appleSeedProducts)?window.appleSeedProducts.filter(function(x){return /iphone/i.test(x?.product?.name||"")&&x?.images?.[0]?.url}):[];
+      var screens=[].slice.call(document.querySelectorAll(".as3-screen"));
+      screens.forEach(function(screen,i){
+        if(screen.dataset.builderCustomImage)return;
+        if(screen.querySelector("img"))return;
+        var item=products[i%products.length],url=item&&item.images&&item.images[0]&&item.images[0].url;
+        if(!url)return;
+        var img=document.createElement("img");
+        img.src=url;img.alt=(item.product&&item.product.name)||"iPhone";
+        img.loading="eager";img.decoding="async";img.onerror=function(){img.remove()};
+        screen.appendChild(img);
+      });
+    }catch(e){}
+  }
+  apply();setTimeout(apply,200);setTimeout(apply,700);setTimeout(apply,1500);
+})();
+</script>
 <script id="apple-seed-visual-builder-v2-runtime">
 /* Apple Seed Visual Builder V2 runtime.
  * Reads the latest published Builder config and applies it to the real homepage.
@@ -3412,21 +3437,24 @@ body.apple-seed-chat-open #apple-seed-ai-board-float{
     if(item.src!==undefined && el.tagName==="IMG") el.src=String(item.src);
 
     if(item.bgImage!==undefined && el.tagName!=="IMG"){
+      var visual=el.matches && el.matches(".as3-phone") ? (el.querySelector(".as3-screen")||el) : el;
       if(item.bgImage){
-        /* A custom Builder image owns this phone slot. Remove any legacy
-           product image injected by the old dynamic Hero loaders. */
-        if(el.matches && el.matches(".as3-screen")){
-          el.querySelectorAll(":scope > img").forEach(function(img){img.remove()});
+        /* Builder-owned phone images always belong to the screen, while
+           ordinary element background images stay on the selected element. */
+        if(visual.matches && visual.matches(".as3-screen")){
+          visual.querySelectorAll(":scope > img").forEach(function(img){img.remove()});
+          visual.setAttribute("data-builder-custom-image","1");
         }
         var bg=String(item.bgImage).replace(/\\/g,"\\\\").replace(/"/g,'\\\"');
-        el.style.setProperty("background-image",'url("'+bg+'")',"important");
-        if(el.matches && el.matches(".as3-screen")){
-          el.style.setProperty("background-size","contain","important");
-          el.style.setProperty("background-position","center","important");
-          el.style.setProperty("background-repeat","no-repeat","important");
+        visual.style.setProperty("background-image",'url("'+bg+'")',"important");
+        if(visual.matches && visual.matches(".as3-screen")){
+          visual.style.setProperty("background-size","contain","important");
+          visual.style.setProperty("background-position","center","important");
+          visual.style.setProperty("background-repeat","no-repeat","important");
         }
       }else{
-        el.style.removeProperty("background-image");
+        visual.style.removeProperty("background-image");
+        if(visual.matches && visual.matches(".as3-screen")) visual.removeAttribute("data-builder-custom-image");
       }
     }
 
