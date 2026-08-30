@@ -913,6 +913,45 @@ async function uploadHeroImageSlot(slot,file){
   }
 }
 function clearHeroImageSlot(slot){window.__appleSeedHeroImages=window.__appleSeedHeroImages||heroImagesFromCss($('themeCustomCss').value||'');delete window.__appleSeedHeroImages[slot];$('themeCustomCss').value=replaceHeroImages($('themeCustomCss').value||'',window.__appleSeedHeroImages,$('heroPhoneFit').value,$('heroBackgroundFit').value);renderHeroImageFields($('themeCustomCss').value);}
+async function publishHeroImagesToBuilder(images){
+  /* Canonical source: site_builder_versions.config. Never mutate an existing
+     published row; use the normal versioned publish RPC so rollback remains safe. */
+  const latest=await sb.from('site_builder_versions')
+    .select('config,version_no')
+    .eq('site_key','default')
+    .eq('status','published')
+    .order('version_no',{ascending:false})
+    .limit(1)
+    .maybeSingle();
+  if(latest.error)throw latest.error;
+  if(!latest.data?.config)throw new Error('Chưa có Builder LIVE để đồng bộ ảnh Hero.');
+  const config=JSON.parse(JSON.stringify(latest.data.config));
+  config.items=config.items||{};
+  config.page=config.page||{desktop:{},mobile:{}};
+  config.page.desktop=config.page.desktop||{};
+  config.page.mobile=config.page.mobile||{};
+  const slots=['phone0','phone1','phone2','phone3','phone4','phone5'];
+  Object.entries(config.items).forEach(([selector,item])=>{
+    const m=selector.match(/\.as3-p([1-6])(?:\b|:)/);
+    if(!m)return;
+    const slot=slots[Number(m[1])-1];
+    if(!slot)return;
+    item.bgImage=images[slot]||'';
+  });
+  if(images.background){
+    config.page.desktop.bgImage=images.background;
+    config.page.desktop.target='hero';
+    config.page.desktop.bgSize=$('heroBackgroundFit').value||'cover';
+    config.page.desktop.bgPosition='center';
+  }else if(Object.prototype.hasOwnProperty.call(config.page.desktop,'bgImage')){
+    config.page.desktop.bgImage='';
+  }
+  config.builder_version='V3';
+  const r=await sb.rpc('apple_seed_builder_publish',{p_config:config,p_site_key:'default'});
+  if(r.error)throw r.error;
+  return r.data?.version_no;
+}
+
 async function saveHeroImages(){
   const btn=$('saveHeroImagesBtn');
   try{
@@ -922,19 +961,20 @@ async function saveHeroImages(){
     const css=replaceHeroImages($('themeCustomCss').value||'',window.__appleSeedHeroImages,$('heroPhoneFit').value,$('heroBackgroundFit').value);
     $('themeCustomCss').value=css;
     const payload={id:1,site_name:$('themeSiteName').value.trim()||'Apple Seed',font_family:$('themeFont').value||'system',primary_color:colorOr($('themePrimary').value,'#2563eb'),secondary_color:colorOr($('themeSecondary').value,'#0f172a'),page_bg:colorOr($('themeBg').value,'#f6f8fb'),surface_color:colorOr($('themeSurface').value,'#ffffff'),text_color:colorOr($('themeText').value,'#111827'),muted_color:colorOr($('themeMuted').value,'#667085'),radius_px:Number($('themeRadius').value)||16,container_width:Number($('themeWidth').value)||1180,section_spacing:Number($('themeSpacing').value)||64,hero_height:Number($('themeHeroHeight').value)||420,button_style:$('themeButton').value||'rounded',card_style:$('themeCard').value||'soft',icon_style:$('themeIcon').value||'emoji',image_default_fit:$('themeImageFit').value||'cover',logo_url:$('themeLogo').value.trim(),favicon_url:$('themeFavicon').value.trim(),meta_title:$('themeMetaTitle').value.trim(),meta_description:$('themeMetaDescription').value.trim(),og_image:$('themeOgImage').value.trim(),custom_css:css};
-    if(btn){btn.disabled=true;btn.textContent='⏳ Đang lưu...'}
+    if(btn){btn.disabled=true;btn.textContent='⏳ Đang đồng bộ...'}
     const r=await sb.from('site_theme_settings').upsert(payload,{onConflict:'id'}).select('id,updated_at').single();
     if(r.error)throw r.error;
-    if(!r.data)throw new Error('Supabase không trả về bản ghi sau khi lưu.');
-    status('✅ Đã lưu ảnh Hero. F5 website để xem thay đổi.');
+    if(!r.data)throw new Error('Supabase không trả về bản ghi sau khi lưu theme.');
+
+    const versionNo=await publishHeroImagesToBuilder(window.__appleSeedHeroImages);
+    status('✅ Ảnh Hero đã đồng bộ Builder + LIVE · V'+(versionNo||''));
   }catch(e){
     console.error('Apple Seed Hero save:',e);
-    status('❌ Lưu ảnh Hero lỗi: '+(e?.message||e),true);
+    status('❌ Đồng bộ ảnh Hero lỗi: '+(e?.message||e),true);
   }finally{
     if(btn){btn.disabled=false;btn.textContent='💾 Lưu ảnh Hero'}
   }
 }
-
 
 const HERO_UI_START='/* APPLESEED_HERO_UI_START */';
 const HERO_UI_END='/* APPLESEED_HERO_UI_END */';
