@@ -200,8 +200,9 @@ $('preview').addEventListener('load',async()=>{
     if(phone)el=phone;
     if(!editable(el))return;
     choose(el);
+    const before=snapshot();
     const st=currentStyle(),base=styleObject(el);
-    drag={type:'move',sx:e.clientX,sy:e.clientY,el,
+    drag={type:'move',sx:e.clientX,sy:e.clientY,el,before,
       bx:Number.isFinite(Number(st.x))?Number(st.x):base.x,
       by:Number.isFinite(Number(st.y))?Number(st.y):base.y,moved:false,pointerId:e.pointerId};
     try{el.setPointerCapture(e.pointerId)}catch(_){}
@@ -227,7 +228,7 @@ $('preview').addEventListener('load',async()=>{
     if(!drag)return;
     if(e&&drag.pointerId!==undefined&&e.pointerId!==undefined&&drag.pointerId!==e.pointerId)return;
     if(drag.moved){
-      checkpoint();
+      if(drag.before)history.push(drag.before);else checkpoint();
       const v=getItem().styles[deviceKey()];
       v.x=parseFloat($('x').value)||0;
       v.y=parseFloat($('y').value)||0;
@@ -263,7 +264,23 @@ $('undo').onclick=()=>{if(!history.length)return;future.push(snapshot());draft=h
 $('redo').onclick=()=>{if(!future.length)return;history.push(snapshot());draft=future.pop();saveDraft();applyAll();toast('↷ Redo')};
 $('backAdmin').onclick=()=>{location.href='admin.html'};
 $('save').onclick=saveDraft;$('reload').onclick=()=>location.reload();$('clear').onclick=()=>{if(confirm('Xóa toàn bộ nháp Builder trên máy?')){localStorage.removeItem(DRAFT_KEY);location.reload()}};
-$('publish').onclick=async()=>{if(!allowed){toast('Tài khoản không có quyền');return}saveDraft();setStatus('Đang xuất bản version mới…');const r=await window.supabaseClient.rpc('apple_seed_builder_publish',{p_config:draft,p_site_key:'default'});if(r.error){toast('Publish lỗi: '+r.error.message);setStatus('Publish lỗi — website chưa đổi');return}toast('🚀 Đã xuất bản V'+(r.data?.version_no||''));setStatus('Đã xuất bản');await loadPublished()};
+$('publish').onclick=async()=>{
+  if(!allowed){toast('Tài khoản không có quyền');return}
+  saveDraft();
+  setStatus('Đang xuất bản version mới…');
+  const payload=snapshot();
+  const r=await window.supabaseClient.rpc('apple_seed_builder_publish',{p_config:payload,p_site_key:'default'});
+  if(r.error){toast('Publish lỗi: '+r.error.message);setStatus('Publish lỗi — website chưa đổi');return}
+  const versionNo=r.data?.version_no;
+  toast('🚀 Đã xuất bản V'+(versionNo||''));
+  setStatus('Đã xuất bản V'+(versionNo||''));
+  await loadPublished();
+  try{
+    const verify=await window.supabaseClient.from('site_builder_versions').select('version_no,config').eq('site_key','default').eq('status','published').order('version_no',{ascending:false}).limit(1).maybeSingle();
+    if(verify.error) console.warn('Publish verify:',verify.error.message);
+    else if(!verify.data?.config?.items) console.warn('Publish verify: published config has no items');
+  }catch(err){console.warn('Publish verify:',err)}
+};
 $('loginBtn').onclick=async()=>{const r=await window.supabaseClient.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(r.error){$('loginMsg').textContent=r.error.message;return}location.reload()};
 async function checkRole(){
   const s=await window.supabaseClient.auth.getSession();if(!s.data.session){$('login').style.display='flex';return}
