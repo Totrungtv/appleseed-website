@@ -572,8 +572,13 @@ $("loginBtn").onclick=async()=>{
     if(!email || !password) throw new Error("Vui lòng nhập email và mật khẩu.");
     const {error}=await sb.auth.signInWithPassword({email,password});
     if(error) throw error;
-    await 
-
+    await checkSession();
+  }catch(err){
+    msg.textContent="Lỗi đăng nhập: "+(err?.message || String(err));
+  }finally{
+    btn.disabled=false; btn.textContent="Đăng nhập";
+  }
+};
 /* ===== APPLE SEED VIDEO ADMIN V1 ===== */
 function extractYouTubeId(value){
   try{
@@ -660,13 +665,6 @@ $('saveVideoBtn').onclick=async e=>{
 };
 async function loadVideoAdmin(){await loadVideoCategories();await loadVideos();}
 
-checkSession();
-  }catch(err){
-    msg.textContent="Lỗi đăng nhập: "+(err?.message || String(err));
-  }finally{
-    btn.disabled=false; btn.textContent="Đăng nhập";
-  }
-};
 $("logoutBtn").onclick=async()=>{await sb.auth.signOut();location.reload();};
 
 async function refreshAll(){await loadProducts();await loadPages();await loadNavItems();await loadHomeSections();await loadTheme();await loadPaymentAndOrders()}
