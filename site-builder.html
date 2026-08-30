@@ -73,7 +73,7 @@ function stableSelector(el){
 function editable(el){return !!el&&el!==doc.body&&el!==doc.documentElement&&!['SCRIPT','STYLE','SVG','PATH','IFRAME','INPUT','TEXTAREA','SELECT','VIDEO','AUDIO','CANVAS'].includes(el.tagName)}
 function textEditable(el){return editable(el)&&el.tagName!=='IMG'&&el.children.length===0&&el.textContent.trim().length>0}
 function getItem(){if(!draft.items[selector])draft.items[selector]={styles:{desktop:{},mobile:{}}};const i=draft.items[selector];i.styles=i.styles||{};i.styles.desktop=i.styles.desktop||{};i.styles.mobile=i.styles.mobile||{};return i}
-function styleObject(el){const s=el.style,r=el.getBoundingClientRect(),tr=(s.translate||'').trim().split(/\\s+/);return{x:parseFloat(tr[0])||0,y:parseFloat(tr[1])||0,w:parseFloat(s.width)||Math.round(r.width),h:parseFloat(s.height)||Math.round(r.height),fontSize:parseFloat(s.fontSize)||'',radius:parseFloat(s.borderRadius)||'',color:s.color||'',background:s.backgroundColor||''}}
+function styleObject(el){const s=el.style,r=el.getBoundingClientRect(),tr=(s.translate||'').trim().split(/\s+/);return{x:parseFloat(tr[0])||0,y:parseFloat(tr[1])||0,w:parseFloat(s.width)||Math.round(r.width),h:parseFloat(s.height)||Math.round(r.height),fontSize:parseFloat(s.fontSize)||'',radius:parseFloat(s.borderRadius)||'',color:s.color||'',background:s.backgroundColor||''}}
 function currentStyle(){return getItem().styles[deviceKey()]||{}}
 function refreshOverlay(){
   const o=$('overlay');if(!selected){o.style.display='none';return}
@@ -177,17 +177,58 @@ $('preview').addEventListener('load',async()=>{
   },true);
   // Never let preview navigation escape the Builder shell.
   doc.addEventListener('auxclick',e=>{if(editable(e.target)){e.preventDefault();e.stopPropagation()}},true);
-  doc.addEventListener('mousedown',e=>{
-    const el=e.target;if(!editable(el))return;choose(el);
-    drag={type:'move',sx:e.clientX,sy:e.clientY,el,bx:currentStyle().x??styleObject(el).x,by:currentStyle().y??styleObject(el).y,moved:false};e.preventDefault();
+  /*
+   * Reliable canvas dragging:
+   * - use pointer events so images/links cannot start native browser dragging;
+   * - keep all pointer tracking inside the iframe document;
+   * - store X/Y immediately in the Builder draft while dragging;
+   * - release the pointer even when it leaves the selected element.
+   */
+  doc.addEventListener('dragstart',e=>{if(e.target&&editable(e.target))e.preventDefault()},true);
+  doc.addEventListener('pointerdown',e=>{
+    const el=e.target;
+    if(!editable(el)||e.button!==0)return;
+    choose(el);
+    const st=currentStyle(),base=styleObject(el);
+    drag={type:'move',sx:e.clientX,sy:e.clientY,el,
+      bx:Number.isFinite(Number(st.x))?Number(st.x):base.x,
+      by:Number.isFinite(Number(st.y))?Number(st.y):base.y,moved:false,pointerId:e.pointerId};
+    try{el.setPointerCapture(e.pointerId)}catch(_){}
+    e.preventDefault();
+    e.stopPropagation();
   },true);
-  doc.addEventListener('mousemove',e=>{
-    if(!drag)return;const dx=e.clientX-drag.sx,dy=e.clientY-drag.sy;if(Math.abs(dx)+Math.abs(dy)<3)return;drag.moved=true;
-    if(drag.type==='move'){const x=Math.round(drag.bx+dx),y=Math.round(drag.by+dy);drag.el.style.translate=x+'px '+y+'px';$('x').value=x;$('y').value=y}
-    else{let w=drag.bw,h=drag.bh;if(drag.type==='se'){w+=dx;h+=dy}if(drag.type==='ne'){w+=dx;h-=dy}if(drag.type==='sw'){w-=dx;h+=dy}if(drag.type==='nw'){w-=dx;h-=dy}w=Math.max(30,Math.round(w));h=Math.max(20,Math.round(h));drag.el.style.width=w+'px';drag.el.style.height=h+'px';$('w').value=w;$('h').value=h}
+  doc.addEventListener('pointermove',e=>{
+    if(!drag||drag.pointerId!==e.pointerId)return;
+    const dx=e.clientX-drag.sx,dy=e.clientY-drag.sy;
+    if(!drag.moved && Math.hypot(dx,dy)<3)return;
+    drag.moved=true;
+    if(drag.type==='move'){
+      const x=Math.round(drag.bx+dx),y=Math.round(drag.by+dy);
+      drag.el.style.translate=x+'px '+y+'px';
+      const v=getItem().styles[deviceKey()];
+      v.x=x;v.y=y;
+      $('x').value=x;$('y').value=y;
+    }
     refreshOverlay();
+    e.preventDefault();
   },true);
-  doc.addEventListener('mouseup',()=>{if(drag?.moved){checkpoint();const v=getItem().styles[deviceKey()];v.x=parseFloat($('x').value)||0;v.y=parseFloat($('y').value)||0;v.w=parseFloat($('w').value)||undefined;v.h=parseFloat($('h').value)||undefined;saveDraft();toast('Đã chỉnh — bản nháp')}drag=null},true);
+  function finishMove(e){
+    if(!drag)return;
+    if(e&&drag.pointerId!==undefined&&e.pointerId!==undefined&&drag.pointerId!==e.pointerId)return;
+    if(drag.moved){
+      checkpoint();
+      const v=getItem().styles[deviceKey()];
+      v.x=parseFloat($('x').value)||0;
+      v.y=parseFloat($('y').value)||0;
+      saveDraft();
+      refreshOverlay();
+      toast('Đã di chuyển — bản nháp');
+    }
+    try{if(drag.el&&drag.pointerId!=null)drag.el.releasePointerCapture(drag.pointerId)}catch(_){}
+    drag=null;
+  }
+  doc.addEventListener('pointerup',finishMove,true);
+  doc.addEventListener('pointercancel',finishMove,true);
   loadDraft();await loadPublished();applyAll();setStatus('Sẵn sàng — bấm trực tiếp để chỉnh');renderLayers();
   // One-shot recovery for a stale/blank iframe cache. Never loops.
   setTimeout(function(){
