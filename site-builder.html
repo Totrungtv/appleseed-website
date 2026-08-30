@@ -27,7 +27,7 @@
   <div class="panel"><h3>📦 Bản nháp</h3><button class="btn" id="reload" style="width:100%;margin-bottom:6px">↻ Nạp lại</button><button class="btn" id="clear" style="width:100%">Xóa nháp máy</button></div>
   <div class="panel"><h3>🛡 An toàn</h3><div class="muted">Builder dùng cấu hình riêng trong Supabase. Không sửa HTML gốc. Publish tạo version mới; bản cũ được giữ để rollback.</div></div>
 </aside>
-<main class="canvas"><div class="frame" id="frame"><iframe id="preview" src="index.html?appleSeedBuilderPreview=1"></iframe></div></main>
+<main class="canvas"><div class="frame" id="frame"><iframe id="preview" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-popups" src="index.html?appleSeedBuilderPreview=1"></iframe></div></main>
 <aside class="side right">
   <div class="panel"><h3>🖱 Đối tượng</h3><div id="info" class="selected-name">Chưa chọn</div><span id="tag" class="tag" hidden></span></div>
   <div class="panel" id="contentPanel" hidden><h3>✏️ Nội dung</h3><div class="field"><label>Chữ</label><textarea id="text"></textarea></div><button class="btn primary" id="applyText" style="width:100%">Áp dụng chữ</button></div>
@@ -163,7 +163,12 @@ setInterval(async()=>{
 },1200);
 $('preview').addEventListener('load',async()=>{
   doc=$('preview').contentDocument;
-  doc.addEventListener('click',e=>{if(!editable(e.target))return;e.preventDefault();e.stopPropagation();choose(e.target)},true);
+  doc.addEventListener('click',e=>{
+    if(!editable(e.target))return;
+    e.preventDefault();e.stopPropagation();choose(e.target);
+  },true);
+  // Never let preview navigation escape the Builder shell.
+  doc.addEventListener('auxclick',e=>{if(editable(e.target)){e.preventDefault();e.stopPropagation()}},true);
   doc.addEventListener('mousedown',e=>{
     const el=e.target;if(!editable(el))return;choose(el);
     drag={type:'move',sx:e.clientX,sy:e.clientY,el,bx:currentStyle().x??styleObject(el).x,by:currentStyle().y??styleObject(el).y,moved:false};e.preventDefault();
