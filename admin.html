@@ -564,6 +564,11 @@ async function checkSession(){
   }catch(e){
     console.warn("Hero Studio init",e);
   }
+  }catch(err){
+    console.error("Apple Seed Admin session error:",err);
+    $("loginStatus").textContent="Lỗi Admin: "+(err?.message||String(err));
+    show($("loginView"),true); show($("app"),false);
+  }
 }
 $("loginBtn").onclick=async()=>{
   const btn=$("loginBtn"), msg=$("loginStatus");
