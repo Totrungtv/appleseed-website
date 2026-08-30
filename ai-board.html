@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Apple Seed AI Board • Full</title>
+<title>Apple Seed AI Board</title>
 <style>
 body{margin:0;font-family:Inter,system-ui,sans-serif;background:linear-gradient(135deg,#f7fbff,#eef7ff 52%,#e8f2ff);color:#10233f}
 .wrap{max-width:1180px;margin:auto;padding:30px}.top{display:flex;justify-content:space-between;gap:20px;align-items:center;flex-wrap:wrap}
@@ -11,70 +11,213 @@ body{margin:0;font-family:Inter,system-ui,sans-serif;background:linear-gradient(
 .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}.card{background:#fff;border:1px solid #cfe2f7;border-radius:20px;padding:20px;box-shadow:0 18px 55px #1e50821a;margin-top:18px}
 .fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.full{grid-column:1/-1}.field{display:flex;flex-direction:column;gap:7px;margin-top:14px}
 label{font-size:12px;font-weight:800;color:#46617f}input,select,textarea{width:100%;border:1px solid #cfe0f2;background:#f7fbff;color:#10233f;border-radius:11px;padding:11px;font:inherit;box-sizing:border-box}
-textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;padding:12px 18px;font-weight:800;cursor:pointer}.btn:disabled{opacity:.6;cursor:wait}.primary{background:linear-gradient(135deg,#1479e8,#3ba7ff);color:white}.secondary{background:#eaf4ff;color:#145ca8}
+textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;padding:12px 18px;font-weight:800;cursor:pointer}.primary{background:linear-gradient(135deg,#1479e8,#3ba7ff);color:white}.secondary{background:#eaf4ff;color:#145ca8}
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}.result{margin-top:14px;padding:14px 16px;background:#f5faff;border-left:4px solid #278cf0;border-radius:12px}
 .pill{display:inline-block;padding:5px 9px;border-radius:999px;background:#eaf4ff;color:#155b9e;border:1px solid #cce3f8;font-size:12px;margin:3px}
-.file-picked{margin-top:8px;padding:10px 12px;border:1px solid #cfe2f7;border-radius:11px;background:#f7fbff;color:#46617f;font-size:13px}.file-picked.show{display:block}.case{padding:13px;border:1px solid #d5e5f5;border-radius:13px;background:#fff;margin-top:10px}.drop{min-height:120px;margin-top:15px;border:1.5px dashed #8bb9e8;border-radius:15px;display:grid;place-items:center;text-align:center;background:#f4faff}
+.case{padding:13px;border:1px solid #d5e5f5;border-radius:13px;background:#fff;margin-top:10px}.drop{min-height:120px;margin-top:15px;border:1.5px dashed #8bb9e8;border-radius:15px;display:grid;place-items:center;text-align:center;background:#f4faff}
 @media(max-width:800px){.grid,.fields{grid-template-columns:1fr}.full{grid-column:auto}h1{font-size:30px}}
 
-/* Apple Seed AI confirmation modal */
-.coin-modal-backdrop{position:fixed;inset:0;background:rgba(16,35,63,.38);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px}
-.coin-modal-backdrop.show{display:flex}
-.coin-modal{width:min(430px,100%);background:#fff;border:1px solid #cfe2f7;border-radius:20px;box-shadow:0 25px 80px rgba(16,35,63,.28);padding:22px}
-.coin-modal h3{margin:0 0 8px;font-size:20px;color:#10233f}
-.coin-modal p{margin:8px 0;color:#647b98;line-height:1.5}
-.coin-cost{display:flex;justify-content:space-between;gap:12px;padding:13px 14px;margin:15px 0;background:#f4faff;border:1px solid #d5e8fa;border-radius:13px}
-.coin-cost strong{color:#1479e8}
-.coin-modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:17px}
-.coin-modal-actions .btn{min-width:105px}
-.coin-modal-error{display:none;margin-top:10px;padding:10px 12px;border-radius:10px;background:#fff3f2;color:#b42318;font-size:13px}
-.coin-modal-error.show{display:block}
+.youtube-center{margin-top:18px;background:#fff;border:1px solid #cfe2f7;border-radius:20px;padding:20px;box-shadow:0 18px 55px #1e50821a}
+.youtube-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;flex-wrap:wrap}.youtube-head h2{margin:0 0 6px}.youtube-search{display:flex;gap:9px;margin-top:16px}.youtube-search input{flex:1;min-width:0}.youtube-search button{white-space:nowrap}.youtube-status{margin-top:9px;min-height:20px;color:#647b98;font-size:13px}.youtube-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:15px}.youtube-card{border:1px solid #d5e5f5;border-radius:14px;overflow:hidden;background:#fff;cursor:pointer;transition:.16s}.youtube-card:hover{transform:translateY(-2px);box-shadow:0 10px 26px #1e50821a}.youtube-thumb{aspect-ratio:16/9;background:#edf4fb;position:relative;overflow:hidden}.youtube-thumb img{width:100%;height:100%;object-fit:cover;display:block}.youtube-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:#ff0033;color:#fff;font-size:22px;box-shadow:0 7px 22px #0004}.youtube-info{padding:11px}.youtube-title{font-weight:850;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.youtube-channel{margin-top:6px;color:#647b98;font-size:12px}.youtube-empty{padding:20px;text-align:center;color:#647b98;border:1px dashed #cfe2f7;border-radius:13px}.youtube-player-modal{position:fixed;inset:0;background:#07111ed9;display:none;align-items:center;justify-content:center;padding:18px;z-index:99999}.youtube-player-modal.open{display:flex}.youtube-player-box{width:min(1050px,100%);background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 25px 80px #0008}.youtube-player-top{display:flex;justify-content:space-between;align-items:center;padding:12px 15px;border-bottom:1px solid #e5eaf2}.youtube-player-close{border:0;background:#eef3f8;width:36px;height:36px;border-radius:50%;font-size:22px;cursor:pointer}.youtube-frame{aspect-ratio:16/9;background:#000}.youtube-frame iframe{width:100%;height:100%;border:0;display:block}.youtube-player-title{padding:12px 15px;font-weight:850}
+.youtube-submit{margin-top:18px;background:#fff;border:1px solid #cfe2f7;border-radius:20px;padding:20px;box-shadow:0 18px 55px #1e50821a}
+.youtube-submit h2{margin:0 0 6px}.youtube-submit-form{display:grid;gap:11px;margin-top:14px}
+.youtube-submit-form label{font-size:12px;font-weight:800;color:#46617f}
+.youtube-submit-form input,.youtube-submit-form select,.youtube-submit-form textarea{margin-top:6px}
+.youtube-submit-form textarea{min-height:95px}
+.youtube-submit-status{display:none;padding:11px 12px;border-radius:10px;font-size:13px;line-height:1.5}
+.youtube-submit-status.show{display:block}.youtube-submit-status.ok{background:#ecfdf3;color:#16794a}.youtube-submit-status.err{background:#fff1f2;color:#b42318}
 
-</style>
+@media(max-width:900px){.youtube-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.youtube-grid{grid-template-columns:1fr}.youtube-search{display:grid;grid-template-columns:1fr}.youtube-search button{width:100%}.youtube-center{padding:15px}}
 
-<style id="apple-seed-member-gate-fix">
-/* MEMBER GATE: chỉ hiện khi chưa đăng nhập */
-body.apple-seed-member-logged-in [id="memberGate"],
-body.apple-seed-member-logged-in .member-gate,
-body.apple-seed-member-logged-in [data-member-gate],
-body.apple-seed-member-logged-in .member-required-banner {
-  display:none !important;
-  visibility:hidden !important;
-  height:0 !important;
-  min-height:0 !important;
-  margin:0 !important;
-  padding:0 !important;
-  overflow:hidden !important;
+
+/* ===== APPLE SEED REPAIR VIDEO LIBRARY ===== */
+.repair-video-library{margin-top:18px;background:#fff;border:1px solid #cfe2f7;border-radius:20px;padding:20px;box-shadow:0 18px 55px #1e50821a}
+.repair-video-library-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.repair-video-library-head h2{margin:0 0 6px}
+.repair-video-filters{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}
+.repair-video-filters input,.repair-video-filters select{min-width:220px}
+.repair-video-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:15px}
+.repair-video-card{border:1px solid #d5e5f5;border-radius:14px;overflow:hidden;background:#fff;cursor:pointer;transition:.16s}
+.repair-video-card:hover{transform:translateY(-2px);box-shadow:0 10px 26px #1e50821a}
+.repair-video-thumb{aspect-ratio:16/9;background:#edf4fb;position:relative;overflow:hidden}
+.repair-video-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.repair-video-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:50px;height:50px;border-radius:50%;display:grid;place-items:center;background:rgba(23,105,255,.94);color:#fff;font-size:23px;box-shadow:0 7px 22px #0003}
+.repair-video-info{padding:12px}
+.repair-video-info h3{margin:0 0 7px;font-size:15px;line-height:1.4}
+.repair-video-info p{margin:0;color:#647b98;font-size:12px;line-height:1.5}
+.repair-video-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.repair-video-empty{grid-column:1/-1;padding:24px;text-align:center;color:#647b98;border:1px dashed #cfe2f7;border-radius:13px}
+@media(max-width:900px){.repair-video-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.repair-video-grid{grid-template-columns:1fr}.repair-video-filters{display:grid}.repair-video-filters input,.repair-video-filters select{width:100%;min-width:0}}
+
+
+/* ===== YOUTUBE PLAYER CLOSE MOBILE FIX V2 ===== */
+.youtube-player-modal{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.youtube-player-box{position:relative}
+.youtube-player-close{
+  position:relative!important;z-index:50!important;
+  pointer-events:auto!important;touch-action:manipulation!important;
+  -webkit-appearance:none!important;appearance:none!important;
 }
+@media(max-width:560px){
+  .youtube-player-modal{padding:10px!important}
+  .youtube-player-box{width:100%!important;max-height:92vh!important}
+  .youtube-player-close{width:44px!important;height:44px!important;font-size:28px!important}
+  .youtube-player-title{max-height:24vh!important;overflow:auto!important}
+}
+
 </style>
 
+<style id="apple-seed-full-fix-css">
+/* ===== FULL AI BOARD RESTORE ===== */
+.as-fullbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;padding:12px 14px;background:#fff;border:1px solid #cfe2f7;border-radius:16px;box-shadow:0 10px 30px #1e508214}
+.as-member-summary{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.as-member-avatar{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:#eaf4ff;font-size:20px}.as-member-name{font-weight:900}.as-member-meta{font-size:12px;color:#647b98}.as-member-actions{display:flex;gap:8px;flex-wrap:wrap}.as-smallbtn{border:1px solid #cfe2f7;background:#fff;color:#145ca8;border-radius:10px;padding:9px 12px;font-weight:850;cursor:pointer}.as-smallbtn.primary{background:#1769ff;color:#fff;border-color:#1769ff}.as-smallbtn.danger{color:#b42318}
+.as-member-modal,.as-chat-modal{position:fixed;inset:0;z-index:200000;background:#07111ebf;display:none;align-items:center;justify-content:center;padding:16px}.as-member-modal.open,.as-chat-modal.open{display:flex}.as-modal-box{width:min(760px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:20px;box-shadow:0 30px 100px #0005}.as-modal-head{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;background:linear-gradient(135deg,#1769ff,#3ba7ff);color:#fff}.as-modal-head h2{margin:0;font-size:19px}.as-close{width:38px;height:38px;border:0;border-radius:50%;background:#ffffff2a;color:#fff;font-size:24px;cursor:pointer}.as-modal-body{padding:18px}.as-auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:15px}.as-auth-tabs button{padding:11px;border:1px solid #d6e3f2;border-radius:10px;background:#fff;font-weight:850;cursor:pointer}.as-auth-tabs button.active{background:#1769ff;color:#fff;border-color:#1769ff}.as-auth-form{display:grid;gap:11px}.as-auth-form label{display:block}.as-auth-form input{margin-top:6px}.as-status{display:none;margin-top:10px;padding:11px 12px;border-radius:10px;font-size:13px;line-height:1.5}.as-status.show{display:block}.as-status.ok{background:#ecfdf3;color:#16794a}.as-status.err{background:#fff1f2;color:#b42318}
+.as-chat-layout{display:grid;grid-template-columns:240px 1fr;min-height:560px}.as-chat-side{border-right:1px solid #e5edf6;background:#f7fbff;padding:12px}.as-chat-side h3{margin:4px 4px 10px;font-size:13px;color:#46617f}.as-chat-tabs{display:flex;gap:6px;margin-bottom:10px}.as-chat-tabs button{flex:1;padding:8px;border:1px solid #d7e4f2;background:#fff;border-radius:9px;font-size:12px;font-weight:850;cursor:pointer}.as-chat-tabs button.active{background:#1769ff;color:#fff;border-color:#1769ff}.as-chat-list{display:grid;gap:6px;max-height:470px;overflow:auto}.as-chat-item{border:1px solid #dce8f4;background:#fff;border-radius:10px;padding:10px;text-align:left;cursor:pointer}.as-chat-item:hover,.as-chat-item.active{border-color:#66a9ef;background:#eef7ff}.as-chat-item b{display:block;font-size:13px}.as-chat-item small{display:block;color:#647b98;margin-top:3px}.as-chat-main{display:flex;flex-direction:column;min-width:0}.as-chat-title{padding:14px 16px;border-bottom:1px solid #e5edf6;font-weight:900}.as-chat-messages{flex:1;min-height:390px;max-height:470px;overflow:auto;padding:14px;background:#fbfdff}.as-msg{max-width:78%;padding:9px 11px;border-radius:12px;background:#fff;border:1px solid #e0e9f3;margin:7px 0;font-size:13px;line-height:1.45}.as-msg.mine{margin-left:auto;background:#1769ff;color:#fff;border-color:#1769ff}.as-msg small{display:block;opacity:.65;margin-top:4px;font-size:10px}.as-chat-compose{display:flex;gap:8px;padding:10px;border-top:1px solid #e5edf6}.as-chat-compose input{flex:1;min-width:0}.as-search-member{display:flex;gap:6px;margin-bottom:9px}.as-search-member input{min-width:0}.as-member-results{display:grid;gap:6px;max-height:190px;overflow:auto}.as-member-result{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px;border:1px solid #dce8f4;border-radius:9px;background:#fff}.as-member-result span{font-size:12px;font-weight:800}.as-empty{padding:15px;text-align:center;color:#647b98;border:1px dashed #cfe2f7;border-radius:10px}.as-chat-note{padding:10px 12px;background:#fff8e8;color:#805b00;border:1px solid #f1d79a;border-radius:10px;font-size:12px;margin-bottom:10px}
+.as-quick-community{display:grid;grid-template-columns:1fr 1fr;gap:12px}.as-community-card{padding:15px;border:1px solid #d5e5f5;border-radius:14px;background:#fff}.as-community-card h3{margin:0 0 6px;font-size:15px}.as-case-list{display:grid;gap:8px;margin-top:10px}.as-case-row{padding:11px;border:1px solid #dbe7f3;border-radius:11px;background:#fafdff}.as-case-row b{display:block}.as-case-row small{color:#647b98}.as-case-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.as-file-preview{display:none;margin-top:10px;padding:9px;border:1px solid #d6e6f5;border-radius:10px;background:#fff;font-size:12px}.as-file-preview.show{display:block}.as-upload-input{display:none}
+@media(max-width:700px){.as-chat-layout{grid-template-columns:1fr}.as-chat-side{border-right:0;border-bottom:1px solid #e5edf6}.as-chat-list{max-height:180px}.as-quick-community{grid-template-columns:1fr}.as-modal-box{max-height:95vh}.as-chat-messages{min-height:300px}.as-fullbar{align-items:flex-start}}
+</style>
 </head>
-<body>
-<div id="coinConfirmModal" class="coin-modal-backdrop" aria-hidden="true">
-  <div class="coin-modal" role="dialog" aria-modal="true" aria-labelledby="coinConfirmTitle">
-    <h3 id="coinConfirmTitle">🪙 Xác nhận phân tích</h3>
-    <p id="coinConfirmText">Bạn sẽ bị trừ <strong>20 Coin</strong> trong tài khoản để thực hiện lần phân tích này. Bạn đồng ý?</p>
-    <div class="coin-cost">
-      <span>Số dư hiện tại</span>
-      <strong id="coinCurrent">— Coin</strong>
-    </div>
-    <div class="coin-cost">
-      <span>Chi phí phân tích</span>
-      <strong>−20 Coin</strong>
-    </div>
-    <div class="coin-cost">
-      <span>Số dư sau phân tích</span>
-      <strong id="coinAfter">— Coin</strong>
-    </div>
-    <div id="coinConfirmError" class="coin-modal-error"></div>
-    <div class="coin-modal-actions">
-      <button type="button" class="btn secondary" id="coinCancel">Hủy</button>
-      <button type="button" class="btn primary" id="coinAccept">Đồng ý, phân tích</button>
+<body><main class="wrap">
+<!-- ===== APPLE SEED FULL MEMBER / COMMUNITY / CHAT RESTORE ===== -->
+<div class="as-fullbar" id="asFullBar">
+  <div class="as-member-summary">
+    <div class="as-member-avatar">👤</div>
+    <div><div class="as-member-name" id="asMemberName">Apple Seed Member</div><div class="as-member-meta" id="asMemberMeta">Đang kiểm tra phiên đăng nhập…</div></div>
+  </div>
+  <div class="as-member-actions">
+    <button class="as-smallbtn primary" id="asAccountBtn" type="button">👤 Tài khoản</button>
+    <button class="as-smallbtn" id="asCommunityBtn" type="button">💬 Nhóm & chat riêng</button>
+    <button class="as-smallbtn danger" id="asLogoutBtn" type="button" style="display:none">Đăng xuất</button>
+  </div>
+</div>
+
+<div class="as-member-modal" id="asMemberModal" role="dialog" aria-modal="true">
+  <div class="as-modal-box" style="width:min(520px,100%)">
+    <div class="as-modal-head"><h2>👤 Apple Seed Member</h2><button class="as-close" id="asMemberClose">×</button></div>
+    <div class="as-modal-body">
+      <div id="asAccountView">
+        <div class="as-member-summary" style="margin-bottom:14px"><div class="as-member-avatar">👤</div><div><div class="as-member-name" id="asAccountName">—</div><div class="as-member-meta" id="asAccountEmail">—</div></div></div>
+        <div class="fields">
+          <div class="case"><b>🪙 Coin</b><div class="muted" id="asAccountCoins">—</div></div>
+          <div class="case"><b>⏳ Trial</b><div class="muted" id="asAccountTrial">—</div></div>
+        </div>
+        <div class="actions"><a class="btn secondary" href="member-wallet.html">💳 Nạp Coin</a><button class="btn primary" id="asOpenChatFromAccount" type="button">💬 Mở chat</button></div>
+      </div>
+      <div id="asAuthView" style="display:none">
+        <div class="as-auth-tabs"><button id="asLoginTab" class="active" type="button">Đăng nhập</button><button id="asSignupTab" type="button">Đăng ký</button></div>
+        <form id="asLoginForm" class="as-auth-form"><label>Email<input id="asLoginEmail" type="email" autocomplete="email" required placeholder="email@gmail.com"></label><label>Mật khẩu<input id="asLoginPassword" type="password" autocomplete="current-password" required></label><button class="btn primary" type="submit">🔐 Đăng nhập</button><button type="button" class="as-smallbtn" id="asForgot">🔑 Quên mật khẩu?</button></form>
+        <form id="asSignupForm" class="as-auth-form" style="display:none"><label>Họ và tên<input id="asSignupName" required autocomplete="name"></label><label>Số điện thoại<input id="asSignupPhone" required autocomplete="tel"></label><label>Email<input id="asSignupEmail" type="email" required autocomplete="email"></label><label>Mật khẩu<input id="asSignupPassword" type="password" minlength="6" required autocomplete="new-password"></label><button class="btn primary" type="submit">✨ Tạo tài khoản</button></form>
+        <div id="asAuthStatus" class="as-status"></div>
+      </div>
     </div>
   </div>
 </div>
-<main class="wrap">
-<header class="top"><div><div class="kicker">APPLE SEED • ENGINEERING LAB</div><h1>AI Board Intelligence</h1><div class="muted">PANIC • Schematic • Boardview • Measurement • Case Intelligence</div></div><div><span class="pill" id="coinBalanceBadge">🪙 1,250 COIN</span><span class="pill">● AI ONLINE</span></div></header>
+
+<div class="as-chat-modal" id="asChatModal" role="dialog" aria-modal="true">
+  <div class="as-modal-box">
+    <div class="as-modal-head"><h2>💬 Technician Network</h2><button class="as-close" id="asChatClose">×</button></div>
+    <div class="as-chat-layout">
+      <aside class="as-chat-side">
+        <div class="as-chat-tabs"><button class="active" id="asGroupTab" type="button">👥 Nhóm</button><button id="asPrivateTab" type="button">🔒 Riêng</button></div>
+        <div id="asGroupPanel"><h3>Nhóm của tôi</h3><div id="asGroupList" class="as-chat-list"></div></div>
+        <div id="asPrivatePanel" style="display:none"><h3>Tìm kỹ thuật viên</h3><div class="as-search-member"><input id="asMemberSearch" placeholder="Tên thành viên..."><button class="as-smallbtn primary" id="asMemberSearchBtn" type="button">🔎</button></div><div id="asMemberResults" class="as-member-results"></div></div>
+      </aside>
+      <section class="as-chat-main">
+        <div class="as-chat-title" id="asChatTitle">Chọn một cuộc trò chuyện</div>
+        <div class="as-chat-messages" id="asChatMessages"><div class="as-empty">Chọn nhóm hoặc thành viên để bắt đầu.</div></div>
+        <form class="as-chat-compose" id="asChatForm"><input id="asChatInput" maxlength="5000" autocomplete="off" placeholder="Nhập tin nhắn…" disabled><button class="btn primary" type="submit" disabled>Gửi</button></form>
+      </section>
+    </div>
+  </div>
+</div>
+
+<header class="top"><div><div class="kicker">APPLE SEED • ENGINEERING LAB</div><h1>AI Board Intelligence</h1><div class="muted">PANIC • Schematic • Boardview • Measurement • Case Intelligence</div></div><div><span class="pill">🪙 1,250 COIN</span><span class="pill">● AI ONLINE</span></div></header>
+
+
+
+<!-- ===== APPLE SEED VIDEO TOOLS: TOP OF AI BOARD ===== -->
+<section class="youtube-center" id="youtube-center">
+  <div class="youtube-head">
+    <div>
+      <div class="kicker">APPLE SEED • YOUTUBE ENGINE</div>
+      <h2>▶️ YouTube Search & Player</h2>
+      <div class="muted">Tìm video YouTube ngay trong AI Engineering Center và xem trực tiếp trên Apple Seed. Player chỉ tải khi pa bấm xem để giữ tốc độ web.</div>
+    </div>
+    <span class="pill">⚡ Lazy Player</span>
+  </div>
+  <div class="youtube-search">
+    <input id="youtubeQuery" placeholder="🔎 Tìm: iPhone 14 Pro Max Panic 0x20000..." autocomplete="off">
+    <button class="btn primary" id="youtubeSearchBtn" type="button">🔎 Tìm YouTube</button>
+  </div>
+  <div class="youtube-status" id="youtubeStatus">Sẵn sàng. Nhập từ khóa để tìm.</div>
+  <div id="youtubeGrid" class="youtube-grid"></div>
+  <div class="actions">
+    <input id="youtubeDirectUrl" placeholder="Hoặc dán link YouTube để xem trực tiếp..." aria-label="YouTube URL">
+    <button class="btn secondary" id="youtubeOpenUrl" type="button">▶️ Xem link</button>
+  </div>
+</section>
+
+<section class="repair-video-library" id="repair-video-library">
+  <div class="repair-video-library-head">
+    <div>
+      <div class="kicker">APPLE SEED • REPAIR VIDEO LIBRARY</div>
+      <h2>🎬 Thư viện video sửa chữa</h2>
+      <div class="muted">Các video YouTube đã được Admin duyệt. Tìm theo model, PANIC, lỗi, I2C, Face ID và các ca sửa thực tế.</div>
+    </div>
+    <button class="btn primary" type="button" id="boardOpenVideoSubmit">＋ Đăng video YouTube</button>
+  </div>
+  <div class="repair-video-filters">
+    <input id="boardVideoSearch" type="search" placeholder="🔎 Tìm iPhone, PANIC, Face ID, I2C...">
+    <select id="boardVideoCategory"><option value="">Tất cả chuyên mục</option></select>
+  </div>
+  <div id="boardVideoGrid" class="repair-video-grid">
+    <div class="repair-video-empty">⏳ Đang tải thư viện video…</div>
+  </div>
+</section>
+
+<section class="youtube-submit" id="youtube-submit">
+  <div class="kicker">APPLE SEED • MEMBER VIDEO</div>
+  <h2>📤 Đăng video YouTube lên Apple Seed</h2>
+  <div class="muted">Kỹ thuật viên gửi link YouTube tại đây. Video sẽ ở trạng thái <b>chờ duyệt</b>; chỉ video được Admin duyệt mới xuất hiện công khai trên website.</div>
+
+  <form class="youtube-submit-form" id="youtubeSubmitForm">
+    <label>Link YouTube *
+      <input id="youtubeSubmitUrl" required placeholder="https://www.youtube.com/watch?v=...">
+    </label>
+    <label>Tiêu đề *
+      <input id="youtubeSubmitTitle" required placeholder="Ví dụ: iPhone 14 Pro Max PANIC 0x20000">
+    </label>
+    <div class="fields">
+      <div class="field" style="margin-top:0">
+        <label>Chuyên mục</label>
+        <select id="youtubeSubmitCategory"><option value="">Đang tải chuyên mục...</option></select>
+      </div>
+      <div class="field" style="margin-top:0">
+        <label>Model máy</label>
+        <input id="youtubeSubmitModel" placeholder="iPhone 14 Pro Max">
+      </div>
+      <div class="field" style="margin-top:0">
+        <label>Loại lỗi</label>
+        <input id="youtubeSubmitFault" placeholder="Panic / mất nguồn / Face ID / I2C...">
+      </div>
+      <div class="field" style="margin-top:0">
+        <label>Tags</label>
+        <input id="youtubeSubmitTags" placeholder="panic, iphone 14 pro max, compass">
+      </div>
+    </div>
+    <label>Mô tả
+      <textarea id="youtubeSubmitDescription" placeholder="Mô tả ngắn về ca sửa, cách đo, hướng xử lý..."></textarea>
+    </label>
+    <div id="youtubeSubmitStatus" class="youtube-submit-status"></div>
+    <div class="actions">
+      <button class="btn primary" id="youtubeSubmitBtn" type="submit">📤 Gửi video chờ Admin duyệt</button>
+    </div>
+  </form>
+</section>
+
+<!-- ===== END VIDEO TOOLS ===== -->
 
 <section class="grid">
 <div class="card"><h2>🧪 Diagnostic Workspace</h2><div class="muted">Tạo ca kỹ thuật và chuẩn bị dữ liệu cho AI.</div>
@@ -87,31 +230,37 @@ body.apple-seed-member-logged-in .member-required-banner {
 <div class="field"><label>Diode / Resistance</label><input placeholder="Giá trị đo"></div>
 <div class="field"><label>I2C / SDA / SCL</label><input placeholder="Địa chỉ / tình trạng"></div>
 </div>
-<div class="drop" id="aiBoardDrop" style="cursor:pointer;min-height:125px">📷<br><strong>Chọn / kéo thả ảnh main / boardview vào đây</strong><br><span class="muted">PNG / JPG / WEBP • ảnh dùng cho AI Board Diagnosis</span><input id="aiBoardFile" type="file" accept="image/png,image/jpeg,image/webp" hidden></div>
-<div class="file-picked" id="aiBoardPicked" hidden></div>
-<div class="actions"><button class="btn primary" id="analyze">⚡ PHÂN TÍCH AI · 20 COIN</button></div><div id="result" class="result">Chưa phân tích.</div></div>
+<div class="drop" id="asMainDrop" style="cursor:pointer">📷<br><strong>Chọn / kéo thả ảnh MAIN / Boardview</strong><br><span class="muted">PNG / JPG / WEBP • ảnh sẽ được gửi tới AI khi bấm phân tích</span><input class="as-upload-input" id="asMainFile" type="file" accept="image/png,image/jpeg,image/webp"></div><div class="as-file-preview" id="asMainPreview"></div>
+<div class="actions"><button class="btn primary" id="analyze">⚡ PHÂN TÍCH AI</button></div><div id="result" class="result">Chưa phân tích.</div></div>
 
 <div class="card"><h2>🧠 AI Diagnosis</h2><div class="muted">Evidence-first • không kết luận khi thiếu dữ liệu.</div>
 <div class="result"><strong>Case Intelligence</strong><div class="case"><b>iPhone 14 Pro Max · 0x20000 · Compass</b><div class="muted">Ưu tiên compass/sensor + I2C. Cần đo và đối chiếu board tốt.</div><span class="pill">I2C</span><span class="pill">PANIC</span></div></div>
-<h2 style="margin-top:22px">📐 Schematic Intelligence</h2>
-<div class="fields">
-<div class="field"><label>Tài liệu</label><select id="schematicType"><option>Schematic</option><option>Boardview / ZXW</option><option>Pinout</option><option>Ảnh main</option><option>Ảnh đo diode / trở</option></select></div>
-<div class="field"><label>Vùng / linh kiện</label><input id="schematicArea" placeholder="U5200 / I2C compass / PP_VDD"></div>
-</div>
-<div class="drop" id="schematicDrop" style="cursor:pointer;min-height:105px">📐<br><strong>Chọn / kéo thả ảnh Schematic / Boardview vào đây</strong><br><span class="muted">PNG / JPG / WEBP • ảnh chỉ dùng cho Schematic Intelligence</span><input id="schematicFile" type="file" accept="image/png,image/jpeg,image/webp" hidden></div>
-<div class="file-picked" id="schematicPicked" hidden></div>
-<div class="actions"><button class="btn primary" id="analyzeSchematic" type="button">📐 ANALYZE SCHEMATIC · 20 COIN</button></div>
-<div id="schematicStatus" class="muted" style="margin-top:9px"></div>
-<div id="schematicResult" class="result">Chưa có phân tích sơ đồ.</div></div>
+<h2 style="margin-top:22px">📐 Schematic Intelligence</h2><div class="fields"><div class="field"><label>Tài liệu</label><select id="asSchematicType"><option>Schematic</option><option>Boardview / ZXW</option><option>Pinout</option><option>Ảnh main</option></select></div><div class="field"><label>Vùng / linh kiện</label><input id="asSchematicArea" placeholder="U5200 / I2C compass / PP_VDD"></div></div><div class="drop" id="asSchematicDrop" style="cursor:pointer;margin-top:14px">📐<br><strong>Chọn / kéo thả ảnh Schematic / Boardview</strong><br><span class="muted">PNG / JPG / WEBP</span><input class="as-upload-input" id="asSchematicFile" type="file" accept="image/png,image/jpeg,image/webp"></div><div class="as-file-preview" id="asSchematicPreview"></div><div class="actions"><button class="btn primary" id="asAnalyzeSchematic" type="button">📐 ANALYZE SCHEMATIC</button></div><div id="asSchematicStatus" class="muted" style="margin-top:9px"></div><div id="asSchematicResult" class="result">Chưa có phân tích sơ đồ.</div></div>
 </section>
 
 <section class="card"><div class="kicker">LIBRARY</div><h2>📚 Schematic Library</h2><div class="muted">Kho sơ đồ theo từng model iPhone.</div>
 <div class="fields"><div class="case"><b>📁 iPhone 14 Pro Max</b><div class="muted">Schematic • Boardview • Pinout</div><span class="pill">12 files</span></div><div class="case"><b>📁 iPhone 15 Pro Max</b><div class="muted">Schematic • Boardview • Pinout</div><span class="pill">8 files</span></div><div class="case"><b>📁 iPhone 13 Pro Max</b><div class="muted">Schematic • Panic reference</div><span class="pill">15 files</span></div><div class="case"><b>📁 iPhone 12 Pro Max</b><div class="muted">Schematic • Pinout</div><span class="pill">6 files</span></div></div>
 <div class="actions"><input id="file" type="file" accept=".pdf,.jpg,.jpeg,.png,.zip,.rar,.brd,.asc,.fz,.sch"><button class="btn primary" id="upload">📥 Thêm vào thư viện</button></div><div id="uploadStatus" class="muted" style="margin-top:8px"></div></section>
 
+
+
+
+
+
+
+<div class="youtube-player-modal" id="youtubePlayerModal" role="dialog" aria-modal="true" aria-label="YouTube player">
+  <div class="youtube-player-box">
+    <div class="youtube-player-top"><strong>🍎 Apple Seed • YouTube</strong><button class="youtube-player-close" id="youtubePlayerClose" type="button">×</button></div>
+    <div class="youtube-frame" id="youtubeFrame"></div>
+    <div class="youtube-player-title" id="youtubePlayerTitle"></div>
+  </div>
+</div>
+
+
+
 <section class="card"><div class="kicker">COMMUNITY</div><h2>🚨 PANIC Control Center</h2><div class="muted">Đăng ca bệnh thực tế, theo dõi phản hồi và sau này xác minh thành Knowledge Base.</div>
 <div class="case"><b>iPhone 14 Pro Max · Panic 0x20000 · Compass</b><div class="muted">6 kỹ thuật viên đang theo dõi.</div><span class="pill">I2C</span><span class="pill">6 replies</span></div>
-<div class="actions"><button class="btn primary">＋ Đăng ca PANIC</button><button class="btn secondary">💬 Chat theo case</button><button class="btn secondary">🔒 Chat riêng</button></div></section>
+<div class="actions"><button class="btn primary" id="asPostCase" type="button">＋ Đăng ca PANIC</button><button class="btn secondary" id="asCaseChat" type="button">💬 Chat theo case</button><button class="btn secondary" id="asPrivateChatBtn" type="button">🔒 Chat riêng</button></div><div id="asCaseStatus" class="muted" style="margin-top:9px"></div></section>
 
 <section class="card"><div class="kicker">ENGINEERING CENTER</div><h2>🗺️ Full System Map</h2><div class="fields">
 <div class="case"><b>🔬 AI Board Lab</b><div class="muted">PANIC • Measurement • I2C • RFFE</div></div>
@@ -122,479 +271,325 @@ body.apple-seed-member-logged-in .member-required-banner {
 <div class="case"><b>🛡️ Admin Control</b><div class="muted">Duyệt case • thành viên • dữ liệu</div></div>
 </div></section>
 </main>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
 <script>
-const sb = window.supabaseClient;
-
-if(!sb){ console.error("Apple Seed AI Board: supabaseClient chưa sẵn sàng."); }
-
-const AI_COST = 20;
-let aiBoardSelectedFile = null;
-let schematicSelectedFile = null;
-let aiBoardLastAnalysis = "";
-let pendingAnalysisMode = null;
-
-/* ---------- UI helpers ---------- */
-function escHtml(value){
-  return String(value ?? "").replace(/[&<>"']/g,c=>({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  }[c]));
-}
-
-function aiBoardSetStatus(message, error=false){
-  const el = document.getElementById("result");
-  if(!el) return;
-  el.innerHTML = error
-    ? "<strong>❌ Lỗi</strong><p>"+escHtml(message)+"</p>"
-    : "<strong>⏳ AI đang xử lý...</strong><p>"+escHtml(message)+"</p>";
-}
-
-function aiBoardSetSchematicStatus(message, error=false){
-  const el = document.getElementById("schematicStatus");
-  if(!el) return;
-  el.textContent = message;
-  el.style.color = error ? "#b42318" : "#647b98";
-}
-
-function aiBoardNotes(){
-  const fields = document.querySelectorAll(".fields .field input, .fields .field textarea");
-  const values = [...fields].map((el,i)=>{
-    const label = el.parentElement?.querySelector("label")?.textContent?.trim() || ("Dữ liệu "+(i+1));
-    const value = el.value?.trim();
-    return value ? label+": "+value : "";
-  }).filter(Boolean);
-
-  const selects = document.querySelectorAll(".field select");
-  const model = selects[0]?.value || "";
-  const fault = selects[1]?.value || "";
-
-  return [
-    "Thiết bị: "+model,
-    "Loại lỗi: "+fault,
-    ...values,
-    "Schematic Intelligence - Loại tài liệu: "+(document.getElementById("schematicType")?.value || ""),
-    "Schematic Intelligence - Vùng / linh kiện: "+(document.getElementById("schematicArea")?.value || "")
-  ].filter(Boolean).join("\n");
-}
-
-/* ---------- Coin confirmation ---------- */
-/*
-  IMPORTANT:
-  The existing AI Board HTML did not contain a secure server-side Coin-charge
-  RPC/function, so this modal does NOT fake a deduction in the browser.
-  It confirms the charge and then continues to the existing AI function.
-  Secure deduction must be connected to the project's existing Coin RPC/Edge
-  Function before production use.
-*/
-function getDisplayedCoinBalance(){
-  const badge = [...document.querySelectorAll(".pill")].find(x =>
-    /COIN/i.test(x.textContent || "")
-  );
-  const m = (badge?.textContent || "").replace(/[,\s]/g,"").match(/(\d+(?:\.\d+)?)COIN/i);
-  return m ? Number(m[1]) : null;
-}
-
-function openCoinConfirm(mode){
-  const modal = document.getElementById("coinConfirmModal");
-  const currentEl = document.getElementById("coinCurrent");
-  const afterEl = document.getElementById("coinAfter");
-  const errorEl = document.getElementById("coinConfirmError");
-  const accept = document.getElementById("coinAccept");
-
-  pendingAnalysisMode = mode;
-  errorEl.textContent = "";
-  errorEl.classList.remove("show");
-
-  const current = getDisplayedCoinBalance();
-
-  if(current !== null){
-    currentEl.textContent = current.toLocaleString("vi-VN")+" Coin";
-    afterEl.textContent = Math.max(0,current-AI_COST).toLocaleString("vi-VN")+" Coin";
-    if(current < AI_COST){
-      errorEl.textContent = "Số dư Coin không đủ. Cần ít nhất "+AI_COST+" Coin để phân tích.";
-      errorEl.classList.add("show");
-      accept.disabled = true;
-    }else{
-      accept.disabled = false;
-    }
-  }else{
-    currentEl.textContent = "Chưa đọc được";
-    afterEl.textContent = "—";
-    accept.disabled = false;
-  }
-
-  modal.classList.add("show");
-  modal.setAttribute("aria-hidden","false");
-}
-
-function closeCoinConfirm(){
-  const modal = document.getElementById("coinConfirmModal");
-  pendingAnalysisMode = null;
-  modal.classList.remove("show");
-  modal.setAttribute("aria-hidden","true");
-}
-
-document.getElementById("coinCancel").onclick = closeCoinConfirm;
-document.getElementById("coinConfirmModal").addEventListener("click",e=>{
-  if(e.target.id==="coinConfirmModal") closeCoinConfirm();
-});
-document.addEventListener("keydown",e=>{
-  if(e.key==="Escape") closeCoinConfirm();
-});
-
-/* ---------- Analysis ---------- */
-async function runAppleSeedBoardAI(mode){
-  const file = mode === "schematic" ? schematicSelectedFile : aiBoardSelectedFile;
-
-  if(!file){
-    const msg = mode === "schematic"
-      ? "Bạn chưa chọn file schematic. Hãy chọn file trước, sau đó nhấn ANALYZE SCHEMATIC."
-      : "Bạn chưa chọn file. Hãy chọn file ảnh main/boardview trước, sau đó nhấn PHÂN TÍCH AI.";
-
-    if(mode==="schematic") aiBoardSetSchematicStatus(msg,true);
-    else aiBoardSetStatus(msg,true);
-    return;
-  }
-
-  if(!/^image\/(png|jpeg|webp)$/.test(file.type)){
-    const msg = "Bạn chưa chọn file. Hãy chọn ảnh PNG, JPG hoặc WEBP trước, sau đó nhấn PHÂN TÍCH AI.";
-    if(mode==="schematic") aiBoardSetSchematicStatus(msg,true);
-    else aiBoardSetStatus(msg,true);
-    return;
-  }
-
-  if(!sb){
-    const msg = "Thiếu Supabase client.";
-    if(mode==="schematic") aiBoardSetSchematicStatus(msg,true);
-    else aiBoardSetStatus(msg,true);
-    return;
-  }
-
-  const sessionResult = await sb.auth.getSession();
-  const session = sessionResult?.data?.session;
-
-  if(!session?.user){
-    const msg = "Vui lòng đăng nhập Apple Seed Member trước khi chạy AI.";
-    if(mode==="schematic") aiBoardSetSchematicStatus(msg,true);
-    else aiBoardSetStatus(msg,true);
-    return;
-  }
-
-  openCoinConfirm(mode);
-}
-
-/*
-  Runs only after the member presses "Đồng ý, phân tích".
-  The actual secure Coin deduction is intentionally not simulated here.
-*/
-async function confirmedRun(mode){
-  const file = mode === "schematic" ? schematicSelectedFile : aiBoardSelectedFile;
-
-  if(!file){
-    closeCoinConfirm();
-    const msg = mode === "schematic"
-      ? "Bạn chưa chọn file schematic. Hãy chọn file trước, sau đó nhấn ANALYZE SCHEMATIC."
-      : "Bạn chưa chọn file. Hãy chọn file ảnh main/boardview trước, sau đó nhấn PHÂN TÍCH AI.";
-    if(mode==="schematic") aiBoardSetSchematicStatus(msg,true);
-    else aiBoardSetStatus(msg,true);
-    return;
-  }
-
-  const sessionResult = await sb.auth.getSession();
-  const session = sessionResult?.data?.session;
-  if(!session?.user){
-    closeCoinConfirm();
-    return;
-  }
-
-  const model = document.querySelector(".field select")?.value || "";
-  const boardCode = document.getElementById("schematicArea")?.value?.trim() || "";
-  const notes = aiBoardNotes();
-
-  const mainBtn = document.getElementById("analyze");
-  const schematicBtn = document.getElementById("analyzeSchematic");
-  if(mainBtn) mainBtn.disabled = true;
-  if(schematicBtn) schematicBtn.disabled = true;
-
-  closeCoinConfirm();
-
-  if(mode==="schematic"){
-    aiBoardSetSchematicStatus("Đang upload ảnh và gọi AI phân tích schematic...");
-  }else{
-    aiBoardSetStatus("Đang upload ảnh và gọi AI phân tích PAN...");
-  }
-
-  try{
-    const safe = file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,"-");
-    const path = `pan-ai/${session.user.id}/${Date.now()}-${Math.random().toString(36).slice(2,8)}-${safe}`;
-
-    const upload = await sb.storage.from("ai-schematics").upload(path,file,{
-      cacheControl:"3600",
-      upsert:false,
-      contentType:file.type
-    });
-    if(upload.error) throw upload.error;
-
-    const insert = await sb.from("ai_schematic_analyses").insert({
-      title:(model+" — "+(mode==="schematic"
-        ? (document.getElementById("schematicArea")?.value?.trim() || "Schematic Intelligence")
-        : "AI Board Diagnosis")).slice(0,180),
-      device_model:model,
-      board_code:boardCode,
-      notes,
-      file_path:path,
-      file_name:file.name,
-      mime_type:file.type,
-      ai_status:"queued",
-      created_by:session.user.id
-    }).select("id").single();
-
-    if(insert.error) throw insert.error;
-
-    const call = await sb.functions.invoke("analyze-schematic",{
-      body:{
-        analysis_id:insert.data.id,
-        file_path:path,
-        device_model:model,
-        board_code:boardCode,
-        notes,
-        mime_type:file.type
-      }
-    });
-
-    if(call.error) throw call.error;
-    if(call.data?.error) throw new Error(call.data.error);
-
-    aiBoardLastAnalysis = call.data?.analysis || "AI không trả về kết quả.";
-    const safeResult = escHtml(aiBoardLastAnalysis);
-
-    if(mode==="schematic"){
-      document.getElementById("schematicResult").innerHTML =
-        "<strong>📐 Schematic Intelligence</strong><pre style=\"white-space:pre-wrap;font:inherit;margin:10px 0 0\">"+safeResult+"</pre>";
-      aiBoardSetSchematicStatus("✅ Phân tích schematic hoàn tất.");
-    }else{
-      document.getElementById("result").innerHTML =
-        "<strong>🧠 AI Board Diagnosis</strong><pre style=\"white-space:pre-wrap;font:inherit;margin:10px 0 0\">"+safeResult+"</pre>";
-      document.getElementById("result").scrollIntoView({behavior:"smooth",block:"nearest"});
-      document.getElementById("uploadStatus").textContent =
-        "✅ AI đã phân tích xong. Hãy kiểm tra lại bằng đo đạc thực tế.";
-    }
-
-  }catch(err){
-    const msg = err?.message || String(err);
-    if(mode==="schematic") aiBoardSetSchematicStatus(msg,true);
-    else aiBoardSetStatus(msg,true);
-  }finally{
-    if(mainBtn) mainBtn.disabled = false;
-    if(schematicBtn) schematicBtn.disabled = false;
-  }
-}
-
-document.getElementById("coinAccept").onclick = async ()=>{
-  if(!pendingAnalysisMode) return;
-  const mode = pendingAnalysisMode;
-  const current = getDisplayedCoinBalance();
-
-  if(current !== null && current < AI_COST){
-    const errorEl = document.getElementById("coinConfirmError");
-    errorEl.textContent = "Số dư Coin không đủ. Cần ít nhất "+AI_COST+" Coin.";
-    errorEl.classList.add("show");
-    return;
-  }
-
-  await confirmedRun(mode);
-};
-
-/* ---------- File selection ---------- */
-function isAllowedImage(file){
-  return !!file && /^image\/(png|jpeg|webp)$/.test(file.type);
-}
-function fileLabel(file){
-  if(!file) return "";
-  const kb=Math.max(1,Math.round(file.size/1024));
-  return `${file.name} — ${kb} KB`;
-}
-function showPicked(id,file,icon){
-  const el=document.getElementById(id);
-  if(!el) return;
-  if(!file){ el.hidden=true; el.classList.remove("show"); el.textContent=""; return; }
-  el.hidden=false; el.classList.add("show"); el.textContent=`${icon} Đã chọn: ${fileLabel(file)}`;
-}
-function bindImageDrop(dropId,inputId,getter,setter,pickedId,icon,statusFn){
-  const drop=document.getElementById(dropId), input=document.getElementById(inputId);
-  if(!drop || !input) return;
-  const choose=(file)=>{
-    if(!isAllowedImage(file)){
-      statusFn("AI hiện nhận PNG, JPG hoặc WEBP.",true);
-      input.value="";
-      return false;
-    }
-    setter(file); showPicked(pickedId,file,icon); statusFn(`${icon} Đã chọn: ${fileLabel(file)}`); return true;
-  };
-  input.addEventListener("change",()=>choose(input.files?.[0]||null));
-  drop.addEventListener("click",()=>input.click());
-  ["dragenter","dragover"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.style.borderColor="#1479e8";drop.style.background="#edf7ff";}));
-  ["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.style.borderColor="#8bb9e8";drop.style.background="#f4faff";}));
-  drop.addEventListener("drop",e=>choose(e.dataTransfer.files?.[0]||null));
-}
-
-bindImageDrop("aiBoardDrop","aiBoardFile",()=>aiBoardSelectedFile,f=>{aiBoardSelectedFile=f;},"aiBoardPicked","📷",(m,e)=>{
-  const el=document.getElementById("uploadStatus"); if(el){el.textContent=m;el.style.color=e?"#b42318":"#647b98";}
-});
-bindImageDrop("schematicDrop","schematicFile",()=>schematicSelectedFile,f=>{schematicSelectedFile=f;},"schematicPicked","📐",aiBoardSetSchematicStatus);
-
-/* Schematic library upload: keep the library selector independent from AI image selectors. */
-document.getElementById("upload").onclick=()=>{
-  const f=document.getElementById("file")?.files?.[0];
-  const el=document.getElementById("uploadStatus");
-  if(el) el.textContent=f ? `📚 Đã chọn: ${f.name} — sẵn sàng thêm vào thư viện.` : "Chưa chọn file thư viện.";
-};
-
-document.getElementById("analyze").onclick=()=>runAppleSeedBoardAI("panic");
-document.getElementById("analyzeSchematic").onclick=()=>runAppleSeedBoardAI("schematic");
-</script>
-<div id="coinSecurityNote" style="display:none">
-  Coin phải được trừ ở server/RPC sau khi thành viên bấm “Đồng ý, phân tích”.
-</div>
-
-
-<script>
-/* =========================================================
-   APPLE SEED — MEMBER GATE VISIBILITY FIX
-   Quy tắc:
-   - Chưa đăng nhập  -> hiện banner yêu cầu đăng ký/đăng nhập.
-   - Đã đăng nhập    -> ẩn hoàn toàn banner, không để khoảng trắng.
-   - Đăng xuất       -> banner xuất hiện lại.
-   Hỗ trợ cả banner có id/class cũ và banner được CMS chèn động.
-   ========================================================= */
-(function(){
-  "use strict";
-
-  const GATE_TEXT = "Đăng ký thành viên để sử dụng toàn bộ tính năng";
-
-  function setMemberGate(loggedIn){
-    document.body.classList.toggle("apple-seed-member-logged-in", !!loggedIn);
-
-    const selectors = [
-      "#memberGate",
-      ".member-gate",
-      "[data-member-gate]",
-      ".member-required-banner"
-    ];
-
-    document.querySelectorAll(selectors.join(",")).forEach(el => {
-      el.style.setProperty("display", loggedIn ? "none" : "", "important");
-      el.style.setProperty("visibility", loggedIn ? "hidden" : "", "important");
-      if(loggedIn){
-        el.style.setProperty("height","0","important");
-        el.style.setProperty("min-height","0","important");
-        el.style.setProperty("margin","0","important");
-        el.style.setProperty("padding","0","important");
-        el.style.setProperty("overflow","hidden","important");
-      }else{
-        ["height","min-height","margin","padding","overflow"].forEach(p => {
-          el.style.removeProperty(p);
-        });
-      }
-    });
-
-    /* Fallback: banner hiện tại nếu chưa có id/class chuẩn.
-       Tìm đúng tiêu đề rồi ẩn section/container gần nhất. */
-    const walker = document.createTreeWalker(
-      document.body,
-      NodeFilter.SHOW_ELEMENT
-    );
-
-    const matches = [];
-    let node;
-    while((node = walker.nextNode())){
-      if(node.children.length <= 3){
-        const t = String(node.textContent || "").replace(/\s+/g," ").trim();
-        if(t.includes(GATE_TEXT)) matches.push(node);
-      }
-    }
-
-    matches.forEach(el => {
-      let target = el.closest("section");
-      if(!target){
-        target = el.parentElement;
-        for(let i=0; i<4 && target; i++){
-          const text = String(target.textContent || "").replace(/\s+/g," ").trim();
-          if(text.includes(GATE_TEXT) && text.length < 900){
-            break;
-          }
-          target = target.parentElement;
-        }
-      }
-
-      if(target){
-        target.setAttribute("data-member-gate","true");
-        target.style.setProperty("display", loggedIn ? "none" : "", "important");
-        target.style.setProperty("visibility", loggedIn ? "hidden" : "", "important");
-        if(loggedIn){
-          target.style.setProperty("height","0","important");
-          target.style.setProperty("min-height","0","important");
-          target.style.setProperty("margin","0","important");
-          target.style.setProperty("padding","0","important");
-          target.style.setProperty("overflow","hidden","important");
-        }else{
-          ["height","min-height","margin","padding","overflow"].forEach(p=>{
-            target.style.removeProperty(p);
-          });
-        }
-      }
-    });
-  }
-
-  async function refreshMemberGate(){
+(()=>{
+  const q=id=>document.getElementById(id);
+  const query=q('youtubeQuery'), btn=q('youtubeSearchBtn'), grid=q('youtubeGrid'), status=q('youtubeStatus');
+  const modal=q('youtubePlayerModal'), frame=q('youtubeFrame'), title=q('youtubePlayerTitle');
+  const close=q('youtubePlayerClose'), direct=q('youtubeDirectUrl'), openDirect=q('youtubeOpenUrl');
+  const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  function videoId(url){
     try{
-      if(!window.supabaseClient || !window.supabaseClient.auth){
-        setMemberGate(false);
-        return;
+      const u=new URL(String(url).trim());
+      if(u.hostname.includes('youtu.be')) return u.pathname.slice(1).split('/')[0];
+      if(u.hostname.includes('youtube.com')){
+        if(u.searchParams.get('v')) return u.searchParams.get('v');
+        const m=u.pathname.match(/\/(?:shorts|embed|live)\/([^/?]+)/); if(m)return m[1];
       }
-
-      const { data, error } = await window.supabaseClient.auth.getSession();
-      if(error){
-        console.warn("Member gate session error:", error);
-        setMemberGate(false);
-        return;
-      }
-
-      setMemberGate(!!data?.session?.user);
+    }catch(e){}
+    return null;
+  }
+  window.__appleSeedPlayYoutube=play;
+  function play(id,t='YouTube'){
+    if(!id)return;
+    frame.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0" title="${esc(t)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+    title.textContent=t||'YouTube'; modal.classList.add('open');
+  }
+  function stop(){modal.classList.remove('open');frame.innerHTML='';title.textContent='';}
+  close.addEventListener('click',stop);
+close.addEventListener('touchend',e=>{e.preventDefault();stop();},{passive:false});
+modal.addEventListener('click',e=>{if(e.target===modal)stop();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')stop();});
+  function render(items){
+    if(!items.length){grid.innerHTML='<div class="youtube-empty">Không có kết quả phù hợp.</div>';return;}
+    grid.innerHTML=items.map(v=>`<article class="youtube-card" data-video-id="${esc(v.videoId)}" data-title="${esc(v.title)}"><div class="youtube-thumb"><img loading="lazy" src="${esc(v.thumbnail)}" alt=""><span class="youtube-play">▶</span></div><div class="youtube-info"><div class="youtube-title">${esc(v.title)}</div><div class="youtube-channel">${esc(v.channelTitle||'YouTube')}</div></div></article>`).join('');
+    grid.querySelectorAll('.youtube-card').forEach(el=>el.addEventListener('click',()=>play(el.dataset.videoId,el.dataset.title)));
+  }
+  async function searchYouTube(){
+    const text=query.value.trim(); if(!text){status.textContent='Nhập từ khóa trước pa.';return;}
+    btn.disabled=true; status.textContent='⏳ Đang tìm YouTube…'; grid.innerHTML='';
+    try{
+      if(!window.supabaseClient) throw new Error('Chưa tải được Supabase client.');
+      const {data,error}=await window.supabaseClient.functions.invoke('youtube-search',{body:{q:text,maxResults:12,regionCode:'VN',relevanceLanguage:'vi'}});
+      if(error) throw error;
+      const items=data?.items||[];
+      render(items); status.textContent=items.length?`Tìm thấy ${items.length} video.`:'Không tìm thấy video.';
     }catch(err){
-      console.warn("Member gate refresh error:", err);
-      setMemberGate(false);
-    }
+      console.error('Apple Seed YouTube search:',err);
+      status.textContent='⚠️ Chưa kết nối được YouTube Search Engine. Cần deploy Edge Function youtube-search và đặt secret YOUTUBE_API_KEY.';
+      grid.innerHTML='<div class="youtube-empty">Player dán link vẫn dùng được. Tìm kiếm YouTube sẽ hoạt động sau khi cấu hình API ở backend.</div>';
+    }finally{btn.disabled=false;}
   }
-
-  function startMemberGate(){
-    refreshMemberGate();
-
-    if(window.supabaseClient?.auth){
-      window.supabaseClient.auth.onAuthStateChange(function(_event, session){
-        setMemberGate(!!session?.user);
-        /* Chạy lại sau khi CMS/UI kịp render */
-        setTimeout(refreshMemberGate, 50);
-        setTimeout(refreshMemberGate, 400);
-      });
-    }
-
-    /* Banner có thể được CMS chèn sau khi trang tải */
-    const observer = new MutationObserver(function(){
-      refreshMemberGate();
-    });
-    observer.observe(document.body, {childList:true, subtree:true});
-
-    window.appleSeedRefreshMemberGate = refreshMemberGate;
-  }
-
-  if(document.readyState === "loading"){
-    document.addEventListener("DOMContentLoaded", startMemberGate, {once:true});
-  }else{
-    startMemberGate();
-  }
+  btn.addEventListener('click',searchYouTube); query.addEventListener('keydown',e=>{if(e.key==='Enter')searchYouTube();});
+  openDirect.addEventListener('click',()=>{const id=videoId(direct.value); if(!id){status.textContent='Link YouTube không hợp lệ.';return;} play(id,'Video YouTube');});
 })();
 </script>
 
-</body>
+
+<script>
+/* ===== APPLE SEED REPAIR VIDEO LIBRARY ===== */
+(()=>{
+  const sb=window.supabaseClient;
+  const grid=document.getElementById('boardVideoGrid');
+  const search=document.getElementById('boardVideoSearch');
+  const filter=document.getElementById('boardVideoCategory');
+  const submit=document.getElementById('boardOpenVideoSubmit');
+  let videos=[];
+
+  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  const ytId=v=>{
+    try{
+      const u=new URL(String(v||'').trim());
+      const h=u.hostname.replace(/^www\./,'').toLowerCase();
+      if(h==='youtu.be') return (u.pathname.split('/').filter(Boolean)[0]||'');
+      if(h.endsWith('youtube.com')){
+        if(u.searchParams.get('v')) return u.searchParams.get('v');
+        const p=u.pathname.split('/').filter(Boolean);
+        const i=p.findIndex(x=>['shorts','embed','live'].includes(x));
+        return i>=0?(p[i+1]||''):'';
+      }
+    }catch(e){}
+    return '';
+  };
+  const thumb=id=>id?`https://i.ytimg.com/vi/${encodeURIComponent(id)}/hqdefault.jpg`:'';
+
+  function render(){
+    const q=(search?.value||'').trim().toLowerCase();
+    const c=filter?.value||'';
+    const rows=videos.filter(v=>{
+      const hay=[v.title,v.description,v.device_model,v.fault_type,v.tags_text,v.video_categories?.name].join(' ').toLowerCase();
+      return (!q||hay.includes(q))&&(!c||String(v.category_id)===c);
+    });
+    if(!grid)return;
+    if(!rows.length){
+      grid.innerHTML='<div class="repair-video-empty">Chưa có video phù hợp.</div>';
+      return;
+    }
+    grid.innerHTML=rows.map(v=>{
+      const id=ytId(v.youtube_url||v.youtube_id);
+      return `<article class="repair-video-card" data-vid="${esc(id)}" data-title="${esc(v.title)}">
+        <div class="repair-video-thumb">
+          <img src="${esc(v.thumbnail_url||thumb(id))}" alt="${esc(v.title)}" loading="lazy">
+          <div class="repair-video-play">▶</div>
+        </div>
+        <div class="repair-video-info">
+          <h3>${esc(v.title)}</h3>
+          <p>${esc(v.description||'')}</p>
+          <div class="repair-video-meta">
+            <span class="pill">${esc((v.video_categories?.icon||'🎬')+' '+(v.video_categories?.name||'Video'))}</span>
+            ${v.device_model?`<span class="pill">📱 ${esc(v.device_model)}</span>`:''}
+            ${v.fault_type?`<span class="pill">⚠️ ${esc(v.fault_type)}</span>`:''}
+          </div>
+        </div>
+      </article>`;
+    }).join('');
+
+    grid.querySelectorAll('.repair-video-card').forEach(card=>{
+      card.addEventListener('click',()=>{
+        const id=card.dataset.vid;
+        const title=card.dataset.title||'Video sửa chữa';
+        if(typeof window.__appleSeedPlayYoutube==='function') window.__appleSeedPlayYoutube(id,title);
+      });
+    });
+  }
+
+  async function loadCategories(){
+    if(!sb)return;
+    const r=await sb.from('video_categories')
+      .select('id,name,icon')
+      .eq('is_active',true)
+      .order('sort_order',{ascending:true});
+    if(r.error)return;
+    const html=(r.data||[]).map(x=>`<option value="${x.id}">${esc((x.icon||'🎬')+' '+x.name)}</option>`).join('');
+    if(filter)filter.innerHTML='<option value="">Tất cả chuyên mục</option>'+html;
+    const cat=document.getElementById('youtubeSubmitCategory');
+    if(cat)cat.innerHTML=html||'<option value="">Chưa có chuyên mục</option>';
+  }
+
+  async function loadVideos(){
+    if(!grid)return;
+    if(!sb){
+      grid.innerHTML='<div class="repair-video-empty">Chưa kết nối dữ liệu video.</div>';
+      return;
+    }
+    const r=await sb.from('apple_seed_videos')
+      .select('id,youtube_url,youtube_id,title,description,thumbnail_url,category_id,device_model,fault_type,tags_text,video_categories(name,icon)')
+      .eq('status','published')
+      .order('created_at',{ascending:false});
+    if(r.error){
+      console.error('Repair video library:',r.error);
+      grid.innerHTML='<div class="repair-video-empty">Không tải được thư viện video.</div>';
+      return;
+    }
+    videos=r.data||[];
+    render();
+  }
+
+  submit?.addEventListener('click',()=>{
+    const target=document.getElementById('youtube-submit');
+    target?.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  search?.addEventListener('input',render);
+  filter?.addEventListener('change',render);
+
+  loadCategories().then(loadVideos);
+})();
+</script>
+
+<script>
+document.getElementById('analyze').onclick=()=>document.getElementById('result').innerHTML='<b>🔎 Phân tích sơ bộ</b><p>PANIC 0x20000 + compass → ưu tiên cụm compass/sensor và I2C. Chưa kết luận linh kiện.</p><span class="pill">Power</span><span class="pill">SDA/SCL</span><span class="pill">Board comparison</span>';
+document.getElementById('upload').onclick=()=>{const f=document.getElementById('file').files[0];document.getElementById('uploadStatus').textContent=f?'Đã chọn: '+f.name+' — giao diện sẵn sàng nối Storage thật.':'Chưa chọn file.'};
+</script>
+
+<script>
+/* ===== APPLE SEED FULL RESTORE CONTROLLER ===== */
+(()=>{
+  const sb=window.supabaseClient;
+  const $=id=>document.getElementById(id);
+  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  let session=null, user=null, currentConversation=null, realtime=null, groups=[];
+  const setStatus=(t,ok=false)=>{const e=$('asAuthStatus');if(!e)return;e.textContent=t;e.className='as-status show '+(ok?'ok':'err')};
+  function openMember(){ $('asMemberModal').classList.add('open'); $('asMemberModal').querySelector('.as-modal-body').scrollTop=0; }
+  function closeMember(){ $('asMemberModal').classList.remove('open'); }
+  function openChat(){ if(!user){openMember();setStatus('Vui lòng đăng nhập Member trước khi chat.');return;} $('asChatModal').classList.add('open'); loadGroups(); }
+  function closeChat(){ $('asChatModal').classList.remove('open'); if(realtime){sb.removeChannel(realtime);realtime=null;} }
+  $('asMemberClose').onclick=closeMember; $('asChatClose').onclick=closeChat; $('asAccountBtn').onclick=openMember; $('asCommunityBtn').onclick=openChat; $('asOpenChatFromAccount').onclick=()=>{closeMember();openChat();};
+  $('asMemberModal').addEventListener('click',e=>{if(e.target===$('asMemberModal'))closeMember();}); $('asChatModal').addEventListener('click',e=>{if(e.target===$('asChatModal'))closeChat();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMember();closeChat();}});
+  function showLoggedOut(){
+    $('asMemberName').textContent='Chưa đăng nhập'; $('asMemberMeta').textContent='Đăng nhập để dùng AI Board và chat kỹ thuật viên'; $('asLogoutBtn').style.display='none'; $('asAccountView').style.display='none'; $('asAuthView').style.display='block';
+  }
+  async function refreshAccount(){
+    if(!sb?.auth){showLoggedOut();return;}
+    const r=await sb.auth.getSession(); session=r.data?.session||null; user=session?.user||null;
+    if(!user){showLoggedOut();return;}
+    $('asAccountView').style.display='block'; $('asAuthView').style.display='none'; $('asLogoutBtn').style.display='inline-block';
+    const p=await sb.from('customer_members').select('full_name,phone,email').eq('user_id',user.id).maybeSingle();
+    const name=p.data?.full_name||user.user_metadata?.full_name||'Thành viên Apple Seed';
+    const email=p.data?.email||user.email||'';
+    $('asMemberName').textContent=name; $('asMemberMeta').textContent=email;
+    $('asAccountName').textContent=name; $('asAccountEmail').textContent=email;
+    const a=await sb.from('member_accounts').select('coins,status,trial_started_at,trial_expires_at').eq('user_id',user.id).maybeSingle();
+    if(a.data){ $('asAccountCoins').textContent=Number(a.data.coins||0).toLocaleString('vi-VN')+' Coin'; $('asAccountTrial').textContent=(a.data.status||'active')+' · đến '+new Date(a.data.trial_expires_at).toLocaleDateString('vi-VN'); } else { $('asAccountCoins').textContent='Chưa có ví'; $('asAccountTrial').textContent='—'; }
+  }
+  $('asLogoutBtn').onclick=async()=>{if(sb?.auth)await sb.auth.signOut();location.reload();};
+  $('asLoginTab').onclick=()=>{ $('asLoginTab').classList.add('active');$('asSignupTab').classList.remove('active');$('asLoginForm').style.display='grid';$('asSignupForm').style.display='none';};
+  $('asSignupTab').onclick=()=>{ $('asSignupTab').classList.add('active');$('asLoginTab').classList.remove('active');$('asSignupForm').style.display='grid';$('asLoginForm').style.display='none';};
+  $('asLoginForm').onsubmit=async e=>{e.preventDefault();if(!sb){setStatus('Supabase chưa sẵn sàng.');return;}const b=e.submitter;b.disabled=true;try{const r=await sb.auth.signInWithPassword({email:$('asLoginEmail').value.trim(),password:$('asLoginPassword').value});if(r.error)throw r.error;setStatus('Đăng nhập thành công.',true);await refreshAccount();}catch(x){setStatus(x.message||'Đăng nhập thất bại.');}finally{b.disabled=false;}};
+  $('asSignupForm').onsubmit=async e=>{e.preventDefault();if(!sb){setStatus('Supabase chưa sẵn sàng.');return;}const b=e.submitter;b.disabled=true;try{const name=$('asSignupName').value.trim(),phone=$('asSignupPhone').value.trim(),email=$('asSignupEmail').value.trim().toLowerCase(),password=$('asSignupPassword').value;const r=await sb.auth.signUp({email,password,options:{data:{full_name:name,phone}}});if(r.error)throw r.error;if(r.data?.user&&!r.data.session){setStatus('Đăng ký thành công. Hãy mở email xác nhận trước khi đăng nhập.',true);}else if(r.data?.user){await sb.from('customer_members').upsert({user_id:r.data.user.id,full_name:name,phone,email,updated_at:new Date().toISOString()},{onConflict:'user_id'});await refreshAccount();setStatus('Tài khoản đã sẵn sàng.',true);}}catch(x){setStatus(x.message||'Đăng ký thất bại.');}finally{b.disabled=false;}};
+  $('asForgot').onclick=()=>{location.href='reset-password.html';};
+  async function loadGroups(){
+    if(!user)return; const p=await sb.from('chat_participants').select('conversation_id').eq('user_id',user.id); const ids=(p.data||[]).map(x=>x.conversation_id);
+    if(!ids.length){groups=[];$('asGroupList').innerHTML='<div class="as-empty">Bạn chưa tham gia nhóm nào.</div>';return;}
+    const c=await sb.from('chat_conversations').select('id,type,name,updated_at').in('id',ids).eq('type','group').order('updated_at',{ascending:false}); groups=c.data||[];
+    $('asGroupList').innerHTML=groups.length?groups.map(g=>`<button class="as-chat-item" data-chat="${esc(g.id)}"><b>👥 ${esc(g.name||'Nhóm kỹ thuật')}</b><small>Cập nhật ${new Date(g.updated_at).toLocaleString('vi-VN')}</small></button>`).join(''):'<div class="as-empty">Chưa có nhóm kỹ thuật.</div>';
+    $('asGroupList').querySelectorAll('[data-chat]').forEach(b=>b.onclick=()=>openConversation(b.dataset.chat,b.textContent.trim()));
+  }
+  async function loadMembers(){
+    const q=$('asMemberSearch').value.trim(); if(!q){$('asMemberResults').innerHTML='<div class="as-empty">Nhập tên kỹ thuật viên.</div>';return;}
+    const r=await sb.rpc('apple_seed_member_directory_search',{p_query:q}); if(r.error){$('asMemberResults').innerHTML='<div class="as-empty">Không tìm được danh sách thành viên.</div>';return;}
+    const rows=r.data||[]; $('asMemberResults').innerHTML=rows.length?rows.map(x=>`<div class="as-member-result"><span>👤 ${esc(x.full_name)}</span><button class="as-smallbtn primary" data-user="${esc(x.user_id)}" data-name="${esc(x.full_name)}" type="button">Chat</button></div>`).join(''):'<div class="as-empty">Không có thành viên phù hợp.</div>';
+    $('asMemberResults').querySelectorAll('[data-user]').forEach(b=>b.onclick=()=>startDirect(b.dataset.user,b.dataset.name));
+  }
+  $('asMemberSearchBtn').onclick=loadMembers; $('asMemberSearch').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();loadMembers();}};
+  $('asGroupTab').onclick=()=>{ $('asGroupTab').classList.add('active');$('asPrivateTab').classList.remove('active');$('asGroupPanel').style.display='block';$('asPrivatePanel').style.display='none';};
+  $('asPrivateTab').onclick=()=>{ $('asPrivateTab').classList.add('active');$('asGroupTab').classList.remove('active');$('asGroupPanel').style.display='none';$('asPrivatePanel').style.display='block';};
+  async function startDirect(targetId,targetName){
+    if(!user||targetId===user.id)return;
+    // Reuse an existing direct conversation where both users participate.
+    const mine=await sb.from('chat_participants').select('conversation_id').eq('user_id',user.id); const ids=(mine.data||[]).map(x=>x.conversation_id); let existing=null;
+    if(ids.length){const tc=await sb.from('chat_conversations').select('id,name').in('id',ids).eq('type','direct');for(const c of tc.data||[]){const ps=await sb.from('chat_participants').select('user_id').eq('conversation_id',c.id);const set=new Set((ps.data||[]).map(x=>x.user_id));if(set.has(targetId)&&set.has(user.id)){existing=c;break;}}}
+    if(existing){openConversation(existing.id,'🔒 '+targetName);return;}
+    const c=await sb.from('chat_conversations').insert({type:'direct',name:targetName,created_by:user.id}).select('id,name').single(); if(c.error){alert(c.error.message);return;}
+    const p=await sb.from('chat_participants').insert([{conversation_id:c.data.id,user_id:user.id},{conversation_id:c.data.id,user_id:targetId}]); if(p.error){alert(p.error.message);return;} openConversation(c.data.id,'🔒 '+targetName);
+  }
+  async function openConversation(id,title){
+    currentConversation=id; $('asChatTitle').textContent=title||'Cuộc trò chuyện'; $('asChatInput').disabled=false; $('asChatForm button').disabled=false; await loadMessages();
+    if(realtime)sb.removeChannel(realtime); realtime=sb.channel('ai-board-chat-'+id).on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages',filter:'conversation_id=eq.'+id},payload=>{if(payload.new)appendMessage(payload.new,true);}).subscribe();
+  }
+  function appendMessage(m,scroll){const box=$('asChatMessages');const mine=m.sender_id===user?.id;const div=document.createElement('div');div.className='as-msg'+(mine?' mine':'');div.innerHTML=esc(m.body)+'<small>'+new Date(m.created_at).toLocaleString('vi-VN')+'</small>';box.appendChild(div);if(scroll)box.scrollTop=box.scrollHeight;}
+  async function loadMessages(){const box=$('asChatMessages');box.innerHTML='';if(!currentConversation)return;const r=await sb.from('chat_messages').select('id,conversation_id,sender_id,body,created_at').eq('conversation_id',currentConversation).order('created_at',{ascending:true}).limit(300);if(r.error){box.innerHTML='<div class="as-empty">Không tải được tin nhắn.</div>';return;}if(!r.data?.length){box.innerHTML='<div class="as-empty">Chưa có tin nhắn. Gửi tin đầu tiên.</div>';return;}r.data.forEach(m=>appendMessage(m,false));box.scrollTop=box.scrollHeight;}
+  $('asChatForm').onsubmit=async e=>{e.preventDefault();const body=$('asChatInput').value.trim();if(!body||!currentConversation||!user)return;const b=e.submitter;b.disabled=true;const r=await sb.from('chat_messages').insert({conversation_id:currentConversation,sender_id:user.id,body});if(r.error){alert(r.error.message);}else{$('asChatInput').value='';}b.disabled=false;};
+  if(sb?.auth){sb.auth.onAuthStateChange(()=>setTimeout(refreshAccount,0));refreshAccount();}else showLoggedOut();
+})();
+</script>
+
+<script>
+/* ===== REAL AI BOARD / SCHEMATIC TEST PATH ===== */
+(()=>{
+ const sb=window.supabaseClient,$=id=>document.getElementById(id);
+ let mainFile=null, schematicFile=null;
+ const okType=f=>!!f && /^image\/(png|jpeg|webp)$/.test(f.type);
+ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+ function bindDrop(dropId,inputId,previewId,setter){
+   const d=$(dropId),i=$(inputId),p=$(previewId); if(!d||!i)return;
+   d.onclick=e=>{if(e.target!==i)i.click()};
+   i.onchange=()=>{const f=i.files?.[0]||null; setter(f); show(f)};
+   function show(f){if(!p)return;if(!f){p.classList.remove('show');p.textContent='';return}p.classList.add('show');p.innerHTML=`📷 <b>${esc(f.name)}</b> · ${Math.round(f.size/1024)} KB`}
+   ['dragenter','dragover'].forEach(ev=>d.addEventListener(ev,e=>{e.preventDefault();d.style.borderColor='#1479e8';}));
+   ['dragleave','drop'].forEach(ev=>d.addEventListener(ev,e=>{e.preventDefault();d.style.borderColor='#8bb9e8';}));
+   d.addEventListener('drop',e=>{const f=e.dataTransfer.files?.[0];if(!f)return;if(!okType(f)){alert('AI hiện nhận PNG, JPG hoặc WEBP.');return}setter(f);show(f)});
+ }
+ bindDrop('asMainDrop','asMainFile','asMainPreview',f=>mainFile=f);
+ bindDrop('asSchematicDrop','asSchematicFile','asSchematicPreview',f=>schematicFile=f);
+ async function session(){const r=await sb?.auth?.getSession();return r?.data?.session||null;}
+ function notes(){return [
+   'PANIC LOG: '+($('panic')?.value||''),
+   'Boot current: '+(document.querySelector('input[placeholder*="0.080A"]')?.value||''),
+   'Vbat / nguồn: '+(document.querySelector('input[placeholder="4.20V"]')?.value||''),
+   'Diode / Resistance: '+(document.querySelector('input[placeholder="Giá trị đo"]')?.value||''),
+   'I2C / SDA / SCL: '+(document.querySelector('input[placeholder="Địa chỉ / tình trạng"]')?.value||''),
+   'Vùng / linh kiện: '+($('asSchematicArea')?.value||'')
+ ].join('\n');}
+ async function run(file,mode){
+   const out=mode==='schematic'?$('asSchematicResult'):$('result'), status=mode==='schematic'?$('asSchematicStatus'):$('uploadStatus');
+   if(!file){status.textContent=mode==='schematic'?'Chưa chọn ảnh schematic / boardview.':'Chưa chọn ảnh MAIN / boardview.';return;}
+   if(!okType(file)){status.textContent='Chỉ nhận PNG, JPG hoặc WEBP.';return;}
+   const se=await session();if(!se?.user){$('asAccountBtn')?.click();return;}
+   if(!sb){status.textContent='Supabase chưa sẵn sàng.';return;}
+   const model=document.querySelector('.field select')?.value||'iPhone 14 Pro Max';
+   const area=$('asSchematicArea')?.value.trim()||'';
+   const boardCode=area||'I2C compass / PP_VDD';
+   const n=notes();
+   status.textContent='⏳ Đang upload ảnh và gọi AI…';
+   try{
+     const safe=file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,'-');
+     const path=`pan-ai/${se.user.id}/${Date.now()}-${crypto.randomUUID().slice(0,8)}-${safe}`;
+     const up=await sb.storage.from('ai-schematics').upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type});
+     if(up.error)throw up.error;
+     const call=await sb.functions.invoke('analyze-schematic',{body:{analysis_id:crypto.randomUUID(),file_path:path,device_model:model,board_code:boardCode,notes:n,mime_type:file.type}});
+     if(call.error)throw call.error;
+     if(call.data?.error)throw new Error(call.data.error);
+     const text=call.data?.analysis||'AI không trả về kết quả.';
+     out.innerHTML='<strong>'+esc(mode==='schematic'?'📐 Schematic Intelligence':'🧠 AI Board Diagnosis')+'</strong><pre style="white-space:pre-wrap;font:inherit;margin:10px 0 0">'+esc(text)+'</pre>';
+     status.textContent='✅ Phân tích hoàn tất.';
+     out.scrollIntoView({behavior:'smooth',block:'nearest'});
+   }catch(e){console.error('Apple Seed AI Board:',e);status.textContent='❌ '+(e?.message||String(e));}
+ }
+ $('analyze').onclick=()=>run(mainFile,'panic');
+ $('asAnalyzeSchematic').onclick=()=>run(schematicFile,'schematic');
+})();
+</script>
+
+<script>
+/* ===== COMMUNITY CASE BUTTONS ===== */
+(()=>{
+ const sb=window.supabaseClient,$=id=>document.getElementById(id);
+ $('asCaseChat')?.addEventListener('click',()=>{$('asCommunityBtn')?.click();});
+ $('asPrivateChatBtn')?.addEventListener('click',()=>{$('asCommunityBtn')?.click();setTimeout(()=>$('asPrivateTab')?.click(),50);});
+ $('asPostCase')?.addEventListener('click',async()=>{
+   const st=$('asCaseStatus'); const r=await sb?.auth?.getSession(); const u=r?.data?.session?.user;
+   if(!u){$('asAccountBtn')?.click();return;}
+   const title='PANIC '+(($('panic')?.value||'').trim()||'Ca bệnh iPhone mới').slice(0,170);
+   const model=document.querySelector('.field select')?.value||'iPhone';
+   const payload={author_id:u.id,title:title.length>=5?title:'Ca bệnh PANIC iPhone',model,platform:'iphone',fault_type:'PANIC / Kernel',panic_log:$('panic')?.value||'',boot_current:document.querySelector('input[placeholder*="0.080A"]')?.value||'',vbat:document.querySelector('input[placeholder="4.20V"]')?.value||'',diode_resistance:document.querySelector('input[placeholder="Giá trị đo"]')?.value||'',i2c_status:document.querySelector('input[placeholder="Địa chỉ / tình trạng"]')?.value||'',area:$('asSchematicArea')?.value||'',description:'Ca PANIC được tạo từ AI Board.'};
+   const x=await sb.from('community_cases').insert(payload).select('id').single();
+   if(x.error){st.textContent='❌ Không đăng được ca PANIC: '+x.error.message;return;}
+   st.textContent='✅ Đã đăng ca PANIC #'+x.data.id+' vào PANIC Control Center.';
+ });
+})();
+</script>
+</body></html>
