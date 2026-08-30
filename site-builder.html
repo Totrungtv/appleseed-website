@@ -207,6 +207,18 @@ function applyAll(){
     if(st.background)el.style.backgroundColor=st.background;
   }
   refreshInspector();
+  syncPreviewToDraft();
+}
+function syncPreviewToDraft(){
+  try{
+    if(!$('preview')||!$('preview').contentWindow)return;
+    $('preview').contentWindow.postMessage({
+      source:'apple-seed-builder',
+      type:'draft-config',
+      config:snapshot(),
+      device:deviceKey()
+    },location.origin);
+  }catch(e){}
 }
 function loadDraft(){try{const raw=localStorage.getItem(DRAFT_KEY);if(raw){draft=JSON.parse(raw);if(!draft.items)draft.items={};if(!draft.page)draft.page={desktop:{},mobile:{}};draft.page.desktop=draft.page.desktop||{};draft.page.mobile=draft.page.mobile||{}}}catch{draft={items:{},page:{desktop:{},mobile:{}}}}}
 function saveDraft(){localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));toast('💾 Đã lưu nháp trên máy')}
