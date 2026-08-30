@@ -292,8 +292,8 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
 <div class="actions"><button class="btn primary" id="analyze">⚡ PHÂN TÍCH AI · 20 COIN</button></div><div id="result" class="result">Chưa phân tích.</div></div>
 
 <div class="card"><h2>🧠 AI Diagnosis</h2><div class="muted">Evidence-first • không kết luận khi thiếu dữ liệu.</div>
-<div class="result"><strong>Case Intelligence</strong><div class="case"><b>iPhone 14 Pro Max · 0x20000 · Compass</b><div class="muted">Ưu tiên compass/sensor + I2C. Cần đo và đối chiếu board tốt.</div><span class="pill">I2C</span><span class="pill">PANIC</span></div></div>
-<h2 style="margin-top:22px">📐 Schematic Intelligence</h2><div class="fields"><div class="field"><label>Tài liệu</label><select id="asSchematicType"><option>Schematic</option><option>Boardview / ZXW</option><option>Pinout</option><option>Ảnh main</option></select></div><div class="field"><label>Vùng / linh kiện</label><input id="asSchematicArea" placeholder="U5200 / I2C compass / PP_VDD"></div></div><div class="drop" id="asSchematicDrop" style="cursor:pointer;margin-top:14px">📐<br><strong>Chọn / kéo thả ảnh Schematic / Boardview</strong><br><span class="muted">PNG / JPG / WEBP</span><input class="as-upload-input" id="asSchematicFile" type="file" accept="image/png,image/jpeg,image/webp"></div><div class="as-file-preview" id="asSchematicPreview"></div><div class="actions"><button class="btn primary" id="asAnalyzeSchematic" type="button">📐 ANALYZE SCHEMATIC</button></div><div id="asSchematicStatus" class="muted" style="margin-top:9px"></div><div id="asSchematicResult" class="result">Chưa có phân tích sơ đồ.</div></div>
+<div class="result"><strong>Case Intelligence</strong><div class="case"><b>Chưa có dữ liệu ca bệnh</b><div class="muted">AI sẽ xác định khu vực nghi ngờ từ PANIC LOG và số đo thực tế, không gán sẵn linh kiện.</div></div></div>
+<h2 style="margin-top:22px">📐 Schematic Intelligence</h2><div class="fields"><div class="field"><label>Tài liệu</label><select id="asSchematicType"><option>Schematic</option><option>Boardview / ZXW</option><option>Pinout</option><option>Ảnh main</option></select></div><div class="field"><label>Vùng / linh kiện</label><input id="asSchematicArea" placeholder="Nhập vùng / linh kiện nếu bạn biết (không bắt buộc)"></div></div><div class="drop" id="asSchematicDrop" style="cursor:pointer;margin-top:14px">📐<br><strong>Chọn / kéo thả ảnh Schematic / Boardview</strong><br><span class="muted">PNG / JPG / WEBP</span><input class="as-upload-input" id="asSchematicFile" type="file" accept="image/png,image/jpeg,image/webp"></div><div class="as-file-preview" id="asSchematicPreview"></div><div class="actions"><button class="btn primary" id="asAnalyzeSchematic" type="button">📐 ANALYZE SCHEMATIC · 20 COIN</button></div><div id="asSchematicStatus" class="muted" style="margin-top:9px"></div><div id="asSchematicResult" class="result">Chưa có phân tích sơ đồ.</div></div>
 </section>
 
 <section class="card"><div class="kicker">LIBRARY</div><h2>📚 Schematic Library</h2><div class="muted">Kho sơ đồ theo từng model iPhone.</div>
@@ -317,7 +317,7 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
 
 
 <section class="card"><div class="kicker">COMMUNITY</div><h2>🚨 PANIC Control Center</h2><div class="muted">Đăng ca bệnh thực tế, theo dõi phản hồi và sau này xác minh thành Knowledge Base.</div>
-<div class="case"><b>iPhone 14 Pro Max · Panic 0x20000 · Compass</b><div class="muted">6 kỹ thuật viên đang theo dõi.</div><span class="pill">I2C</span><span class="pill">6 replies</span></div>
+<div class="case"><b>PANIC Control Center</b><div class="muted">Đăng ca bệnh thực tế để cộng đồng kỹ thuật cùng phân tích và xác minh.</div></div>
 <div class="actions"><a class="btn primary" id="asPostCase" href="panic-community.html">＋ Đăng ca PANIC</a><button class="btn secondary" id="asCaseChat" type="button">💬 Chat theo case</button><button class="btn secondary" id="asPrivateChatBtn" type="button">🔒 Chat riêng</button></div><div id="asCaseStatus" class="muted" style="margin-top:9px"></div></section>
 
 <section class="card"><div class="kicker">ENGINEERING CENTER</div><h2>🗺️ Full System Map</h2><div class="fields">
@@ -672,9 +672,9 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
    if(!sb){status.textContent='Supabase chưa sẵn sàng.';if(analyzeBtn){analyzeBtn.disabled=false;analyzeBtn.classList.remove('is-analyzing');analyzeBtn.innerHTML=originalBtnText;}return;}
    const model=document.querySelector('.field select')?.value||'iPhone 14 Pro Max';
    const area=$('asSchematicArea')?.value.trim()||'';
-   const boardCode=area||'I2C compass / PP_VDD';
+   const boardCode=area;
    const n=notes();
-   status.innerHTML='<span class="as-analysis-hourglass" aria-hidden="true">⌛</span><span><strong>Đang chờ dữ liệu phân tích…</strong><small>Hệ thống đang tải ảnh và gửi dữ liệu tới AI. Vui lòng chờ.</small></span>';status.classList.add('show');
+   status.innerHTML='<span class="as-analysis-hourglass" aria-hidden="true">⌛</span><span><strong>Đang phân tích · đang giữ 20 Coin…</strong><small>Coin chỉ được ghi nhận khi AI hoàn tất; nếu phân tích lỗi hệ thống sẽ hoàn Coin.</small></span>';status.classList.add('show');
    out.innerHTML='<div class="as-analysis-wait"><span class="as-analysis-hourglass" aria-hidden="true">⌛</span><span>Đang phân tích…<small>AI đang xử lý PANIC LOG và ảnh MAIN / Boardview.</small></span></div>';
    try{
      const safe=file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,'-');
