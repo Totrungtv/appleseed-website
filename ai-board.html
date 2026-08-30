@@ -304,7 +304,7 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
 <div class="field"><label>I2C / SDA / SCL</label><input placeholder="Địa chỉ / tình trạng"></div>
 </div>
 <div class="drop" id="asMainDrop" style="cursor:pointer">📷<br><strong>Chọn / kéo thả ảnh MAIN / Boardview</strong><br><span class="muted">PNG / JPG / WEBP • ảnh sẽ được gửi tới AI khi bấm phân tích</span><input class="as-upload-input" id="asMainFile" type="file" accept="image/png,image/jpeg,image/webp"></div><div class="as-file-preview" id="asMainPreview"></div>
-<div class="actions"><button class="btn primary" id="analyze">⚡ PHÂN TÍCH AI</button></div><div id="result" class="result">Chưa phân tích.</div></div>
+<div class="actions"><button class="btn primary" id="analyze">⚡ PHÂN TÍCH AI · 20 COIN</button></div><div id="result" class="result">Chưa phân tích.</div></div>
 
 <div class="card"><h2>🧠 AI Diagnosis</h2><div class="muted">Evidence-first • không kết luận khi thiếu dữ liệu.</div>
 <div class="result"><strong>Case Intelligence</strong><div class="case"><b>iPhone 14 Pro Max · 0x20000 · Compass</b><div class="muted">Ưu tiên compass/sensor + I2C. Cần đo và đối chiếu board tốt.</div><span class="pill">I2C</span><span class="pill">PANIC</span></div></div>
@@ -692,13 +692,40 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
      const path=`pan-ai/${se.user.id}/${Date.now()}-${crypto.randomUUID().slice(0,8)}-${safe}`;
      const up=await sb.storage.from('ai-schematics').upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type});
      if(up.error)throw up.error;
-     const call=await sb.functions.invoke('analyze-schematic',{body:{analysis_id:crypto.randomUUID(),file_path:path,device_model:model,board_code:boardCode,notes:n,mime_type:file.type}});
-     if(call.error)throw call.error;
-     if(call.data?.error)throw new Error(call.data.error);
-     const text=call.data?.analysis||'AI không trả về kết quả.';
-     out.innerHTML='<strong>'+esc(mode==='schematic'?'📐 Schematic Intelligence':'🧠 AI Board Diagnosis')+'</strong><pre style="white-space:pre-wrap;font:inherit;margin:10px 0 0">'+esc(text)+'</pre>';
-     status.innerHTML='✅ <strong>Phân tích hoàn tất.</strong>';
-     out.scrollIntoView({behavior:'smooth',block:'nearest'});
+     const analysisId=crypto.randomUUID();
+     let charged=false;
+     let chargedCost=0;
+     if(mode==='panic'){
+       const charge=await sb.rpc('apple_seed_consume_ai_board_coins',{p_action:'ai_analysis'});
+       if(charge.error)throw charge.error;
+       if(!charge.data?.ok){
+         const msg=charge.data?.message||'Không đủ Coin hoặc tài khoản không còn quyền sử dụng.';
+         status.innerHTML='🪙 <strong>'+esc(msg)+'</strong>';
+         out.innerHTML='<strong>🪙 Chưa thực hiện phân tích</strong><p>'+esc(msg)+'</p>';
+         return;
+       }
+       charged=true;
+       chargedCost=Number(charge.data?.cost||20);
+       if($('asAccountCoins') && charge.data?.balance!=null) $('asAccountCoins').textContent=Number(charge.data.balance).toLocaleString('vi-VN')+' Coin';
+       status.innerHTML='🪙 <strong>Đã trừ '+chargedCost+' Coin.</strong> AI đang phân tích…';
+     }
+     try{
+       const call=await sb.functions.invoke('analyze-schematic',{body:{analysis_id:analysisId,file_path:path,device_model:model,board_code:boardCode,notes:n,mime_type:file.type}});
+       if(call.error)throw call.error;
+       if(call.data?.error)throw new Error(call.data.error);
+       const text=call.data?.analysis||'AI không trả về kết quả.';
+       out.innerHTML='<strong>'+esc(mode==='schematic'?'📐 Schematic Intelligence':'🧠 AI Board Diagnosis')+'</strong><pre style="white-space:pre-wrap;font:inherit;margin:10px 0 0">'+esc(text)+'</pre>';
+       status.innerHTML='✅ <strong>Phân tích hoàn tất.</strong>'+ (charged ? ' 🪙 Đã sử dụng '+chargedCost+' Coin.' : '');
+       out.scrollIntoView({behavior:'smooth',block:'nearest'});
+     }catch(e){
+       if(charged){
+         try{
+           const refund=await sb.rpc('apple_seed_refund_ai_board_coins',{p_action:'ai_analysis',p_reference:analysisId});
+           if(refund.data?.ok && $('asAccountCoins') && refund.data?.balance!=null) $('asAccountCoins').textContent=Number(refund.data.balance).toLocaleString('vi-VN')+' Coin';
+         }catch(refundError){console.error('Apple Seed AI Board refund:',refundError);}
+       }
+       throw e;
+     }
    }catch(e){console.error('Apple Seed AI Board:',e);status.innerHTML='❌ <strong>Phân tích lỗi:</strong> '+esc(e?.message||String(e));}
  }
  $('analyze').onclick=()=>run(mainFile,'panic');
