@@ -654,12 +654,7 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
     $('asGroupList').innerHTML=groups.length?groups.map(g=>`<button class="as-chat-item" data-chat="${esc(g.id)}"><b>👥 ${esc(g.name||'Nhóm kỹ thuật')}</b><small>Cập nhật ${new Date(g.updated_at).toLocaleString('vi-VN')}</small></button>`).join(''):'<div class="as-empty">Chưa có nhóm kỹ thuật.</div>';
     $('asGroupList').querySelectorAll('[data-chat]').forEach(b=>b.onclick=()=>openConversation(b.dataset.chat,b.textContent.trim()));
   }
-  async function loadMembers(){
-    const q=$('asMemberSearch').value.trim(); if(!q){$('asMemberResults').innerHTML='<div class="as-empty">Nhập tên kỹ thuật viên.</div>';return;}
-    const r=await sb.rpc('apple_seed_member_directory_search',{p_query:q}); if(r.error){$('asMemberResults').innerHTML='<div class="as-empty">Không tìm được danh sách thành viên.</div>';return;}
-    const rows=r.data||[]; $('asMemberResults').innerHTML=rows.length?rows.map(x=>`<div class="as-member-result"><span>👤 ${esc(x.full_name)}</span><button class="as-smallbtn primary" data-user="${esc(x.user_id)}" data-name="${esc(x.full_name)}" type="button">Chat</button></div>`).join(''):'<div class="as-empty">Không có thành viên phù hợp.</div>';
-    $('asMemberResults').querySelectorAll('[data-user]').forEach(b=>b.onclick=()=>startDirect(b.dataset.user,b.dataset.name));
-  }
+
   $('asMemberSearchBtn').onclick=loadMembers; $('asMemberSearch').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();loadMembers();}};
   $('asCreateGroupBtn').onclick=function(){$('asCreateGroupBox').style.display='block';renderSelectedGroupMembers();};
   $('asCreateGroupCancel').onclick=function(){$('asCreateGroupBox').style.display='none';};
@@ -681,8 +676,8 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
     if(realtime)sb.removeChannel(realtime); realtime=sb.channel('ai-board-chat-'+id).on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages',filter:'conversation_id=eq.'+id},payload=>{if(payload.new)appendMessage(payload.new,true);}).subscribe();
   }
   function appendMessage(m,scroll){const box=$('asChatMessages');const mine=m.sender_id===user?.id;const div=document.createElement('div');div.className='as-msg'+(mine?' mine':'');div.innerHTML=esc(m.body)+'<small>'+new Date(m.created_at).toLocaleString('vi-VN')+'</small>';box.appendChild(div);if(scroll)box.scrollTop=box.scrollHeight;}
-  async function loadMessages(){const box=$('asChatMessages');box.innerHTML='';if(!currentConversation)return;const r=await sb.from('chat_messages').select('id,conversation_id,sender_id,body,created_at').eq('conversation_id',currentConversation).order('created_at',{ascending:true}).limit(300);if(r.error){box.innerHTML='<div class="as-empty">Không tải được tin nhắn.</div>';return;}if(!r.data?.length){box.innerHTML='<div class="as-empty">Chưa có tin nhắn. Gửi tin đầu tiên.</div>';return;}r.data.forEach(m=>appendMessage(m,false));box.scrollTop=box.scrollHeight;}
-  $('asChatForm').onsubmit=async e=>{e.preventDefault();const body=$('asChatInput').value.trim();if(!body||!currentConversation||!user)return;const b=e.submitter;b.disabled=true;const r=await sb.from('chat_messages').insert({conversation_id:currentConversation,sender_id:user.id,body});if(r.error){alert(r.error.message);}else{$('asChatInput').value='';}b.disabled=false;};
+  async function loadMessages(){const box=$('asChatMessages');box.innerHTML='';if(!currentConversation)return;const r=await sb.from('chat_messages').select('id,conversation_id,sender_id,body,created_at').eq('conversation_id',currentConversation).order('created_at',{ascending:true}).limit(300);if(r.error){console.error('loadMessages',r.error);box.innerHTML='<div class="as-empty">Không tải được tin nhắn: '+esc(r.error.message)+'</div>';return;}if(!r.data?.length){box.innerHTML='<div class="as-empty">Chưa có tin nhắn. Gửi tin đầu tiên.</div>';return;}r.data.forEach(m=>appendMessage(m,false));box.scrollTop=box.scrollHeight;}
+  $('asChatForm').onsubmit=async e=>{e.preventDefault();const body=$('asChatInput').value.trim();if(!body||!currentConversation||!user)return;const b=e.submitter;b.disabled=true;const r=await sb.from('chat_messages').insert({conversation_id:currentConversation,sender_id:user.id,body});if(r.error){console.error('sendMessage',r.error);alert('Không gửi được tin nhắn: '+(r.error.message||'Lỗi không xác định'));}else{$('asChatInput').value='';}b.disabled=false;};
   if(sb?.auth){sb.auth.onAuthStateChange(()=>setTimeout(refreshAccount,0));refreshAccount();}else showLoggedOut();
 })();
 </script>
