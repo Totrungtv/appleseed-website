@@ -50,6 +50,9 @@
     <button class="btn" id="reloadCanvas" style="width:100%;margin-top:6px">↻ Nạp lại ảnh & trang gốc</button>
   </div>
   <div class="panel" id="stylePanel" hidden><h3>🎨 Giao diện — <span id="deviceLabel">Desktop</span></h3>
+    <div class="field" style="margin-top:4px"><label>🔗 Liên kết</label><input id="linkUrl" type="url" placeholder="https://… hoặc /trang.html"></div>
+    <div class="grid2"><div class="field"><label>Mở liên kết</label><select id="linkTarget"><option value="_self">Cùng trang</option><option value="_blank">Tab mới</option></select></div><div class="field" style="display:flex;align-items:flex-end"><button class="btn" id="clearLink" style="width:100%">Xóa liên kết</button></div></div>
+    <button class="btn primary" id="applyLink" style="width:100%;margin-bottom:8px">🔗 Áp dụng liên kết</button>
     <div class="grid2"><div class="field"><label>X (px)</label><input id="x" type="number"></div><div class="field"><label>Y (px)</label><input id="y" type="number"></div></div>
     <div class="grid2"><div class="field"><label>Rộng</label><input id="w" type="number" min="1"></div><div class="field"><label>Cao</label><input id="h" type="number" min="1"></div></div>
     <div class="grid2"><div class="field"><label>Cỡ chữ</label><input id="fontSize" type="number" min="1"></div><div class="field"><label>Bo góc</label><input id="radius" type="number" min="0"></div></div>
@@ -166,6 +169,8 @@ function refreshInspector(){
   $('info').textContent=selector;$('tag').hidden=false;$('tag').textContent=selected.tagName.toLowerCase();
   $('contentPanel').hidden=!textEditable(selected);
   const item=draft.items?.[selector]||{};
+  $('linkUrl').value=item.link?.url||'';
+  $('linkTarget').value=item.link?.target||'_self';
   const phone=selected.closest?.('.as3-phone');
   const phoneImage=item.bgImage ||
     (selected.tagName==='IMG'?(selected.currentSrc||selected.src):'') ||
@@ -246,6 +251,29 @@ function applyHeroPhoneImage(el,url){
   }
   return true;
 }
+function applyLinkToElement(el,item){
+  if(!el)return;
+  const link=item?.link||{};
+  const url=typeof link.url==='string'?link.url.trim():'';
+  const target=link.target==='_blank'?'_blank':'_self';
+  if(el.tagName==='A'){
+    if(url){
+      el.setAttribute('href',url);
+      if(target==='_blank'){el.setAttribute('target','_blank');el.setAttribute('rel','noopener noreferrer');}
+      else{el.removeAttribute('target');el.removeAttribute('rel');}
+    }else{
+      el.removeAttribute('href');el.removeAttribute('target');el.removeAttribute('rel');
+    }
+  }else if(url){
+    el.dataset.appleSeedLink=url;
+    el.dataset.appleSeedLinkTarget=target;
+    el.style.cursor='pointer';
+  }else{
+    delete el.dataset.appleSeedLink;
+    delete el.dataset.appleSeedLinkTarget;
+    el.style.removeProperty('cursor');
+  }
+}
 function applyAll(){
   if(!doc)return;
   const dk=deviceKey();
@@ -255,6 +283,7 @@ function applyAll(){
   for(const [s,item] of Object.entries(draft.items||{})){
     let el;try{el=doc.querySelector(s)}catch{continue}if(!el)continue;
     if(item.text!==undefined&&textEditable(el))el.textContent=item.text;
+    applyLinkToElement(el,item);
     if(item.src!==undefined&&el.tagName==='IMG')el.src=item.src;
     if(item.bgImage!==undefined&&el.tagName!=='IMG'){
       if(el.matches?.('.as3-phone,.as3-screen')) applyHeroPhoneImage(el,item.bgImage);
@@ -366,6 +395,7 @@ $('preview').addEventListener('load',async()=>{
     if(phone)el=phone;
     e.preventDefault();e.stopPropagation();choose(el);
   },true);
+  doc.addEventListener('auxclick',e=>{if(editable(e.target)){e.preventDefault();e.stopPropagation()}},true);
   // Never let preview navigation escape the Builder shell.
   doc.addEventListener('auxclick',e=>{if(editable(e.target)){e.preventDefault();e.stopPropagation()}},true);
   /*
@@ -514,6 +544,8 @@ $('reloadCanvas').onclick=()=>{
 };
 refreshPageDesign();
 $('applyText').onclick=()=>{if(!selected||!textEditable(selected))return;checkpoint();selected.textContent=$('text').value;getItem().text=selected.textContent;saveDraft();refreshInspector();toast('Đã đổi chữ')};
+$('applyLink').onclick=()=>{if(!selected)return;const url=$('linkUrl').value.trim();const target=$('linkTarget').value==='_blank'?'_blank':'_self';checkpoint();const item=getItem();if(url)item.link={url,target};else delete item.link;applyAll();saveDraft();refreshInspector();toast(url?'🔗 Đã áp dụng liên kết':'🔗 Đã xóa liên kết')};
+$('clearLink').onclick=()=>{if(!selected)return;checkpoint();delete getItem().link;applyAll();saveDraft();refreshInspector();toast('🔗 Đã xóa liên kết')};
 $('applyStyle').onclick=()=>{if(!selected)return;checkpoint();const v=getItem().styles[deviceKey()];for(const k of ['x','y','w','h']){const n=parseFloat($(k).value);if(Number.isFinite(n))v[k]=n}for(const k of ['fontSize','radius']){const n=parseFloat($(k).value);if(Number.isFinite(n))v[k]=n}v.color=$('color').value;v.background=$('backgroundColor').value;selected.style.translate=(v.x||0)+'px '+(v.y||0)+'px';if(v.w)selected.style.width=v.w+'px';if(v.h)selected.style.height=v.h+'px';if(v.fontSize)selected.style.fontSize=v.fontSize+'px';if(v.radius!==undefined)selected.style.borderRadius=v.radius+'px';if(v.color)selected.style.color=v.color;if(v.background)selected.style.backgroundColor=v.background;saveDraft();refreshOverlay();toast('Đã áp dụng giao diện')};
 $('pick').onclick=()=>$('file').click();$('file').onchange=e=>{pendingFile=e.target.files[0]||null;if(pendingFile)$('imagePreview').src=URL.createObjectURL(pendingFile)};
 $('applyImage').onclick=async()=>{if(!selected)return;let url=$('imageUrl').value.trim();try{if(pendingFile){url=await upload(pendingFile);pendingFile=null}}catch(e){toast('Upload lỗi: '+e.message);return}if(!url)return;checkpoint();const item=getItem();if(selected.tagName==='IMG'){selected.src=url;item.src=url}else{selected.style.backgroundImage='url("'+url+'")';item.bgImage=url}saveDraft();refreshInspector();toast('Đã thay hình')};
