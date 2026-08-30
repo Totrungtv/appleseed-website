@@ -510,15 +510,58 @@ function renderFriends(){const list=$('asZaloList');list.innerHTML=friendRows.le
 function renderSelectedGroupMembers(){const b=$('asGroupSelectedMembers');b.innerHTML=[...selectedGroupMembers].map(id=>'<span class="pill">👤 '+esc(groupMemberNames.get(id)||id)+' <button data-r="'+esc(id)+'">×</button></span>').join('')||'<span class="muted">Chưa chọn thành viên.</span>';b.querySelectorAll('[data-r]').forEach(x=>x.onclick=()=>{selectedGroupMembers.delete(x.dataset.r);renderSelectedGroupMembers()})}
 async function createGroup(){const name=$('asGroupNameInput').value.trim();if(!name)return alert('Vui lòng nhập tên nhóm.');const r=await sb.rpc('chat_create_group',{p_name:name,p_member_ids:[...selectedGroupMembers]});if(r.error)return alert('Không tạo được nhóm: '+r.error.message);selectedGroupMembers.clear();$('asGroupNameInput').value='';$('asCreateGroupBox').style.display='none';await loadRecent();await openConversation(r.data,'👥 '+name)}
 async function startDirect(id,name){const r=await sb.rpc('chat_start_direct',{p_other_user_id:id,p_other_name:name});if(r.error)return alert('Không mở được chat: '+r.error.message);await openConversation(r.data,'🔒 '+name)}
-async function openConversation(id,title){currentConversation=id;$('asZaloLayout').classList.add('as-show-chat');$('asChatTitle').textContent=title||'Cuộc trò chuyện';$('asChatInput').disabled=false;$('asChatForm button').disabled=false;$('asChatMembers').textContent='Đang tải…';await loadConversationMembers(id);await loadMessages();if(realtime)sb.removeChannel(realtime);if(chatPoll)clearInterval(chatPoll);realtime=sb.channel('ai-board-chat-'+id).on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages',filter:'conversation_id=eq.'+id},p=>{if(p.new)appendMessage(p.new,true)}).subscribe();chatPoll=setInterval(()=>{if(currentConversation===id)loadMessages()},3000)}
+async function openConversation(id,title){currentConversation=id;$('asZaloLayout').classList.add('as-show-chat');$('asChatTitle').textContent=title||'Cuộc trò chuyện';$('asChatInput').disabled=false;$('asChatForm button').disabled=false;$('asChatMembers').textContent='Đang tải…';await loadConversationMembers(id);await loadMessages();await markConversationNotificationsRead();if(realtime)sb.removeChannel(realtime);if(chatPoll)clearInterval(chatPoll);realtime=sb.channel('ai-board-chat-'+id).on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages',filter:'conversation_id=eq.'+id},p=>{if(p.new)appendMessage(p.new,true)}).subscribe();chatPoll=setInterval(()=>{if(currentConversation===id)loadMessages()},3000)}
 async function loadConversationMembers(id){const r=await sb.rpc('chat_get_participants',{p_conversation_id:id});$('asChatMembers').textContent=(r.data||[]).map(x=>esc(x.full_name||'Thành viên')+(x.online?' 🟢':'')).join(' · ')||'Cuộc trò chuyện'}
+async function markConversationNotificationsRead(){
+ if(!currentConversation)return;
+ const r=await sb.rpc('chat_get_notifications',{p_limit:100});if(r.error)return;
+ const ids=(r.data||[]).filter(x=>x.conversation_id===currentConversation&&!x.read_at).map(x=>x.id);
+ if(ids.length)await sb.rpc('chat_mark_notifications_read',{p_notification_ids:ids});
+ await refreshChatNotifications();
+}
+async function refreshChatNotifications(){
+ if(!user)return;
+ const r=await sb.rpc('chat_get_notifications',{p_limit:50});if(r.error)return;
+ const unread=(r.data||[]).filter(x=>!x.read_at);
+ document.querySelectorAll('#asPrivateTab,#asGroupTab').forEach(tab=>{
+  let b=tab.querySelector('.as-chat-unread-badge');
+  if(!b){b=document.createElement('span');b.className='as-chat-unread-badge';b.style.cssText='display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;margin-left:5px;border-radius:999px;background:#ff3b30;color:#fff;font-size:10px;font-weight:900';tab.appendChild(b)}
+  b.textContent=unread.length>99?'99+':String(unread.length);b.style.display=unread.length?'inline-grid':'none';
+ });
+ const latest=unread[0];
+ if(latest&&latest.id!==window.__asLastNotificationId){
+  window.__asLastNotificationId=latest.id;
+  if(latest.conversation_id!==currentConversation){
+   try{if('Notification'in window&&Notification.permission==='granted')new Notification('Apple Seed — Tin nhắn mới',{body:(latest.sender_name||'Thành viên')+': '+latest.body.slice(0,120)})}catch(_){}
+  }
+ }
+}
 function appendMessage(m,scroll){const box=$('asChatMessages'),d=document.createElement('div');d.className='as-msg'+(m.sender_id===user?.id?' mine':'');d.innerHTML=esc(m.body)+'<small>'+new Date(m.created_at).toLocaleString('vi-VN')+'</small>';box.appendChild(d);if(scroll)box.scrollTop=box.scrollHeight}
 async function loadMessages(){const box=$('asChatMessages');if(!currentConversation)return;box.innerHTML='<div class="as-zalo-empty">⏳ Đang tải tin nhắn…</div>';const r=await sb.rpc('chat_get_messages',{p_conversation_id:currentConversation,p_limit:300});if(r.error){box.innerHTML='<div class="as-empty">Không tải được tin nhắn: '+esc(r.error.message)+'</div>';return}box.innerHTML='';if(!r.data?.length){box.innerHTML='<div class="as-zalo-empty">Chưa có tin nhắn.<br>Gửi tin đầu tiên.</div>';return}r.data.forEach(m=>appendMessage(m,false));box.scrollTop=box.scrollHeight}
-$('asChatBack').onclick=async()=>{$('asZaloLayout').classList.remove('as-show-chat');currentConversation=null;if(realtime){sb.removeChannel(realtime);realtime=null}if(chatPoll)clearInterval(chatPoll);await loadRecent()};$('asChatForm').onsubmit=async e=>{e.preventDefault();const body=$('asChatInput').value.trim();if(!body||!currentConversation||!user)return;const b=e.submitter||$('asChatForm button');b.disabled=true;const r=await sb.rpc('chat_send_message',{p_conversation_id:currentConversation,p_body:body});if(r.error)alert('Không gửi được tin nhắn: '+r.error.message);else{$('asChatInput').value='';await loadMessages()}b.disabled=false};
+$('asChatBack').onclick=async()=>{$('asZaloLayout').classList.remove('as-show-chat');currentConversation=null;if(realtime){sb.removeChannel(realtime);realtime=null}if(chatPoll)clearInterval(chatPoll);await loadRecent()};
+async function sendCurrentChatMessage(body,button){
+ if(!user){alert('Phiên đăng nhập đã hết. Vui lòng đăng nhập lại.');return}
+ if(!currentConversation){alert('Chưa chọn cuộc trò chuyện.');return}
+ if(!body)return;
+ button.disabled=true;
+ try{
+  const r=await sb.rpc('chat_send_message',{p_conversation_id:currentConversation,p_body:body});
+  if(r.error)throw r.error;
+  $('asChatInput').value='';
+  await loadMessages();
+  await loadRecent();
+ }catch(err){
+  console.error('Apple Seed chat_send_message:',err);
+  alert('Không gửi được tin nhắn: '+(err?.message||err?.details||'Lỗi không xác định'));
+ }finally{button.disabled=false;$('asChatInput').focus()}
+}
+$('asChatForm').onsubmit=async e=>{e.preventDefault();const input=$('asChatInput'),body=input.value.trim(),button=e.submitter||$('asChatForm button');await sendCurrentChatMessage(body,button)};
+$('asChatInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('asChatForm').requestSubmit()}});
+
 $('asGroupTab').onclick=()=>{$('asGroupTab').classList.add('active');$('asPrivateTab').classList.remove('active');$('asGroupPanel').style.display='block';$('asPrivatePanel').style.display='none';$('asListTitle').textContent='TIN NHẮN GẦN ĐÂY';$('asMemberCount').textContent='';$('asZaloSearchResults').classList.remove('show');loadRecent()};$('asPrivateTab').onclick=async()=>{$('asPrivateTab').classList.add('active');$('asGroupTab').classList.remove('active');$('asGroupPanel').style.display='none';$('asPrivatePanel').style.display='block';$('asListTitle').textContent='TẤT CẢ THÀNH VIÊN';await loadFriends();await loadAllMembers()};$('asCreateGroupBtn').onclick=()=>{$('asCreateGroupBox').style.display='block';renderSelectedGroupMembers()};$('asCreateGroupCancel').onclick=()=>{$('asCreateGroupBox').style.display='none'};$('asCreateGroupConfirm').onclick=createGroup;
 $('asMemberSearch').addEventListener('input',()=>{clearTimeout(searchTimer);searchTimer=setTimeout(()=>searchMembers($('asMemberSearch').value),280)});$('asMemberSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchMembers(e.target.value)}});$('asMemberSearchBtn').onclick=()=>searchMembers($('asMemberSearch').value);
 async function loadDirectory(){await loadFriends();await loadRecent();$('asGroupTab').click()}
-if(sb?.auth){sb.auth.onAuthStateChange(()=>setTimeout(refreshAccount,0));refreshAccount()}else showLoggedOut()})();
+if(sb?.auth){sb.auth.onAuthStateChange(()=>setTimeout(()=>{refreshAccount();refreshChatNotifications()},0));refreshAccount();setTimeout(refreshChatNotifications,500);setInterval(refreshChatNotifications,5000)}else showLoggedOut()})();
 </script>
 
 <script>
