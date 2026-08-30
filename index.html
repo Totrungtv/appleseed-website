@@ -2932,9 +2932,34 @@ form.onsubmit=async e=>{
   lockImages();
   if (document.body) new MutationObserver(lockImages).observe(document.body, {childList:true, subtree:true});
   try {
-    if (window.top !== window.self) window.top.location = window.self.location;
+    /*
+     * Visual Site Builder preview exception.
+     * The Builder intentionally renders index.html inside an iframe so it can
+     * select/edit real elements. The old anti-copy guard forced the iframe to
+     * navigate the top window back to itself, which created the Builder's
+     * blank/loading loop. Keep the guard for normal embeds, but explicitly
+     * allow the Builder preview.
+     */
+    const q = new URLSearchParams(window.location.search);
+    const isBuilderPreview =
+      q.get('appleSeedBuilderPreview') === '1' ||
+      q.get('appleSeedBuilderCanvas') === '1' ||
+      q.get('builderCanvas') === '1';
+
+    if (window.top !== window.self && !isBuilderPreview) {
+      window.top.location = window.self.location;
+    }
   } catch (_) {
-    document.documentElement.style.display = 'none';
+    /*
+     * Do not blank the Builder if cross-window access is restricted. The
+     * preview must remain renderable even when browser isolation changes.
+     */
+    const q = new URLSearchParams(window.location.search);
+    const isBuilderPreview =
+      q.get('appleSeedBuilderPreview') === '1' ||
+      q.get('appleSeedBuilderCanvas') === '1' ||
+      q.get('builderCanvas') === '1';
+    if (!isBuilderPreview) document.documentElement.style.display = 'none';
   }
   console.log('Apple Seed Security V2 loaded.');
 })();
