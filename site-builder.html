@@ -169,8 +169,10 @@ function refreshInspector(){
   $('info').textContent=selector;$('tag').hidden=false;$('tag').textContent=selected.tagName.toLowerCase();
   $('contentPanel').hidden=!textEditable(selected);
   const item=draft.items?.[selector]||{};
-  $('linkUrl').value=item.link?.url||'';
-  $('linkTarget').value=item.link?.target||'_self';
+  // Hiển thị cả liên kết đã có sẵn trong HTML (ví dụ Facebook footer), không chỉ link đã lưu trong Builder.
+  const existingHref=selected.tagName==='A'?(selected.getAttribute('href')||''):'';
+  $('linkUrl').value=item.link?.url||existingHref;
+  $('linkTarget').value=item.link?.target||((selected.tagName==='A'&&selected.getAttribute('target')==='_blank')?'_blank':'_self');
   const phone=selected.closest?.('.as3-phone');
   const phoneImage=item.bgImage ||
     (selected.tagName==='IMG'?(selected.currentSrc||selected.src):'') ||
