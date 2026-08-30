@@ -3402,6 +3402,24 @@ body.apple-seed-chat-open #apple-seed-ai-board-float{
     if(!selector || !item) return;
     var el=null;
     try{el=document.querySelector(selector)}catch(e){return}
+
+    /* Hero phone images are injected asynchronously by the product loader.
+       If Builder saved the image on that injected IMG, that IMG does not exist
+       yet during the first Builder-runtime pass. Re-target its phone screen
+       and recreate the saved image so reload keeps the user's choice. */
+    if(!el && item.src && selector.indexOf(".as3-screen")!==-1){
+      el=document.querySelector(".as3-screen");
+      if(el){
+        el.querySelectorAll(":scope > img").forEach(function(img){img.remove()});
+        var customImg=document.createElement("img");
+        customImg.src=String(item.src);
+        customImg.alt="iPhone";
+        customImg.loading="eager";
+        customImg.decoding="async";
+        customImg.onerror=function(){customImg.remove()};
+        el.appendChild(customImg);
+      }
+    }
     if(!el) return;
 
     if(item.text!==undefined && textEditable(el)) el.textContent=String(item.text);
