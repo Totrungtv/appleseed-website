@@ -2,6 +2,7 @@
    Published config only. If CMS is unavailable, the original HTML remains untouched. */
 (function(){
   if(location.pathname.split('/').pop().toLowerCase()==='site-builder.html') return;
+  // Homepage is always the source canvas. Builder changes are only overlays.
   var appliedVersion='';
   function deviceKey(){return window.matchMedia && window.matchMedia('(max-width: 650px)').matches?'mobile':'desktop'}
   function apply(){
@@ -39,6 +40,9 @@
     apply();
     setTimeout(apply,600);setTimeout(apply,1600);setTimeout(apply,3200);
     window.addEventListener('resize',function(){setTimeout(apply,80)});
+    // Re-check published Builder versions so a page left open follows Admin publishes.
+    setInterval(apply,5000);
+    document.addEventListener('visibilitychange',function(){if(!document.hidden)apply()});
   }
   if(document.readyState==='complete')boot();else window.addEventListener('load',boot,{once:true});
 })();
