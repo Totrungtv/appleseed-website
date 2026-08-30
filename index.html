@@ -3037,8 +3037,8 @@ form.onsubmit=async e=>{
     },500);
   }
 
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>setTimeout(initRobot,250));
-  else setTimeout(initRobot,250);
+  // Disabled: do not animate/spawn the temporary "Xin chào 👋" robot on page reload.
+  // The real fixed chat robot (#chatBtn) remains available normally.
 })();
 </script>
 
