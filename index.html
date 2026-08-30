@@ -2144,13 +2144,27 @@ body{
   }
 
   function normalizeHeroCssOrder(css){
-    /* Legacy Hero image blocks are intentionally ignored.
-       Other Builder/CMS custom CSS remains untouched. */
+    /* Legacy Hero image CSS is disabled completely.
+       The live Hero image must come only from site_builder_versions.config.page.
+       Strip every legacy Hero image block before injecting Theme CSS, so an old
+       image can never flash on first load or override the Builder selection. */
     let out=String(css||'');
     const imageStart='/* APPLESEED_HERO_IMAGES_START */';
     const imageEnd='/* APPLESEED_HERO_IMAGES_END */';
-    const a=out.indexOf(imageStart), b=out.indexOf(imageEnd);
-    if(a>=0 && b>a) out=out.slice(0,a)+out.slice(b+imageEnd.length);
+    let guard=0;
+    while(guard++<20){
+      const a=out.indexOf(imageStart);
+      if(a<0) break;
+      const b=out.indexOf(imageEnd,a);
+      if(b<0){
+        out=out.slice(0,a);
+        break;
+      }
+      out=out.slice(0,a)+out.slice(b+imageEnd.length);
+    }
+    /* Extra safety: never allow the legacy Hero background selector itself
+       to survive outside the marked block. */
+    out=out.replace(/\\.as3-stage\\s*\\{[^}]*background-image\\s*:\\s*url\\([^)]*\\)[^}]*\\}/gi,'');
     return out;
   }
 
