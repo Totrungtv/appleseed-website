@@ -545,17 +545,19 @@ async function sendCurrentChatMessage(body,button){
  if(!user){alert('Phiên đăng nhập đã hết. Vui lòng đăng nhập lại.');return}
  if(!currentConversation){if(status){status.textContent='Chưa chọn cuộc trò chuyện.';status.classList.add('show')}return}
  if(!body)return;
+ if(!button)button=$('asChatForm')?.querySelector('button[type="submit"]');
+ if(!button){if(status){status.textContent='Không tìm thấy nút Gửi. Hãy tải lại trang.';status.classList.add('show')}return}
  button.disabled=true;
  try{
   const r=await sb.rpc('chat_send_message_v2',{p_conversation_id:currentConversation,p_body:body});
   if(r.error)throw r.error;
-  $('asChatInput').value='';
+  const input=$('asChatInput');if(input)input.value='';
   await loadMessages();
   await loadRecent();
  }catch(err){
   console.error('Apple Seed chat_send_message:',err);
   if(status){status.textContent='Không gửi được: '+(err?.message||err?.details||'Lỗi không xác định');status.classList.add('show')}else alert('Không gửi được tin nhắn: '+(err?.message||err?.details||'Lỗi không xác định'));
- }finally{button.disabled=false;$('asChatInput').focus()}
+ }finally{button.disabled=false;const input=$('asChatInput');if(input)input.focus()}
 }
 $('asChatForm').onsubmit=async e=>{e.preventDefault();const input=$('asChatInput'),body=input.value.trim(),button=e.submitter||$('asChatForm button');await sendCurrentChatMessage(body,button)};
 $('asChatInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('asChatForm').requestSubmit()}});
