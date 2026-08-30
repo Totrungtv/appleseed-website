@@ -1,5 +1,4 @@
 <!doctype html>
-<!-- APPLE SEED GLOBAL PALETTE SYNC v1 — Builder ↔ LIVE -->
 <html lang="vi">
 <head>
 <meta charset="utf-8">
@@ -1366,6 +1365,44 @@ body{
 }
 </style>
 
+<style id="apple-seed-builder-global-palette">
+/* APPLE SEED BUILDER GLOBAL PALETTE V2
+   This layer intentionally sits after the existing premium/light themes.
+   The Builder palette controls are the source of truth for these four colors. */
+:root{
+  --apple-seed-primary:#d7aa4d;
+  --apple-seed-ink:#17233d;
+  --apple-seed-page-bg:#ffffff;
+  --apple-seed-card-bg:#ffffff;
+  --blue:var(--apple-seed-primary)!important;
+  --ink:var(--apple-seed-ink)!important;
+  --as-gold:var(--apple-seed-primary)!important;
+  --as-gold-light:var(--apple-seed-primary)!important;
+  --as-light-gold:var(--apple-seed-primary)!important;
+  --as-light-gold-2:var(--apple-seed-primary)!important;
+  --as-light-bg:var(--apple-seed-page-bg)!important;
+  --as-light-ink:var(--apple-seed-ink)!important;
+}
+html,body{background:var(--apple-seed-page-bg)!important;color:var(--apple-seed-ink)!important}
+.as3-hero{background:var(--apple-seed-page-bg)!important;color:var(--apple-seed-ink)!important}
+.as3-hero:before{background:var(--apple-seed-page-bg)!important}
+.as3-kicker,.as3-sub b,.as3-benefit i,.as3-service .ico,.as3-stat b{color:var(--apple-seed-primary)!important}
+.as3-title{color:var(--apple-seed-ink)!important}
+.as3-title span{background:linear-gradient(105deg,var(--apple-seed-ink),color-mix(in srgb,var(--apple-seed-ink) 58%,transparent),var(--apple-seed-primary))!important;-webkit-background-clip:text!important;background-clip:text!important}
+.as3-sub{color:var(--apple-seed-ink)!important}
+.as3-desc{color:color-mix(in srgb,var(--apple-seed-ink) 68%,transparent)!important}
+.as3-btn.gold,.site-header .booking-nav{background:var(--apple-seed-primary)!important;border-color:var(--apple-seed-primary)!important}
+.as3-btn.gold{color:#fff!important}
+.as3-play{border-color:var(--apple-seed-primary)!important;color:var(--apple-seed-primary)!important}
+.as3-service,.as3-stats,.product-home-card,.contact-card,.map-card,.dynamic-pages-section .page-card,.product-modal-box{background:var(--apple-seed-card-bg)!important}
+.as3-service h3,.as3-stat span,.as3-service p{color:var(--apple-seed-ink)!important}
+.as3-more{background:var(--apple-seed-ink)!important;border-color:var(--apple-seed-ink)!important}
+.site-header .menu,.site-header .menu a{color:var(--apple-seed-ink)!important}
+.site-header .menu a:hover{color:var(--apple-seed-primary)!important}
+.site-header .brand-title{color:var(--apple-seed-ink)!important}
+.services,.contact,.dynamic-pages-section{background:var(--apple-seed-page-bg)!important}
+/* Lower-page components using the original --blue/--ink variables follow automatically. */
+</style>
 </head>
 
 <body>
@@ -3447,55 +3484,6 @@ body.apple-seed-chat-open #apple-seed-ai-board-float{
     setStyle(el,"background-color",st.background||undefined);
   }
 
-  function applyGlobalPalette(pal){
-    pal=pal||{};
-    var root=document.documentElement;
-    var primary=pal["--gold"]||"#d7aa4d";
-    var ink=pal["--ink"]||"#18212b";
-    var pageBg=pal["--apple-seed-page-bg"]||"#ffffff";
-    var cardBg=pal["--apple-seed-card-bg"]||"#ffffff";
-
-    /* One shared palette contract for legacy + current Apple Seed CSS. */
-    var aliases={
-      "--gold":primary,
-      "--blue":primary,
-      "--as-gold":primary,
-      "--as-gold-light":primary,
-      "--as-light-gold":primary,
-      "--as-light-gold-2":primary,
-      "--ink":ink,
-      "--as-light-ink":ink,
-      "--bg":pageBg,
-      "--as-light-bg":pageBg,
-      "--as-light-card":cardBg,
-      "--apple-seed-page-bg":pageBg,
-      "--apple-seed-card-bg":cardBg
-    };
-    Object.keys(aliases).forEach(function(k){
-      root.style.setProperty(k,String(aliases[k]),"important");
-    });
-
-    document.body.style.setProperty("background-color",pageBg,"important");
-    document.body.style.setProperty("color",ink,"important");
-
-    var style=document.getElementById("apple-seed-builder-global-palette");
-    if(!style){
-      style=document.createElement("style");
-      style.id="apple-seed-builder-global-palette";
-      document.head.appendChild(style);
-    }
-    style.textContent=[
-      "body,main{background-color:var(--apple-seed-page-bg)!important;color:var(--ink)!important}",
-      ".site-header{background:var(--apple-seed-card-bg)!important;color:var(--ink)!important;border-color:var(--gold)!important}",
-      ".services,.service-card,.product-home-card,.page-card,.contact-card,.map-card,.video-public-card,.youtube-result-card,.youtube-audio-card,.as3-service{background-color:var(--apple-seed-card-bg)!important;color:var(--ink)!important}",
-      ".service-card,.product-home-card,.page-card,.contact-card,.map-card{border-color:var(--gold)!important}",
-      ".section-kicker,.service-icon,.as3-kicker,.as3-sub b,.as3-service .as3-label{color:var(--gold)!important}",
-      ".as3-btn.gold,.booking-nav,.member-auth-btn.primary{background:var(--gold)!important;border-color:var(--gold)!important;color:#fff!important}",
-      ".as3-hero{background-color:var(--apple-seed-page-bg)!important}",
-      "a:hover{color:var(--gold)!important}"
-    ].join("");
-  }
-
   function applyConfig(){
     if(applying || !currentConfig || !currentConfig.items) return;
     applying=true;
@@ -3503,7 +3491,24 @@ body.apple-seed-chat-open #apple-seed-ai-board-float{
       var isMobile=mobileQuery.matches;
       var page=(currentConfig.page||{})[isMobile?"mobile":"desktop"]||{};
       var pal=page.palette||{};
-      applyGlobalPalette(pal);
+      var primary=String(pal["--gold"]||"#d7aa4d");
+      var ink=String(pal["--ink"]||"#17233d");
+      var pageBg=String(pal["--apple-seed-page-bg"]||"#ffffff");
+      var cardBg=String(pal["--apple-seed-card-bg"]||"#ffffff");
+      document.documentElement.style.setProperty("--apple-seed-primary",primary,"important");
+      document.documentElement.style.setProperty("--apple-seed-ink",ink,"important");
+      document.documentElement.style.setProperty("--apple-seed-page-bg",pageBg,"important");
+      document.documentElement.style.setProperty("--apple-seed-card-bg",cardBg,"important");
+      document.documentElement.style.setProperty("--gold",primary,"important");
+      document.documentElement.style.setProperty("--blue",primary,"important");
+      document.documentElement.style.setProperty("--as-gold",primary,"important");
+      document.documentElement.style.setProperty("--as-gold-light",primary,"important");
+      document.documentElement.style.setProperty("--as-light-gold",primary,"important");
+      document.documentElement.style.setProperty("--as-light-gold-2",primary,"important");
+      document.documentElement.style.setProperty("--ink",ink,"important");
+      document.documentElement.style.setProperty("--as-light-ink",ink,"important");
+      Object.keys(pal).forEach(function(k){if(/^--[a-z0-9-]+$/.test(k)) document.documentElement.style.setProperty(k,String(pal[k]),"important")});
+      document.body.style.setProperty("background-color",pageBg,"important");
       Object.keys(currentConfig.items).forEach(function(selector){applyItem(selector,currentConfig.items[selector],isMobile)});
       var target=null;
       if(page.target==="main") target=document.querySelector("main")||document.body;
