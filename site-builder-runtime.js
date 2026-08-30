@@ -1,6 +1,12 @@
 /* Apple Seed Visual Site Builder V2 runtime.
    Published config only. If CMS is unavailable, the original HTML remains untouched. */
 (function(){
+  // Builder iframe must be a stable editing canvas. Do not run the published-site runtime inside it;
+  // its polling/timers can repaint the preview and cause visible blinking.
+  try{
+    var qs=new URLSearchParams(location.search);
+    if(qs.get('appleSeedBuilderPreview')==='1' || qs.get('appleSeedBuilderCanvas')==='1') return;
+  }catch(_){ }
   if(location.pathname.split('/').pop().toLowerCase()==='site-builder.html') return;
   var appliedVersion='';
 
