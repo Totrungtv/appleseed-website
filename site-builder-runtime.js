@@ -2,7 +2,6 @@
    Published config only. If CMS is unavailable, the original HTML remains untouched. */
 (function(){
   if(location.pathname.split('/').pop().toLowerCase()==='site-builder.html') return;
-  // Homepage is always the source canvas. Builder changes are only overlays.
   var appliedVersion='';
   function deviceKey(){return window.matchMedia && window.matchMedia('(max-width: 650px)').matches?'mobile':'desktop'}
   function apply(){
@@ -36,13 +35,60 @@
         });
     }catch(_){}
   }
+
+  /* ===== AI BOARD / CUSTOMER ROBOT VISIBILITY FIX ===== */
+  function syncAiBoardVisibility(){
+    try{
+      var chat=document.getElementById('chatBox');
+      var chatOpen=!!(chat && chat.classList.contains('open'));
+      document.querySelectorAll('a,button,div,span').forEach(function(el){
+        if(el.id==='chatBtn'||el.closest('#chatBox'))return;
+        var txt=(el.textContent||'').replace(/\s+/g,' ').trim();
+        if(txt!=='AI BOARD' && txt.indexOf('AI BOARD')!==0)return;
+        var rect=el.getBoundingClientRect();
+        if(rect.width<=20 || rect.height<=20)return;
+        if(chatOpen){
+          if(!el.dataset.asAiBoardHidden){
+            el.dataset.asAiBoardHidden='1';
+            el.dataset.asAiBoardPrevDisplay=el.style.display||'';
+          }
+          el.style.setProperty('display','none','important');
+        }else if(el.dataset.asAiBoardHidden==='1'){
+          el.style.setProperty('display',el.dataset.asAiBoardPrevDisplay||'','important');
+          delete el.dataset.asAiBoardHidden;
+          delete el.dataset.asAiBoardPrevDisplay;
+        }
+      });
+    }catch(_){}
+  }
+
   function boot(){
     apply();
     setTimeout(apply,600);setTimeout(apply,1600);setTimeout(apply,3200);
     window.addEventListener('resize',function(){setTimeout(apply,80)});
-    // Re-check published Builder versions so a page left open follows Admin publishes.
     setInterval(apply,5000);
     document.addEventListener('visibilitychange',function(){if(!document.hidden)apply()});
+
+    var chatBtn=document.getElementById('chatBtn');
+    if(chatBtn){
+      chatBtn.addEventListener('click',function(){
+        setTimeout(syncAiBoardVisibility,0);
+        setTimeout(syncAiBoardVisibility,100);
+        setTimeout(syncAiBoardVisibility,350);
+      },true);
+    }
+
+    var chatBox=document.getElementById('chatBox');
+    if(chatBox){
+      new MutationObserver(syncAiBoardVisibility)
+        .observe(chatBox,{attributes:true,attributeFilter:['class','style']});
+    }
+
+    new MutationObserver(syncAiBoardVisibility)
+      .observe(document.body,{childList:true,subtree:true});
+
+    syncAiBoardVisibility();
+    setInterval(syncAiBoardVisibility,500);
   }
   if(document.readyState==='complete')boot();else window.addEventListener('load',boot,{once:true});
 })();
