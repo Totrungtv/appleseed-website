@@ -73,12 +73,40 @@
     var chatBtn=document.getElementById('chatBtn');
     if(chatBtn){
       chatBtn.addEventListener('click',function(){
+        var launcher=document.getElementById('apple-seed-ai-board-float');
+        if(launcher){
+          launcher.style.setProperty('display','none','important');
+          launcher.setAttribute('aria-hidden','true');
+        }
         setTimeout(syncAiBoardVisibility,0);
         setTimeout(syncAiBoardVisibility,50);
         setTimeout(syncAiBoardVisibility,200);
       },true);
-    },true);
     }
+
+    var chatClose=document.getElementById('chatClose');
+    if(chatClose){
+      chatClose.addEventListener('click',function(){
+        setTimeout(syncAiBoardVisibility,0);
+        setTimeout(syncAiBoardVisibility,100);
+      },true);
+    }
+
+    document.addEventListener('click',function(e){
+      try{
+        var t=e.target;
+        if(t && t.closest && t.closest('#chatBtn')){
+          var launcher=document.getElementById('apple-seed-ai-board-float');
+          if(launcher){
+            launcher.style.setProperty('display','none','important');
+            launcher.setAttribute('aria-hidden','true');
+          }
+        }else if(t && t.closest && t.closest('#chatClose')){
+          setTimeout(syncAiBoardVisibility,0);
+          setTimeout(syncAiBoardVisibility,100);
+        }
+      }catch(_){}
+    },true);
 
     var chatBox=document.getElementById('chatBox');
     if(chatBox){
