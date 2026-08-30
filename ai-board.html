@@ -231,6 +231,42 @@ body.member-guest .top .pill{display:none}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
+<script src="member-auth.js?v=20260825-auth-fix2"></script>
+<script>
+/* APPLE SEED MEMBER GATE FIX
+   ai-board.html must read the same Supabase Auth session as index.html.
+   Guest: YouTube only. Signed-in Member: unlock the complete Board.
+*/
+(async function appleSeedBoardAuthGate(){
+  function apply(session){
+    const signedIn=!!session?.user;
+    document.body.classList.toggle('member-guest',!signedIn);
+    document.body.classList.toggle('member-authenticated',signedIn);
+    const gate=document.getElementById('member-gate');
+    if(gate) gate.style.display=signedIn?'none':'block';
+    if(signedIn){
+      console.log('✅ Apple Seed AI Board: Member session detected.');
+    }else{
+      console.log('🔒 Apple Seed AI Board: no Member session.');
+    }
+  }
+  try{
+    if(!window.supabaseClient?.auth) throw new Error('Supabase Auth chưa sẵn sàng.');
+    const {data,error}=await window.supabaseClient.auth.getSession();
+    if(error) throw error;
+    apply(data?.session||null);
+    window.supabaseClient.auth.onAuthStateChange((event,session)=>{
+      if(event==='SIGNED_IN'||event==='INITIAL_SESSION'||event==='TOKEN_REFRESHED'||event==='SIGNED_OUT'){
+        apply(session||null);
+      }
+    });
+  }catch(err){
+    console.error('Apple Seed AI Board auth gate:',err);
+    apply(null);
+  }
+})();
+</script>
+
 <script>
 (()=>{
   const q=id=>document.getElementById(id);
