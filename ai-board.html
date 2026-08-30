@@ -78,6 +78,25 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
 .as-quick-community{display:grid;grid-template-columns:1fr 1fr;gap:12px}.as-community-card{padding:15px;border:1px solid #d5e5f5;border-radius:14px;background:#fff}.as-community-card h3{margin:0 0 6px;font-size:15px}.as-case-list{display:grid;gap:8px;margin-top:10px}.as-case-row{padding:11px;border:1px solid #dbe7f3;border-radius:11px;background:#fafdff}.as-case-row b{display:block}.as-case-row small{color:#647b98}.as-case-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.as-file-preview{display:none;margin-top:10px;padding:9px;border:1px solid #d6e6f5;border-radius:10px;background:#fff;font-size:12px}.as-file-preview.show{display:block}.as-upload-input{display:none}
 @media(max-width:700px){.as-chat-layout{grid-template-columns:1fr}.as-chat-side{border-right:0;border-bottom:1px solid #e5edf6}.as-chat-list{max-height:180px}.as-quick-community{grid-template-columns:1fr}.as-modal-box{max-height:95vh}.as-chat-messages{min-height:300px}.as-fullbar{align-items:flex-start}}
 </style>
+<style id="apple-seed-account-panel-css">
+.as-account-hero{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px;border:1px solid #d7e6f5;border-radius:14px;background:linear-gradient(135deg,#f7fbff,#eef7ff);margin-bottom:14px}
+.as-account-online{font-size:11px;font-weight:900;color:#16794a;background:#ecfdf3;border:1px solid #c7efd9;border-radius:999px;padding:6px 9px}
+.as-account-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:12px;margin-bottom:12px}
+.as-account-info-card{border:1px solid #dbe7f3;border-radius:14px;background:#fff;padding:14px}
+.as-account-card-title{font-weight:900;color:#17395f;margin-bottom:10px}
+.as-account-row{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid #edf2f7;font-size:12px}
+.as-account-row:first-of-type{border-top:0}.as-account-row span{color:#647b98}.as-account-row b{text-align:right;word-break:break-word}
+.as-wallet-card{background:linear-gradient(135deg,#fafdff,#f0f7ff)}
+.as-wallet-balance{font-size:28px;font-weight:950;color:#145ca8;margin:2px 0 8px}
+.as-topup-btn{display:block;text-align:center;text-decoration:none;margin-top:12px;padding:11px 12px;border-radius:11px;background:linear-gradient(135deg,#1479e8,#3ba7ff);color:#fff;font-weight:900}
+.as-chat-notice{margin-top:0}.as-chat-notice-head{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.as-chat-notice-sub{font-size:12px;color:#647b98;margin-top:-6px;margin-bottom:8px}
+.as-account-chat-list{display:grid;gap:7px;max-height:220px;overflow:auto}
+.as-account-chat-item{display:flex;gap:10px;align-items:flex-start;padding:10px;border:1px solid #e0eaf4;border-radius:11px;background:#fafdff}
+.as-account-chat-avatar{width:30px;height:30px;flex:0 0 30px;border-radius:9px;display:grid;place-items:center;background:#eaf4ff}
+.as-account-chat-text{min-width:0}.as-account-chat-name{font-weight:850;font-size:12px}.as-account-chat-body{font-size:12px;color:#526b88;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.as-account-chat-time{font-size:10px;color:#8a9bb0;margin-top:3px}
+@media(max-width:700px){.as-account-grid{grid-template-columns:1fr}.as-account-hero{align-items:flex-start;flex-direction:column}.as-chat-notice-head{align-items:flex-start;flex-direction:column}}
+</style>
 </head>
 <body><main class="wrap">
 <!-- ===== APPLE SEED FULL MEMBER / COMMUNITY / CHAT RESTORE ===== -->
@@ -98,12 +117,42 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
     <div class="as-modal-head"><h2>👤 Apple Seed Member</h2><button class="as-close" id="asMemberClose">×</button></div>
     <div class="as-modal-body">
       <div id="asAccountView">
-        <div class="as-member-summary" style="margin-bottom:14px"><div class="as-member-avatar">👤</div><div><div class="as-member-name" id="asAccountName">—</div><div class="as-member-meta" id="asAccountEmail">—</div></div></div>
-        <div class="fields">
-          <div class="case"><b>🪙 Coin</b><div class="muted" id="asAccountCoins">—</div></div>
-          <div class="case"><b>⏳ Trial</b><div class="muted" id="asAccountTrial">—</div></div>
+        <div class="as-account-hero">
+          <div class="as-member-summary">
+            <div class="as-member-avatar">👤</div>
+            <div><div class="as-member-name" id="asAccountName">—</div><div class="as-member-meta" id="asAccountEmail">—</div></div>
+          </div>
+          <div class="as-account-online">● MEMBER</div>
         </div>
-        <div class="actions"><a class="btn secondary" href="member-wallet.html">💳 Nạp Coin</a><button class="btn primary" id="asOpenChatFromAccount" type="button">💬 Mở chat</button></div>
+
+        <div class="as-account-grid">
+          <div class="as-account-info-card">
+            <div class="as-account-card-title">👤 Thông tin cá nhân</div>
+            <div class="as-account-row"><span>Họ và tên</span><b id="asAccountFullName">—</b></div>
+            <div class="as-account-row"><span>📧 Email</span><b id="asAccountEmailFull">—</b></div>
+            <div class="as-account-row"><span>📱 Số điện thoại</span><b id="asAccountPhone">—</b></div>
+            <div class="as-account-row"><span>🆔 Member ID</span><b id="asAccountMemberId">—</b></div>
+            <div class="as-account-row"><span>📅 Ngày tham gia</span><b id="asAccountJoined">—</b></div>
+          </div>
+
+          <div class="as-account-info-card as-wallet-card">
+            <div class="as-account-card-title">🪙 Ví Apple Seed</div>
+            <div class="as-wallet-balance" id="asAccountCoins">—</div>
+            <div class="as-account-row"><span>Trạng thái</span><b id="asAccountStatus">—</b></div>
+            <div class="as-account-row"><span>Trial</span><b id="asAccountTrial">—</b></div>
+            <a class="as-topup-btn" href="member-wallet.html">🪙 NẠP COIN</a>
+          </div>
+        </div>
+
+        <div class="as-account-info-card as-chat-notice">
+          <div class="as-chat-notice-head">
+            <div><div class="as-account-card-title">💬 Thông báo chat</div><div class="as-chat-notice-sub" id="asChatNoticeSummary">Đang kiểm tra tin nhắn…</div></div>
+            <button class="as-smallbtn primary" id="asOpenChatFromAccount" type="button">💬 Mở chat</button>
+          </div>
+          <div id="asAccountChatNotifications" class="as-account-chat-list">
+            <div class="as-empty">Đang tải thông báo chat…</div>
+          </div>
+        </div>
       </div>
       <div id="asAuthView" style="display:none">
         <div class="as-auth-tabs"><button id="asLoginTab" class="active" type="button">Đăng nhập</button><button id="asSignupTab" type="button">Đăng ký</button></div>
@@ -470,10 +519,21 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
     const p=await sb.from('customer_members').select('full_name,phone,email').eq('user_id',user.id).maybeSingle();
     const name=p.data?.full_name||user.user_metadata?.full_name||'Thành viên Apple Seed';
     const email=p.data?.email||user.email||'';
+    const phone=p.data?.phone||user.user_metadata?.phone||'Chưa cập nhật';
     $('asMemberName').textContent=name; $('asMemberMeta').textContent=email;
     $('asAccountName').textContent=name; $('asAccountEmail').textContent=email;
+    $('asAccountFullName').textContent=name; $('asAccountEmailFull').textContent=email; $('asAccountPhone').textContent=phone;
+    $('asAccountMemberId').textContent=user.id.slice(0,8).toUpperCase()+'…';
+    $('asAccountJoined').textContent=user.created_at?new Date(user.created_at).toLocaleDateString('vi-VN'):'—';
     const a=await sb.from('member_accounts').select('coins,status,trial_started_at,trial_expires_at').eq('user_id',user.id).maybeSingle();
-    if(a.data){ $('asAccountCoins').textContent=Number(a.data.coins||0).toLocaleString('vi-VN')+' Coin'; $('asAccountTrial').textContent=(a.data.status||'active')+' · đến '+new Date(a.data.trial_expires_at).toLocaleDateString('vi-VN'); } else { $('asAccountCoins').textContent='Chưa có ví'; $('asAccountTrial').textContent='—'; }
+    if(a.data){
+      $('asAccountCoins').textContent=Number(a.data.coins||0).toLocaleString('vi-VN')+' Coin';
+      $('asAccountStatus').textContent=a.data.status||'active';
+      $('asAccountTrial').textContent=a.data.trial_expires_at?'Đến '+new Date(a.data.trial_expires_at).toLocaleDateString('vi-VN'):'—';
+    }else{
+      $('asAccountCoins').textContent='0 Coin'; $('asAccountStatus').textContent='Chưa khởi tạo'; $('asAccountTrial').textContent='—';
+    }
+    await loadAccountChatNotifications();
   }
   $('asLogoutBtn').onclick=async()=>{if(sb?.auth)await sb.auth.signOut();location.reload();};
   $('asLoginTab').onclick=()=>{ $('asLoginTab').classList.add('active');$('asSignupTab').classList.remove('active');$('asLoginForm').style.display='grid';$('asSignupForm').style.display='none';};
@@ -481,6 +541,33 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
   $('asLoginForm').onsubmit=async e=>{e.preventDefault();if(!sb){setStatus('Supabase chưa sẵn sàng.');return;}const b=e.submitter;b.disabled=true;try{const r=await sb.auth.signInWithPassword({email:$('asLoginEmail').value.trim(),password:$('asLoginPassword').value});if(r.error)throw r.error;setStatus('Đăng nhập thành công.',true);await refreshAccount();}catch(x){setStatus(x.message||'Đăng nhập thất bại.');}finally{b.disabled=false;}};
   $('asSignupForm').onsubmit=async e=>{e.preventDefault();if(!sb){setStatus('Supabase chưa sẵn sàng.');return;}const b=e.submitter;b.disabled=true;try{const name=$('asSignupName').value.trim(),phone=$('asSignupPhone').value.trim(),email=$('asSignupEmail').value.trim().toLowerCase(),password=$('asSignupPassword').value;const r=await sb.auth.signUp({email,password,options:{data:{full_name:name,phone}}});if(r.error)throw r.error;if(r.data?.user&&!r.data.session){setStatus('Đăng ký thành công. Hãy mở email xác nhận trước khi đăng nhập.',true);}else if(r.data?.user){await sb.from('customer_members').upsert({user_id:r.data.user.id,full_name:name,phone,email,updated_at:new Date().toISOString()},{onConflict:'user_id'});await refreshAccount();setStatus('Tài khoản đã sẵn sàng.',true);}}catch(x){setStatus(x.message||'Đăng ký thất bại.');}finally{b.disabled=false;}};
   $('asForgot').onclick=()=>{location.href='reset-password.html';};
+  async function loadAccountChatNotifications(){
+    const box=$('asAccountChatNotifications'), summary=$('asChatNoticeSummary');
+    if(!box||!user)return;
+    box.innerHTML='<div class="as-empty">Đang tải thông báo chat…</div>';
+    try{
+      const p=await sb.from('chat_participants').select('conversation_id').eq('user_id',user.id);
+      const ids=(p.data||[]).map(x=>x.conversation_id).filter(Boolean);
+      if(!ids.length){summary.textContent='Chưa có cuộc trò chuyện';box.innerHTML='<div class="as-empty">Chưa có tin nhắn chat.</div>';return;}
+      const c=await sb.from('chat_conversations').select('id,type,name,updated_at').in('id',ids).order('updated_at',{ascending:false});
+      const conversations=c.data||[];
+      const m=await sb.from('chat_messages').select('id,conversation_id,sender_id,body,created_at').in('conversation_id',ids).order('created_at',{ascending:false}).limit(6);
+      if(m.error){summary.textContent='Không thể tải thông báo chat';box.innerHTML='<div class="as-empty">Không tải được thông báo chat.</div>';return;}
+      const messages=m.data||[];
+      summary.textContent=messages.length?messages.length+' tin nhắn gần đây · '+conversations.length+' cuộc trò chuyện':'Chưa có tin nhắn mới';
+      const byId=new Map(conversations.map(x=>[x.id,x]));
+      box.innerHTML=messages.length?messages.map(x=>{
+        const conv=byId.get(x.conversation_id);
+        const mine=x.sender_id===user.id;
+        const title=conv?.name||(conv?.type==='group'?'Nhóm kỹ thuật':'Cuộc trò chuyện');
+        return '<div class="as-account-chat-item"><div class="as-account-chat-avatar">'+(conv?.type==='group'?'👥':'💬')+'</div><div class="as-account-chat-text"><div class="as-account-chat-name">'+esc(title)+(mine?' · Bạn':'')+'</div><div class="as-account-chat-body">'+esc(x.body||'Tin nhắn')+'</div><div class="as-account-chat-time">'+new Date(x.created_at).toLocaleString('vi-VN')+'</div></div></div>';
+      }).join(''):'<div class="as-empty">Chưa có tin nhắn chat.</div>';
+    }catch(e){
+      console.warn('Account chat notifications:',e);
+      summary.textContent='Không thể kiểm tra thông báo';
+      box.innerHTML='<div class="as-empty">Không tải được thông báo chat.</div>';
+    }
+  }
   async function loadGroups(){
     if(!user)return; const p=await sb.from('chat_participants').select('conversation_id').eq('user_id',user.id); const ids=(p.data||[]).map(x=>x.conversation_id);
     if(!ids.length){groups=[];$('asGroupList').innerHTML='<div class="as-empty">Bạn chưa tham gia nhóm nào.</div>';return;}
