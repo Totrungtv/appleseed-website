@@ -778,7 +778,7 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
       if(data.status==='LOCKED')show('danger','🔒 ACTIVATION LOCK: ĐANG KHÓA',data.message||'Nguồn xác minh trả về trạng thái LOCKED.');
       else if(data.status==='UNLOCKED')show('ok','✅ ACTIVATION LOCK: ĐÃ TẮT',data.message||'Nguồn xác minh trả về trạng thái UNLOCKED.');
       else show('warn','⚠️ CHƯA XÁC MINH',data.message||'Nguồn kiểm tra chưa trả về trạng thái chắc chắn. Không tự kết luận.');
-    }catch(e){show('warn','⚠️ CHƯA CÓ NGUỒN TRA CỨU','Khung đã được nạp vào AI Board, nhưng backend kiểm tra iCloud chưa được triển khai nên tôi không giả lập kết quả LOCKED/UNLOCKED.');}
+    }catch(e){show('warn','⚠️ CHƯA CÓ NGUỒN TRA CỨU','Server Apple Seed chưa có API provider hợp lệ hoặc provider chưa được cấu hình. Không giả lập kết quả LOCKED/UNLOCKED.');}
     finally{check.disabled=false;}
   });
 })();
