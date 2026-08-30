@@ -173,7 +173,10 @@ $('preview').addEventListener('load',async()=>{
   }catch(_){}
   doc.addEventListener('click',e=>{
     if(!editable(e.target))return;
-    e.preventDefault();e.stopPropagation();choose(e.target);
+    let el=e.target;
+    const phone=el.closest?.('.as3-phone');
+    if(phone)el=phone;
+    e.preventDefault();e.stopPropagation();choose(el);
   },true);
   // Never let preview navigation escape the Builder shell.
   doc.addEventListener('auxclick',e=>{if(editable(e.target)){e.preventDefault();e.stopPropagation()}},true);
@@ -186,8 +189,16 @@ $('preview').addEventListener('load',async()=>{
    */
   doc.addEventListener('dragstart',e=>{if(e.target&&editable(e.target))e.preventDefault()},true);
   doc.addEventListener('pointerdown',e=>{
-    const el=e.target;
-    if(!editable(el)||e.button!==0)return;
+    let el=e.target;
+    if(e.button!==0||!editable(el))return;
+    /*
+     * Hero phones are real individual .as3-phone elements with nested
+     * .as3-screen/.as3-island/.as3-label children.  A click on the screen
+     * must select the phone itself, otherwise only the nested screen moves.
+     */
+    const phone=el.closest?.('.as3-phone');
+    if(phone)el=phone;
+    if(!editable(el))return;
     choose(el);
     const st=currentStyle(),base=styleObject(el);
     drag={type:'move',sx:e.clientX,sy:e.clientY,el,
