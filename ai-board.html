@@ -67,7 +67,7 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
   .youtube-player-title{max-height:24vh!important;overflow:auto!important}
 }
 
-.as-chat-modal.chat-minimized{inset:auto 22px 22px auto;background:transparent;padding:0;display:block;pointer-events:none}.as-chat-modal.chat-minimized .as-modal-box{display:none}.as-chat-restore{display:none;pointer-events:auto;position:fixed;right:22px;bottom:22px;border:1px solid #bcd8f5;background:#1769ff;color:#fff;border-radius:999px;padding:11px 16px;font-weight:900;box-shadow:0 12px 35px #0003;cursor:pointer}.as-chat-modal.chat-minimized .as-chat-restore{display:block}.as-chat-modal.open:not(.chat-minimized){align-items:flex-start;justify-content:flex-start;pointer-events:none}.as-chat-modal.open:not(.chat-minimized) .as-modal-box{pointer-events:auto;position:fixed;left:50%;top:8vh;transform:translateX(-50%);width:min(900px,calc(100vw - 32px));max-height:88vh}.as-modal-head{cursor:move;user-select:none}.as-modal-head button{cursor:pointer}.as-chat-window-actions{display:flex;gap:6px;align-items:center}.as-chat-minimize{width:34px;height:34px;border:0;border-radius:50%;background:#ffffff26;color:#fff;font-size:21px;font-weight:900;cursor:pointer}.as-chat-minimize:hover{background:#ffffff40}.as-chat-title{display:flex;align-items:center;justify-content:space-between;gap:10px}.as-chat-members{font-size:11px;color:#647b98;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}@media(max-width:700px){.as-chat-modal.open:not(.chat-minimized) .as-modal-box{left:8px;top:3vh;transform:none;width:calc(100vw - 16px)}}</style>
+.as-chat-modal.chat-minimized{inset:auto 22px 22px auto;background:transparent;padding:0;display:block;pointer-events:none}.as-chat-modal.chat-minimized .as-modal-box{display:none}.as-chat-restore{display:none;pointer-events:auto;position:fixed;right:22px;bottom:22px;border:1px solid #bcd8f5;background:#1769ff;color:#fff;border-radius:999px;padding:11px 16px;font-weight:900;box-shadow:0 12px 35px #0003;cursor:pointer}.as-chat-modal.chat-minimized .as-chat-restore{display:block}.as-chat-modal.open:not(.chat-minimized){align-items:flex-start;justify-content:flex-start;pointer-events:none}.as-chat-modal.open:not(.chat-minimized) .as-modal-box{pointer-events:auto;position:fixed;left:50%;top:8vh;transform:translateX(-50%);width:min(900px,calc(100vw - 32px));max-height:88vh}.as-modal-head{cursor:move;user-select:none}.as-modal-head button{cursor:pointer}.as-chat-window-actions{display:flex;gap:6px;align-items:center}.as-chat-minimize{width:34px;height:34px;border:0;border-radius:50%;background:#ffffff26;color:#fff;font-size:21px;font-weight:900;cursor:pointer}.as-chat-minimize:hover{background:#ffffff40}.as-chat-title{display:flex;align-items:center;justify-content:space-between;gap:10px}.as-chat-back{border:1px solid #cfe0f4;background:#f5f9ff;color:#1769ff;border-radius:9px;padding:5px 9px;font-weight:900;cursor:pointer}.as-chat-back:hover{background:#eaf3ff}.as-chat-members{font-size:11px;color:#647b98;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}@media(max-width:700px){.as-chat-modal.open:not(.chat-minimized) .as-modal-box{left:8px;top:3vh;transform:none;width:calc(100vw - 16px)}}</style>
 
 <style id="apple-seed-full-fix-css">
 /* ===== FULL AI BOARD RESTORE ===== */
@@ -188,7 +188,7 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
         </div>
       </aside>
       <section class="as-chat-main">
-        <div class="as-chat-title"><span id="asChatTitle">Chọn một cuộc trò chuyện</span><span class="as-chat-members" id="asChatMembers"></span></div>
+        <div class="as-chat-title"><div style="display:flex;align-items:center;gap:8px;min-width:0"><button class="as-chat-back" id="asChatBack" type="button" title="Chọn cuộc trò chuyện khác" style="display:none">←</button><span id="asChatTitle">Chọn một cuộc trò chuyện</span></div><span class="as-chat-members" id="asChatMembers"></span></div>
         <div class="as-chat-messages" id="asChatMessages"><div class="as-empty">Chọn nhóm hoặc thành viên để bắt đầu.</div></div>
         <form class="as-chat-compose" id="asChatForm"><input id="asChatInput" maxlength="5000" autocomplete="off" placeholder="Nhập tin nhắn…" disabled><button class="btn primary" type="submit" disabled>Gửi</button></form>
       </section>
@@ -529,7 +529,7 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
   const sb=window.supabaseClient;
   const $=id=>document.getElementById(id);
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
-  let session=null, user=null, currentConversation=null, realtime=null, groups=[];
+  let session=null, user=null, currentConversation=null, realtime=null, chatPoll=null, groups=[];
   const setStatus=(t,ok=false)=>{const e=$('asAuthStatus');if(!e)return;e.textContent=t;e.className='as-status show '+(ok?'ok':'err')};
   function openMember(){ $('asMemberModal').classList.add('open'); $('asMemberModal').querySelector('.as-modal-body').scrollTop=0; }
   function closeMember(){ $('asMemberModal').classList.remove('open'); }
@@ -538,6 +538,7 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
   $('asMemberClose').onclick=closeMember;
   $('asChatMinimize').onclick=function(e){e.stopPropagation();$('asChatModal').classList.add('chat-minimized');};
   $('asChatRestore').onclick=function(){$('asChatModal').classList.remove('chat-minimized');};
+  $('asChatBack').onclick=function(){currentConversation=null;if(realtime){sb.removeChannel(realtime);realtime=null;}if(chatPoll)clearInterval(chatPoll);$('asChatBack').style.display='none';$('asChatTitle').textContent='Chọn một cuộc trò chuyện';$('asChatMembers').textContent='';$('asChatMessages').innerHTML='<div class="as-empty">Chọn nhóm hoặc thành viên để bắt đầu.</div>';$('asChatInput').disabled=true;$('asChatForm button').disabled=true;};
   (function(){const box=$('asChatModal').querySelector('.as-modal-box'),head=$('asChatDragHandle');let dragging=false,sx=0,sy=0,ox=0,oy=0;head.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;dragging=true;const r=box.getBoundingClientRect();sx=e.clientX;sy=e.clientY;ox=r.left;oy=r.top;box.style.left=ox+'px';box.style.top=oy+'px';box.style.transform='none';head.setPointerCapture(e.pointerId)});head.addEventListener('pointermove',e=>{if(!dragging)return;const maxX=Math.max(8,innerWidth-box.offsetWidth-8),maxY=Math.max(8,innerHeight-box.offsetHeight-8);box.style.left=Math.min(maxX,Math.max(8,ox+e.clientX-sx))+'px';box.style.top=Math.min(maxY,Math.max(8,oy+e.clientY-sy))+'px'});head.addEventListener('pointerup',()=>dragging=false)})(); $('asChatClose').onclick=closeChat; $('asAccountBtn').onclick=openMember; $('asCommunityBtn').onclick=openChat; $('asOpenChatFromAccount').onclick=()=>{closeMember();openChat();};
   $('asMemberModal').addEventListener('click',e=>{if(e.target===$('asMemberModal'))closeMember();}); $('asChatModal').addEventListener('click',e=>{if(e.target===$('asChatModal'))closeChat();});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMember();closeChat();}});
@@ -669,7 +670,7 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
     await openConversation(r.data,'🔒 '+targetName);
   }
   async function openConversation(id,title){
-    currentConversation=id; $('asChatTitle').textContent=title||'Cuộc trò chuyện'; $('asChatMembers').textContent=''; $('asChatInput').disabled=false; $('asChatForm button').disabled=false;
+    currentConversation=id; $('asChatTitle').textContent=title||'Cuộc trò chuyện'; $('asChatMembers').textContent=''; $('asChatBack').style.display='inline-block'; $('asChatInput').disabled=false; $('asChatForm button').disabled=false;
     await loadConversationMembers(id,title); await loadMessages();
     if(realtime)sb.removeChannel(realtime); if(chatPoll)clearInterval(chatPoll);
     realtime=sb.channel('ai-board-chat-'+id).on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages',filter:'conversation_id=eq.'+id},payload=>{if(payload.new)appendMessage(payload.new,true);}).subscribe();
