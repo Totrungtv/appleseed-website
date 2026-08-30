@@ -67,7 +67,7 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
   .youtube-player-title{max-height:24vh!important;overflow:auto!important}
 }
 
-</style>
+.as-chat-modal.chat-minimized{inset:auto 22px 22px auto;background:transparent;padding:0;display:block;pointer-events:none}.as-chat-modal.chat-minimized .as-modal-box{display:none}.as-chat-restore{display:none;pointer-events:auto;position:fixed;right:22px;bottom:22px;border:1px solid #bcd8f5;background:#1769ff;color:#fff;border-radius:999px;padding:11px 16px;font-weight:900;box-shadow:0 12px 35px #0003;cursor:pointer}.as-chat-modal.chat-minimized .as-chat-restore{display:block}.as-chat-modal.open:not(.chat-minimized){align-items:flex-start;justify-content:flex-start;pointer-events:none}.as-chat-modal.open:not(.chat-minimized) .as-modal-box{pointer-events:auto;position:fixed;left:50%;top:8vh;transform:translateX(-50%);width:min(900px,calc(100vw - 32px));max-height:88vh}.as-modal-head{cursor:move;user-select:none}.as-modal-head button{cursor:pointer}.as-chat-window-actions{display:flex;gap:6px;align-items:center}.as-chat-minimize{width:34px;height:34px;border:0;border-radius:50%;background:#ffffff26;color:#fff;font-size:21px;font-weight:900;cursor:pointer}.as-chat-minimize:hover{background:#ffffff40}.as-chat-title{display:flex;align-items:center;justify-content:space-between;gap:10px}.as-chat-members{font-size:11px;color:#647b98;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}@media(max-width:700px){.as-chat-modal.open:not(.chat-minimized) .as-modal-box{left:8px;top:3vh;transform:none;width:calc(100vw - 16px)}}</style>
 
 <style id="apple-seed-full-fix-css">
 /* ===== FULL AI BOARD RESTORE ===== */
@@ -166,7 +166,7 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
 
 <div class="as-chat-modal" id="asChatModal" role="dialog" aria-modal="true">
   <div class="as-modal-box">
-    <div class="as-modal-head"><h2>💬 Technician Network</h2><button class="as-close" id="asChatClose">×</button></div>
+    <div class="as-modal-head" id="asChatDragHandle"><h2>💬 Technician Network</h2><div class="as-chat-window-actions"><button class="as-chat-minimize" id="asChatMinimize" type="button" title="Ẩn khung chat">−</button><button class="as-close" id="asChatClose">×</button></div></div>
     <div class="as-chat-layout">
       <aside class="as-chat-side">
         <div class="as-chat-tabs"><button class="active" id="asGroupTab" type="button">👥 Nhóm</button><button id="asPrivateTab" type="button">🔒 Riêng</button></div>
@@ -188,13 +188,13 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
         </div>
       </aside>
       <section class="as-chat-main">
-        <div class="as-chat-title" id="asChatTitle">Chọn một cuộc trò chuyện</div>
+        <div class="as-chat-title"><span id="asChatTitle">Chọn một cuộc trò chuyện</span><span class="as-chat-members" id="asChatMembers"></span></div>
         <div class="as-chat-messages" id="asChatMessages"><div class="as-empty">Chọn nhóm hoặc thành viên để bắt đầu.</div></div>
         <form class="as-chat-compose" id="asChatForm"><input id="asChatInput" maxlength="5000" autocomplete="off" placeholder="Nhập tin nhắn…" disabled><button class="btn primary" type="submit" disabled>Gửi</button></form>
       </section>
     </div>
   </div>
-</div>
+</div><button class="as-chat-restore" id="asChatRestore" type="button">💬 Trở lại chat</button>
 
 <header class="top"><div><div class="kicker">APPLE SEED • ENGINEERING LAB</div><h1>AI Board Intelligence</h1><div class="muted">PANIC • Schematic • Boardview • Measurement • Case Intelligence</div></div><div><span class="pill">🪙 1,250 COIN</span><span class="pill">● AI ONLINE</span></div></header>
 
@@ -533,9 +533,12 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
   const setStatus=(t,ok=false)=>{const e=$('asAuthStatus');if(!e)return;e.textContent=t;e.className='as-status show '+(ok?'ok':'err')};
   function openMember(){ $('asMemberModal').classList.add('open'); $('asMemberModal').querySelector('.as-modal-body').scrollTop=0; }
   function closeMember(){ $('asMemberModal').classList.remove('open'); }
-  function openChat(){ if(!user){openMember();setStatus('Vui lòng đăng nhập Member trước khi chat.');return;} $('asChatModal').classList.add('open'); loadGroups(); }
-  function closeChat(){ $('asChatModal').classList.remove('open'); if(realtime){sb.removeChannel(realtime);realtime=null;} }
-  $('asMemberClose').onclick=closeMember; $('asChatClose').onclick=closeChat; $('asAccountBtn').onclick=openMember; $('asCommunityBtn').onclick=openChat; $('asOpenChatFromAccount').onclick=()=>{closeMember();openChat();};
+  function openChat(){ if(!user){openMember();setStatus('Vui lòng đăng nhập Member trước khi chat.');return;} $('asChatModal').classList.add('open'); $('asChatModal').classList.remove('chat-minimized'); loadGroups(); loadMembers(); loadFriends(); }
+  function closeChat(){ $('asChatModal').classList.remove('open','chat-minimized'); if(realtime){sb.removeChannel(realtime);realtime=null;} if(chatPoll)clearInterval(chatPoll); currentConversation=null; }
+  $('asMemberClose').onclick=closeMember;
+  $('asChatMinimize').onclick=function(e){e.stopPropagation();$('asChatModal').classList.add('chat-minimized');};
+  $('asChatRestore').onclick=function(){$('asChatModal').classList.remove('chat-minimized');};
+  (function(){const box=$('asChatModal').querySelector('.as-modal-box'),head=$('asChatDragHandle');let dragging=false,sx=0,sy=0,ox=0,oy=0;head.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;dragging=true;const r=box.getBoundingClientRect();sx=e.clientX;sy=e.clientY;ox=r.left;oy=r.top;box.style.left=ox+'px';box.style.top=oy+'px';box.style.transform='none';head.setPointerCapture(e.pointerId)});head.addEventListener('pointermove',e=>{if(!dragging)return;const maxX=Math.max(8,innerWidth-box.offsetWidth-8),maxY=Math.max(8,innerHeight-box.offsetHeight-8);box.style.left=Math.min(maxX,Math.max(8,ox+e.clientX-sx))+'px';box.style.top=Math.min(maxY,Math.max(8,oy+e.clientY-sy))+'px'});head.addEventListener('pointerup',()=>dragging=false)})(); $('asChatClose').onclick=closeChat; $('asAccountBtn').onclick=openMember; $('asCommunityBtn').onclick=openChat; $('asOpenChatFromAccount').onclick=()=>{closeMember();openChat();};
   $('asMemberModal').addEventListener('click',e=>{if(e.target===$('asMemberModal'))closeMember();}); $('asChatModal').addEventListener('click',e=>{if(e.target===$('asChatModal'))closeChat();});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMember();closeChat();}});
   function showLoggedOut(){
@@ -666,7 +669,7 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
     await openConversation(r.data,'🔒 '+targetName);
   }
   async function openConversation(id,title){
-    currentConversation=id; $('asChatTitle').textContent=title||'Cuộc trò chuyện'; $('asChatInput').disabled=false; $('asChatForm button').disabled=false;
+    currentConversation=id; $('asChatTitle').textContent=title||'Cuộc trò chuyện'; $('asChatMembers').textContent=''; $('asChatInput').disabled=false; $('asChatForm button').disabled=false;
     await loadConversationMembers(id,title); await loadMessages();
     if(realtime)sb.removeChannel(realtime); if(chatPoll)clearInterval(chatPoll);
     realtime=sb.channel('ai-board-chat-'+id).on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages',filter:'conversation_id=eq.'+id},payload=>{if(payload.new)appendMessage(payload.new,true);}).subscribe();
@@ -675,7 +678,7 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
   async function loadConversationMembers(id,title){
     const r=await sb.rpc('chat_get_participants',{p_conversation_id:id});
     const label=(r.data||[]).map(x=>esc(x.full_name||'Thành viên')+(x.online?' 🟢':'')).join(' · ');
-    $('asChatTitle').textContent=(title||'Cuộc trò chuyện')+(label?' — '+label:'');
+    $('asChatTitle').textContent=title||'Cuộc trò chuyện'; $('asChatMembers').textContent=label||'';
   }
   function appendMessage(m,scroll){const box=$('asChatMessages');const mine=m.sender_id===user?.id;const div=document.createElement('div');div.className='as-msg'+(mine?' mine':'');div.innerHTML=esc(m.body)+'<small>'+new Date(m.created_at).toLocaleString('vi-VN')+'</small>';box.appendChild(div);if(scroll)box.scrollTop=box.scrollHeight;}
   async function loadMessages(){const box=$('asChatMessages');box.innerHTML='';if(!currentConversation)return;const r=await sb.rpc('chat_get_messages',{p_conversation_id:currentConversation,p_limit:300});if(r.error){console.error('loadMessages',r.error);box.innerHTML='<div class="as-empty">Không tải được tin nhắn: '+esc(r.error.message)+'</div>';return;}if(!r.data?.length){box.innerHTML='<div class="as-empty">Chưa có tin nhắn. Gửi tin đầu tiên.</div>';return;}r.data.forEach(m=>appendMessage(m,false));box.scrollTop=box.scrollHeight;}
