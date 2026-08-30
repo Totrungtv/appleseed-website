@@ -770,15 +770,15 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
     if(!window.supabaseClient){show('warn','⚠️ CHƯA SẴN SÀNG','Supabase client chưa được nạp.');return;}
     const session=(await window.supabaseClient.auth.getSession())?.data?.session;
     if(!session?.user){show('warn','🔐 CẦN ĐĂNG NHẬP','Vui lòng đăng nhập Apple Seed Member trước khi kiểm tra.');return;}
-    check.disabled=true;show('loading','⏳ ĐANG KIỂM TRA','Đang gửi định danh an toàn tới bộ kiểm tra iCloud của Apple Seed…');
+    check.disabled=true;show('loading','⏳ ĐANG KIỂM TRA','Kiểm tra iCloud qua server Apple Seed…');
     try{
       const call=await window.supabaseClient.functions.invoke('check-icloud-status',{body:{identifier_type:type,identifier:v,device_model:model?.value||null}});
-      if(call.error) throw call.error;
       const data=call.data||{};
-      if(data.status==='LOCKED')show('danger','🔒 ACTIVATION LOCK: ĐANG KHÓA',data.message||'Nguồn xác minh trả về trạng thái LOCKED.');
-      else if(data.status==='UNLOCKED')show('ok','✅ ACTIVATION LOCK: ĐÃ TẮT',data.message||'Nguồn xác minh trả về trạng thái UNLOCKED.');
-      else show('warn','⚠️ CHƯA XÁC MINH',data.message||'Nguồn kiểm tra chưa trả về trạng thái chắc chắn. Không tự kết luận.');
-    }catch(e){show('warn','⚠️ CHƯA CÓ NGUỒN TRA CỨU','Server Apple Seed chưa có API provider hợp lệ hoặc provider chưa được cấu hình. Không giả lập kết quả LOCKED/UNLOCKED.');}
+      if(call.error && !data.status) throw call.error;
+      if(data.status==='LOCKED')show('danger','🔒 ACTIVATION LOCK: ĐANG KHÓA',data.message||'Nguồn xác minh trả về trạng thái LOCKED.', data.balance!=null?'Còn '+Number(data.balance).toLocaleString('vi-VN')+' Coin.':'');
+      else if(data.status==='UNLOCKED')show('ok','✅ ACTIVATION LOCK: ĐÃ TẮT',data.message||'Nguồn xác minh trả về trạng thái UNLOCKED.', data.balance!=null?'Còn '+Number(data.balance).toLocaleString('vi-VN')+' Coin.':'');
+      else show('warn','⚠️ '+(data.code==='INSUFFICIENT_COINS'?'KHÔNG ĐỦ COIN':'CHƯA XÁC MINH'),data.message||'Nguồn kiểm tra chưa trả về trạng thái chắc chắn. Không tự kết luận.');
+    }catch(e){show('warn','⚠️ KIỂM TRA THẤT BẠI','Server Apple Seed chưa hoàn tất kiểm tra. Nếu lỗi xảy ra sau khi đã trừ Coin, server sẽ hoàn Coin cho lỗi kết nối/nguồn không phản hồi.');}
     finally{check.disabled=false;}
   });
 })();
