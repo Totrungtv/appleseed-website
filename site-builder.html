@@ -249,7 +249,7 @@ function applyAll(){
   refreshInspector();
   syncPreviewToDraft();
 }
-function syncPreviewToDraftfunction syncPreviewToDraft(){
+function syncPreviewToDraft(){
   try{
     if(!$('preview')||!$('preview').contentWindow)return;
     $('preview').contentWindow.postMessage({
