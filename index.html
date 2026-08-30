@@ -3370,6 +3370,118 @@ body.apple-seed-chat-open #apple-seed-ai-board-float{
 })();
 </script>
 
+<script id="apple-seed-visual-builder-v2-runtime">
+/* Apple Seed Visual Builder V2 runtime.
+ * Reads the latest published Builder config and applies it to the real homepage.
+ * The Builder iframe is excluded so local draft edits are never overwritten.
+ */
+(function(){
+  "use strict";
+  if(/[?&](appleSeedBuilderPreview|builderCanvas)=1(?:&|$)/i.test(location.search)) return;
+  var sb=window.supabaseClient;
+  if(!sb) return;
+
+  var mobileQuery=window.matchMedia("(max-width:760px)");
+  var currentConfig=null;
+  var applying=false;
+
+  function textEditable(el){
+    return !!el && el!==document.body && el!==document.documentElement &&
+      el.tagName!=="IMG" && el.children.length===0 && el.textContent.trim().length>0;
+  }
+
+  function setStyle(el,name,value){
+    if(value===undefined || value===null || value===""){
+      el.style.removeProperty(name);
+    }else{
+      el.style.setProperty(name,String(value),"important");
+    }
+  }
+
+  function applyItem(selector,item,isMobile){
+    if(!selector || !item) return;
+    var el=null;
+    try{el=document.querySelector(selector)}catch(e){return}
+    if(!el) return;
+
+    if(item.text!==undefined && textEditable(el)) el.textContent=String(item.text);
+    if(item.src!==undefined && el.tagName==="IMG") el.src=String(item.src);
+
+    if(item.bgImage!==undefined && el.tagName!=="IMG"){
+      if(item.bgImage){
+        var bg=String(item.bgImage).replace(/\\/g,"\\\\").replace(/"/g,'\\\"');
+        el.style.setProperty("background-image",'url("'+bg+'")',"important");
+      }else{
+        el.style.removeProperty("background-image");
+      }
+    }
+
+    var styles=item.styles||{};
+    var st=styles[isMobile?"mobile":"desktop"]||{};
+
+    if(st.x!==undefined || st.y!==undefined){
+      el.style.setProperty("translate",(Number(st.x)||0)+"px "+(Number(st.y)||0)+"px","important");
+    }else{
+      el.style.removeProperty("translate");
+    }
+    setStyle(el,"width",Number(st.w)>0?Number(st.w)+"px":undefined);
+    setStyle(el,"height",Number(st.h)>0?Number(st.h)+"px":undefined);
+    setStyle(el,"font-size",Number(st.fontSize)>0?Number(st.fontSize)+"px":undefined);
+    setStyle(el,"border-radius",Number(st.radius)>=0 && st.radius!==""?Number(st.radius)+"px":undefined);
+    setStyle(el,"color",st.color||undefined);
+    setStyle(el,"background-color",st.background||undefined);
+  }
+
+  function applyConfig(){
+    if(applying || !currentConfig || !currentConfig.items) return;
+    applying=true;
+    try{
+      var isMobile=mobileQuery.matches;
+      Object.keys(currentConfig.items).forEach(function(selector){
+        applyItem(selector,currentConfig.items[selector],isMobile);
+      });
+    }finally{applying=false}
+  }
+
+  function scheduleApply(){
+    window.clearTimeout(scheduleApply.t);
+    scheduleApply.t=window.setTimeout(applyConfig,80);
+  }
+
+  async function load(){
+    try{
+      var r=await sb.from("site_builder_versions")
+        .select("version_no,config,created_at")
+        .eq("site_key","default")
+        .eq("status","published")
+        .order("version_no",{ascending:false})
+        .limit(1)
+        .maybeSingle();
+      if(r.error){
+        console.warn("[Apple Seed Builder] Published config:",r.error.message);
+        return;
+      }
+      if(!r.data || !r.data.config || !r.data.config.items) return;
+      currentConfig=r.data.config;
+      applyConfig();
+      window.setTimeout(applyConfig,500);
+      window.setTimeout(applyConfig,1500);
+    }catch(e){
+      console.warn("[Apple Seed Builder] Runtime:",e);
+    }
+  }
+
+  function init(){
+    mobileQuery.addEventListener && mobileQuery.addEventListener("change",applyConfig);
+    var observer=new MutationObserver(function(){scheduleApply()});
+    observer.observe(document.body,{childList:true,subtree:true});
+    load();
+  }
+
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",init,{once:true});
+  else init();
+})();
+</script>
 </body>
 </html>
 <footer class="apple-seed-copyright" aria-label="Bản quyền Apple Seed">
