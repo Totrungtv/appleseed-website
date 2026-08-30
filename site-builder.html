@@ -122,6 +122,9 @@ function applyAll(){
 function loadDraft(){try{const raw=localStorage.getItem(DRAFT_KEY);if(raw){draft=JSON.parse(raw);if(!draft.items)draft={items:{}}}}catch{draft={items:{}}}}
 function saveDraft(){localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));toast('💾 Đã lưu nháp trên máy')}
 async function loadPublished(){
+  // Builder always reloads the CURRENT index.html as its canvas.
+  // Published overrides are layered on top; no copied homepage is stored.
+  if($('preview').contentWindow) $('preview').contentWindow.location.reload();
   const r=await window.supabaseClient.from('site_builder_versions').select('id,version_no,config,created_at').eq('site_key','default').eq('status','published').maybeSingle();
   if(r.error){$('history').innerHTML='<div class="muted">CMS chưa có Builder V2. Chạy migration trước khi Publish.</div>';return}
   if(r.data?.config?.items&&!localStorage.getItem(DRAFT_KEY))draft=r.data.config;
@@ -143,6 +146,21 @@ async function upload(file){
   if(r.error)throw r.error;
   return window.supabaseClient.storage.from('site-images').getPublicUrl(path).data.publicUrl;
 }
+let lastCanvasFingerprint='';
+function canvasFingerprint(){
+  if(!doc||!doc.body)return '';
+  return doc.title+'|'+doc.body.innerHTML.length+'|'+doc.querySelectorAll('*').length;
+}
+setInterval(async()=>{
+  if(!doc)return;
+  const fp=canvasFingerprint();
+  if(fp && fp!==lastCanvasFingerprint){
+    lastCanvasFingerprint=fp;
+    renderLayers();
+    if(selected && !doc.contains(selected)){selected=null;selector='';refreshInspector()}
+    refreshOverlay();
+  }
+},1200);
 $('preview').addEventListener('load',async()=>{
   doc=$('preview').contentDocument;
   doc.addEventListener('click',e=>{if(!editable(e.target))return;e.preventDefault();e.stopPropagation();choose(e.target)},true);
