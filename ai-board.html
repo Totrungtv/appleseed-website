@@ -530,6 +530,8 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
   const $=id=>document.getElementById(id);
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
   let session=null, user=null, currentConversation=null, realtime=null, chatPoll=null, groups=[];
+  const groupMemberNames=new Map();
+  const selectedGroupMembers=new Set();
   const setStatus=(t,ok=false)=>{const e=$('asAuthStatus');if(!e)return;e.textContent=t;e.className='as-status show '+(ok?'ok':'err')};
   function openMember(){ $('asMemberModal').classList.add('open'); $('asMemberModal').querySelector('.as-modal-body').scrollTop=0; }
   function closeMember(){ $('asMemberModal').classList.remove('open'); }
