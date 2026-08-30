@@ -18,7 +18,7 @@
   <div class="brand">APPLE SEED <small>VISUAL SITE BUILDER V3</small></div>
   <button class="btn active" id="desktopBtn">🖥 Desktop</button><button class="btn" id="mobileBtn">📱 Mobile</button><button class="btn" id="simpleMode">✨ Đơn giản</button><button class="btn" id="aiOpen">🤖 AI Designer</button>
   <span class="spacer"></span><span class="status" id="status">Đang kiểm tra quyền…</span>
-  <button class="btn" id="backAdmin">← Admin</button><button class="btn" id="undo">↶</button><button class="btn" id="redo">↷</button><button class="btn" id="save">💾 Nháp</button><button class="btn primary" id="publish">🚀 Xuất bản</button>
+  <button class="btn" id="backAdmin">← Admin</button><button class="btn" id="undo">↶</button><button class="btn" id="redo">↷</button><button class="btn" id="save">💾 Nháp</button><button class="btn" id="syncLive">🔄 Đồng bộ LIVE</button><button class="btn primary" id="publish">🚀 Xuất bản</button>
 </header>
 <div class="workspace">
 <aside class="side left">
@@ -210,7 +210,12 @@ function applyAll(){
 }
 function loadDraft(){try{const raw=localStorage.getItem(DRAFT_KEY);if(raw){draft=JSON.parse(raw);if(!draft.items)draft.items={};if(!draft.page)draft.page={desktop:{},mobile:{}};draft.page.desktop=draft.page.desktop||{};draft.page.mobile=draft.page.mobile||{}}}catch{draft={items:{},page:{desktop:{},mobile:{}}}}}
 function saveDraft(){localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));toast('💾 Đã lưu nháp trên máy')}
-async function loadPublished(){
+async function loadPublished(forcePublished=false){
+  // SINGLE SOURCE OF TRUTH:
+  // Supabase published config is the LIVE source. Local draft is used only
+  // when explicitly retained for the same published version.
+  // forcePublished=true is the hard resync button: it makes Builder exactly
+  // match the current live configuration before editing continues.
   // SINGLE SOURCE OF TRUTH:
   // - The published Supabase version is the baseline for a fresh Builder session.
   // - A local draft is kept only while it belongs to the same published version.
@@ -230,7 +235,7 @@ async function loadPublished(){
     const publishedVersion=String(r.data.version_no||'');
     const localRaw=localStorage.getItem(DRAFT_KEY);
     const localBase=localStorage.getItem(PUBLISHED_VERSION_KEY);
-    if(!localRaw || !localBase || localBase!==publishedVersion){
+    if(forcePublished || !localRaw || !localBase || localBase!==publishedVersion){
       draft=JSON.parse(JSON.stringify(r.data.config));
       draft.items=draft.items||{};
       draft.page=draft.page||{desktop:{},mobile:{}};
@@ -242,6 +247,7 @@ async function loadPublished(){
   }
   refreshPageDesign();
   applyAll();
+  setStatus('Đồng bộ LIVE · V'+publishedVersion);
   const h=await window.supabaseClient.from('site_builder_versions')
     .select('id,version_no,status,created_at')
     .eq('site_key','default')
@@ -452,6 +458,19 @@ $('undo').onclick=()=>{if(!history.length)return;future.push(snapshot());draft=h
 $('redo').onclick=()=>{if(!future.length)return;history.push(snapshot());draft=future.pop();saveDraft();applyAll();toast('↷ Redo')};
 $('backAdmin').onclick=()=>{location.href='admin.html'};
 $('save').onclick=saveDraft;$('reload').onclick=()=>location.reload();$('clear').onclick=()=>{if(confirm('Xóa toàn bộ nháp Builder trên máy?')){localStorage.removeItem(DRAFT_KEY);location.reload()}};
+$('syncLive').onclick=async()=>{
+  if(!allowed){toast('Tài khoản không có quyền');return}
+  if(!confirm('Đồng bộ Builder theo đúng bản LIVE hiện tại? Mọi thay đổi nháp chưa xuất bản trên máy sẽ bị thay thế.'))return;
+  setStatus('Đang đồng bộ LIVE…');
+  await loadPublished(true);
+  try{
+    const u=new URL($('preview').src,location.href);
+    u.searchParams.set('v','builder-live-'+Date.now());
+    $('preview').dataset.builderRetry='';
+    $('preview').src=u.toString();
+  }catch(_){}
+  toast('🔄 Builder đã đồng bộ đúng bản LIVE');
+};
 $('publish').onclick=async()=>{
   if(!allowed){toast('Tài khoản không có quyền');return}
   saveDraft();
@@ -466,14 +485,29 @@ $('publish').onclick=async()=>{
   if(versionNo!=null)localStorage.setItem(PUBLISHED_VERSION_KEY,String(versionNo));
   toast('🚀 Đã xuất bản V'+(versionNo||''));
   setStatus('Đã xuất bản V'+(versionNo||''));
-  await loadPublished();
-  refreshPageDesign();
-  applyAll();
   try{
     const verify=await window.supabaseClient.from('site_builder_versions').select('version_no,config').eq('site_key','default').eq('status','published').order('version_no',{ascending:false}).limit(1).maybeSingle();
     if(verify.error) console.warn('Publish verify:',verify.error.message);
-    else if(!verify.data?.config?.items) console.warn('Publish verify: published config has no items');
+    else if(verify.data?.config?.items){
+      // IMPORTANT: after Publish the canvas must use the exact config that
+      // the live homepage will read. Never leave an older local draft here.
+      draft=JSON.parse(JSON.stringify(verify.data.config));
+      draft.items=draft.items||{};
+      draft.page=draft.page||{desktop:{},mobile:{}};
+      draft.page.desktop=draft.page.desktop||{};
+      draft.page.mobile=draft.page.mobile||{};
+      localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));
+      if(verify.data.version_no!=null)localStorage.setItem(PUBLISHED_VERSION_KEY,String(verify.data.version_no));
+    }
   }catch(err){console.warn('Publish verify:',err)}
+  refreshPageDesign();
+  applyAll();
+  try{
+    const u=new URL($('preview').src,location.href);
+    u.searchParams.set('v','builder-live-'+Date.now());
+    $('preview').dataset.builderRetry='';
+    $('preview').src=u.toString();
+  }catch(_){}
 };
 $('loginBtn').onclick=async()=>{const r=await window.supabaseClient.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(r.error){$('loginMsg').textContent=r.error.message;return}location.reload()};
 async function checkRole(){
