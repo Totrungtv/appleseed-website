@@ -610,7 +610,7 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
       const incoming=status==='pending'&&!x.requested_by_me;
       let action='',label='⏳ Đã gửi';
       if(status==='accepted'){label='💬 Chat';action='data-chat-user="'+esc(x.user_id)+'" data-chat-name="'+esc(x.full_name||'Thành viên')+'"';}
-      else if(incoming){label='✅ Chấp nhận';action='data-accept-user="'+esc(x.id)+'"';}
+      else if(incoming){label='✅ Chấp nhận';action='data-accept-user="'+esc(x.user_id)+'"';}
       return '<div class="as-member-result"><span>👤 '+esc(x.full_name||'Thành viên')+' '+(x.online?'🟢':'⚪')+'<small style="display:block;color:#7a8da8">'+esc(status==='accepted'?'Bạn bè':incoming?'Đang chờ bạn xác nhận':'Đang chờ phản hồi')+'</small></span><button class="as-smallbtn '+(status==='accepted'?'primary':'')+'" type="button" '+action+'>'+label+'</button></div>';
     }).join('');
     box.querySelectorAll('[data-chat-user]').forEach(function(b){b.onclick=function(){startDirect(b.dataset.chatUser,b.dataset.chatName);};});
@@ -660,8 +660,9 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
   async function openConversation(id,title){
     currentConversation=id; $('asChatTitle').textContent=title||'Cuộc trò chuyện'; $('asChatInput').disabled=false; $('asChatForm button').disabled=false;
     await loadConversationMembers(id,title); await loadMessages();
-    if(realtime)sb.removeChannel(realtime);
+    if(realtime)sb.removeChannel(realtime); if(chatPoll)clearInterval(chatPoll);
     realtime=sb.channel('ai-board-chat-'+id).on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages',filter:'conversation_id=eq.'+id},payload=>{if(payload.new)appendMessage(payload.new,true);}).subscribe();
+    chatPoll=setInterval(function(){if(currentConversation===id)loadMessages();},3000);
   }
   async function loadConversationMembers(id,title){
     const r=await sb.rpc('chat_get_participants',{p_conversation_id:id});
@@ -670,7 +671,7 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
   }
   function appendMessage(m,scroll){const box=$('asChatMessages');const mine=m.sender_id===user?.id;const div=document.createElement('div');div.className='as-msg'+(mine?' mine':'');div.innerHTML=esc(m.body)+'<small>'+new Date(m.created_at).toLocaleString('vi-VN')+'</small>';box.appendChild(div);if(scroll)box.scrollTop=box.scrollHeight;}
   async function loadMessages(){const box=$('asChatMessages');box.innerHTML='';if(!currentConversation)return;const r=await sb.rpc('chat_get_messages',{p_conversation_id:currentConversation,p_limit:300});if(r.error){console.error('loadMessages',r.error);box.innerHTML='<div class="as-empty">Không tải được tin nhắn: '+esc(r.error.message)+'</div>';return;}if(!r.data?.length){box.innerHTML='<div class="as-empty">Chưa có tin nhắn. Gửi tin đầu tiên.</div>';return;}r.data.forEach(m=>appendMessage(m,false));box.scrollTop=box.scrollHeight;}
-  $('asChatForm').onsubmit=async e=>{e.preventDefault();const body=$('asChatInput').value.trim();if(!body||!currentConversation||!user)return;const b=e.submitter||$('asChatForm button');b.disabled=true;const r=await sb.rpc('chat_send_message',{p_conversation_id:currentConversation,p_body:body});if(r.error){console.error('sendMessage',r.error);alert('Không gửi được tin nhắn: '+(r.error.message||'Lỗi không xác định'));}else{$('asChatInput').value='';}b.disabled=false;};
+  $('asChatForm').onsubmit=async e=>{e.preventDefault();const body=$('asChatInput').value.trim();if(!body||!currentConversation||!user)return;const b=e.submitter||$('asChatForm button');b.disabled=true;const r=await sb.rpc('chat_send_message',{p_conversation_id:currentConversation,p_body:body});if(r.error){console.error('sendMessage',r.error);alert('Không gửi được tin nhắn: '+(r.error.message||'Lỗi không xác định'));}else{$('asChatInput').value='';await loadMessages();}b.disabled=false;};
   if(sb?.auth){sb.auth.onAuthStateChange(()=>setTimeout(refreshAccount,0));refreshAccount();}else showLoggedOut();
 })();
 </script>
