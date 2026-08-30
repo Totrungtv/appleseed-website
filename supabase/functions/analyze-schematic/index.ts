@@ -187,7 +187,15 @@ Hãy phân tích PAN thực tế kết hợp với ảnh schematic/board đượ
 
 THÔNG TIN THIẾT BỊ
 Model: ${device_model || "Không rõ"}
-Board code: ${board_code || "Không rõ"}
+Board code / vùng do kỹ thuật viên nhập: ${board_code || "Không cung cấp"}
+
+QUY TẮC VỀ DỮ LIỆU ĐẦU VÀO:
+- Board code / vùng do kỹ thuật viên nhập chỉ là dữ liệu tham khảo hoặc giả thuyết, KHÔNG phải kết luận chẩn đoán.
+- Nếu Board code / vùng để trống, tuyệt đối không tự điền hoặc suy đoán Compass, Magnetometer, I2C, PP_VDD, U5200 hay bất kỳ IC/rail cụ thể nào.
+- Không được biến tên linh kiện xuất hiện trong giao diện, ví dụ mẫu, lịch sử ca bệnh hoặc ngữ cảnh thành nguyên nhân của PANIC.
+- Chỉ quy kết một IC, sensor, bus hoặc rail khi PANIC LOG, số đo hoặc ảnh schematic/boardview cung cấp bằng chứng phù hợp.
+- Nếu chỉ có lỗi I2C chung (ví dụ ni2c_err_sts) mà chưa xác định device/address/bus cụ thể, phải kết luận ở mức "lỗi giao tiếp I2C chưa xác định thiết bị", không mặc định Compass.
+- Nếu dữ liệu chưa đủ, phải nói rõ "chưa đủ dữ liệu" và đưa ra phép đo/kiểm tra tiếp theo thay vì đoán.
 
 DỮ LIỆU PAN / KỸ THUẬT:
 ${notes || "Không có"}
@@ -198,7 +206,8 @@ YÊU CẦU PHÂN TÍCH:
 2. Phân tích boot current nếu có.
 3. Phân tích rail nguồn liên quan nếu dữ liệu có.
 4. Đọc các IC / đường nguồn / tín hiệu có thể nhìn thấy trên schematic.
-5. Xác định khu vực nghi ngờ.
+5. Xác định khu vực nghi ngờ dựa trên bằng chứng thực tế, không dựa trên giả định có sẵn.
+5a. Nếu PANIC chỉ cho biết một bus chung như I2C, phải khoanh vùng device/address bằng dữ liệu PANIC, schematic và phép đo; không được chọn Compass chỉ vì có I2C.
 6. Đưa ra các điểm cần đo tiếp theo.
 7. Nếu có thể, chỉ rõ:
    - VDD/VBAT/VDD_MAIN
