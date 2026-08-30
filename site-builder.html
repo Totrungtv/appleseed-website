@@ -183,8 +183,18 @@ async function checkRole(){
     const el=document.querySelector('.handle.'+pair[0]);
     el.addEventListener('mousedown',function(e){
       if(!selected)return;e.preventDefault();e.stopPropagation();
-      const st=styleObject(selected);drag={type:pair[1],sx:e.clientX,sy:e.clientY,el:selected,bx:st.x,by:st.y,bw:st.w,bh:st.h,moved:false};
+      const st=styleObject(selected);checkpoint();drag={type:pair[1],sx:e.clientX,sy:e.clientY,el:selected,bx:st.x,by:st.y,bw:st.w,bh:st.h,moved:false};
     });
+  });
+  window.addEventListener('mousemove',function(e){
+    if(!drag||!/^n|^s|^e|^w/.test(drag.type))return;
+    const dx=e.clientX-drag.sx,dy=e.clientY-drag.sy;let w=drag.bw,h=drag.bh;
+    if(drag.type==='se'){w+=dx;h+=dy}if(drag.type==='ne'){w+=dx;h-=dy}if(drag.type==='sw'){w-=dx;h+=dy}if(drag.type==='nw'){w-=dx;h-=dy}
+    w=Math.max(30,Math.round(w));h=Math.max(20,Math.round(h));drag.el.style.width=w+'px';drag.el.style.height=h+'px';$('w').value=w;$('h').value=h;drag.moved=true;refreshOverlay();
+  });
+  window.addEventListener('mouseup',function(){
+    if(drag&&/^(nw|ne|sw|se)$/.test(drag.type)&&drag.moved){const v=getItem().styles[deviceKey()];v.w=parseFloat($('w').value)||drag.bw;v.h=parseFloat($('h').value)||drag.bh;saveDraft();toast('Đã đổi kích thước — bản nháp')}
+    if(drag&&/^(nw|ne|sw|se)$/.test(drag.type))drag=null;
   });
 })();
 (async()=>{await checkRole()})();
