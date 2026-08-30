@@ -1311,6 +1311,76 @@ body{
   .as3-discover{margin:16px auto 18px!important;}
 }
 </style>
+
+<style id="apple-seed-ai-board-button">
+/* APPLE SEED AI BOARD — quick access */
+#apple-seed-ai-board-float{
+  position:fixed;
+  right:24px;
+  bottom:94px;
+  z-index:1001;
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  min-width:148px;
+  padding:11px 16px;
+  border:1px solid rgba(255,255,255,.82);
+  border-radius:16px;
+  background:linear-gradient(135deg,#17233d,#2f4f80);
+  color:#fff;
+  text-decoration:none;
+  box-shadow:0 12px 30px rgba(23,35,61,.22);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  transition:transform .18s ease,box-shadow .18s ease;
+}
+#apple-seed-ai-board-float:hover{
+  transform:translateY(-2px);
+  box-shadow:0 16px 34px rgba(23,35,61,.28);
+}
+#apple-seed-ai-board-float .as-ai-board-icon{
+  width:34px;height:34px;
+  display:grid;place-items:center;
+  flex:none;
+  border-radius:11px;
+  background:rgba(255,255,255,.13);
+  border:1px solid rgba(255,255,255,.2);
+  font-size:18px;
+}
+#apple-seed-ai-board-float strong{
+  display:block;
+  font-size:13px;
+  line-height:1.1;
+  letter-spacing:.04em;
+}
+#apple-seed-ai-board-float small{
+  display:block;
+  margin-top:4px;
+  font-size:10px;
+  line-height:1.1;
+  opacity:.78;
+  letter-spacing:.02em;
+}
+@media(max-width:560px){
+  #apple-seed-ai-board-float{
+    right:12px;
+    bottom:82px;
+    min-width:0;
+    width:138px;
+    padding:9px 11px;
+    border-radius:14px;
+    gap:8px;
+  }
+  #apple-seed-ai-board-float .as-ai-board-icon{
+    width:31px;height:31px;
+    border-radius:9px;
+    font-size:16px;
+  }
+  #apple-seed-ai-board-float strong{font-size:11px}
+  #apple-seed-ai-board-float small{font-size:9px}
+}
+</style>
+
 </head>
 
 <body>
@@ -1511,6 +1581,10 @@ body{
   </div>
 </div>
 
+<a id="apple-seed-ai-board-float" href="ai-board.html" aria-label="Mở AI Board - PANIC và chẩn đoán kỹ thuật">
+  <span class="as-ai-board-icon">🧠</span>
+  <span><strong>AI BOARD</strong><small>PANIC • SCHEMATIC • DIAGNOSTIC</small></span>
+</a>
 <button class="chat-btn" id="chatBtn" aria-label="Mở trợ lý Apple Seed">🤖</button>
 <div class="chat-box" id="chatBox" aria-label="Trợ lý Apple Seed">
 <div class="chat-head"><span>🤖 Trợ lý Apple Seed</span><button class="chat-close" id="chatClose">×</button></div>
