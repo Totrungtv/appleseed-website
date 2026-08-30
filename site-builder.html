@@ -326,7 +326,7 @@ for(const dk of devices){selector=ch.selector;const item=getItem();const st=item
 for(const k of ['x','y','w','h','fontSize','radius'])if(src[k]!==undefined&&Number.isFinite(Number(src[k])))st[k]=Number(src[k]);
 for(const k of ['color','background'])if(typeof src[k]==='string'&&src[k])st[k]=src[k];
 if(ch.text!==undefined&&textEditable(el))item.text=String(ch.text);
-}applied++;}applyAll();saveDraft();refreshLayers();return applied}
+}applied++;}applyAll();saveDraft();renderLayers();refreshOverlay();return applied}
 async function runAI(message){aiAdd('user',message);$('aiSend').disabled=true;$('aiSend').textContent='Đang nghĩ…';try{const raw=await askBuilderAI(message);const result=parseAIEditor(raw);if(result){const n=applyAIChanges(result);aiAdd('bot',(result.reply||'Đã xử lý yêu cầu.')+'\n\n'+(n?'✅ Đã áp dụng trực tiếp '+n+' thay đổi vào Builder.':'ℹ️ AI chưa tìm thấy thay đổi an toàn để áp dụng.'));}else aiAdd('bot',raw)}catch(e){aiAdd('bot','⚠️ '+e.message)}finally{$('aiSend').disabled=false;$('aiSend').textContent='Gửi AI'}}
 function blockAction(type){const el=findBlockTarget(type);if(!el){toast('Chưa tìm thấy khối này');return}choose(el);el.scrollIntoView({behavior:'smooth',block:'center'});toast('🎯 Đã chọn khối')}
 $('aiOpen').onclick=()=>{$('aiModal').style.display='flex';$('aiInput').focus()};$('aiClose').onclick=()=>{$('aiModal').style.display='none'};$('aiModal').onclick=e=>{if(e.target===$('aiModal'))$('aiModal').style.display='none'};
