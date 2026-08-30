@@ -11,15 +11,70 @@ body{margin:0;font-family:Inter,system-ui,sans-serif;background:linear-gradient(
 .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}.card{background:#fff;border:1px solid #cfe2f7;border-radius:20px;padding:20px;box-shadow:0 18px 55px #1e50821a;margin-top:18px}
 .fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.full{grid-column:1/-1}.field{display:flex;flex-direction:column;gap:7px;margin-top:14px}
 label{font-size:12px;font-weight:800;color:#46617f}input,select,textarea{width:100%;border:1px solid #cfe0f2;background:#f7fbff;color:#10233f;border-radius:11px;padding:11px;font:inherit;box-sizing:border-box}
-textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;padding:12px 18px;font-weight:800;cursor:pointer}.primary{background:linear-gradient(135deg,#1479e8,#3ba7ff);color:white}.secondary{background:#eaf4ff;color:#145ca8}
+textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;padding:12px 18px;font-weight:800;cursor:pointer}.btn:disabled{opacity:.6;cursor:wait}.primary{background:linear-gradient(135deg,#1479e8,#3ba7ff);color:white}.secondary{background:#eaf4ff;color:#145ca8}
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}.result{margin-top:14px;padding:14px 16px;background:#f5faff;border-left:4px solid #278cf0;border-radius:12px}
 .pill{display:inline-block;padding:5px 9px;border-radius:999px;background:#eaf4ff;color:#155b9e;border:1px solid #cce3f8;font-size:12px;margin:3px}
 .case{padding:13px;border:1px solid #d5e5f5;border-radius:13px;background:#fff;margin-top:10px}.drop{min-height:120px;margin-top:15px;border:1.5px dashed #8bb9e8;border-radius:15px;display:grid;place-items:center;text-align:center;background:#f4faff}
 @media(max-width:800px){.grid,.fields{grid-template-columns:1fr}.full{grid-column:auto}h1{font-size:30px}}
+
+/* Apple Seed AI confirmation modal */
+.coin-modal-backdrop{position:fixed;inset:0;background:rgba(16,35,63,.38);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px}
+.coin-modal-backdrop.show{display:flex}
+.coin-modal{width:min(430px,100%);background:#fff;border:1px solid #cfe2f7;border-radius:20px;box-shadow:0 25px 80px rgba(16,35,63,.28);padding:22px}
+.coin-modal h3{margin:0 0 8px;font-size:20px;color:#10233f}
+.coin-modal p{margin:8px 0;color:#647b98;line-height:1.5}
+.coin-cost{display:flex;justify-content:space-between;gap:12px;padding:13px 14px;margin:15px 0;background:#f4faff;border:1px solid #d5e8fa;border-radius:13px}
+.coin-cost strong{color:#1479e8}
+.coin-modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:17px}
+.coin-modal-actions .btn{min-width:105px}
+.coin-modal-error{display:none;margin-top:10px;padding:10px 12px;border-radius:10px;background:#fff3f2;color:#b42318;font-size:13px}
+.coin-modal-error.show{display:block}
+
 </style>
+
+<style id="apple-seed-member-gate-fix">
+/* MEMBER GATE: chỉ hiện khi chưa đăng nhập */
+body.apple-seed-member-logged-in [id="memberGate"],
+body.apple-seed-member-logged-in .member-gate,
+body.apple-seed-member-logged-in [data-member-gate],
+body.apple-seed-member-logged-in .member-required-banner {
+  display:none !important;
+  visibility:hidden !important;
+  height:0 !important;
+  min-height:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+}
+</style>
+
 </head>
-<body><main class="wrap">
-<header class="top"><div><div class="kicker">APPLE SEED • ENGINEERING LAB</div><h1>AI Board Intelligence</h1><div class="muted">PANIC • Schematic • Boardview • Measurement • Case Intelligence</div></div><div><span class="pill">🪙 1,250 COIN</span><span class="pill">● AI ONLINE</span></div></header>
+<body>
+<div id="coinConfirmModal" class="coin-modal-backdrop" aria-hidden="true">
+  <div class="coin-modal" role="dialog" aria-modal="true" aria-labelledby="coinConfirmTitle">
+    <h3 id="coinConfirmTitle">🪙 Xác nhận phân tích</h3>
+    <p id="coinConfirmText">Bạn sẽ bị trừ <strong>20 Coin</strong> trong tài khoản để thực hiện lần phân tích này. Bạn đồng ý?</p>
+    <div class="coin-cost">
+      <span>Số dư hiện tại</span>
+      <strong id="coinCurrent">— Coin</strong>
+    </div>
+    <div class="coin-cost">
+      <span>Chi phí phân tích</span>
+      <strong>−20 Coin</strong>
+    </div>
+    <div class="coin-cost">
+      <span>Số dư sau phân tích</span>
+      <strong id="coinAfter">— Coin</strong>
+    </div>
+    <div id="coinConfirmError" class="coin-modal-error"></div>
+    <div class="coin-modal-actions">
+      <button type="button" class="btn secondary" id="coinCancel">Hủy</button>
+      <button type="button" class="btn primary" id="coinAccept">Đồng ý, phân tích</button>
+    </div>
+  </div>
+</div>
+<main class="wrap">
+<header class="top"><div><div class="kicker">APPLE SEED • ENGINEERING LAB</div><h1>AI Board Intelligence</h1><div class="muted">PANIC • Schematic • Boardview • Measurement • Case Intelligence</div></div><div><span class="pill" id="coinBalanceBadge">🪙 1,250 COIN</span><span class="pill">● AI ONLINE</span></div></header>
 
 <section class="grid">
 <div class="card"><h2>🧪 Diagnostic Workspace</h2><div class="muted">Tạo ca kỹ thuật và chuẩn bị dữ liệu cho AI.</div>
@@ -32,20 +87,19 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
 <div class="field"><label>Diode / Resistance</label><input placeholder="Giá trị đo"></div>
 <div class="field"><label>I2C / SDA / SCL</label><input placeholder="Địa chỉ / tình trạng"></div>
 </div>
-<div class="drop" id="aiBoardDrop" role="button" tabindex="0" aria-label="Chọn ảnh main, schematic hoặc boardview">
-  <div>📷<br><strong>Thả ảnh main / schematic / boardview</strong><br><span class="muted">Bấm để chọn hoặc kéo thả • PNG / JPG / WEBP</span></div>
-  <input id="aiBoardFile" type="file" accept="image/png,image/jpeg,image/webp" hidden>
-</div>
-<div class="actions">
-  <button class="btn secondary" id="aiBoardChoose" type="button">📷 Chọn ảnh</button>
-  <button class="btn primary" id="analyze">⚡ PHÂN TÍCH AI</button>
-</div>
-<div id="aiBoardUploadStatus" class="muted" style="margin-top:8px"></div>
-<div id="result" class="result">Chưa phân tích.</div></div>
+<div class="drop" id="aiBoardDrop" style="cursor:pointer">📷<br><strong>Thả ảnh main / schematic / boardview</strong><br><span class="muted">Bấm để chọn hoặc kéo thả ảnh • PNG / JPG / WEBP</span><input id="aiBoardFile" type="file" accept="image/png,image/jpeg,image/webp" hidden></div>
+<div class="actions"><button class="btn primary" id="analyze">⚡ PHÂN TÍCH AI · 20 COIN</button></div><div id="result" class="result">Chưa phân tích.</div></div>
 
 <div class="card"><h2>🧠 AI Diagnosis</h2><div class="muted">Evidence-first • không kết luận khi thiếu dữ liệu.</div>
 <div class="result"><strong>Case Intelligence</strong><div class="case"><b>iPhone 14 Pro Max · 0x20000 · Compass</b><div class="muted">Ưu tiên compass/sensor + I2C. Cần đo và đối chiếu board tốt.</div><span class="pill">I2C</span><span class="pill">PANIC</span></div></div>
-<h2 style="margin-top:22px">📐 Schematic Intelligence</h2><div class="fields"><div class="field"><label>Tài liệu</label><select><option>Schematic</option><option>Boardview / ZXW</option><option>Pinout</option><option>Ảnh main</option></select></div><div class="field"><label>Vùng / linh kiện</label><input placeholder="U5200 / I2C compass / PP_VDD"></div></div><div class="actions"><button class="btn primary">📐 ANALYZE SCHEMATIC</button></div></div>
+<h2 style="margin-top:22px">📐 Schematic Intelligence</h2>
+<div class="fields">
+<div class="field"><label>Tài liệu</label><select id="schematicType"><option>Schematic</option><option>Boardview / ZXW</option><option>Pinout</option><option>Ảnh main</option><option>Ảnh đo diode / trở</option></select></div>
+<div class="field"><label>Vùng / linh kiện</label><input id="schematicArea" placeholder="U5200 / I2C compass / PP_VDD"></div>
+</div>
+<div class="actions"><button class="btn primary" id="analyzeSchematic" type="button">📐 ANALYZE SCHEMATIC · 20 COIN</button></div>
+<div id="schematicStatus" class="muted" style="margin-top:9px"></div>
+<div id="schematicResult" class="result">Chưa có phân tích sơ đồ.</div></div>
 </section>
 
 <section class="card"><div class="kicker">LIBRARY</div><h2>📚 Schematic Library</h2><div class="muted">Kho sơ đồ theo từng model iPhone.</div>
@@ -65,43 +119,591 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
 <div class="case"><b>🛡️ Admin Control</b><div class="muted">Duyệt case • thành viên • dữ liệu</div></div>
 </div></section>
 </main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
 <script>
-const aiBoardDrop=document.getElementById('aiBoardDrop');
-const aiBoardFile=document.getElementById('aiBoardFile');
-const aiBoardChoose=document.getElementById('aiBoardChoose');
-const aiBoardUploadStatus=document.getElementById('aiBoardUploadStatus');
-let aiBoardSelectedFile=null;
+const sb = window.supabaseClient;
 
-function aiBoardSetFile(file){
-  if(!file){ aiBoardSelectedFile=null; if(aiBoardUploadStatus) aiBoardUploadStatus.textContent='Chưa chọn ảnh.'; return; }
-  if(!/^image\/(png|jpeg|webp)$/.test(file.type)){
-    aiBoardSelectedFile=null;
-    if(aiBoardUploadStatus) aiBoardUploadStatus.textContent='❌ Chỉ nhận PNG, JPG hoặc WEBP.';
-    if(aiBoardFile) aiBoardFile.value='';
+const AI_COST = 20;
+let aiBoardSelectedFile = null;
+let schematicSelectedFile = null;
+let aiBoardLastAnalysis = "";
+let pendingAnalysisMode = null;
+
+/* ---------- UI helpers ---------- */
+function escHtml(value){
+  return String(value ?? "").replace(/[&<>"']/g,c=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+}
+
+function aiBoardSetStatus(message, error=false){
+  const el = document.getElementById("result");
+  if(!el) return;
+  el.innerHTML = error
+    ? "<strong>❌ Lỗi</strong><p>"+escHtml(message)+"</p>"
+    : "<strong>⏳ AI đang xử lý...</strong><p>"+escHtml(message)+"</p>";
+}
+
+function aiBoardSetSchematicStatus(message, error=false){
+  const el = document.getElementById("schematicStatus");
+  if(!el) return;
+  el.textContent = message;
+  el.style.color = error ? "#b42318" : "#647b98";
+}
+
+function aiBoardNotes(){
+  const fields = document.querySelectorAll(".fields .field input, .fields .field textarea");
+  const values = [...fields].map((el,i)=>{
+    const label = el.parentElement?.querySelector("label")?.textContent?.trim() || ("Dữ liệu "+(i+1));
+    const value = el.value?.trim();
+    return value ? label+": "+value : "";
+  }).filter(Boolean);
+
+  const selects = document.querySelectorAll(".field select");
+  const model = selects[0]?.value || "";
+  const fault = selects[1]?.value || "";
+
+  return [
+    "Thiết bị: "+model,
+    "Loại lỗi: "+fault,
+    ...values,
+    "Schematic Intelligence - Loại tài liệu: "+(document.getElementById("schematicType")?.value || ""),
+    "Schematic Intelligence - Vùng / linh kiện: "+(document.getElementById("schematicArea")?.value || "")
+  ].filter(Boolean).join("\n");
+}
+
+/* ---------- Coin confirmation ---------- */
+/*
+  IMPORTANT:
+  The existing AI Board HTML did not contain a secure server-side Coin-charge
+  RPC/function, so this modal does NOT fake a deduction in the browser.
+  It confirms the charge and then continues to the existing AI function.
+  Secure deduction must be connected to the project's existing Coin RPC/Edge
+  Function before production use.
+*/
+function getDisplayedCoinBalance(){
+  const badge = [...document.querySelectorAll(".pill")].find(x =>
+    /COIN/i.test(x.textContent || "")
+  );
+  const m = (badge?.textContent || "").replace(/[,\s]/g,"").match(/(\d+(?:\.\d+)?)COIN/i);
+  return m ? Number(m[1]) : null;
+}
+
+function openCoinConfirm(mode){
+  const modal = document.getElementById("coinConfirmModal");
+  const currentEl = document.getElementById("coinCurrent");
+  const afterEl = document.getElementById("coinAfter");
+  const errorEl = document.getElementById("coinConfirmError");
+  const accept = document.getElementById("coinAccept");
+
+  pendingAnalysisMode = mode;
+  errorEl.textContent = "";
+  errorEl.classList.remove("show");
+
+  const current = getDisplayedCoinBalance();
+
+  if(current !== null){
+    currentEl.textContent = current.toLocaleString("vi-VN")+" Coin";
+    afterEl.textContent = Math.max(0,current-AI_COST).toLocaleString("vi-VN")+" Coin";
+    if(current < AI_COST){
+      errorEl.textContent = "Số dư Coin không đủ. Cần ít nhất "+AI_COST+" Coin để phân tích.";
+      errorEl.classList.add("show");
+      accept.disabled = true;
+    }else{
+      accept.disabled = false;
+    }
+  }else{
+    currentEl.textContent = "Chưa đọc được";
+    afterEl.textContent = "—";
+    accept.disabled = false;
+  }
+
+  modal.classList.add("show");
+  modal.setAttribute("aria-hidden","false");
+}
+
+function closeCoinConfirm(){
+  const modal = document.getElementById("coinConfirmModal");
+  pendingAnalysisMode = null;
+  modal.classList.remove("show");
+  modal.setAttribute("aria-hidden","true");
+}
+
+document.getElementById("coinCancel").onclick = closeCoinConfirm;
+document.getElementById("coinConfirmModal").addEventListener("click",e=>{
+  if(e.target.id==="coinConfirmModal") closeCoinConfirm();
+});
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape") closeCoinConfirm();
+});
+
+/* ---------- Analysis ---------- */
+async function runAppleSeedBoardAI(mode){
+  const file = mode === "schematic" ? schematicSelectedFile : aiBoardSelectedFile;
+
+  if(!file){
+    const msg = mode === "schematic"
+      ? "Bạn chưa chọn file schematic. Hãy chọn file trước, sau đó nhấn ANALYZE SCHEMATIC."
+      : "Bạn chưa chọn file. Hãy chọn file ảnh main/boardview trước, sau đó nhấn PHÂN TÍCH AI.";
+
+    if(mode==="schematic") aiBoardSetSchematicStatus(msg,true);
+    else aiBoardSetStatus(msg,true);
     return;
   }
-  aiBoardSelectedFile=file;
-  if(aiBoardUploadStatus) aiBoardUploadStatus.textContent='📷 Đã chọn: '+file.name+' — '+Math.max(1,Math.round(file.size/1024))+' KB';
+
+  if(!/^image\/(png|jpeg|webp)$/.test(file.type)){
+    const msg = "Bạn chưa chọn file. Hãy chọn ảnh PNG, JPG hoặc WEBP trước, sau đó nhấn PHÂN TÍCH AI.";
+    if(mode==="schematic") aiBoardSetSchematicStatus(msg,true);
+    else aiBoardSetStatus(msg,true);
+    return;
+  }
+
+  if(!sb){
+    const msg = "Thiếu Supabase client.";
+    if(mode==="schematic") aiBoardSetSchematicStatus(msg,true);
+    else aiBoardSetStatus(msg,true);
+    return;
+  }
+
+  const sessionResult = await sb.auth.getSession();
+  const session = sessionResult?.data?.session;
+
+  if(!session?.user){
+    const msg = "Vui lòng đăng nhập Apple Seed Member trước khi chạy AI.";
+    if(mode==="schematic") aiBoardSetSchematicStatus(msg,true);
+    else aiBoardSetStatus(msg,true);
+    return;
+  }
+
+  openCoinConfirm(mode);
 }
 
-if(aiBoardChoose && aiBoardFile){ aiBoardChoose.addEventListener('click',()=>aiBoardFile.click()); }
-if(aiBoardDrop && aiBoardFile){
-  aiBoardDrop.addEventListener('click',(e)=>{ if(e.target!==aiBoardFile) aiBoardFile.click(); });
-  aiBoardDrop.addEventListener('keydown',(e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); aiBoardFile.click(); } });
-  ['dragenter','dragover'].forEach(type=>aiBoardDrop.addEventListener(type,(e)=>{
-    e.preventDefault(); e.stopPropagation(); aiBoardDrop.style.borderColor='#1479e8'; aiBoardDrop.style.background='#edf7ff';
-  }));
-  ['dragleave','drop'].forEach(type=>aiBoardDrop.addEventListener(type,(e)=>{
-    e.preventDefault(); e.stopPropagation(); aiBoardDrop.style.borderColor='#8bb9e8'; aiBoardDrop.style.background='#f4faff';
-  }));
-  aiBoardDrop.addEventListener('drop',(e)=>aiBoardSetFile(e.dataTransfer.files?.[0]||null));
-}
-if(aiBoardFile){ aiBoardFile.addEventListener('change',(e)=>aiBoardSetFile(e.target.files?.[0]||null)); }
+/*
+  Runs only after the member presses "Đồng ý, phân tích".
+  The actual secure Coin deduction is intentionally not simulated here.
+*/
+async function confirmedRun(mode){
+  const file = mode === "schematic" ? schematicSelectedFile : aiBoardSelectedFile;
 
-document.getElementById('analyze').onclick=()=>{
-  const imageNote=aiBoardSelectedFile ? '<p>📷 Ảnh đã nạp: <b>'+aiBoardSelectedFile.name+'</b>. AI sẽ dùng ảnh khi nối Storage/vision backend.</p>' : '<p>Chưa có ảnh main; có thể phân tích PANIC bằng log và số đo hiện tại.</p>';
-  document.getElementById('result').innerHTML='<b>🔎 Phân tích sơ bộ</b>'+imageNote+'<p>PANIC 0x20000 + compass → ưu tiên cụm compass/sensor và I2C. Chưa kết luận linh kiện.</p><span class="pill">Power</span><span class="pill">SDA/SCL</span><span class="pill">Board comparison</span>';
+  if(!file){
+    closeCoinConfirm();
+    const msg = mode === "schematic"
+      ? "Bạn chưa chọn file schematic. Hãy chọn file trước, sau đó nhấn ANALYZE SCHEMATIC."
+      : "Bạn chưa chọn file. Hãy chọn file ảnh main/boardview trước, sau đó nhấn PHÂN TÍCH AI.";
+    if(mode==="schematic") aiBoardSetSchematicStatus(msg,true);
+    else aiBoardSetStatus(msg,true);
+    return;
+  }
+
+  const sessionResult = await sb.auth.getSession();
+  const session = sessionResult?.data?.session;
+  if(!session?.user){
+    closeCoinConfirm();
+    return;
+  }
+
+  const model = document.querySelector(".field select")?.value || "";
+  const boardCode = document.getElementById("schematicArea")?.value?.trim() || "";
+  const notes = aiBoardNotes();
+
+  const mainBtn = document.getElementById("analyze");
+  const schematicBtn = document.getElementById("analyzeSchematic");
+  if(mainBtn) mainBtn.disabled = true;
+  if(schematicBtn) schematicBtn.disabled = true;
+
+  closeCoinConfirm();
+
+  if(mode==="schematic"){
+    aiBoardSetSchematicStatus("Đang upload ảnh và gọi AI phân tích schematic...");
+  }else{
+    aiBoardSetStatus("Đang upload ảnh và gọi AI phân tích PAN...");
+  }
+
+  try{
+    const safe = file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,"-");
+    const path = `pan-ai/${session.user.id}/${Date.now()}-${Math.random().toString(36).slice(2,8)}-${safe}`;
+
+    const upload = await sb.storage.from("ai-schematics").upload(path,file,{
+      cacheControl:"3600",
+      upsert:false,
+      contentType:file.type
+    });
+    if(upload.error) throw upload.error;
+
+    const insert = await sb.from("ai_schematic_analyses").insert({
+      title:(model+" — "+(mode==="schematic"
+        ? (document.getElementById("schematicArea")?.value?.trim() || "Schematic Intelligence")
+        : "AI Board Diagnosis")).slice(0,180),
+      device_model:model,
+      board_code:boardCode,
+      notes,
+      file_path:path,
+      file_name:file.name,
+      mime_type:file.type,
+      ai_status:"queued",
+      created_by:session.user.id
+    }).select("id").single();
+
+    if(insert.error) throw insert.error;
+
+    const call = await sb.functions.invoke("analyze-schematic",{
+      body:{
+        analysis_id:insert.data.id,
+        file_path:path,
+        device_model:model,
+        board_code:boardCode,
+        notes,
+        mime_type:file.type
+      }
+    });
+
+    if(call.error) throw call.error;
+    if(call.data?.error) throw new Error(call.data.error);
+
+    aiBoardLastAnalysis = call.data?.analysis || "AI không trả về kết quả.";
+    const safeResult = escHtml(aiBoardLastAnalysis);
+
+    if(mode==="schematic"){
+      document.getElementById("schematicResult").innerHTML =
+        "<strong>📐 Schematic Intelligence</strong><pre style=\"white-space:pre-wrap;font:inherit;margin:10px 0 0\">"+safeResult+"</pre>";
+      aiBoardSetSchematicStatus("✅ Phân tích schematic hoàn tất.");
+    }else{
+      document.getElementById("result").innerHTML =
+        "<strong>🧠 AI Board Diagnosis</strong><pre style=\"white-space:pre-wrap;font:inherit;margin:10px 0 0\">"+safeResult+"</pre>";
+      document.getElementById("result").scrollIntoView({behavior:"smooth",block:"nearest"});
+      document.getElementById("uploadStatus").textContent =
+        "✅ AI đã phân tích xong. Hãy kiểm tra lại bằng đo đạc thực tế.";
+    }
+
+  }catch(err){
+    const msg = err?.message || String(err);
+    if(mode==="schematic") aiBoardSetSchematicStatus(msg,true);
+    else aiBoardSetStatus(msg,true);
+  }finally{
+    if(mainBtn) mainBtn.disabled = false;
+    if(schematicBtn) schematicBtn.disabled = false;
+  }
+}
+
+document.getElementById("coinAccept").onclick = async ()=>{
+  if(!pendingAnalysisMode) return;
+  const mode = pendingAnalysisMode;
+  const current = getDisplayedCoinBalance();
+
+  if(current !== null && current < AI_COST){
+    const errorEl = document.getElementById("coinConfirmError");
+    errorEl.textContent = "Số dư Coin không đủ. Cần ít nhất "+AI_COST+" Coin.";
+    errorEl.classList.add("show");
+    return;
+  }
+
+  await confirmedRun(mode);
 };
-document.getElementById('upload').onclick=()=>{const f=document.getElementById('file').files[0];document.getElementById('uploadStatus').textContent=f?'Đã chọn: '+f.name+' — giao diện sẵn sàng nối Storage thật.':'Chưa chọn file.'};
+
+/* Main image picker */
+document.getElementById("aiBoardFile").onchange=e=>{
+  aiBoardSelectedFile=e.target.files?.[0]||null;
+  const status=document.getElementById("uploadStatus");
+  if(status) status.textContent=aiBoardSelectedFile
+    ? "📷 Đã chọn ảnh AI: "+aiBoardSelectedFile.name+" — "+Math.round(aiBoardSelectedFile.size/1024)+" KB"
+    : "Chưa chọn ảnh.";
+};
+
+/* Main image drag/drop */
+const drop=document.getElementById("aiBoardDrop");
+if(drop){
+  drop.onclick=e=>{
+    if(e.target.id!=="aiBoardFile") document.getElementById("aiBoardFile").click();
+  };
+
+  ["dragenter","dragover"].forEach(ev=>drop.addEventListener(ev,e=>{
+    e.preventDefault();
+    drop.style.borderColor="#1479e8";
+    drop.style.background="#edf7ff";
+  }));
+
+  ["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{
+    e.preventDefault();
+    drop.style.borderColor="#8bb9e8";
+    drop.style.background="#f4faff";
+  }));
+
+  drop.addEventListener("drop",e=>{
+    const f=e.dataTransfer.files?.[0];
+    if(!f)return;
+    if(!/^image\/(png|jpeg|webp)$/.test(f.type)){
+      document.getElementById("uploadStatus").textContent="AI hiện nhận PNG, JPG hoặc WEBP.";
+      return;
+    }
+    aiBoardSelectedFile=f;
+    document.getElementById("uploadStatus").textContent =
+      "📷 Đã chọn ảnh AI: "+f.name+" — "+Math.round(f.size/1024)+" KB";
+  });
+}
+
+/* Separate schematic picker */
+const schematicDrop = document.getElementById("schematicDrop");
+const schematicFile = document.getElementById("schematicFile");
+
+if(schematicFile){
+  schematicFile.onchange=e=>{
+    schematicSelectedFile=e.target.files?.[0]||null;
+    aiBoardSetSchematicStatus(
+      schematicSelectedFile
+        ? "📐 Đã chọn schematic: "+schematicSelectedFile.name+" — "+Math.round(schematicSelectedFile.size/1024)+" KB"
+        : "Chưa chọn file schematic."
+    );
+  };
+}
+
+if(schematicDrop && schematicFile){
+  schematicDrop.onclick=e=>{
+    if(e.target.id!=="schematicFile") schematicFile.click();
+  };
+
+  ["dragenter","dragover"].forEach(ev=>schematicDrop.addEventListener(ev,e=>{
+    e.preventDefault();
+    schematicDrop.style.borderColor="#1479e8";
+    schematicDrop.style.background="#edf7ff";
+  }));
+
+  ["dragleave","drop"].forEach(ev=>schematicDrop.addEventListener(ev,e=>{
+    e.preventDefault();
+    schematicDrop.style.borderColor="#8bb9e8";
+    schematicDrop.style.background="#f4faff";
+  }));
+
+  schematicDrop.addEventListener("drop",e=>{
+    const f=e.dataTransfer.files?.[0];
+    if(!f)return;
+    if(!/^image\/(png|jpeg|webp)$/.test(f.type)){
+      aiBoardSetSchematicStatus("AI hiện nhận PNG, JPG hoặc WEBP.",true);
+      return;
+    }
+    schematicSelectedFile=f;
+    aiBoardSetSchematicStatus(
+      "📐 Đã chọn schematic: "+f.name+" — "+Math.round(f.size/1024)+" KB"
+    );
+  });
+}
+
+/* Schematic library demo upload */
+document.getElementById("upload").onclick=()=>{
+  const f=document.getElementById("file").files[0];
+  document.getElementById("uploadStatus").textContent=f
+    ? "Đã chọn: "+f.name+" — thư viện file giữ nguyên chức năng."
+    : "Chưa chọn file.";
+};
+
+/* Buttons */
+document.getElementById("analyze").onclick=()=>runAppleSeedBoardAI("panic");
+document.getElementById("analyzeSchematic").onclick=()=>runAppleSeedBoardAI("schematic");
+
+/*
+  The current HTML did not have a dedicated schematic input.
+  Create it dynamically inside the Schematic Intelligence drop zone
+  if the old markup is still present.
+*/
+(function ensureSchematicInput(){
+  const old = document.getElementById("schematicDrop");
+  if(old) return;
+
+  const heading = document.getElementById("analyzeSchematic");
+  if(!heading) return;
+
+  const wrap = document.createElement("div");
+  wrap.id = "schematicDrop";
+  wrap.className = "drop";
+  wrap.style.cursor = "pointer";
+  wrap.innerHTML =
+    "📐<br><strong>Chọn / kéo thả ảnh Schematic / Boardview vào đây</strong><br>" +
+    "<span class=\"muted\">PNG / JPG / WEBP • ảnh chỉ dùng cho Schematic Intelligence</span>" +
+    "<input id=\"schematicFile\" type=\"file\" accept=\"image/png,image/jpeg,image/webp\" hidden>";
+
+  heading.parentElement.insertBefore(wrap,heading);
+
+  const fileInput = document.getElementById("schematicFile");
+  fileInput.onchange=e=>{
+    schematicSelectedFile=e.target.files?.[0]||null;
+    aiBoardSetSchematicStatus(
+      schematicSelectedFile
+        ? "📐 Đã chọn schematic: "+schematicSelectedFile.name+" — "+Math.round(schematicSelectedFile.size/1024)+" KB"
+        : "Chưa chọn file schematic."
+    );
+  };
+
+  wrap.onclick=e=>{
+    if(e.target.id!=="schematicFile") fileInput.click();
+  };
+
+  ["dragenter","dragover"].forEach(ev=>wrap.addEventListener(ev,e=>{
+    e.preventDefault();
+    wrap.style.borderColor="#1479e8";
+    wrap.style.background="#edf7ff";
+  }));
+
+  ["dragleave","drop"].forEach(ev=>wrap.addEventListener(ev,e=>{
+    e.preventDefault();
+    wrap.style.borderColor="#8bb9e8";
+    wrap.style.background="#f4faff";
+  }));
+
+  wrap.addEventListener("drop",e=>{
+    const f=e.dataTransfer.files?.[0];
+    if(!f)return;
+    if(!/^image\/(png|jpeg|webp)$/.test(f.type)){
+      aiBoardSetSchematicStatus("AI hiện nhận PNG, JPG hoặc WEBP.",true);
+      return;
+    }
+    schematicSelectedFile=f;
+    aiBoardSetSchematicStatus(
+      "📐 Đã chọn schematic: "+f.name+" — "+Math.round(f.size/1024)+" KB"
+    );
+  });
+})();
 </script>
-</body></html>
+<div id="coinSecurityNote" style="display:none">
+  Coin phải được trừ ở server/RPC sau khi thành viên bấm “Đồng ý, phân tích”.
+</div>
+
+
+<script>
+/* =========================================================
+   APPLE SEED — MEMBER GATE VISIBILITY FIX
+   Quy tắc:
+   - Chưa đăng nhập  -> hiện banner yêu cầu đăng ký/đăng nhập.
+   - Đã đăng nhập    -> ẩn hoàn toàn banner, không để khoảng trắng.
+   - Đăng xuất       -> banner xuất hiện lại.
+   Hỗ trợ cả banner có id/class cũ và banner được CMS chèn động.
+   ========================================================= */
+(function(){
+  "use strict";
+
+  const GATE_TEXT = "Đăng ký thành viên để sử dụng toàn bộ tính năng";
+
+  function setMemberGate(loggedIn){
+    document.body.classList.toggle("apple-seed-member-logged-in", !!loggedIn);
+
+    const selectors = [
+      "#memberGate",
+      ".member-gate",
+      "[data-member-gate]",
+      ".member-required-banner"
+    ];
+
+    document.querySelectorAll(selectors.join(",")).forEach(el => {
+      el.style.setProperty("display", loggedIn ? "none" : "", "important");
+      el.style.setProperty("visibility", loggedIn ? "hidden" : "", "important");
+      if(loggedIn){
+        el.style.setProperty("height","0","important");
+        el.style.setProperty("min-height","0","important");
+        el.style.setProperty("margin","0","important");
+        el.style.setProperty("padding","0","important");
+        el.style.setProperty("overflow","hidden","important");
+      }else{
+        ["height","min-height","margin","padding","overflow"].forEach(p => {
+          el.style.removeProperty(p);
+        });
+      }
+    });
+
+    /* Fallback: banner hiện tại nếu chưa có id/class chuẩn.
+       Tìm đúng tiêu đề rồi ẩn section/container gần nhất. */
+    const walker = document.createTreeWalker(
+      document.body,
+      NodeFilter.SHOW_ELEMENT
+    );
+
+    const matches = [];
+    let node;
+    while((node = walker.nextNode())){
+      if(node.children.length <= 3){
+        const t = String(node.textContent || "").replace(/\s+/g," ").trim();
+        if(t.includes(GATE_TEXT)) matches.push(node);
+      }
+    }
+
+    matches.forEach(el => {
+      let target = el.closest("section");
+      if(!target){
+        target = el.parentElement;
+        for(let i=0; i<4 && target; i++){
+          const text = String(target.textContent || "").replace(/\s+/g," ").trim();
+          if(text.includes(GATE_TEXT) && text.length < 900){
+            break;
+          }
+          target = target.parentElement;
+        }
+      }
+
+      if(target){
+        target.setAttribute("data-member-gate","true");
+        target.style.setProperty("display", loggedIn ? "none" : "", "important");
+        target.style.setProperty("visibility", loggedIn ? "hidden" : "", "important");
+        if(loggedIn){
+          target.style.setProperty("height","0","important");
+          target.style.setProperty("min-height","0","important");
+          target.style.setProperty("margin","0","important");
+          target.style.setProperty("padding","0","important");
+          target.style.setProperty("overflow","hidden","important");
+        }else{
+          ["height","min-height","margin","padding","overflow"].forEach(p=>{
+            target.style.removeProperty(p);
+          });
+        }
+      }
+    });
+  }
+
+  async function refreshMemberGate(){
+    try{
+      if(!window.memberSB || !window.memberSB.auth){
+        setMemberGate(false);
+        return;
+      }
+
+      const { data, error } = await window.memberSB.auth.getSession();
+      if(error){
+        console.warn("Member gate session error:", error);
+        setMemberGate(false);
+        return;
+      }
+
+      setMemberGate(!!data?.session?.user);
+    }catch(err){
+      console.warn("Member gate refresh error:", err);
+      setMemberGate(false);
+    }
+  }
+
+  function startMemberGate(){
+    refreshMemberGate();
+
+    if(window.memberSB?.auth){
+      window.memberSB.auth.onAuthStateChange(function(_event, session){
+        setMemberGate(!!session?.user);
+        /* Chạy lại sau khi CMS/UI kịp render */
+        setTimeout(refreshMemberGate, 50);
+        setTimeout(refreshMemberGate, 400);
+      });
+    }
+
+    /* Banner có thể được CMS chèn sau khi trang tải */
+    const observer = new MutationObserver(function(){
+      refreshMemberGate();
+    });
+    observer.observe(document.body, {childList:true, subtree:true});
+
+    window.appleSeedRefreshMemberGate = refreshMemberGate;
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", startMemberGate, {once:true});
+  }else{
+    startMemberGate();
+  }
+})();
+</script>
+
+</body>
