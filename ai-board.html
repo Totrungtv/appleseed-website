@@ -67,6 +67,7 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
   .youtube-player-title{max-height:24vh!important;overflow:auto!important}
 }
 
+.as-analysis-wait{display:flex;align-items:center;gap:10px;margin-top:14px;padding:12px 14px;border:1px solid #cfe2f7;border-radius:12px;background:#eef7ff;color:#145ca8;font-weight:800}.as-analysis-hourglass{display:inline-grid;place-items:center;width:24px;height:24px;font-size:19px;animation:asHourglassSpin 1s linear infinite;transform-origin:center}@keyframes asHourglassSpin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}.as-analysis-wait small{display:block;font-weight:600;color:#647b98;margin-top:2px}
 </style>
 
 <style id="apple-seed-full-fix-css">
@@ -639,7 +640,8 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
    const area=$('asSchematicArea')?.value.trim()||'';
    const boardCode=area||'I2C compass / PP_VDD';
    const n=notes();
-   status.textContent='⏳ Đang upload ảnh và gọi AI…';
+   status.innerHTML='<span class="as-analysis-hourglass" aria-hidden="true">⌛</span><span><strong>Đang chờ dữ liệu phân tích…</strong><small>Hệ thống đang tải ảnh và gửi dữ liệu tới AI. Vui lòng chờ.</small></span>';status.classList.add('show');
+   out.innerHTML='<div class="as-analysis-wait"><span class="as-analysis-hourglass" aria-hidden="true">⌛</span><span>Đang chờ dữ liệu phân tích…<small>AI đang xử lý ảnh MAIN / Boardview.</small></span></div>';
    try{
      const safe=file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,'-');
      const path=`pan-ai/${se.user.id}/${Date.now()}-${crypto.randomUUID().slice(0,8)}-${safe}`;
@@ -650,9 +652,9 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
      if(call.data?.error)throw new Error(call.data.error);
      const text=call.data?.analysis||'AI không trả về kết quả.';
      out.innerHTML='<strong>'+esc(mode==='schematic'?'📐 Schematic Intelligence':'🧠 AI Board Diagnosis')+'</strong><pre style="white-space:pre-wrap;font:inherit;margin:10px 0 0">'+esc(text)+'</pre>';
-     status.textContent='✅ Phân tích hoàn tất.';
+     status.innerHTML='✅ <strong>Phân tích hoàn tất.</strong>';
      out.scrollIntoView({behavior:'smooth',block:'nearest'});
-   }catch(e){console.error('Apple Seed AI Board:',e);status.textContent='❌ '+(e?.message||String(e));}
+   }catch(e){console.error('Apple Seed AI Board:',e);status.innerHTML='❌ <strong>Phân tích lỗi:</strong> '+esc(e?.message||String(e));}
  }
  $('analyze').onclick=()=>run(mainFile,'panic');
  $('asAnalyzeSchematic').onclick=()=>run(schematicFile,'schematic');
