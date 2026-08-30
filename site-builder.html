@@ -122,11 +122,21 @@ function applyPageDesign(){
 }
 function applyPageToTarget(target,p){
   if(!target)return;
-  if(p.bgImage)target.style.backgroundImage='url("'+p.bgImage+'")';else if(p.bgImage==='')target.style.backgroundImage='';
-  if(p.bgColor)target.style.backgroundColor=p.bgColor;
-  if(p.bgSize)target.style.backgroundSize=p.bgSize;
-  if(p.bgPosition)target.style.backgroundPosition=p.bgPosition;
-  target.style.backgroundRepeat='no-repeat';
+  /*
+   * Hero/Main có CSS gốc dùng !important cho background.
+   * Builder phải dùng inline !important để ảnh/màu chọn trong Builder
+   * thắng CSS mặc định và hiện NGAY trên canvas, không cần reload.
+   */
+  if(p.bgImage){
+    const safe=String(p.bgImage).replace(/\\/g,'\\\\').replace(/"/g,'\\\"');
+    target.style.setProperty('background-image','url("'+safe+'")','important');
+  }else{
+    target.style.removeProperty('background-image');
+  }
+  if(p.bgColor)target.style.setProperty('background-color',String(p.bgColor),'important');
+  if(p.bgSize)target.style.setProperty('background-size',String(p.bgSize),'important');
+  if(p.bgPosition)target.style.setProperty('background-position',String(p.bgPosition),'important');
+  target.style.setProperty('background-repeat','no-repeat','important');
 }
 
 function refreshOverlay(){
