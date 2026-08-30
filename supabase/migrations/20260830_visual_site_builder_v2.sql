@@ -61,6 +61,7 @@ declare
   v bigint;
   row public.site_builder_versions;
 begin
+  perform pg_advisory_xact_lock(hashtextextended(p_site_key,0));
   if uid is null then raise exception 'AUTH_REQUIRED'; end if;
   if not exists(select 1 from public.profiles p where p.id=uid and p.role in ('admin','staff')) then
     raise exception 'BUILDER_FORBIDDEN';
@@ -86,6 +87,7 @@ declare
   row public.site_builder_versions;
   v bigint;
 begin
+  perform pg_advisory_xact_lock(hashtextextended(src.site_key,0));
   if uid is null then raise exception 'AUTH_REQUIRED'; end if;
   if not exists(select 1 from public.profiles p where p.id=uid and p.role in ('admin','staff')) then
     raise exception 'BUILDER_FORBIDDEN';
