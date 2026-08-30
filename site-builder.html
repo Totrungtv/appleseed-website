@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Apple Seed — Visual Site Builder</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<style>
+:root{--gold:#c99735;--ink:#17202a;--line:#dfe5ec;--soft:#f6f8fb}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:#eef2f6}
+button,input{font:inherit}.app{height:100vh;display:grid;grid-template-rows:64px 1fr;overflow:hidden}
+.top{display:flex;align-items:center;gap:16px;padding:0 18px;background:#fff;border-bottom:1px solid var(--line);z-index:20}
+.brand{font-weight:900;letter-spacing:.5px}.brand small{display:block;font-size:9px;letter-spacing:2px;color:#8a939e;margin-top:2px}
+.top .status{margin-left:auto;font-size:12px;color:#667085}.btn{border:1px solid #d3dae3;background:#fff;border-radius:10px;padding:9px 13px;font-weight:800;cursor:pointer}.btn.primary{background:#d9aa4b;border-color:#d9aa4b;color:#17120a}.btn.dark{background:#17202a;color:#fff;border-color:#17202a}.btn:disabled{opacity:.5;cursor:not-allowed}
+.workspace{min-height:0;display:grid;grid-template-columns:270px minmax(0,1fr) 300px;gap:0}
+.left,.right{background:#fff;overflow:auto;padding:16px}.left{border-right:1px solid var(--line)}.right{border-left:1px solid var(--line)}
+.panel{border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px;background:#fff}.panel h3{font-size:13px;margin:0 0 10px}.muted{font-size:11px;line-height:1.5;color:#667085}
+.mode{display:grid;grid-template-columns:1fr 1fr;gap:7px}.mode button{padding:10px 6px}.mode button.active{background:#f5e5bf;border-color:#d6ae5a}
+.canvas{position:relative;min-width:0;min-height:0;background:#cfd6de;display:flex;align-items:stretch;justify-content:center;overflow:hidden}
+.frame-wrap{width:min(100%,1440px);height:100%;background:#fff;position:relative;box-shadow:0 0 35px rgba(0,0,0,.13)}
+#preview{width:100%;height:100%;border:0;background:#fff}
+.overlay{position:absolute;pointer-events:none;border:2px solid #2563eb;box-shadow:0 0 0 99999px rgba(37,99,235,.025);display:none;z-index:8}
+.overlay:after{content:attr(data-label);position:absolute;left:-2px;top:-25px;background:#2563eb;color:#fff;font-size:10px;font-weight:800;padding:4px 7px;border-radius:5px;white-space:nowrap}
+.field{margin-bottom:10px}.field label{display:block;font-size:11px;font-weight:800;margin-bottom:5px;color:#475467}.field input,.field textarea,.field select{width:100%;border:1px solid #d5dce5;border-radius:9px;padding:9px;background:#fff}.field textarea{min-height:80px;resize:vertical}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.image-box{border:1px dashed #cbd5e1;border-radius:10px;padding:9px;text-align:center;background:#f8fafc}.image-box img{max-width:100%;max-height:130px;object-fit:contain;display:block;margin:0 auto 7px}.drop{padding:10px;border:1px dashed #b8c2cf;border-radius:9px;text-align:center;font-size:11px;color:#667085;cursor:pointer}.drop:hover{background:#f8fafc}
+.selected-info{font-size:11px;padding:9px;background:#f8fafc;border-radius:9px;word-break:break-all}.toast{position:fixed;right:20px;bottom:20px;background:#17202a;color:#fff;padding:11px 14px;border-radius:10px;box-shadow:0 12px 30px rgba(0,0,0,.2);font-size:12px;z-index:50;display:none}
+.login{position:fixed;inset:0;background:rgba(15,23,42,.65);display:flex;align-items:center;justify-content:center;z-index:100}.login-card{width:min(420px,calc(100% - 30px));background:#fff;border-radius:18px;padding:22px;box-shadow:0 25px 70px rgba(0,0,0,.3)}.login-card h2{margin:0 0 5px}.login-card p{font-size:12px;color:#667085}.login-card .field{margin-top:12px}
+@media(max-width:1050px){.workspace{grid-template-columns:220px minmax(0,1fr)}.right{display:none}}
+@media(max-width:700px){.top{padding:0 9px}.top .status{display:none}.left{display:none}.workspace{grid-template-columns:1fr}.frame-wrap{width:100%}.canvas{padding:0}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div class="brand">APPLE SEED <small>VISUAL SITE BUILDER V1</small></div>
+  <div class="mode"><button id="desktopMode" class="btn active">🖥 Desktop</button><button id="mobileMode" class="btn">📱 Mobile</button></div>
+  <div class="status" id="status">Đang khởi tạo…</div>
+  <button class="btn" id="undoBtn">↶</button><button class="btn" id="redoBtn">↷</button>
+  <button class="btn" id="draftBtn">💾 Lưu nháp</button><button class="btn primary" id="publishBtn">🚀 Xuất bản</button>
+</header>
+<div class="workspace">
+<aside class="left">
+  <div class="panel"><h3>🎯 Cách dùng</h3><div class="muted">Bấm trực tiếp vào chữ hoặc hình trên trang. Chữ có thể sửa ngay. Hình có thể thay. Kéo đối tượng để đổi vị trí. Mọi thay đổi chỉ nằm trong Builder cho tới khi bấm Xuất bản.</div></div>
+  <div class="panel"><h3>📐 Khung xem</h3><div class="grid2"><button class="btn active" id="fitBtn">Vừa khung</button><button class="btn" id="resetViewBtn">↺ Reset</button></div></div>
+  <div class="panel"><h3>📦 Công cụ</h3><button class="btn" id="reloadBtn" style="width:100%;margin-bottom:8px">↻ Nạp website gốc</button><button class="btn" id="clearBtn" style="width:100%">🗑 Xóa thay đổi nháp</button></div>
+  <div class="panel"><h3>🛡 An toàn</h3><div class="muted">Builder dùng bản website hiện tại làm mẫu. Không sửa HTML trực tiếp khi đang kéo/thay đổi. Bản xuất bản được lưu thành một cấu hình riêng để có thể rollback.</div></div>
+</aside>
+<main class="canvas" id="canvas"><div class="frame-wrap" id="frameWrap"><iframe id="preview" src="index.html?siteBuilderPreview=1" title="Apple Seed preview"></iframe><div id="overlay" class="overlay"></div></div></main>
+<aside class="right">
+  <div class="panel"><h3>🖱 Đối tượng đang chọn</h3><div id="selectedInfo" class="selected-info">Chưa chọn gì. Hãy bấm một phần trên trang.</div></div>
+  <div class="panel" id="textPanel" style="display:none"><h3>✏️ Chỉnh chữ</h3><div class="field"><label>Nội dung</label><textarea id="textValue"></textarea></div><button class="btn primary" id="applyText" style="width:100%">Áp dụng chữ</button></div>
+  <div class="panel" id="imagePanel" style="display:none"><h3>🖼️ Thay hình</h3><div class="image-box"><img id="imagePreview" alt=""><div class="drop" id="imageDrop">Chọn ảnh từ máy</div><input id="imageFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden></div><div class="field" style="margin-top:9px"><label>Hoặc URL ảnh</label><input id="imageUrl" placeholder="https://…"></div><button class="btn primary" id="applyImage" style="width:100%">Áp dụng hình</button></div>
+  <div class="panel" id="movePanel" style="display:none"><h3>↔ Vị trí</h3><div class="grid2"><div class="field"><label>X (px)</label><input id="moveX" type="number" value="0"></div><div class="field"><label>Y (px)</label><input id="moveY" type="number" value="0"></div></div><button class="btn" id="applyMove" style="width:100%">Áp dụng vị trí</button><div class="muted" style="margin-top:7px">Kéo trực tiếp trên preview cũng được.</div></div>
+  <div class="panel"><h3>📄 Phiên bản</h3><div class="muted" id="versionInfo">Chưa có bản xuất bản.</div></div>
+</aside>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+<div class="login" id="login">
+ <div class="login-card"><h2>Apple Seed Builder</h2><p>Đăng nhập tài khoản Admin/Staff để sử dụng trình chỉnh sửa.</p>
+ <div class="field"><label>Email</label><input id="email" type="email" autocomplete="username"></div>
+ <div class="field"><label>Mật khẩu</label><input id="password" type="password" autocomplete="current-password"></div>
+ <button class="btn primary" id="loginBtn" style="width:100%;margin-top:5px">Đăng nhập</button>
+ <div class="muted" id="loginMsg" style="margin-top:9px"></div></div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const supa=window.supabaseClient;
+let doc=null, selected=null, selectedSelector='', pendingFile=null, dragState=null;
+let history=[], future=[], applying=false;
+const KEY='appleSeedVisualBuilderDraftV1';
+const esc=s=>String(s||'').replace(/\\/g,'\\\\').replace(/"/g,'\\\"');
+function toast(m){$('toast').textContent=m;$('toast').style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>$('toast').style.display='none',2200)}
+function setStatus(m){$('status').textContent=m}
+function selector(el){
+ if(!el||el.nodeType!==1)return '';
+ if(el.id)return '#'+CSS.escape(el.id);
+ const parts=[];let n=el;
+ while(n&&n.nodeType===1&&n!==doc.body){
+   let p=n.tagName.toLowerCase();
+   if(n.classList.length){const c=[...n.classList].filter(x=>!x.includes('active')&&!x.includes('selected')).slice(0,2);if(c.length)p+='.'+c.map(CSS.escape).join('.')}
+   if(n.parentElement){const same=[...n.parentElement.children].filter(x=>x.tagName===n.tagName);if(same.length>1)p+=':nth-of-type('+(same.indexOf(n)+1)+')'}
+   parts.unshift(p);n=n.parentElement;
+ }
+ return parts.join('>');
+}
+function editable(el){
+ if(!el||el===doc.body||el===doc.documentElement)return false;
+ if(['SCRIPT','STYLE','SVG','IFRAME','BUTTON','INPUT','TEXTAREA','SELECT'].includes(el.tagName))return false;
+ return true;
+}
+function findTarget(x,y){
+ const path=doc.elementsFromPoint(x,y);
+ return path.find(e=>editable(e)&&!e.closest('#siteBuilderRuntime'))||null;
+}
+function capture(){
+ const st={items:{}};
+ document.querySelectorAll('#preview').length;
+ for(const el of doc.querySelectorAll('*')){
+   const id=selector(el); if(!id)continue;
+   const item={};
+   if(el.matches('img')&&el.getAttribute('src'))item.src=el.getAttribute('src');
+   const direct=[...el.childNodes].filter(n=>n.nodeType===3&&n.textContent.trim());
+   if(direct.length && el.children.length<=3)item.text=el.textContent;
+   const t=el.style.transform;
+   if(t)item.transform=t;
+   if(Object.keys(item).length)st.items[id]=item;
+ }
+ return st;
+}
+function snapshot(){return JSON.parse(JSON.stringify(state))}
+let state={items:{}};
+function pushHistory(){if(applying)return;history.push(snapshot());if(history.length>40)history.shift();future=[]}
+function restore(s){
+ applying=true;state=s||{items:{}};
+ applyState();applying=false;refreshSelection();
+}
+function applyState(){
+ for(const [sel,v] of Object.entries(state.items||{})){
+   let el;try{el=doc.querySelector(sel)}catch{continue} if(!el)continue;
+   if(v.text!==undefined)el.textContent=v.text;
+   if(v.src!==undefined&&el.matches('img'))el.src=v.src;
+   if(v.transform!==undefined)el.style.transform=v.transform;
+ }
+}
+function saveSelected(){
+ if(!selected||!selectedSelector)return;
+ const v=state.items[selectedSelector]||(state.items[selectedSelector]={});
+ if(selected.matches('img'))v.src=selected.getAttribute('src')||'';
+ else if($('textPanel').style.display!=='none')v.text=selected.textContent;
+ v.transform=selected.style.transform||'';
+}
+function refreshSelection(){
+ if(!selected)return;
+ try{selected=doc.querySelector(selectedSelector)}catch{selected=null}
+ if(!selected)return;
+ const r=selected.getBoundingClientRect(), fr=$('preview').getBoundingClientRect();
+ const ov=$('overlay');ov.style.display='block';ov.style.left=(r.left-fr.left)+'px';ov.style.top=(r.top-fr.top)+'px';ov.style.width=r.width+'px';ov.style.height=r.height+'px';ov.dataset.label=selected.tagName.toLowerCase();
+ $('selectedInfo').textContent=selectedSelector;
+ $('textPanel').style.display=(selected.tagName!=='IMG'?'block':'none');
+ $('imagePanel').style.display=(selected.tagName==='IMG'?'block':'none');
+ $('movePanel').style.display='block';
+ if(selected.tagName!=='IMG')$('textValue').value=selected.textContent;
+ if(selected.tagName==='IMG'){$('imagePreview').src=selected.src;$('imageUrl').value=selected.src}
+ const tr=selected.style.transform.match(/translate\\(\\s*(-?[\\d.]+)px,\\s*(-?[\\d.]+)px\\s*\\)/);
+ $('moveX').value=tr?tr[1]:0;$('moveY').value=tr?tr[2]:0;
+}
+function select(el){
+ if(!editable(el))return;
+ selected=el;selectedSelector=selector(el);refreshSelection();
+}
+function applyText(){
+ if(!selected||selected.tagName==='IMG')return;
+ pushHistory();selected.textContent=$('textValue').value;saveSelected();refreshSelection();toast('Đã đổi chữ — đang ở bản nháp');
+}
+function applyMove(){
+ if(!selected)return;
+ pushHistory();const x=Number($('moveX').value)||0,y=Number($('moveY').value)||0;selected.style.transform='translate('+x+'px, '+y+'px)';saveSelected();refreshSelection();
+}
+async function uploadFile(file){
+ if(!file)return null;
+ const safe=file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,'-');
+ const path='builder/'+Date.now()+'-'+Math.random().toString(36).slice(2,8)+'-'+safe;
+ const {error}=await supa.storage.from('site-images').upload(path,file,{upsert:false,contentType:file.type});
+ if(error)throw error;
+ const {data}=supa.storage.from('site-images').getPublicUrl(path);return data.publicUrl;
+}
+async function applyImage(){
+ if(!selected||selected.tagName!=='IMG')return;
+ let url=$('imageUrl').value.trim();
+ try{if(pendingFile){toast('Đang tải ảnh…');url=await uploadFile(pendingFile);pendingFile=null}}catch(e){toast('Upload ảnh lỗi: '+e.message);return}
+ if(!url)return;
+ pushHistory();selected.src=url;saveSelected();refreshSelection();toast('Đã thay hình — đang ở bản nháp');
+}
+function loadDraft(){
+ try{const raw=localStorage.getItem(KEY);if(raw){state=JSON.parse(raw);applyState();toast('Đã nạp bản nháp trên máy')}}catch{}
+}
+function saveDraft(){state.items=state.items||{};localStorage.setItem(KEY,JSON.stringify(state));toast('Đã lưu nháp trên máy')}
+async function loadPublished(){
+ const {data,error}=await supa.from('site_builder_versions').select('config,updated_at,is_published').eq('site_key','default').maybeSingle();
+ if(error){$('versionInfo').textContent='Chưa kết nối CMS. Hãy chạy migration V1 trước.';return}
+ if(data&&data.config&&Object.keys(data.config).length){state=data.config;applyState();$('versionInfo').textContent='Bản CMS: '+new Date(data.updated_at).toLocaleString('vi-VN')}
+ else $('versionInfo').textContent='Chưa có bản xuất bản.'
+}
+async function publish(){
+ saveSelected();
+ const {data:userData}=await supa.auth.getUser();if(!userData.user){toast('Chưa đăng nhập');return}
+ setStatus('Đang xuất bản…');
+ const {error}=await supa.from('site_builder_versions').upsert({site_key:'default',config:state,is_published:true,updated_by:userData.user.id},{onConflict:'site_key'});
+ if(error){toast('Chưa xuất bản: '+error.message);setStatus('Lỗi');return}
+ localStorage.setItem(KEY,JSON.stringify(state));$('versionInfo').textContent='Đã xuất bản: '+new Date().toLocaleString('vi-VN');setStatus('Đã xuất bản');toast('🚀 Xuất bản thành công');
+}
+function resetAll(){if(!confirm('Xóa toàn bộ thay đổi nháp trên trình duyệt và nạp lại website gốc?'))return;localStorage.removeItem(KEY);state={items:{}};history=[];future=[];location.reload()}
+$('preview').addEventListener('load',async()=>{
+ doc=$('preview').contentDocument; if(!doc)return;
+ doc.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();select(findTarget(e.clientX,e.clientY))},true);
+ doc.addEventListener('mousedown',e=>{
+   const el=findTarget(e.clientX,e.clientY);if(!el)return;select(el);
+   const r=el.getBoundingClientRect();dragState={el,startX:e.clientX,startY:e.clientY,baseX:parseFloat($('moveX').value)||0,baseY:parseFloat($('moveY').value)||0,moved:false};e.preventDefault();
+ },true);
+ doc.addEventListener('mousemove',e=>{if(!dragState)return;const dx=e.clientX-dragState.startX,dy=e.clientY-dragState.startY;if(Math.abs(dx)+Math.abs(dy)<3)return;dragState.moved=true;const x=dragState.baseX+dx,y=dragState.baseY+dy;dragState.el.style.transform='translate('+x+'px, '+y+'px)';$('moveX').value=Math.round(x);$('moveY').value=Math.round(y);refreshSelection()},true);
+ doc.addEventListener('mouseup',e=>{if(dragState?.moved){pushHistory();saveSelected();toast('Đã di chuyển đối tượng — đang ở bản nháp')}dragState=null},true);
+ doc.addEventListener('dblclick',e=>{const el=findTarget(e.clientX,e.clientY);if(el&&el.tagName!=='IMG'){select(el);$('textValue').focus();$('textValue').select()}},true);
+ loadDraft();await loadPublished();applyState();setStatus('Sẵn sàng — bấm vào trang để sửa');
+});
+$('applyText').onclick=applyText;$('applyMove').onclick=applyMove;$('applyImage').onclick=applyImage;
+$('imageDrop').onclick=()=>$('imageFile').click();$('imageFile').onchange=e=>{pendingFile=e.target.files[0]||null;if(pendingFile){$('imagePreview').src=URL.createObjectURL(pendingFile);toast('Đã chọn ảnh, bấm Áp dụng hình')}}
+$('draftBtn').onclick=()=>{saveSelected();saveDraft()};$('publishBtn').onclick=publish;$('reloadBtn').onclick=()=>location.reload();$('clearBtn').onclick=resetAll;
+$('undoBtn').onclick=()=>{if(!history.length)return;future.push(snapshot());restore(history.pop());toast('Undo')};$('redoBtn').onclick=()=>{if(!future.length)return;history.push(snapshot());restore(future.pop());toast('Redo')};
+$('desktopMode').onclick=()=>{$('frameWrap').style.width='min(100%,1440px)';$('desktopMode').classList.add('active');$('mobileMode').classList.remove('active')};
+$('mobileMode').onclick=()=>{$('frameWrap').style.width='390px';$('mobileMode').classList.add('active');$('desktopMode').classList.remove('active')};
+$('fitBtn').onclick=()=>{$('frameWrap').style.width='min(100%,1440px)'};
+$('resetViewBtn').onclick=()=>{$('frameWrap').style.width='min(100%,1440px)';$('desktopMode').click()};
+async function authCheck(){
+ if(!supa){$('loginMsg').textContent='Thiếu Supabase config.';return}
+ const {data}=await supa.auth.getSession();
+ if(data.session){$('login').style.display='none';return}
+ $('login').style.display='flex';
+}
+$('loginBtn').onclick=async()=>{
+ $('loginMsg').textContent='Đang đăng nhập…';
+ const {error}=await supa.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});
+ if(error){$('loginMsg').textContent=error.message;return}
+ $('login').style.display='none';location.reload();
+};
+authCheck();
+</script>
+</body>
+</html>
