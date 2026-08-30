@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Apple Seed — Visual Site Builder</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<style>
+:root{--gold:#d7aa4d;--blue:#1769ff;--ink:#18212b;--muted:#667085;--line:#e1e6ee}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:#edf1f5}button,input,textarea{font:inherit}
+.app{height:100vh;display:grid;grid-template-rows:60px 1fr;overflow:hidden}.top{height:60px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;padding:0 12px;z-index:10}.brand{font-weight:900;letter-spacing:.6px;white-space:nowrap}.brand small{display:block;font-size:8px;letter-spacing:2px;color:#8a94a2}.spacer{flex:1}.status{font-size:11px;color:var(--muted);max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.btn{border:1px solid #d5dce5;background:#fff;color:var(--ink);border-radius:9px;padding:8px 11px;font-weight:800;cursor:pointer}.btn:hover{border-color:#b9c5d4}.btn.active{box-shadow:inset 0 0 0 2px #e4c579}.btn.primary{background:var(--gold);border-color:var(--gold);color:#18130a}.workspace{min-height:0;display:grid;grid-template-columns:235px minmax(0,1fr) 300px}.side{background:#fff;overflow:auto;padding:11px}.left{border-right:1px solid var(--line)}.right{border-left:1px solid var(--line)}.panel{border:1px solid var(--line);border-radius:12px;padding:11px;margin-bottom:10px;background:#fff}.panel h3{font-size:12px;margin:0 0 9px}.muted{font-size:11px;color:var(--muted);line-height:1.5}.canvas{min-width:0;min-height:0;display:flex;justify-content:center;overflow:auto;background:#cbd2db;padding:0}.frame{height:max-content;min-height:100%;width:1440px;max-width:100%;background:#fff;box-shadow:0 0 35px #0002;transition:width .15s}.frame.mobile{width:390px}.frame iframe{display:block;width:100%;height:1400px;min-height:1400px;border:0;background:#fff;opacity:1;visibility:visible}.hint{background:#fff8e9;border:1px solid #eed8a6;border-radius:9px;padding:9px;font-size:10px;line-height:1.5;color:#735719}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:7px}.field{margin-bottom:8px}.field label{display:flex;justify-content:space-between;font-size:10px;font-weight:850;color:#475467;margin-bottom:4px}.field input,.field textarea,.field select{width:100%;border:1px solid #d5dce5;border-radius:8px;padding:7px 8px;background:#fff;outline:0}.field textarea{min-height:74px;resize:vertical}.image-preview{max-width:100%;max-height:130px;display:block;margin:4px auto 8px;object-fit:contain}.drop{border:1px dashed #b9c4d1;border-radius:8px;padding:8px;text-align:center;font-size:10px;cursor:pointer}.layers{max-height:310px;overflow:auto;display:grid;gap:4px}.layer{width:100%;text-align:left;border:1px solid #e5e9ef;background:#fafbfc;border-radius:7px;padding:7px;font-size:10px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.layer.active{border-color:#8eb0ff;background:#eff5ff}.history{display:grid;gap:5px;max-height:230px;overflow:auto}.history-item{display:grid;grid-template-columns:1fr auto;gap:5px;align-items:center;border:1px solid #e5e9ef;border-radius:7px;padding:6px}.history-item small{font-size:9px;color:var(--muted)}.overlay{position:fixed;display:none;border:2px solid var(--blue);pointer-events:none;z-index:50}.overlay .label{position:absolute;left:-2px;top:-21px;background:var(--blue);color:#fff;padding:3px 6px;border-radius:4px 4px 0 0;font-size:9px;font-weight:850}.handle{position:absolute;width:9px;height:9px;background:#fff;border:2px solid var(--blue);border-radius:2px;pointer-events:auto}.nw{left:-6px;top:-6px;cursor:nwse-resize}.ne{right:-6px;top:-6px;cursor:nesw-resize}.sw{left:-6px;bottom:-6px;cursor:nesw-resize}.se{right:-6px;bottom:-6px;cursor:nwse-resize}.toast{position:fixed;right:16px;bottom:16px;background:#17202a;color:#fff;padding:9px 12px;border-radius:8px;font-size:11px;display:none;z-index:100}.login{position:fixed;inset:0;background:#101828dd;display:flex;align-items:center;justify-content:center;z-index:200}.login-card{width:min(390px,calc(100% - 24px));background:#fff;border-radius:15px;padding:20px;box-shadow:0 25px 70px #0005}.login-card h2{margin:0 0 6px}.danger{color:#b42318;font-size:10px;margin-top:7px}.simple-mode .advanced-only{display:none!important}.block-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.block-btn{border:1px solid #e3e8ef;background:#fbfcfe;border-radius:9px;padding:8px 7px;text-align:left;font-size:10px;font-weight:800;cursor:pointer}.block-btn:hover{border-color:#d7aa4d;background:#fffaf0}.ai-modal{position:fixed;inset:0;background:#10182888;display:none;align-items:center;justify-content:center;z-index:180}.ai-card{width:min(620px,calc(100% - 24px));max-height:min(760px,calc(100vh - 30px));overflow:auto;background:#fff;border-radius:16px;box-shadow:0 30px 90px #0006;padding:16px}.ai-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}.ai-head h2{margin:0;font-size:17px}.ai-close{margin-left:auto}.ai-log{min-height:160px;max-height:330px;overflow:auto;background:#f7f9fc;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:11px;line-height:1.55}.ai-msg{margin:0 0 9px;padding:8px 10px;border-radius:9px;white-space:pre-wrap}.ai-user{background:#fff4d9}.ai-bot{background:#fff;border:1px solid #e6eaf0}.ai-row{display:flex;gap:7px;margin-top:9px}.ai-row textarea{flex:1;min-height:66px;border:1px solid #d5dce5;border-radius:9px;padding:8px;resize:vertical}.ai-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.ai-chip{border:1px solid #dfe5ed;background:#fff;border-radius:999px;padding:6px 9px;font-size:10px;font-weight:800;cursor:pointer}.section-list{display:grid;gap:5px;max-height:220px;overflow:auto}.preset-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.preset{border:1px solid #e3e8ef;background:#fff;border-radius:8px;padding:7px;font-size:10px;font-weight:800;cursor:pointer}.preset:hover{border-color:#d7aa4d}.color-row{display:flex;align-items:center;gap:6px}.color-row input[type=color]{width:44px;height:36px;padding:2px;border:1px solid #d5dce5;border-radius:8px;cursor:pointer}.swatches{display:flex;gap:7px;flex-wrap:wrap}.swatch{width:30px;height:30px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #cfd6df;cursor:pointer}.bg-preview{height:105px;border:1px solid #dfe5ed;border-radius:10px;background:#f7f9fc center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:#667085;font-size:10px;overflow:hidden;margin-bottom:7px}.bg-preview span{background:#ffffffdd;padding:5px 8px;border-radius:7px}
+@media(max-width:980px){.workspace{grid-template-columns:200px minmax(0,1fr)}.right{display:none}.status{display:none}}@media(max-width:650px){.left{display:none}.workspace{grid-template-columns:1fr}.top .btn{padding:7px 8px}.brand small{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div class="brand">APPLE SEED <small>VISUAL SITE BUILDER V3</small></div>
+  <button class="btn active" id="desktopBtn">🖥 Desktop</button><button class="btn" id="mobileBtn">📱 Mobile</button><button class="btn" id="simpleMode">✨ Đơn giản</button><button class="btn" id="aiOpen">🤖 AI Designer</button>
+  <span class="spacer"></span><span class="status" id="status">Đang kiểm tra quyền…</span>
+  <button class="btn" id="backAdmin">← Admin</button><button class="btn" id="undo">↶</button><button class="btn" id="redo">↷</button><button class="btn" id="save">💾 Nháp</button><button class="btn" id="syncLive">🔄 Đồng bộ LIVE</button><button class="btn primary" id="publish">🚀 Xuất bản</button>
+</header>
+<div class="workspace">
+<aside class="side left">
+  <div class="panel"><h3>🎯 Cách dùng</h3><div class="hint">Bấm trực tiếp vào <b>chữ / ảnh / khối</b> trong trang. Kéo khung để di chuyển. Kéo 4 góc để đổi kích thước. Mọi thay đổi chỉ nằm trong Builder cho tới khi bấm <b>Xuất bản</b>.</div></div>
+  <div class="panel"><h3>🧱 Bộ khối Apple Seed</h3><div class="block-grid">
+<button class="block-btn" data-block="hero">📱 Hero Premium</button><button class="block-btn" data-block="services">🔧 Dịch vụ</button>
+<button class="block-btn" data-block="why">⭐ Vì sao chọn</button><button class="block-btn" data-block="process">🛠 Quy trình</button>
+<button class="block-btn" data-block="cases">🔬 Repair Case</button><button class="block-btn" data-block="booking">📅 Đặt lịch</button>
+<button class="block-btn" data-block="articles">📰 Bài viết</button><button class="block-btn" data-block="map">🗺 Google Maps</button>
+</div><div class="muted" style="margin-top:7px">Bấm khối để chọn khu tương ứng trên trang rồi kéo-thả.</div></div>
+  <div class="panel"><h3>🧩 Nhóm & bố cục</h3><button class="btn" id="groupPhones" style="width:100%;margin-bottom:6px">📱 Kéo cả cụm iPhone</button><button class="btn" id="centerSelected" style="width:100%">↔️ Căn giữa đối tượng</button></div>
+  <div class="panel"><h3>🧱 Thành phần</h3><div id="layerList" class="layers"><div class="muted">Chưa tải trang.</div></div></div>
+  <div class="panel"><h3>📦 Bản nháp</h3><button class="btn" id="reload" style="width:100%;margin-bottom:6px">↻ Nạp lại</button><button class="btn" id="clear" style="width:100%">Xóa nháp máy</button></div>
+  <div class="panel"><h3>🛡 An toàn</h3><div class="muted">Builder dùng cấu hình riêng trong Supabase. Không sửa HTML gốc. Publish tạo version mới; bản cũ được giữ để rollback.</div></div>
+</aside>
+<main class="canvas"><div class="frame" id="frame"><iframe id="preview" title="Apple Seed Builder Preview" loading="eager" src="index.html?appleSeedBuilderPreview=1&builderCanvas=1&v=builder-live-20260830"></iframe></div></main>
+<aside class="side right">
+  <div class="panel"><h3>🖱 Đối tượng</h3><div id="info" class="selected-name">Chưa chọn</div><span id="tag" class="tag" hidden></span></div>
+  <div class="panel" id="contentPanel" hidden><h3>✏️ Nội dung</h3><div class="field"><label>Chữ</label><textarea id="text"></textarea></div><button class="btn primary" id="applyText" style="width:100%">Áp dụng chữ</button></div>
+  <div class="panel" id="imagePanel" hidden><h3>🖼 Hình ảnh</h3><img id="imagePreview" class="image-preview" alt=""><div class="drop" id="pick">Chọn ảnh từ máy</div><input id="file" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden><div class="field" style="margin-top:8px"><label>URL ảnh</label><input id="imageUrl" placeholder="https://…"></div><button class="btn primary" id="applyImage" style="width:100%">Áp dụng hình</button></div>
+  <div class="panel" id="pageDesignPanel"><h3>🖼️ Thiết kế Trang / Hero</h3>
+    <div class="muted" style="margin-bottom:8px">Chỉnh nền Hero/trang mà không cần chọn đúng ảnh. Mỗi Desktop/Mobile có nền riêng.</div>
+    <div class="grid2"><button class="btn" id="targetHero">🎯 Hero</button><button class="btn" id="targetMain">📄 Main</button></div>
+    <div class="field" style="margin-top:8px"><label>URL ảnh nền</label><input id="pageBgUrl" placeholder="https://…"></div>
+    <div class="grid2"><div class="field"><label>Màu nền</label><input id="pageBgColor" type="color" value="#ffffff" title="Chọn màu nền"></div><div class="field"><label>Lớp phủ</label><input id="pageOverlayColor" type="color" value="#ffffff" title="Chọn màu phủ"></div></div>
+    <div class="grid2"><div class="field"><label>Kích thước</label><select id="pageBgSize" style="width:100%;border:1px solid #d5dce5;border-radius:8px;padding:7px"><option value="cover">Cover</option><option value="contain">Contain</option><option value="100% 100%">100% 100%</option></select></div><div class="field"><label>Vị trí</label><select id="pageBgPosition" style="width:100%;border:1px solid #d5dce5;border-radius:8px;padding:7px"><option value="center">Center</option><option value="center top">Center top</option><option value="center bottom">Center bottom</option><option value="left center">Left center</option><option value="right center">Right center</option></select></div></div>
+    <div class="field" style="margin-top:8px"><label>Ảnh nền từ máy</label><div class="drop" id="pagePick">Chọn ảnh nền từ máy</div><input id="pageFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden></div>
+    <button class="btn primary" id="applyPageDesign" style="width:100%">Áp dụng nền Hero / Trang</button>
+    <button class="btn" id="reloadCanvas" style="width:100%;margin-top:6px">↻ Nạp lại ảnh & trang gốc</button>
+  </div>
+  <div class="panel" id="stylePanel" hidden><h3>🎨 Giao diện — <span id="deviceLabel">Desktop</span></h3>
+    <div class="grid2"><div class="field"><label>X (px)</label><input id="x" type="number"></div><div class="field"><label>Y (px)</label><input id="y" type="number"></div></div>
+    <div class="grid2"><div class="field"><label>Rộng</label><input id="w" type="number" min="1"></div><div class="field"><label>Cao</label><input id="h" type="number" min="1"></div></div>
+    <div class="grid2"><div class="field"><label>Cỡ chữ</label><input id="fontSize" type="number" min="1"></div><div class="field"><label>Bo góc</label><input id="radius" type="number" min="0"></div></div>
+    <div class="grid2"><div class="field"><label>Màu chữ</label><input id="color" type="color" value="#17233d" title="Chọn màu chữ"></div><div class="field"><label>Nền</label><input id="backgroundColor" type="color" value="#ffffff" title="Chọn màu nền"></div></div>
+    <button class="btn primary" id="applyStyle" style="width:100%">Áp dụng giao diện</button>
+  </div>
+  <div class="panel" id="palettePanel"><h3>🎨 Bảng màu toàn trang</h3><div class="muted" style="margin-bottom:8px">Bấm vào ô màu để chọn trực tiếp — không cần nhập mã.</div><div class="grid2"><div class="field"><label>Màu chủ đạo</label><input id="palPrimary" type="color" value="#d7aa4d"></div><div class="field"><label>Màu chữ</label><input id="palInk" type="color" value="#18212b"></div><div class="field"><label>Nền trang</label><input id="palPage" type="color" value="#ffffff"></div><div class="field"><label>Nền thẻ</label><input id="palCard" type="color" value="#ffffff"></div></div><button class="btn primary" id="applyPalette" style="width:100%">🎨 Áp dụng màu toàn trang</button><button class="btn" id="resetPalette" style="width:100%;margin-top:6px">↺ Về màu Apple Seed</button></div><div class="panel advanced-only"><h3>🎨 Preset nhanh</h3><div class="preset-grid"><button class="preset" data-preset="title">Tiêu đề Premium</button><button class="preset" data-preset="button">Nút Apple Seed</button><button class="preset" data-preset="card">Card dịch vụ</button><button class="preset" data-preset="clean">Tối giản</button></div></div>
+  <div class="panel"><h3>🕘 Lịch sử xuất bản</h3><div id="history" class="history"><div class="muted">Chưa tải.</div></div></div>
+</aside>
+</div></div>
+<div class="overlay" id="overlay"><div class="label" id="overlayLabel"></div><i class="handle nw"></i><i class="handle ne"></i><i class="handle sw"></i><i class="handle se"></i></div>
+<div class="toast" id="toast"></div>
+<div class="login" id="login"><div class="login-card"><h2>Apple Seed Builder</h2><p class="muted">Khu vực chỉnh website. Chỉ Admin/Staff được phép.</p><div class="field"><label>Email</label><input id="email" type="email" autocomplete="username"></div><div class="field"><label>Mật khẩu</label><input id="password" type="password" autocomplete="current-password"></div><button class="btn primary" id="loginBtn" style="width:100%">Đăng nhập</button><div id="loginMsg" class="danger"></div></div></div>
+<div class="ai-modal" id="aiModal"><div class="ai-card"><div class="ai-head"><div style="font-size:25px">🤖</div><div><h2>Apple Seed AI Designer</h2><div class="muted">AI tư vấn bố cục, responsive, nội dung và phong cách Apple Seed.</div></div><button class="btn ai-close" id="aiClose">✕</button></div><div class="ai-actions"><button class="ai-chip" data-ai="review">🔎 Phân tích trang</button><button class="ai-chip" data-ai="mobile">📱 Tối ưu Mobile</button><button class="ai-chip" data-ai="premium">✨ Cao cấp</button><button class="ai-chip" data-ai="simple">🧹 Đơn giản</button><button class="ai-chip" data-ai="seo">🚀 SEO</button></div><div class="ai-log" id="aiLog"><div class="ai-msg ai-bot">Chào bro 👋 Tôi có thể phân tích trang đang thiết kế và đề xuất cách chỉnh. AI không tự ý sửa production.</div></div><div class="ai-row"><textarea id="aiInput" placeholder="Ví dụ: Làm Hero gọn hơn trên mobile nhưng giữ cụm iPhone nổi bật..."></textarea><button class="btn primary" id="aiSend">Gửi AI</button></div></div></div>
+<script>
+const $=id=>document.getElementById(id);
+const DRAFT_KEY='appleSeedVisualBuilderV2';
+const PUBLISHED_VERSION_KEY='appleSeedVisualBuilderPublishedVersionV3';
+let doc=null,selected=null,selector='',device='desktop',draft={items:{},page:{desktop:{},mobile:{}}},history=[],future=[],drag=null,pendingFile=null,pagePendingFile=null,allowed=false,groupPhones=false,simpleMode=false;
+
+function toast(msg){$('toast').textContent=msg;$('toast').style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>{$('toast').style.display='none'},2200)}
+function setStatus(msg){$('status').textContent=msg}
+function deviceKey(){return device==='mobile'?'mobile':'desktop'}
+function snapshot(){return JSON.parse(JSON.stringify(draft))}
+function checkpoint(){history.push(snapshot());if(history.length>40)history.shift();future=[]}
+function stableSelector(el){
+  if(el.id)return '#'+CSS.escape(el.id);
+  const parts=[];let n=el;
+  while(n&&n!==doc.body&&n.nodeType===1){
+    let p=n.tagName.toLowerCase();
+    const classes=[...n.classList].filter(c=>c.length&&!/^(active|selected|hover)/.test(c)).slice(0,2);
+    if(classes.length)p+='.'+classes.map(CSS.escape).join('.');
+    if(n.parentElement){
+      const same=[...n.parentElement.children].filter(x=>x.tagName===n.tagName);
+      if(same.length>1)p+=':nth-of-type('+(same.indexOf(n)+1)+')';
+    }
+    parts.unshift(p);n=n.parentElement;
+  }
+  return parts.join('>');
+}
+function editable(el){return !!el&&el!==doc.body&&el!==doc.documentElement&&!['SCRIPT','STYLE','SVG','PATH','IFRAME','INPUT','TEXTAREA','SELECT','VIDEO','AUDIO','CANVAS'].includes(el.tagName)}
+function textEditable(el){return editable(el)&&el.tagName!=='IMG'&&el.children.length===0&&el.textContent.trim().length>0}
+function getItem(){if(!draft.items[selector])draft.items[selector]={styles:{desktop:{},mobile:{}}};const i=draft.items[selector];i.styles=i.styles||{};i.styles.desktop=i.styles.desktop||{};i.styles.mobile=i.styles.mobile||{};return i}
+function styleObject(el){const s=el.style,r=el.getBoundingClientRect(),tr=(s.translate||'').trim().split(/\s+/);return{x:parseFloat(tr[0])||0,y:parseFloat(tr[1])||0,w:parseFloat(s.width)||Math.round(r.width),h:parseFloat(s.height)||Math.round(r.height),fontSize:parseFloat(s.fontSize)||'',radius:parseFloat(s.borderRadius)||'',color:s.color||'',background:s.backgroundColor||''}}
+function currentStyle(){return getItem().styles[deviceKey()]||{}}
+function ensurePage(){draft.page=draft.page||{};draft.page.desktop=draft.page.desktop||{};draft.page.mobile=draft.page.mobile||{};return draft.page[deviceKey()]}
+function findPageTarget(kind='hero'){
+  if(!doc)return null;
+  const map=kind==='main'?['main','#main','.main']:['#apple-seed-premium-home','.as3-hero','.hero','section:first-of-type','main'];
+  for(const s of map){try{const el=doc.querySelector(s);if(el)return el}catch{}}
+  return doc.body;
+}
+function pageStyleTarget(){return $('pageDesignPanel').dataset.target||ensurePage().target||'hero'}
+function overlayToUi(v){const m=String(v||'').match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\s*\)/i);return m?{color:'#'+[m[1],m[2],m[3]].map(x=>parseInt(x,10).toString(16).padStart(2,'0')).join(''),alpha:Math.round((m[4]===undefined?1:+m[4])*100)}:{color:'#ffffff',alpha:0}}function refreshPalette(){const p=ensurePage().palette||{};$('palPrimary').value=p['--gold']||'#d7aa4d';$('palInk').value=p['--ink']||'#18212b';$('palPage').value=p['--apple-seed-page-bg']||'#ffffff';$('palCard').value=p['--apple-seed-card-bg']||'#ffffff'}function applyPagePalette(p){if(!doc)return;const pal=p.palette||{};Object.entries(pal).forEach(([k,v])=>{if(/^--[a-z0-9-]+$/.test(k)&&typeof v==='string')doc.documentElement.style.setProperty(k,v)});if(pal['--apple-seed-page-bg'])doc.body.style.backgroundColor=pal['--apple-seed-page-bg']}function savePalette(reset){checkpoint();const p=ensurePage();p.palette=reset?{'--gold':'#d7aa4d','--ink':'#18212b','--apple-seed-page-bg':'#ffffff','--apple-seed-card-bg':'#ffffff'}:{'--gold':$('palPrimary').value,'--ink':$('palInk').value,'--apple-seed-page-bg':$('palPage').value,'--apple-seed-card-bg':$('palCard').value};applyAll();saveDraft();refreshPalette();toast(reset?'↺ Đã về màu Apple Seed':'🎨 Đã áp dụng bảng màu')}function refreshPageDesign(){
+  const p=ensurePage();
+  $('pageBgUrl').value=p.bgImage||'';$('pageBgColor').value=p.bgColor||'#ffffff';$('pageOverlayColor').value='#ffffff';const bp=$('pageBgPreview');if(bp){bp.style.backgroundImage=p.bgImage?'url("'+p.bgImage.replace(/"/g,'\\\"')+'")':'none';bp.innerHTML=p.bgImage?'':'<span>Chưa chọn ảnh nền</span>'}
+  $('pageBgSize').value=p.bgSize||'cover';
+  $('pageBgPosition').value=p.bgPosition||'center';
+  $('pageDesignPanel').dataset.target=p.target||'hero';
+}
+function applyPageDesign(){
+  const target=findPageTarget(pageStyleTarget());if(!target){toast('Không tìm thấy Hero/Trang');return}
+  checkpoint();
+  const p=ensurePage();
+  p.bgImage=$('pageBgUrl').value.trim();
+  p.bgColor=$('pageBgColor').value||'#ffffff';p.overlay='transparent';
+  p.bgSize=$('pageBgSize').value||'cover';
+  p.bgPosition=$('pageBgPosition').value||'center';
+  p.target=pageStyleTarget();
+  applyPageToTarget(target,p);saveDraft();toast('🖼️ Đã áp dụng nền '+(pageStyleTarget()==='main'?'Main':'Hero'));
+}
+function applyPageToTarget(target,p){
+  if(!target)return;
+  /*
+   * Hero/Main có CSS gốc dùng !important cho background.
+   * Builder phải dùng inline !important để ảnh/màu chọn trong Builder
+   * thắng CSS mặc định và hiện NGAY trên canvas, không cần reload.
+   */
+  if(p.bgImage){
+    const safe=String(p.bgImage).replace(/\\/g,'\\\\').replace(/"/g,'\\\"');
+    target.style.setProperty('background-image','url("'+safe+'")','important');
+    if(target.id==='apple-seed-premium-home'){
+      target.classList.add('builder-has-page-bg');
+      const stage=target.querySelector('.as3-stage');
+      if(stage){
+        stage.style.setProperty('background-image','none','important');
+        stage.style.setProperty('background-color','transparent','important');
+      }
+    }
+  }else{
+    target.style.removeProperty('background-image');
+    if(target.id==='apple-seed-premium-home')target.classList.remove('builder-has-page-bg');
+  }
+  if(p.bgColor)target.style.setProperty('background-color',String(p.bgColor),'important');
+  if(p.bgSize)target.style.setProperty('background-size',String(p.bgSize),'important');
+  if(p.bgPosition)target.style.setProperty('background-position',String(p.bgPosition),'important');
+  target.style.setProperty('background-repeat','no-repeat','important');
+}
+
+function refreshOverlay(){
+  const o=$('overlay');if(!selected){o.style.display='none';return}
+  const r=selected.getBoundingClientRect(),fr=$('preview').getBoundingClientRect();
+  o.style.display='block';o.style.left=(fr.left+r.left)+'px';o.style.top=(fr.top+r.top)+'px';o.style.width=r.width+'px';o.style.height=r.height+'px';$('overlayLabel').textContent=selected.tagName.toLowerCase();
+}
+function imageTarget(el){
+  if(el&&el.matches&&el.matches('.as3-phone')) return el.querySelector('.as3-screen')||el;
+  return el;
+}
+function refreshInspector(){
+  if(!selected){$('info').textContent='Chưa chọn';$('tag').hidden=true;$('contentPanel').hidden=true;$('imagePanel').hidden=true;$('stylePanel').hidden=true;$('layerList').innerHTML='<div class="muted">Chưa chọn đối tượng.</div>';refreshOverlay();return}
+  $('info').textContent=selector;$('tag').hidden=false;$('tag').textContent=selected.tagName.toLowerCase();
+  $('contentPanel').hidden=!textEditable(selected);
+  const item=getItem(),visual=imageTarget(selected);
+  const visualBg=visual&&visual!==selected?getComputedStyle(visual).backgroundImage:'';
+  const hasImage=selected.tagName==='IMG'||!!item.src||!!item.bgImage||getComputedStyle(selected).backgroundImage!=='none'||visualBg!=='none'||!!visual?.querySelector?.('img');
+  $('imagePanel').hidden=!hasImage;
+  $('stylePanel').hidden=false;
+  if(textEditable(selected))$('text').value=selected.textContent;
+  if(selected.tagName==='IMG'){
+    $('imagePreview').src=selected.currentSrc||selected.src;
+    $('imageUrl').value=selected.currentSrc||selected.src;
+  }else{
+    const raw=item.bgImage||item.src||selected.style.backgroundImage||getComputedStyle(selected).backgroundImage||visualBg||'';
+    const m=raw.match(/url\((?:"|')?(.*?)(?:"|')?\)/i);
+    const bgUrl=m?m[1]:'';
+    const child=visual?.querySelector?.('img');
+    $('imagePreview').src=item.bgImage||item.src||bgUrl||(child?.currentSrc||child?.src)||'';
+    $('imageUrl').value=item.bgImage||item.src||bgUrl||(child?.currentSrc||child?.src)||'';
+  }
+  const st=styleObject(selected),v=currentStyle();
+  $('x').value=v.x??st.x;$('y').value=v.y??st.y;$('w').value=v.w??st.w;$('h').value=v.h??st.h;$('fontSize').value=v.fontSize??st.fontSize;$('radius').value=v.radius??st.radius;$('color').value=/^#[0-9a-f]{6}$/i.test(v.color??st.color)?(v.color??st.color):'#17233d';$('backgroundColor').value=/^#[0-9a-f]{6}$/i.test(v.background??st.background)?(v.background??st.background):'#ffffff';$('deviceLabel').textContent=device==='mobile'?'Mobile':'Desktop';
+  refreshOverlay();renderLayers();
+}
+function choose(el){if(!editable(el))return;selected=el;selector=stableSelector(el);refreshInspector()}
+function findBlockTargetfunction findBlockTarget(type){
+  if(!doc)return null;
+  const map={hero:['.hero','.as3-hero','header'],services:['#services','.services','.service-grid','.service-card'],why:['.why','.benefits','.features'],process:['.process','.repair-process'],cases:['.repair-case','.repair-cases','.articles','.posts'],booking:['#booking','.booking','.booking-section'],articles:['.articles','.posts','.blog'],map:['#map','.map','.contact-map','.contact']};
+  for(const s of (map[type]||[])){try{const el=doc.querySelector(s);if(el)return el}catch{}}
+  const words={services:'dịch vụ',why:'vì sao',process:'quy trình',cases:'repair case',booking:'đặt lịch',articles:'bài viết',map:'google map'};
+  const word=words[type];if(word){const els=[...doc.querySelectorAll('section,div,h2,h3')].filter(editable);return els.find(el=>(el.textContent||'').toLowerCase().includes(word))||null}
+  return type==='hero'?doc.querySelector('main')||doc.body:null;
+}
+function applyPreset(kind){
+  if(!selected){toast('Chọn đối tượng trước');return}
+  checkpoint();const v=getItem().styles[deviceKey()];
+  if(kind==='title'){v.fontSize=device==='mobile'?32:56;v.color='#17233d';v.radius=0}
+  if(kind==='button'){v.fontSize=15;v.radius=12;v.color='#18130a';v.background='#d7aa4d'}
+  if(kind==='card'){v.radius=16;v.background='#ffffff';v.w=Math.max(v.w||0,280)}
+  if(kind==='clean'){v.radius=8;v.background='transparent';v.color='#17233d'}
+  applyAll();saveDraft();toast('🎨 Đã áp dụng preset')
+}
+function renderLayers(){
+  if(!doc)return;
+  const els=[...doc.querySelectorAll('h1,h2,h3,p,a,img,.cta,.service-card,.hero,.section-kicker')].filter(editable);
+  const uniq=[],seen=new Set();
+  for(const el of els){const s=stableSelector(el);if(!seen.has(s)){seen.add(s);uniq.push([el,s])}}
+  $('layerList').innerHTML=uniq.slice(0,80).map(x=>'<button class="layer '+(x[1]===selector?'active':'')+'" data-s="'+encodeURIComponent(x[1])+'">'+x[0].tagName.toLowerCase()+' — '+((x[0].textContent||x[0].alt||'').trim().replace(/\\s+/g,' ').slice(0,42)||'(hình)')+'</button>').join('');
+  $('layerList').querySelectorAll('.layer').forEach(b=>b.onclick=()=>{try{choose(doc.querySelector(decodeURIComponent(b.dataset.s)))}catch{}});
+}
+function applyAll(){
+  if(!doc)return;
+  const dk=deviceKey();
+  const page=ensurePage();
+  const pageTarget=findPageTarget(page.target||pageStyleTarget());applyPagePalette(page);applyPageToTarget(pageTarget,page);
+  const controlled=['translate','width','height','fontSize','borderRadius','color','backgroundColor'];
+  for(const [s,item] of Object.entries(draft.items||{})){
+    let el;try{el=doc.querySelector(s)}catch{continue}if(!el)continue;
+    const visual=imageTarget(el);
+    if(item.text!==undefined&&textEditable(el))el.textContent=item.text;
+    if(item.src!==undefined&&el.tagName==='IMG')el.src=item.src;
+    if(item.bgImage!==undefined&&el.tagName!=='IMG'){
+      if(item.bgImage){
+        const safe=String(item.bgImage).replace(/\\/g,'\\\\').replace(/"/g,'\\\"');
+        visual.style.setProperty('background-image','url("'+safe+'")','important');
+        visual.setAttribute('data-builder-custom-image','1');
+        visual.querySelectorAll?.(':scope > img').forEach(img=>img.remove());
+        if(visual.matches&&visual.matches('.as3-screen')){
+          visual.style.setProperty('background-size','contain','important');
+          visual.style.setProperty('background-position','center','important');
+          visual.style.setProperty('background-repeat','no-repeat','important');
+        }
+      }else{
+        visual.style.removeProperty('background-image');
+        visual.removeAttribute('data-builder-custom-image');
+      }
+    }
+    controlled.forEach(k=>{el.style[k]=''});
+    const st=(item.styles||{})[dk]||{};
+    if(st.x!==undefined||st.y!==undefined)el.style.translate=(st.x||0)+'px '+(st.y||0)+'px';
+    if(st.w!==undefined)el.style.width=st.w+'px';
+    if(st.h!==undefined)el.style.height=st.h+'px';
+    if(st.fontSize!==undefined&&st.fontSize!=='')el.style.fontSize=st.fontSize+'px';
+    if(st.radius!==undefined&&st.radius!=='')el.style.borderRadius=st.radius+'px';
+    if(st.color)el.style.color=st.color;
+    if(st.background)el.style.backgroundColor=st.background;
+  }
+  refreshInspector();
+  syncPreviewToDraft();
+}
+function syncPreviewToDraftfunction syncPreviewToDraft(){
+  try{
+    if(!$('preview')||!$('preview').contentWindow)return;
+    $('preview').contentWindow.postMessage({
+      source:'apple-seed-builder',
+      type:'draft-config',
+      config:snapshot(),
+      device:deviceKey()
+    },location.origin);
+    setTimeout(syncBuilderHeroAssets,120);
+    setTimeout(syncBuilderHeroAssets,600);
+  }catch(e){}
+}
+function loadDraft(){try{const raw=localStorage.getItem(DRAFT_KEY);if(raw){draft=JSON.parse(raw);if(!draft.items)draft.items={};if(!draft.page)draft.page={desktop:{},mobile:{}};draft.page.desktop=draft.page.desktop||{};draft.page.mobile=draft.page.mobile||{}}}catch{draft={items:{},page:{desktop:{},mobile:{}}}}}
+function saveDraft(){localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));toast('💾 Đã lưu nháp trên máy')}
+async function loadPublished(forcePublished=false){
+  // SINGLE SOURCE OF TRUTH:
+  // Supabase published config is the LIVE source. Local draft is used only
+  // when explicitly retained for the same published version.
+  // forcePublished=true is the hard resync button: it makes Builder exactly
+  // match the current live configuration before editing continues.
+  // SINGLE SOURCE OF TRUTH:
+  // - The published Supabase version is the baseline for a fresh Builder session.
+  // - A local draft is kept only while it belongs to the same published version.
+  // This prevents an old localStorage draft from hiding a newly published Hero/image.
+  let publishedVersion='';
+  const r=await window.supabaseClient.from('site_builder_versions')
+    .select('id,version_no,config,created_at')
+    .eq('site_key','default')
+    .eq('status','published')
+    .order('version_no',{ascending:false})
+    .limit(1)
+    .maybeSingle();
+  if(r.error){
+    $('history').innerHTML='<div class="muted">CMS chưa có Builder V2. Chạy migration trước khi Publish.</div>';
+    return;
+  }
+  if(r.data?.config){
+    publishedVersion=String(r.data.version_no||'');
+    const localRaw=localStorage.getItem(DRAFT_KEY);
+    const localBase=localStorage.getItem(PUBLISHED_VERSION_KEY);
+    if(forcePublished || !localRaw || !localBase || localBase!==publishedVersion){
+      draft=JSON.parse(JSON.stringify(r.data.config));
+      draft.items=draft.items||{};
+      draft.page=draft.page||{desktop:{},mobile:{}};
+      draft.page.desktop=draft.page.desktop||{};
+      draft.page.mobile=draft.page.mobile||{};
+      localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));
+    }
+    localStorage.setItem(PUBLISHED_VERSION_KEY,publishedVersion);
+  }
+  refreshPageDesign();
+  applyAll();
+  setStatus('Đồng bộ LIVE · V'+publishedVersion);
+  const h=await window.supabaseClient.from('site_builder_versions')
+    .select('id,version_no,status,created_at')
+    .eq('site_key','default')
+    .order('version_no',{ascending:false})
+    .limit(15);
+  if(h.error){$('history').innerHTML='<div class="muted">Không đọc được lịch sử.</div>';return}
+  $('history').innerHTML=h.data?.length?h.data.map(v=>'<div class="history-item"><div><b>V'+v.version_no+'</b> <small>'+v.status+' · '+new Date(v.created_at).toLocaleString('vi-VN')+'</small></div>'+(v.status!=='published'?'<button class="btn" data-version="'+v.id+'">Khôi phục</button>':'<small>LIVE</small>')+'</div>').join(''):'<div class="muted">Chưa có version.</div>';
+  $('history').querySelectorAll('[data-version]').forEach(b=>b.onclick=()=>rollback(b.dataset.version));
+}
+async function rollback(id){
+  if(!confirm('Khôi phục version này và xuất bản thành bản mới?'))return;
+  setStatus('Đang rollback…');const r=await window.supabaseClient.rpc('apple_seed_builder_rollback',{p_version_id:id});
+  if(r.error){toast('Rollback lỗi: '+r.error.message);setStatus('Lỗi');return}
+  toast('↩️ Đã rollback và xuất bản');setStatus('Đã rollback');await loadPublished();location.reload();
+}
+async function upload(file){
+  const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');
+  const path='builder/'+Date.now()+'-'+Math.random().toString(36).slice(2,8)+'.'+ext;
+  const r=await window.supabaseClient.storage.from('site-images').upload(path,file,{upsert:false,contentType:file.type});
+  if(r.error)throw r.error;
+  return window.supabaseClient.storage.from('site-images').getPublicUrl(path).data.publicUrl;
+}
+let lastCanvasFingerprint='';
+function canvasFingerprint(){
+  if(!doc||!doc.body)return '';
+  return doc.title+'|'+doc.body.innerHTML.length+'|'+doc.querySelectorAll('*').length;
+}
+setInterval(async()=>{
+  if(!doc)return;
+  const fp=canvasFingerprint();
+  if(fp && fp!==lastCanvasFingerprint){
+    lastCanvasFingerprint=fp;
+    renderLayers();
+    if(selected && !doc.contains(selected)){selected=null;selector='';refreshInspector()}
+    refreshOverlay();
+  }
+},1200);
+function syncBuilderHeroAssets(){
+  if(!doc)return;
+  try{
+    const phones=Array.isArray(doc.defaultView?.appleSeedProducts)?doc.defaultView.appleSeedProducts.filter(x=>/iphone/i.test(x?.product?.name||'')&&x?.images?.[0]?.url):[];
+    [...doc.querySelectorAll('.as3-screen')].forEach((screen,i)=>{
+      const phoneSelector=stableSelector(screen.parentElement),screenSelector=stableSelector(screen);
+      const phoneItem=draft.items?.[phoneSelector],screenItem=draft.items?.[screenSelector];
+      const custom=phoneItem?.bgImage||screenItem?.bgImage;
+      if(custom){
+        screen.querySelectorAll(':scope > img').forEach(img=>img.remove());
+        screen.style.setProperty('background-image','url("'+String(custom).replace(/\\/g,'\\\\').replace(/"/g,'\\\"')+'")','important');
+        screen.setAttribute('data-builder-custom-image','1');
+        screen.style.setProperty('background-size','contain','important');
+        screen.style.setProperty('background-position','center','important');
+        screen.style.setProperty('background-repeat','no-repeat','important');
+        return;
+      }
+      if(screen.querySelector('img')||!phones.length)return;
+      const item=phones[i%phones.length],url=item?.images?.[0]?.url;if(!url)return;
+      const img=doc.createElement('img');img.src=url;img.alt=item?.product?.name||'iPhone';img.loading='eager';img.decoding='async';img.onerror=()=>img.remove();screen.appendChild(img);
+    });
+  }catch(e){console.warn('[Apple Seed Builder] Hero assets:',e)}
+}
+$('preview').addEventListener('load',async()=>{
+  doc=$('preview').contentDocument;
+  // Canvas hardening: reset the embedded homepage to the top and clear any
+  // stale visibility state restored by the browser cache/session.
+  try{
+    if($('preview').contentWindow) $('preview').contentWindow.scrollTo(0,0);
+    if(doc && doc.documentElement){doc.documentElement.style.visibility='visible';doc.documentElement.style.opacity='1'}
+    if(doc && doc.body){doc.body.style.visibility='visible';doc.body.style.opacity='1'}
+  }catch(_){}
+  doc.addEventListener('click',e=>{
+    if(!editable(e.target))return;
+    let el=e.target;
+    const phone=el.closest?.('.as3-phone');
+    if(phone)el=phone;
+    e.preventDefault();e.stopPropagation();choose(el);
+  },true);
+  // Never let preview navigation escape the Builder shell.
+  doc.addEventListener('auxclick',e=>{if(editable(e.target)){e.preventDefault();e.stopPropagation()}},true);
+  /*
+   * Reliable canvas dragging:
+   * - use pointer events so images/links cannot start native browser dragging;
+   * - keep all pointer tracking inside the iframe document;
+   * - store X/Y immediately in the Builder draft while dragging;
+   * - release the pointer even when it leaves the selected element.
+   */
+  doc.addEventListener('dragstart',e=>{if(e.target&&editable(e.target))e.preventDefault()},true);
+  doc.addEventListener('pointerdown',e=>{
+    let el=e.target;
+    if(e.button!==0||!editable(el))return;
+    /*
+     * Hero phones are real individual .as3-phone elements with nested
+     * .as3-screen/.as3-island/.as3-label children.  A click on the screen
+     * must select the phone itself, otherwise only the nested screen moves.
+     */
+    const phone=el.closest?.('.as3-phone');
+    if(phone)el=phone;
+    if(!editable(el))return;
+    choose(el);
+    const before=snapshot();
+    const st=currentStyle(),base=styleObject(el);
+    drag={type:'move',sx:e.clientX,sy:e.clientY,el,before,
+      bx:Number.isFinite(Number(st.x))?Number(st.x):base.x,
+      by:Number.isFinite(Number(st.y))?Number(st.y):base.y,moved:false,pointerId:e.pointerId};
+    try{el.setPointerCapture(e.pointerId)}catch(_){}
+    e.preventDefault();
+    e.stopPropagation();
+  },true);
+  doc.addEventListener('pointermove',e=>{
+    if(!drag||drag.pointerId!==e.pointerId)return;
+    const dx=e.clientX-drag.sx,dy=e.clientY-drag.sy;
+    if(!drag.moved && Math.hypot(dx,dy)<3)return;
+    drag.moved=true;
+    if(drag.type==='move'){
+      const x=Math.round(drag.bx+dx),y=Math.round(drag.by+dy);
+      if(groupPhones&&drag.el.classList.contains('as3-phone')){
+        [...doc.querySelectorAll('.as3-phone')].forEach(phone=>{const s=styleObject(phone),sel=stableSelector(phone);if(!draft.items[sel])draft.items[sel]={styles:{desktop:{},mobile:{}}};draft.items[sel].styles[deviceKey()].x=Math.round(s.x+dx);draft.items[sel].styles[deviceKey()].y=Math.round(s.y+dy);phone.style.translate=Math.round(s.x+dx)+'px '+Math.round(s.y+dy)+'px'});
+      }else{drag.el.style.translate=x+'px '+y+'px';const v=getItem().styles[deviceKey()];v.x=x;v.y=y}
+      $('x').value=x;$('y').value=y;
+    }
+    refreshOverlay();
+    e.preventDefault();
+  },true);
+  function finishMove(e){
+    if(!drag)return;
+    if(e&&drag.pointerId!==undefined&&e.pointerId!==undefined&&drag.pointerId!==e.pointerId)return;
+    if(drag.moved){
+      if(drag.before)history.push(drag.before);else checkpoint();
+      const v=getItem().styles[deviceKey()];
+      v.x=parseFloat($('x').value)||0;
+      v.y=parseFloat($('y').value)||0;
+      saveDraft();
+      refreshOverlay();
+      toast('Đã di chuyển — bản nháp');
+    }
+    try{if(drag.el&&drag.pointerId!=null)drag.el.releasePointerCapture(drag.pointerId)}catch(_){}
+    drag=null;
+  }
+  doc.addEventListener('pointerup',finishMove,true);
+  doc.addEventListener('pointercancel',finishMove,true);
+  await loadPublished();applyAll();syncBuilderHeroAssets();setTimeout(syncBuilderHeroAssets,250);setTimeout(syncBuilderHeroAssets,800);setTimeout(syncBuilderHeroAssets,1600);refreshPageDesign();setStatus('Sẵn sàng — bấm trực tiếp để chỉnh');renderLayers();
+  // One-shot recovery for a stale/blank iframe cache. Never loops.
+  setTimeout(function(){
+    try{
+      var bodyText=String(doc&&doc.body?doc.body.innerText||'':'').trim();
+      var hasVisual=!!(doc&&doc.body&&doc.body.children&&doc.body.children.length);
+      if((!hasVisual||bodyText.length<20)&&!$('preview').dataset.builderRetry){
+        $('preview').dataset.builderRetry='1';
+        $('preview').src='index.html?appleSeedBuilderPreview=1&builderCanvas=1&v='+Date.now();
+      }
+    }catch(_){}
+  },1200);
+});
+async function askBuilderAI(message){
+  const sb=window.supabaseClient;
+  if(!sb)throw new Error('Supabase chưa sẵn sàng');
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session?.access_token)throw new Error('Phiên Admin đã hết hạn. Hãy đăng nhập lại.');
+  const elements=doc?[...doc.querySelectorAll('h1,h2,h3,h4,p,a,button,img,section,.hero,.service-card,.cta')].filter(editable).slice(0,120).map(el=>({selector:stableSelector(el),tag:el.tagName.toLowerCase(),text:(el.textContent||'').trim().replace(/\\s+/g,' ').slice(0,120),styles:styleObject(el)})):[];
+  const context={
+    page:'Apple Seed Visual Site Builder V3',
+    device,
+    selected:selected?{tag:selected.tagName,text:(selected.textContent||'').trim().slice(0,300),selector}:null,
+    elements,
+    elementCount:doc?doc.querySelectorAll('*').length:0,
+    builderFeatures:['blocks','responsive','desktop-mobile','group-drag','presets','AI Designer','AI direct apply']
+  };
+  const res=await fetch(window.SUPABASE_URL+'/functions/v1/appleseed-ai',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'apikey':window.SUPABASE_ANON_KEY,
+      'Authorization':'Bearer '+session.access_token
+    },
+    body:JSON.stringify({
+      message:'Bạn là AI Designer + Editor của Apple Seed Visual Site Builder. Khi người dùng yêu cầu sửa thiết kế/code giao diện, KHÔNG chỉ tư vấn: hãy tạo thay đổi có thể áp dụng trực tiếp vào Builder. Chỉ sửa selector có trong Context. Không tạo JavaScript nguy hiểm, không đụng auth/payment/security. Trả JSON DUY NHẤT theo schema: {reply:giải thích ngắn,changes:[{selector:selector trong Context,device:desktop|mobile|both,text:nội dung mới tùy chọn,styles:{x,y,w,h,fontSize,radius,color,background},page:{target:hero|main,bgImage,bgColor,overlay,bgSize,bgPosition}}]}. Chỉ đưa field cần đổi. Nếu không chắc selector thì changes=[]. '+message+'\\nContext: '+JSON.stringify(context),
+      history:[],
+      source:'ai-admin',
+      mode:'robot_workspace',
+      image_data:null
+    })
+  });
+  const raw=await res.text();
+  let data=null;
+  try{data=raw?JSON.parse(raw):null}catch{data=raw}
+  if(!res.ok)throw new Error((data&&typeof data==='object'&&data.error)||'AI server lỗi HTTP '+res.status);
+  const reply=(typeof data==='string'?data:(data?.reply||data?.message||data?.content||data?.answer||'')).trim();
+  if(!reply)throw new Error('AI không trả về nội dung.');
+  return reply;
+}
+function aiAdd(role,text){const d=document.createElement('div');d.className='ai-msg '+(role==='user'?'ai-user':'ai-bot');d.textContent=text;$('aiLog').appendChild(d);$('aiLog').scrollTop=$('aiLog').scrollHeight}
+function parseAIEditor(raw){let s=String(raw||'').trim();s=s.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();try{return JSON.parse(s)}catch{const a=s.indexOf('{'),b=s.lastIndexOf('}');if(a>=0&&b>a){try{return JSON.parse(s.slice(a,b+1))}catch{}}return null}}
+function applyAIChanges(result){const changes=Array.isArray(result?.changes)?result.changes:[];if(!changes.length)return 0;checkpoint();let applied=0;
+for(const ch of changes){if(!ch?.selector)continue;let el;try{el=doc.querySelector(ch.selector)}catch{continue}if(!el||!editable(el))continue;
+if(ch.page&&typeof ch.page==='object'){const targets=ch.page.target==='main'?'main':'hero';for(const dk of (ch.device==='both'?['desktop','mobile']:[ch.device||device])){draft.page=draft.page||{desktop:{},mobile:{}};draft.page[dk]=draft.page[dk]||{};Object.assign(draft.page[dk],ch.page,{target:targets})}}
+ const devices=ch.device==='both'?['desktop','mobile']:[ch.device||device];
+for(const dk of devices){selector=ch.selector;const item=getItem();const st=item.styles[dk]=item.styles[dk]||{};const src=ch.styles||{};
+for(const k of ['x','y','w','h','fontSize','radius'])if(src[k]!==undefined&&Number.isFinite(Number(src[k])))st[k]=Number(src[k]);
+for(const k of ['color','background'])if(typeof src[k]==='string'&&src[k])st[k]=src[k];
+if(ch.text!==undefined&&textEditable(el))item.text=String(ch.text);
+}applied++;}applyAll();saveDraft();renderLayers();refreshOverlay();return applied}
+async function runAI(message){aiAdd('user',message);$('aiSend').disabled=true;$('aiSend').textContent='Đang nghĩ…';try{const raw=await askBuilderAI(message);const result=parseAIEditor(raw);if(result){const n=applyAIChanges(result);aiAdd('bot',(result.reply||'Đã xử lý yêu cầu.')+'\n\n'+(n?'✅ Đã áp dụng trực tiếp '+n+' thay đổi vào Builder.':'ℹ️ AI chưa tìm thấy thay đổi an toàn để áp dụng.'));}else aiAdd('bot',raw)}catch(e){aiAdd('bot','⚠️ '+e.message)}finally{$('aiSend').disabled=false;$('aiSend').textContent='Gửi AI'}}
+function blockAction(type){const el=findBlockTarget(type);if(!el){toast('Chưa tìm thấy khối này');return}choose(el);el.scrollIntoView({behavior:'smooth',block:'center'});toast('🎯 Đã chọn khối')}
+$('aiOpen').onclick=()=>{$('aiModal').style.display='flex';$('aiInput').focus()};$('aiClose').onclick=()=>{$('aiModal').style.display='none'};$('aiModal').onclick=e=>{if(e.target===$('aiModal'))$('aiModal').style.display='none'};
+$('aiSend').onclick=()=>{const m=$('aiInput').value.trim();if(m){$('aiInput').value='';runAI(m)}};$('aiInput').onkeydown=e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();$('aiSend').click()}};
+document.querySelectorAll('[data-ai]').forEach(b=>b.onclick=()=>runAI({review:'Phân tích trang chủ hiện tại và 5 việc nên chỉnh để chuyên nghiệp nhưng ít rối.',mobile:'Đề xuất tối ưu Mobile cho Hero và cụm iPhone hiện tại.',premium:'Đề xuất phong cách Apple Seed Premium về khoảng trắng, typography, CTA, card và hình ảnh.',simple:'Thiết kế tư duy homepage ít section hơn nhưng vẫn đủ dịch vụ, đặt lịch, bài viết và Repair Case.',seo:'Đề xuất cấu trúc heading và section tốt cho SEO local sửa iPhone tại Trà Vinh.'}[b.dataset.ai]));
+document.querySelectorAll('[data-block]').forEach(b=>b.onclick=()=>blockAction(b.dataset.block));document.querySelectorAll('[data-preset]').forEach(b=>b.onclick=()=>applyPreset(b.dataset.preset));
+$('simpleMode').onclick=()=>{simpleMode=!simpleMode;document.body.classList.toggle('simple-mode',simpleMode);$('simpleMode').classList.toggle('active',simpleMode);toast(simpleMode?'✨ Chế độ đơn giản':'🔧 Chế độ nâng cao')};
+$('groupPhones').onclick=()=>{groupPhones=!groupPhones;$('groupPhones').classList.toggle('active',groupPhones);toast(groupPhones?'📱 Đã bật kéo cả cụm iPhone':'📱 Đã tắt kéo cả cụm')};
+$('centerSelected').onclick=()=>{if(!selected){toast('Chọn đối tượng trước');return}checkpoint();const v=getItem().styles[deviceKey()];v.x=0;selected.style.translate='0px '+(v.y||0)+'px';$('x').value=0;saveDraft();refreshOverlay();toast('↔️ Đã căn giữa')};
+$('targetHero').onclick=()=>{$('pageDesignPanel').dataset.target='hero';refreshPageDesign();toast('🎯 Đang chỉnh nền Hero')};
+$('targetMain').onclick=()=>{$('pageDesignPanel').dataset.target='main';refreshPageDesign();toast('🎯 Đang chỉnh nền Main')};$('applyPalette').onclick=()=>savePalette(false);$('resetPalette').onclick=()=>savePalette(true);refreshPalette();
+$('applyPageDesign').onclick=async()=>{
+  if(pagePendingFile){try{$('pageBgUrl').value=await upload(pagePendingFile);pagePendingFile=null;$('pageFile').value=''}catch(e){toast('Upload nền lỗi: '+e.message);return}}
+  applyPageDesign();applyAll();refreshOverlay();
+};
+$('pagePick').onclick=()=>$('pageFile').click();
+$('pageFile').onchange=e=>{pagePendingFile=e.target.files[0]||null;if(pagePendingFile){$('pageBgUrl').value='';toast('🖼️ Đã chọn ảnh nền — bấm Áp dụng nền Hero / Trang')};};
+$('reloadCanvas').onclick=()=>{
+  const p=$('preview');p.dataset.builderRetry='1';
+  p.src='index.html?appleSeedBuilderPreview=1&builderCanvas=1&v='+Date.now();
+  toast('↻ Đang nạp lại trang gốc và ảnh mới');
+};
+refreshPageDesign();
+$('applyText').onclick=()=>{if(!selected||!textEditable(selected))return;checkpoint();selected.textContent=$('text').value;getItem().text=selected.textContent;saveDraft();refreshInspector();toast('Đã đổi chữ')};
+$('applyStyle').onclick=()=>{if(!selected)return;checkpoint();const v=getItem().styles[deviceKey()];for(const k of ['x','y','w','h']){const n=parseFloat($(k).value);if(Number.isFinite(n))v[k]=n}for(const k of ['fontSize','radius']){const n=parseFloat($(k).value);if(Number.isFinite(n))v[k]=n}v.color=$('color').value;v.background=$('backgroundColor').value;selected.style.translate=(v.x||0)+'px '+(v.y||0)+'px';if(v.w)selected.style.width=v.w+'px';if(v.h)selected.style.height=v.h+'px';if(v.fontSize)selected.style.fontSize=v.fontSize+'px';if(v.radius!==undefined)selected.style.borderRadius=v.radius+'px';if(v.color)selected.style.color=v.color;if(v.background)selected.style.backgroundColor=v.background;saveDraft();refreshOverlay();toast('Đã áp dụng giao diện')};
+$('pick').onclick=()=>$('file').click();$('file').onchange=e=>{pendingFile=e.target.files[0]||null;if(pendingFile)$('imagePreview').src=URL.createObjectURL(pendingFile)};
+$('applyImage').onclick=async()=>{if(!selected)return;let url=$('imageUrl').value.trim();try{if(pendingFile){url=await upload(pendingFile);pendingFile=null}}catch(e){toast('Upload lỗi: '+e.message);return}if(!url)return;checkpoint();const item=getItem(),visual=imageTarget(selected);if(selected.tagName==='IMG'){selected.src=url;item.src=url}else{visual.style.setProperty('background-image','url("'+String(url).replace(/\\/g,'\\\\').replace(/"/g,'\\\"')+'")','important');visual.setAttribute('data-builder-custom-image','1');visual.querySelectorAll?.(':scope > img').forEach(img=>img.remove());item.bgImage=url}saveDraft();syncPreviewToDraft();refreshInspector();toast('Đã thay hình')};
+$('desktopBtn').onclick=()=>{device='desktop';$('desktopBtn').classList.add('active');$('mobileBtn').classList.remove('active');$('frame').classList.remove('mobile');applyAll();refreshInspector();};
+$('mobileBtn').onclick=()=>{device='mobile';$('mobileBtn').classList.add('active');$('desktopBtn').classList.remove('active');$('frame').classList.add('mobile');applyAll();refreshInspector();};
+$('undo').onclick=()=>{if(!history.length)return;future.push(snapshot());draft=history.pop();saveDraft();applyAll();toast('↶ Undo')};
+$('redo').onclick=()=>{if(!future.length)return;history.push(snapshot());draft=future.pop();saveDraft();applyAll();toast('↷ Redo')};
+$('backAdmin').onclick=()=>{location.href='admin.html'};
+$('save').onclick=saveDraft;$('reload').onclick=()=>location.reload();$('clear').onclick=()=>{if(confirm('Xóa toàn bộ nháp Builder trên máy?')){localStorage.removeItem(DRAFT_KEY);location.reload()}};
+$('syncLive').onclick=async()=>{
+  if(!allowed){toast('Tài khoản không có quyền');return}
+  if(!confirm('Đồng bộ Builder theo đúng bản LIVE hiện tại? Mọi thay đổi nháp chưa xuất bản trên máy sẽ bị thay thế.'))return;
+  setStatus('Đang đồng bộ LIVE…');
+  await loadPublished(true);
+  try{
+    const u=new URL($('preview').src,location.href);
+    u.searchParams.set('v','builder-live-'+Date.now());
+    $('preview').dataset.builderRetry='';
+    $('preview').src=u.toString();
+  }catch(_){}
+  toast('🔄 Builder đã đồng bộ đúng bản LIVE');
+};
+$('publish').onclick=async()=>{
+  if(!allowed){toast('Tài khoản không có quyền');return}
+  saveDraft();
+  setStatus('Đang xuất bản version mới…');
+  const payload=snapshot();payload.builder_version='V3';payload.builder_features=['blocks','responsive','group-drag','presets','ai-designer'];
+  const r=await window.supabaseClient.rpc('apple_seed_builder_publish',{p_config:payload,p_site_key:'default'});
+  if(r.error){toast('Publish lỗi: '+r.error.message);setStatus('Publish lỗi — website chưa đổi');return}
+  const versionNo=r.data?.version_no;
+  // Mark this local draft as based on the version just published.
+  // Future Builder reloads can safely keep unsaved edits only until a newer
+  // published version exists.
+  if(versionNo!=null)localStorage.setItem(PUBLISHED_VERSION_KEY,String(versionNo));
+  toast('🚀 Đã xuất bản V'+(versionNo||''));
+  setStatus('Đã xuất bản V'+(versionNo||''));
+  try{
+    const verify=await window.supabaseClient.from('site_builder_versions').select('version_no,config').eq('site_key','default').eq('status','published').order('version_no',{ascending:false}).limit(1).maybeSingle();
+    if(verify.error) console.warn('Publish verify:',verify.error.message);
+    else if(verify.data?.config?.items){
+      // IMPORTANT: after Publish the canvas must use the exact config that
+      // the live homepage will read. Never leave an older local draft here.
+      draft=JSON.parse(JSON.stringify(verify.data.config));
+      draft.items=draft.items||{};
+      draft.page=draft.page||{desktop:{},mobile:{}};
+      draft.page.desktop=draft.page.desktop||{};
+      draft.page.mobile=draft.page.mobile||{};
+      localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));
+      if(verify.data.version_no!=null)localStorage.setItem(PUBLISHED_VERSION_KEY,String(verify.data.version_no));
+    }
+  }catch(err){console.warn('Publish verify:',err)}
+  refreshPageDesign();
+  applyAll();
+  try{
+    const u=new URL($('preview').src,location.href);
+    u.searchParams.set('v','builder-live-'+Date.now());
+    $('preview').dataset.builderRetry='';
+    $('preview').src=u.toString();
+  }catch(_){}
+};
+$('loginBtn').onclick=async()=>{const r=await window.supabaseClient.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(r.error){$('loginMsg').textContent=r.error.message;return}location.reload()};
+async function checkRole(){
+  const s=await window.supabaseClient.auth.getSession();if(!s.data.session){$('login').style.display='flex';return}
+  const u=await window.supabaseClient.auth.getUser();if(!u.data.user){$('login').style.display='flex';return}
+  const r=await window.supabaseClient.from('profiles').select('role').eq('id',u.data.user.id).maybeSingle();
+  if(r.error||!r.data||!['admin','staff'].includes(r.data.role)){$('login').style.display='flex';$('loginMsg').textContent='Tài khoản không có quyền Visual Site Builder.';return}
+  allowed=true;$('login').style.display='none';setStatus('Đã xác thực · '+r.data.role);
+}
+(function wireResizeHandles(){
+  const handles=[['nw','nw'],['ne','ne'],['sw','sw'],['se','se']];
+  handles.forEach(function(pair){
+    const el=document.querySelector('.handle.'+pair[0]);
+    el.addEventListener('mousedown',function(e){
+      if(!selected)return;e.preventDefault();e.stopPropagation();
+      const st=styleObject(selected);checkpoint();drag={type:pair[1],sx:e.clientX,sy:e.clientY,el:selected,bx:st.x,by:st.y,bw:st.w,bh:st.h,moved:false};
+    });
+  });
+  window.addEventListener('mousemove',function(e){
+    if(!drag||!/^n|^s|^e|^w/.test(drag.type))return;
+    const dx=e.clientX-drag.sx,dy=e.clientY-drag.sy;let w=drag.bw,h=drag.bh;
+    if(drag.type==='se'){w+=dx;h+=dy}if(drag.type==='ne'){w+=dx;h-=dy}if(drag.type==='sw'){w-=dx;h+=dy}if(drag.type==='nw'){w-=dx;h-=dy}
+    w=Math.max(30,Math.round(w));h=Math.max(20,Math.round(h));drag.el.style.width=w+'px';drag.el.style.height=h+'px';$('w').value=w;$('h').value=h;drag.moved=true;refreshOverlay();
+  });
+  window.addEventListener('mouseup',function(){
+    if(drag&&/^(nw|ne|sw|se)$/.test(drag.type)&&drag.moved){const v=getItem().styles[deviceKey()];v.w=parseFloat($('w').value)||drag.bw;v.h=parseFloat($('h').value)||drag.bh;saveDraft();toast('Đã đổi kích thước — bản nháp')}
+    if(drag&&/^(nw|ne|sw|se)$/.test(drag.type))drag=null;
+  });
+})();
+(async()=>{await checkRole()})();
+</script></body></html>
