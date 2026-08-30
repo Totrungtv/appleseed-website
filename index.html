@@ -1182,33 +1182,17 @@ body{
 </style>
 
 <style id="apple-seed-phone-showcase-02">
-/* =========================================================
-   APPLE SEED PHONE SHOWCASE 02
-   UI-only patch: replaces the empty CSS phone shells with the
-   selected phone composition from mẫu 02.
-   IMPORTANT: do not alter page structure, routes, CMS or Supabase.
-   The real Apple Seed logo remains the existing logo.png asset.
-   ========================================================= */
+/* Legacy Hero artwork removed.
+   Hero images are now controlled only by the Visual Site Builder. */
 .as3-stage{
-  background-image:url('hero-mau-35.png')!important;
-  background-repeat:no-repeat!important;
-  background-position:center center!important;
-  background-size:112% auto!important;
+  background-image:none!important;
+  background-color:transparent!important;
 }
 .as3-stage > .as3-phone{
   display:none!important;
 }
 .as3-stage > .as3-benefits{
   z-index:30!important;
-}
-@media(max-width:1100px){
-  .as3-stage{background-size:116% auto!important}
-}
-@media(max-width:760px){
-  .as3-stage{background-size:116% auto!important}
-}
-@media(max-width:480px){
-  .as3-stage{background-size:125% auto!important}
 }
 </style>
 
@@ -2160,47 +2144,22 @@ body{
   }
 
   function normalizeHeroCssOrder(css){
+    /* Legacy Hero image blocks are intentionally ignored.
+       Other Builder/CMS custom CSS remains untouched. */
     let out=String(css||'');
-    const imageStart='/* APPLESEED_HERO_IMAGES_START */',imageEnd='/* APPLESEED_HERO_IMAGES_END */';
-    const ia=out.indexOf(imageStart),ib=out.indexOf(imageEnd);
-    if(ia<0||ib<ia)return out;
-    const imageBlock=out.slice(ia,ib+imageEnd.length);
-    out=(out.slice(0,ia)+out.slice(ib+imageEnd.length)).trim();
-    const presetEnd='/* APPLESEED_HERO_PRESET_END */';
-    const pe=out.indexOf(presetEnd);
-    if(pe<0)return (out?out+'\n\n':'')+imageBlock;
-    return out.slice(0,pe+presetEnd.length)+'\n\n'+imageBlock+out.slice(pe+presetEnd.length);
+    const imageStart='/* APPLESEED_HERO_IMAGES_START */';
+    const imageEnd='/* APPLESEED_HERO_IMAGES_END */';
+    const a=out.indexOf(imageStart), b=out.indexOf(imageEnd);
+    if(a>=0 && b>a) out=out.slice(0,a)+out.slice(b+imageEnd.length);
+    return out;
   }
 
-
-  function applyAppleSeedCmsHeroBackground(css){
-    const raw=String(css||'');
-    const start='/* APPLESEED_HERO_IMAGES_START */', end='/* APPLESEED_HERO_IMAGES_END */';
-    const a=raw.indexOf(start), b=raw.indexOf(end);
-    const block=(a>=0 && b>a)?raw.slice(a,b+end.length):raw;
-    // Accept .as3-stage, #apple-seed-premium-home or legacy .as3-hero declarations.
-    const patterns=[
-      /(?:#apple-seed-premium-home\s+)?\.as3-stage\s*\{[\s\S]*?background(?:-image)?\s*:\s*[^;]*?url\(\s*["']([^"']+)["']\s*\)/i,
-      /(?:#apple-seed-premium-home\s+)?\.as3-hero\s*\{[\s\S]*?background(?:-image)?\s*:\s*[^;]*?url\(\s*["']([^"']+)["']\s*\)/i,
-      /#apple-seed-premium-home\s*\{[\s\S]*?background(?:-image)?\s*:\s*[^;]*?url\(\s*["']([^"']+)["']\s*\)/i
-    ];
-    let url='';
-    for(const re of patterns){ const m=block.match(re); if(m&&m[1]){url=m[1];break;} }
-    if(!url)return false;
-    const safe=url.replace(/\\/g,'\\\\').replace(/"/g,'\\"');
-    const hero=document.querySelector('#apple-seed-premium-home');
-    if(!hero)return false;
-    const setBg=(el)=>{
-      if(!el)return;
-      el.style.setProperty('background-image',`url("${safe}")`,'important');
-      el.style.setProperty('background-size','cover','important');
-      el.style.setProperty('background-position','center center','important');
-      el.style.setProperty('background-repeat','no-repeat','important');
-    };
-    // CMS Hero belongs to the whole Hero section, not the phone stage.
-    setBg(hero);
-    return true;
+  function applyAppleSeedCmsHeroBackground(){
+    /* Hero background is owned by site_builder_versions.config.page.
+       Do not read legacy Hero image CSS from site_theme_settings. */
+    return false;
   }
+
   async function load(){
     if(!sb){staticFallback();bindProductCards();fixNavigation();return}
     try{
@@ -2212,7 +2171,13 @@ body{
       const t={data:themeRows?.[0]||null};
       const n={data:Array.isArray(navRows)?navRows:[],error:null};
       const s={data:Array.isArray(sectionRows)?sectionRows:[],error:null};
-      if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){const normalizedHeroCss=normalizeHeroCssOrder(t.data.custom_css);const st=document.createElement('style');st.textContent=normalizedHeroCss;document.head.appendChild(st);applyAppleSeedCmsHeroBackground(normalizedHeroCss);requestAnimationFrame(()=>{const hero=document.querySelector('#apple-seed-premium-home');if(!hero)return;const marker=normalizedHeroCss.match(/\/\* APPLESEED_HERO_IMAGES_START \*\/([\s\S]*?)\/\* APPLESEED_HERO_IMAGES_END \*\//i);const block=marker?marker[1]:normalizedHeroCss;const bg=block.match(/(?:^|})\s*(?:#apple-seed-premium-home\s+)?\.as3-stage\s*\{[\s\S]*?background(?:-image)?\s*:\s*[^;]*url\(\s*[\"']([^\"']+)[\"']\s*\)/i)||block.match(/(?:^|})\s*(?:#apple-seed-premium-home\s+)?\.as3-hero\s*\{[\s\S]*?background(?:-image)?\s*:\s*[^;]*url\(\s*[\"']([^\"']+)[\"']\s*\)/i);if(bg&&bg[1]){const heroUrl=bg[1];hero.style.setProperty('--cms-hero-bg',`url(\"${heroUrl.replace(/\"/g,'\\\"')}\")`,'important');hero.style.setProperty('background-image',`url(\"${heroUrl.replace(/\"/g,'\\\"')}\")`,'important');hero.style.setProperty('background-size','cover','important');hero.style.setProperty('background-position','center center','important');hero.style.setProperty('background-repeat','no-repeat','important');hero.style.setProperty('background-color','#f7f7f5','important');hero.classList.add('has-cms-hero-bg');const stage=hero.querySelector('.as3-stage');if(stage){stage.style.removeProperty('--cms-hero-bg');stage.style.removeProperty('background-image');stage.style.removeProperty('background-size');stage.style.removeProperty('background-position');stage.style.removeProperty('background-repeat');stage.classList.remove('has-cms-hero-bg');}}})}if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){
+      if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){
+        const normalizedHeroCss=normalizeHeroCssOrder(t.data.custom_css);
+        const st=document.createElement('style');
+        st.textContent=normalizedHeroCss;
+        document.head.appendChild(st);
+      }
+      if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){
       const menu=document.querySelector('.menu');
       const memberAuth=document.getElementById('memberAuthButtons');
       /*
