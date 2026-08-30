@@ -12,7 +12,8 @@
         .eq('site_key','default').eq('status','published').maybeSingle()
         .then(function(r){
           if(r.error||!r.data||!r.data.config||!r.data.config.items)return;
-          if(String(r.data.version_no)===appliedVersion)return;
+          var viewKey=String(r.data.version_no)+'-'+deviceKey();
+          if(viewKey===appliedVersion)return;
           var mobile=deviceKey()==='mobile';
           Object.keys(r.data.config.items).forEach(function(sel){
             var item=r.data.config.items[sel],el;
@@ -30,7 +31,7 @@
             if(st.color)el.style.color=st.color;
             if(st.background)el.style.backgroundColor=st.background;
           });
-          appliedVersion=String(r.data.version_no);
+          appliedVersion=viewKey;
         });
     }catch(_){}
   }
