@@ -3413,18 +3413,31 @@ body.apple-seed-chat-open #apple-seed-ai-board-float{
 
     if(item.bgImage!==undefined && el.tagName!=="IMG"){
       if(item.bgImage){
-        /* A custom Builder image owns this phone slot. Remove any legacy
-           product image injected by the old dynamic Hero loaders. */
-        if(el.matches && el.matches(".as3-screen")){
-          el.querySelectorAll(":scope > img").forEach(function(img){img.remove()});
+        /* Canonical Builder Hero image layer. The same rules are used by the
+           Builder canvas so LIVE and DESIGN cannot render different phone art. */
+        var phone=el.matches && el.matches(".as3-phone") ? el : (el.closest ? el.closest(".as3-phone") : null);
+        var screen=el.matches && el.matches(".as3-screen") ? el : (phone ? phone.querySelector(".as3-screen") : null);
+        if(phone){
+          phone.querySelectorAll(":scope > .as3-screen > img").forEach(function(img){img.remove()});
+          phone.querySelectorAll(":scope > .as3-island,:scope > .as3-label").forEach(function(x){x.style.setProperty("display","none","important")});
+          phone.style.setProperty("background-color","transparent","important");
+          phone.style.setProperty("background-size","contain","important");
+          phone.style.setProperty("background-position","center","important");
+          phone.style.setProperty("background-repeat","no-repeat","important");
+          phone.style.setProperty("box-shadow","none","important");
+          phone.style.setProperty("border","0","important");
+          phone.style.setProperty("padding","0","important");
+        }
+        if(screen){
+          screen.style.setProperty("background","transparent","important");
+          screen.style.setProperty("background-image","none","important");
+          screen.querySelectorAll(":scope > img").forEach(function(img){img.remove()});
         }
         var bg=String(item.bgImage).replace(/\\/g,"\\\\").replace(/"/g,'\\\"');
-        el.style.setProperty("background-image",'url("'+bg+'")',"important");
-        if(el.matches && el.matches(".as3-screen")){
-          el.style.setProperty("background-size","contain","important");
-          el.style.setProperty("background-position","center","important");
-          el.style.setProperty("background-repeat","no-repeat","important");
-        }
+        (phone||el).style.setProperty("background-image",'url("'+bg+'")',"important");
+        (phone||el).style.setProperty("background-size","contain","important");
+        (phone||el).style.setProperty("background-position","center","important");
+        (phone||el).style.setProperty("background-repeat","no-repeat","important");
       }else{
         el.style.removeProperty("background-image");
       }
