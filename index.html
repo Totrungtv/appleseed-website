@@ -1640,6 +1640,98 @@ body{
     overflow:hidden!important;transform:none!important;
   }
 }
+</style><style id="apple-seed-mobile-header-overflow-final-20260830-v3">
+/* FINAL MOBILE HEADER OVERFLOW FIX V3
+   The Member block is a child of .menu, so it must be removed from
+   the six-icon flex row. Keep it inside the header as an independent
+   contained row; never allow email/account text to push the icons.
+*/
+@media (pointer:coarse) and (max-width:760px){
+  .site-header .nav{position:relative!important;padding-bottom:54px!important}
+
+  .site-header .menu{
+    position:relative!important;
+    width:100%!important;
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    overflow:visible!important;
+  }
+
+  /* Six navigation actions only in this row. */
+  .site-header .menu>a{
+    flex:0 0 42px!important;
+    width:42px!important;
+    min-width:42px!important;
+    max-width:42px!important;
+  }
+  .site-header .menu>a.booking-nav{
+    flex:0 0 46px!important;
+    width:46px!important;
+    min-width:46px!important;
+    max-width:46px!important;
+  }
+
+  /* Member account is NOT a seventh item in the icon row. */
+  .site-header .member-auth-buttons{
+    position:absolute!important;
+    left:12px!important;
+    right:12px!important;
+    top:108px!important;
+    width:auto!important;
+    height:38px!important;
+    min-height:38px!important;
+    max-width:none!important;
+    margin:0!important;
+    padding:0 4px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:7px!important;
+    overflow:hidden!important;
+    z-index:5!important;
+  }
+  .site-header .member-user-pill{
+    width:auto!important;
+    max-width:100%!important;
+    min-width:0!important;
+    height:38px!important;
+    flex:0 1 auto!important;
+    display:none!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:5px!important;
+    overflow:hidden!important;
+    white-space:nowrap!important;
+    font-size:12px!important;
+  }
+  .site-header .member-user-pill.show{display:flex!important}
+  .site-header .member-user-pill>span{
+    display:block!important;
+    min-width:0!important;
+    max-width:calc(100vw - 130px)!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+  }
+  .site-header .member-logout-btn{
+    flex:0 0 auto!important;
+    font-size:12px!important;
+    padding:5px 6px!important;
+  }
+
+  /* Logged-out state: login/signup stay contained too. */
+  .site-header .member-auth-buttons .member-auth-btn{
+    flex:0 1 auto!important;
+    width:auto!important;
+    max-width:46vw!important;
+    height:36px!important;
+    min-height:36px!important;
+    padding:6px 12px!important;
+    font-size:12px!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+}
 </style></head>
 
 <body>
