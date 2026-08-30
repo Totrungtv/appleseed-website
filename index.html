@@ -2723,17 +2723,15 @@ const form=document.getElementById("chatForm"),input=document.getElementById("ch
 function setAppleSeedChatOpen(open){
   box.classList.toggle("open",!!open);
   document.body.classList.toggle("apple-seed-chat-open",!!open);
+  /* AI BOARD is independent from the chatbot and must remain clickable. */
   const aiBoard=document.getElementById("apple-seed-ai-board-float");
   if(aiBoard){
-    if(open){
-      aiBoard.style.setProperty("display","none","important");
-      aiBoard.setAttribute("aria-hidden","true");
-      aiBoard.setAttribute("tabindex","-1");
-    }else{
-      aiBoard.style.setProperty("display","inline-flex","important");
-      aiBoard.removeAttribute("aria-hidden");
-      aiBoard.removeAttribute("tabindex");
-    }
+    aiBoard.style.setProperty("display","inline-flex","important");
+    aiBoard.style.setProperty("visibility","visible","important");
+    aiBoard.style.setProperty("opacity","1","important");
+    aiBoard.style.setProperty("pointer-events","auto","important");
+    aiBoard.removeAttribute("aria-hidden");
+    aiBoard.removeAttribute("tabindex");
   }
   if(open) input.focus();
 }
@@ -3228,49 +3226,25 @@ let n=0;const t=setInterval(()=>{if(apply()||++n>50)clearInterval(t)},400);
   }catch(_){}
 })();
 </script>
-<style id="apple-seed-home-hide-ai-board">
-/* Homepage: the AI Board has its own page; keep the floating assistant identity clean. */
-#apple-seed-ai-board-float{display:none!important;visibility:hidden!important;pointer-events:none!important;}
-</style>
-<style id="apple-seed-chat-ai-board-exclusive">
+<style id="apple-seed-ai-board-preserve">
+/* AI BOARD + ROBOT: independent controls. Opening the assistant must NEVER hide AI BOARD. */
+#apple-seed-ai-board-float{
+  display:inline-flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+  z-index:1005!important;
+  right:24px!important;
+  bottom:102px!important;
+}
 body.apple-seed-chat-open #apple-seed-ai-board-float{
-  display:none!important;
-  visibility:hidden!important;
-  opacity:0!important;
-  pointer-events:none!important;
+  display:inline-flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+  z-index:1005!important;
 }
 </style>
-<script>
-(function(){
-  "use strict";
-  function enforce(){
-    var box=document.getElementById("chatBox");
-    var board=document.getElementById("apple-seed-ai-board-float");
-    if(!box||!board)return;
-    var open=box.classList.contains("open");
-    document.body.classList.toggle("apple-seed-chat-open",open);
-    if(open){
-      board.style.setProperty("display","none","important");
-      board.style.setProperty("visibility","hidden","important");
-      board.style.setProperty("opacity","0","important");
-      board.style.setProperty("pointer-events","none","important");
-    }else{
-      board.style.setProperty("display","inline-flex","important");
-      board.style.removeProperty("visibility");
-      board.style.removeProperty("opacity");
-      board.style.removeProperty("pointer-events");
-    }
-  }
-  window.addEventListener("load",enforce,{once:true});
-  document.addEventListener("click",function(e){
-    if(e.target.closest && (e.target.closest("#chatBtn")||e.target.closest("#chatClose"))){
-      setTimeout(enforce,0);
-      setTimeout(enforce,30);
-    }
-  },true);
-  setInterval(enforce,250);
-})();
-</script>
 <script src="site-builder-runtime.js?v=20260830-v4"></script>
 
 <style id="apple-seed-ai-assistant-presence-v1">
