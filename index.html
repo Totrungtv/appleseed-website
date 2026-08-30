@@ -3268,6 +3268,105 @@ body.apple-seed-chat-open #apple-seed-ai-board-float{
 })();
 </script>
 <script src="site-builder-runtime.js?v=20260830-v4"></script>
+
+<style id="apple-seed-ai-assistant-presence-v1">
+/* AI ASSISTANT PRESENCE — floating identity/status next to the robot launcher. */
+#apple-seed-ai-presence{
+  position:fixed;
+  right:24px;
+  bottom:104px;
+  z-index:1002;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:198px;
+  padding:10px 13px;
+  border-radius:16px;
+  background:rgba(18,43,78,.96);
+  color:#fff;
+  box-shadow:0 12px 30px rgba(15,35,65,.24);
+  border:1px solid rgba(255,255,255,.12);
+  cursor:pointer;
+  user-select:none;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+#apple-seed-ai-presence .asai-presence-icon{
+  width:38px;height:38px;flex:0 0 38px;border-radius:12px;overflow:hidden;
+  background:#fff;display:grid;place-items:center;
+}
+#apple-seed-ai-presence .asai-presence-icon img{
+  width:100%;height:100%;object-fit:cover;display:block;
+}
+#apple-seed-ai-presence .asai-presence-copy{min-width:0;line-height:1.15}
+#apple-seed-ai-presence .asai-presence-name{
+  display:block;font-size:15px;font-weight:900;letter-spacing:-.15px;white-space:nowrap;
+}
+#apple-seed-ai-presence .asai-presence-status{
+  display:flex;align-items:center;gap:6px;margin-top:5px;
+  color:#d8e5f7;font-size:11px;font-weight:700;white-space:nowrap;
+}
+#apple-seed-ai-presence .asai-online-dot{
+  width:8px;height:8px;border-radius:50%;background:#20d878;
+  box-shadow:0 0 0 3px rgba(32,216,120,.12),0 0 10px rgba(32,216,120,.55);
+  animation:asai-online-pulse 1.8s ease-in-out infinite;
+}
+@keyframes asai-online-pulse{
+  0%,100%{transform:scale(1);opacity:1}
+  50%{transform:scale(.78);opacity:.72}
+}
+#apple-seed-ai-presence.is-hidden{display:none!important}
+@media(max-width:560px){
+  #apple-seed-ai-presence{
+    right:14px;bottom:91px;min-width:188px;padding:9px 11px;border-radius:14px;
+  }
+  #apple-seed-ai-presence .asai-presence-name{font-size:14px}
+}
+</style>
+<script id="apple-seed-ai-assistant-presence-script">
+(function(){
+  "use strict";
+  function init(){
+    var robot=document.getElementById("chatBtn");
+    var box=document.getElementById("chatBox");
+    if(!robot||!box||document.getElementById("apple-seed-ai-presence")) return false;
+
+    var presence=document.createElement("button");
+    presence.type="button";
+    presence.id="apple-seed-ai-presence";
+    presence.setAttribute("aria-label","Mở Trợ lý AI Apple Seed");
+    presence.innerHTML=
+      '<span class="asai-presence-icon"><img src="apple-seed-robot.png" alt=""></span>'+
+      '<span class="asai-presence-copy">'+
+        '<span class="asai-presence-name">Trợ lý AI Apple Seed</span>'+
+        '<span class="asai-presence-status"><i class="asai-online-dot"></i>Online</span>'+
+      '</span>';
+
+    document.body.appendChild(presence);
+
+    function sync(){
+      var open=box.classList.contains("open");
+      presence.classList.toggle("is-hidden",open);
+      robot.setAttribute("aria-expanded",open?"true":"false");
+    }
+    function openAssistant(){
+      if(!box.classList.contains("open")) robot.click();
+      setTimeout(sync,0);
+      setTimeout(sync,40);
+    }
+    presence.addEventListener("click",openAssistant);
+    robot.addEventListener("click",function(){setTimeout(sync,0);setTimeout(sync,40)},true);
+    var close=document.getElementById("chatClose");
+    if(close) close.addEventListener("click",function(){setTimeout(sync,0);setTimeout(sync,40)},true);
+    sync();
+    setInterval(sync,250);
+    return true;
+  }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",function(){init()});
+  else init();
+})();
+</script>
+
 </body>
 </html>
 <footer class="apple-seed-copyright" aria-label="Bản quyền Apple Seed">
