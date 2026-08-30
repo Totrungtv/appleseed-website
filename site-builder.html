@@ -285,12 +285,14 @@ async function askBuilderAI(message){
   if(!sb)throw new Error('Supabase chưa sẵn sàng');
   const {data:{session}}=await sb.auth.getSession();
   if(!session?.access_token)throw new Error('Phiên Admin đã hết hạn. Hãy đăng nhập lại.');
+  const elements=doc?[...doc.querySelectorAll('h1,h2,h3,h4,p,a,button,img,section,.hero,.service-card,.cta')].filter(editable).slice(0,120).map(el=>({selector:stableSelector(el),tag:el.tagName.toLowerCase(),text:(el.textContent||'').trim().replace(/\\s+/g,' ').slice(0,120),styles:styleObject(el)})):[];
   const context={
     page:'Apple Seed Visual Site Builder V3',
     device,
     selected:selected?{tag:selected.tagName,text:(selected.textContent||'').trim().slice(0,300),selector}:null,
+    elements,
     elementCount:doc?doc.querySelectorAll('*').length:0,
-    builderFeatures:['blocks','responsive','desktop-mobile','group-drag','presets','AI Designer']
+    builderFeatures:['blocks','responsive','desktop-mobile','group-drag','presets','AI Designer','AI direct apply']
   };
   const res=await fetch(window.SUPABASE_URL+'/functions/v1/appleseed-ai',{
     method:'POST',
@@ -300,7 +302,7 @@ async function askBuilderAI(message){
       'Authorization':'Bearer '+session.access_token
     },
     body:JSON.stringify({
-      message:'Bạn là AI Designer của Apple Seed. Tư vấn thiết kế website đơn giản, cao cấp, responsive. Không tự ý sửa production và không tự ý viết code production. '+message+'\\nContext: '+JSON.stringify(context),
+      message:'Bạn là AI Designer + Editor của Apple Seed Visual Site Builder. Khi người dùng yêu cầu sửa thiết kế/code giao diện, KHÔNG chỉ tư vấn: hãy tạo thay đổi có thể áp dụng trực tiếp vào Builder. Chỉ sửa selector có trong Context. Không tạo JavaScript nguy hiểm, không đụng auth/payment/security. Trả JSON DUY NHẤT theo schema: {reply:giải thích ngắn,changes:[{selector:selector trong Context,device:desktop|mobile|both,text:nội dung mới tùy chọn,styles:{x,y,w,h,fontSize,radius,color,background}}]}. Chỉ đưa field cần đổi. Nếu không chắc selector thì changes=[]. '+message+'\\nContext: '+JSON.stringify(context),
       history:[],
       source:'ai-admin',
       mode:'robot_workspace',
@@ -316,7 +318,16 @@ async function askBuilderAI(message){
   return reply;
 }
 function aiAdd(role,text){const d=document.createElement('div');d.className='ai-msg '+(role==='user'?'ai-user':'ai-bot');d.textContent=text;$('aiLog').appendChild(d);$('aiLog').scrollTop=$('aiLog').scrollHeight}
-async function runAI(message){aiAdd('user',message);$('aiSend').disabled=true;$('aiSend').textContent='Đang nghĩ…';try{aiAdd('bot',await askBuilderAI(message))}catch(e){aiAdd('bot','⚠️ '+e.message)}finally{$('aiSend').disabled=false;$('aiSend').textContent='Gửi AI'}}
+function parseAIEditor(raw){let s=String(raw||'').trim();s=s.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();try{return JSON.parse(s)}catch{const a=s.indexOf('{'),b=s.lastIndexOf('}');if(a>=0&&b>a){try{return JSON.parse(s.slice(a,b+1))}catch{}}return null}}
+function applyAIChanges(result){const changes=Array.isArray(result?.changes)?result.changes:[];if(!changes.length)return 0;checkpoint();let applied=0;
+for(const ch of changes){if(!ch?.selector)continue;let el;try{el=doc.querySelector(ch.selector)}catch{continue}if(!el||!editable(el))continue;
+const devices=ch.device==='both'?['desktop','mobile']:[ch.device||device];
+for(const dk of devices){selector=ch.selector;const item=getItem();const st=item.styles[dk]=item.styles[dk]||{};const src=ch.styles||{};
+for(const k of ['x','y','w','h','fontSize','radius'])if(src[k]!==undefined&&Number.isFinite(Number(src[k])))st[k]=Number(src[k]);
+for(const k of ['color','background'])if(typeof src[k]==='string'&&src[k])st[k]=src[k];
+if(ch.text!==undefined&&textEditable(el))item.text=String(ch.text);
+}applied++;}applyAll();saveDraft();refreshLayers();return applied}
+async function runAI(message){aiAdd('user',message);$('aiSend').disabled=true;$('aiSend').textContent='Đang nghĩ…';try{const raw=await askBuilderAI(message);const result=parseAIEditor(raw);if(result){const n=applyAIChanges(result);aiAdd('bot',(result.reply||'Đã xử lý yêu cầu.')+'\n\n'+(n?'✅ Đã áp dụng trực tiếp '+n+' thay đổi vào Builder.':'ℹ️ AI chưa tìm thấy thay đổi an toàn để áp dụng.'));}else aiAdd('bot',raw)}catch(e){aiAdd('bot','⚠️ '+e.message)}finally{$('aiSend').disabled=false;$('aiSend').textContent='Gửi AI'}}
 function blockAction(type){const el=findBlockTarget(type);if(!el){toast('Chưa tìm thấy khối này');return}choose(el);el.scrollIntoView({behavior:'smooth',block:'center'});toast('🎯 Đã chọn khối')}
 $('aiOpen').onclick=()=>{$('aiModal').style.display='flex';$('aiInput').focus()};$('aiClose').onclick=()=>{$('aiModal').style.display='none'};$('aiModal').onclick=e=>{if(e.target===$('aiModal'))$('aiModal').style.display='none'};
 $('aiSend').onclick=()=>{const m=$('aiInput').value.trim();if(m){$('aiInput').value='';runAI(m)}};$('aiInput').onkeydown=e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();$('aiSend').click()}};
