@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Apple Seed — Visual Site Builder</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<style>
+:root{--gold:#d7aa4d;--blue:#1769ff;--ink:#18212b;--muted:#667085;--line:#e1e6ee}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:#edf1f5}button,input,textarea{font:inherit}
+.app{height:100vh;display:grid;grid-template-rows:60px 1fr;overflow:hidden}.top{height:60px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;padding:0 12px;z-index:10}.brand{font-weight:900;letter-spacing:.6px;white-space:nowrap}.brand small{display:block;font-size:8px;letter-spacing:2px;color:#8a94a2}.spacer{flex:1}.status{font-size:11px;color:var(--muted);max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.btn{border:1px solid #d5dce5;background:#fff;color:var(--ink);border-radius:9px;padding:8px 11px;font-weight:800;cursor:pointer}.btn:hover{border-color:#b9c5d4}.btn.active{box-shadow:inset 0 0 0 2px #e4c579}.btn.primary{background:var(--gold);border-color:var(--gold);color:#18130a}.workspace{min-height:0;display:grid;grid-template-columns:235px minmax(0,1fr) 300px}.side{background:#fff;overflow:auto;padding:11px}.left{border-right:1px solid var(--line)}.right{border-left:1px solid var(--line)}.panel{border:1px solid var(--line);border-radius:12px;padding:11px;margin-bottom:10px;background:#fff}.panel h3{font-size:12px;margin:0 0 9px}.muted{font-size:11px;color:var(--muted);line-height:1.5}.canvas{min-width:0;min-height:0;display:flex;justify-content:center;overflow:auto;background:#cbd2db;padding:0}.frame{height:max-content;min-height:100%;width:1440px;max-width:100%;background:#fff;box-shadow:0 0 35px #0002;transition:width .15s}.frame.mobile{width:390px}.frame iframe{display:block;width:100%;height:100vh;min-height:900px;border:0;background:#fff}.hint{background:#fff8e9;border:1px solid #eed8a6;border-radius:9px;padding:9px;font-size:10px;line-height:1.5;color:#735719}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:7px}.field{margin-bottom:8px}.field label{display:flex;justify-content:space-between;font-size:10px;font-weight:850;color:#475467;margin-bottom:4px}.field input,.field textarea{width:100%;border:1px solid #d5dce5;border-radius:8px;padding:7px 8px;background:#fff;outline:0}.field textarea{min-height:74px;resize:vertical}.image-preview{max-width:100%;max-height:130px;display:block;margin:4px auto 8px;object-fit:contain}.drop{border:1px dashed #b9c4d1;border-radius:8px;padding:8px;text-align:center;font-size:10px;cursor:pointer}.layers{max-height:310px;overflow:auto;display:grid;gap:4px}.layer{width:100%;text-align:left;border:1px solid #e5e9ef;background:#fafbfc;border-radius:7px;padding:7px;font-size:10px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.layer.active{border-color:#8eb0ff;background:#eff5ff}.history{display:grid;gap:5px;max-height:230px;overflow:auto}.history-item{display:grid;grid-template-columns:1fr auto;gap:5px;align-items:center;border:1px solid #e5e9ef;border-radius:7px;padding:6px}.history-item small{font-size:9px;color:var(--muted)}.overlay{position:fixed;display:none;border:2px solid var(--blue);pointer-events:none;z-index:50}.overlay .label{position:absolute;left:-2px;top:-21px;background:var(--blue);color:#fff;padding:3px 6px;border-radius:4px 4px 0 0;font-size:9px;font-weight:850}.handle{position:absolute;width:9px;height:9px;background:#fff;border:2px solid var(--blue);border-radius:2px;pointer-events:auto}.nw{left:-6px;top:-6px;cursor:nwse-resize}.ne{right:-6px;top:-6px;cursor:nesw-resize}.sw{left:-6px;bottom:-6px;cursor:nesw-resize}.se{right:-6px;bottom:-6px;cursor:nwse-resize}.toast{position:fixed;right:16px;bottom:16px;background:#17202a;color:#fff;padding:9px 12px;border-radius:8px;font-size:11px;display:none;z-index:100}.login{position:fixed;inset:0;background:#101828dd;display:flex;align-items:center;justify-content:center;z-index:200}.login-card{width:min(390px,calc(100% - 24px));background:#fff;border-radius:15px;padding:20px;box-shadow:0 25px 70px #0005}.login-card h2{margin:0 0 6px}.danger{color:#b42318;font-size:10px;margin-top:7px}
+@media(max-width:980px){.workspace{grid-template-columns:200px minmax(0,1fr)}.right{display:none}.status{display:none}}@media(max-width:650px){.left{display:none}.workspace{grid-template-columns:1fr}.top .btn{padding:7px 8px}.brand small{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div class="brand">APPLE SEED <small>VISUAL SITE BUILDER V2</small></div>
+  <button class="btn active" id="desktopBtn">🖥 Desktop</button><button class="btn" id="mobileBtn">📱 Mobile</button>
+  <span class="spacer"></span><span class="status" id="status">Đang kiểm tra quyền…</span>
+  <button class="btn" id="undo">↶</button><button class="btn" id="redo">↷</button><button class="btn" id="save">💾 Nháp</button><button class="btn primary" id="publish">🚀 Xuất bản</button>
+</header>
+<div class="workspace">
+<aside class="side left">
+  <div class="panel"><h3>🎯 Cách dùng</h3><div class="hint">Bấm trực tiếp vào <b>chữ / ảnh / khối</b> trong trang. Kéo khung để di chuyển. Kéo 4 góc để đổi kích thước. Mọi thay đổi chỉ nằm trong Builder cho tới khi bấm <b>Xuất bản</b>.</div></div>
+  <div class="panel"><h3>🧱 Thành phần</h3><div id="layerList" class="layers"><div class="muted">Chưa tải trang.</div></div></div>
+  <div class="panel"><h3>📦 Bản nháp</h3><button class="btn" id="reload" style="width:100%;margin-bottom:6px">↻ Nạp lại</button><button class="btn" id="clear" style="width:100%">Xóa nháp máy</button></div>
+  <div class="panel"><h3>🛡 An toàn</h3><div class="muted">Builder dùng cấu hình riêng trong Supabase. Không sửa HTML gốc. Publish tạo version mới; bản cũ được giữ để rollback.</div></div>
+</aside>
+<main class="canvas"><div class="frame" id="frame"><iframe id="preview" src="index.html?appleSeedBuilderPreview=1"></iframe></div></main>
+<aside class="side right">
+  <div class="panel"><h3>🖱 Đối tượng</h3><div id="info" class="selected-name">Chưa chọn</div><span id="tag" class="tag" hidden></span></div>
+  <div class="panel" id="contentPanel" hidden><h3>✏️ Nội dung</h3><div class="field"><label>Chữ</label><textarea id="text"></textarea></div><button class="btn primary" id="applyText" style="width:100%">Áp dụng chữ</button></div>
+  <div class="panel" id="imagePanel" hidden><h3>🖼 Hình ảnh</h3><img id="imagePreview" class="image-preview" alt=""><div class="drop" id="pick">Chọn ảnh từ máy</div><input id="file" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden><div class="field" style="margin-top:8px"><label>URL ảnh</label><input id="imageUrl" placeholder="https://…"></div><button class="btn primary" id="applyImage" style="width:100%">Áp dụng hình</button></div>
+  <div class="panel" id="stylePanel" hidden><h3>🎨 Giao diện — <span id="deviceLabel">Desktop</span></h3>
+    <div class="grid2"><div class="field"><label>X (px)</label><input id="x" type="number"></div><div class="field"><label>Y (px)</label><input id="y" type="number"></div></div>
+    <div class="grid2"><div class="field"><label>Rộng</label><input id="w" type="number" min="1"></div><div class="field"><label>Cao</label><input id="h" type="number" min="1"></div></div>
+    <div class="grid2"><div class="field"><label>Cỡ chữ</label><input id="fontSize" type="number" min="1"></div><div class="field"><label>Bo góc</label><input id="radius" type="number" min="0"></div></div>
+    <div class="grid2"><div class="field"><label>Màu chữ</label><input id="color" type="text" placeholder="#17233d"></div><div class="field"><label>Nền</label><input id="background" type="text" placeholder="transparent"></div></div>
+    <button class="btn primary" id="applyStyle" style="width:100%">Áp dụng giao diện</button>
+  </div>
+  <div class="panel"><h3>🕘 Lịch sử xuất bản</h3><div id="history" class="history"><div class="muted">Chưa tải.</div></div></div>
+</aside>
+</div></div>
+<div class="overlay" id="overlay"><div class="label" id="overlayLabel"></div><i class="handle nw"></i><i class="handle ne"></i><i class="handle sw"></i><i class="handle se"></i></div>
+<div class="toast" id="toast"></div>
+<div class="login" id="login"><div class="login-card"><h2>Apple Seed Builder</h2><p class="muted">Khu vực chỉnh website. Chỉ Admin/Staff được phép.</p><div class="field"><label>Email</label><input id="email" type="email" autocomplete="username"></div><div class="field"><label>Mật khẩu</label><input id="password" type="password" autocomplete="current-password"></div><button class="btn primary" id="loginBtn" style="width:100%">Đăng nhập</button><div id="loginMsg" class="danger"></div></div></div>
+<script>
+const $=id=>document.getElementById(id);
+const DRAFT_KEY='appleSeedVisualBuilderV2';
+let doc=null,selected=null,selector='',device='desktop',draft={items:{}},history=[],future=[],drag=null,pendingFile=null,allowed=false;
+
+function toast(msg){$('toast').textContent=msg;$('toast').style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>{$('toast').style.display='none'},2200)}
+function setStatus(msg){$('status').textContent=msg}
+function deviceKey(){return device==='mobile'?'mobile':'desktop'}
+function snapshot(){return JSON.parse(JSON.stringify(draft))}
+function checkpoint(){history.push(snapshot());if(history.length>40)history.shift();future=[]}
+function stableSelector(el){
+  if(el.id)return '#'+CSS.escape(el.id);
+  const parts=[];let n=el;
+  while(n&&n!==doc.body&&n.nodeType===1){
+    let p=n.tagName.toLowerCase();
+    const classes=[...n.classList].filter(c=>c.length&&!/^(active|selected|hover)/.test(c)).slice(0,2);
+    if(classes.length)p+='.'+classes.map(CSS.escape).join('.');
+    if(n.parentElement){
+      const same=[...n.parentElement.children].filter(x=>x.tagName===n.tagName);
+      if(same.length>1)p+=':nth-of-type('+(same.indexOf(n)+1)+')';
+    }
+    parts.unshift(p);n=n.parentElement;
+  }
+  return parts.join('>');
+}
+function editable(el){return !!el&&el!==doc.body&&el!==doc.documentElement&&!['SCRIPT','STYLE','SVG','PATH','IFRAME','INPUT','TEXTAREA','SELECT','VIDEO','AUDIO','CANVAS'].includes(el.tagName)}
+function textEditable(el){return editable(el)&&el.tagName!=='IMG'&&el.children.length===0&&el.textContent.trim().length>0}
+function getItem(){if(!draft.items[selector])draft.items[selector]={styles:{desktop:{},mobile:{}}};const i=draft.items[selector];i.styles=i.styles||{};i.styles.desktop=i.styles.desktop||{};i.styles.mobile=i.styles.mobile||{};return i}
+function styleObject(el){const s=el.style,r=el.getBoundingClientRect(),tr=(s.translate||'').trim().split(/\\s+/);return{x:parseFloat(tr[0])||0,y:parseFloat(tr[1])||0,w:parseFloat(s.width)||Math.round(r.width),h:parseFloat(s.height)||Math.round(r.height),fontSize:parseFloat(s.fontSize)||'',radius:parseFloat(s.borderRadius)||'',color:s.color||'',background:s.backgroundColor||''}}
+function currentStyle(){return getItem().styles[deviceKey()]||{}}
+function refreshOverlay(){
+  const o=$('overlay');if(!selected){o.style.display='none';return}
+  const r=selected.getBoundingClientRect(),fr=$('preview').getBoundingClientRect();
+  o.style.display='block';o.style.left=(fr.left+r.left)+'px';o.style.top=(fr.top+r.top)+'px';o.style.width=r.width+'px';o.style.height=r.height+'px';$('overlayLabel').textContent=selected.tagName.toLowerCase();
+}
+function refreshInspector(){
+  if(!selected){$('info').textContent='Chưa chọn';$('tag').hidden=true;$('contentPanel').hidden=true;$('imagePanel').hidden=true;$('stylePanel').hidden=true;$('layerList').innerHTML='<div class="muted">Chưa chọn đối tượng.</div>';refreshOverlay();return}
+  $('info').textContent=selector;$('tag').hidden=false;$('tag').textContent=selected.tagName.toLowerCase();
+  $('contentPanel').hidden=!textEditable(selected);
+  $('imagePanel').hidden=!(selected.tagName==='IMG'||getComputedStyle(selected).backgroundImage!=='none');
+  $('stylePanel').hidden=false;
+  if(textEditable(selected))$('text').value=selected.textContent;
+  if(selected.tagName==='IMG'){$('imagePreview').src=selected.currentSrc||selected.src;$('imageUrl').value=selected.src}
+  const st=styleObject(selected),v=currentStyle();
+  $('x').value=v.x??st.x;$('y').value=v.y??st.y;$('w').value=v.w??st.w;$('h').value=v.h??st.h;$('fontSize').value=v.fontSize??st.fontSize;$('radius').value=v.radius??st.radius;$('color').value=v.color??st.color;$('background').value=v.background??st.background;$('deviceLabel').textContent=device==='mobile'?'Mobile':'Desktop';
+  refreshOverlay();renderLayers();
+}
+function choose(el){if(!editable(el))return;selected=el;selector=stableSelector(el);refreshInspector()}
+function renderLayers(){
+  if(!doc)return;
+  const els=[...doc.querySelectorAll('h1,h2,h3,p,a,img,.cta,.service-card,.hero,.section-kicker')].filter(editable);
+  const uniq=[],seen=new Set();
+  for(const el of els){const s=stableSelector(el);if(!seen.has(s)){seen.add(s);uniq.push([el,s])}}
+  $('layerList').innerHTML=uniq.slice(0,80).map(x=>'<button class="layer '+(x[1]===selector?'active':'')+'" data-s="'+encodeURIComponent(x[1])+'">'+x[0].tagName.toLowerCase()+' — '+((x[0].textContent||x[0].alt||'').trim().replace(/\\s+/g,' ').slice(0,42)||'(hình)')+'</button>').join('');
+  $('layerList').querySelectorAll('.layer').forEach(b=>b.onclick=()=>{try{choose(doc.querySelector(decodeURIComponent(b.dataset.s)))}catch{}});
+}
+function applyAll(){
+  if(!doc)return;
+  for(const [s,item] of Object.entries(draft.items||{})){
+    let el;try{el=doc.querySelector(s)}catch{continue}if(!el)continue;
+    if(item.text!==undefined&&textEditable(el))el.textContent=item.text;
+    if(item.src!==undefined&&el.tagName==='IMG')el.src=item.src;
+    if(item.bgImage!==undefined&&el.tagName!=='IMG')el.style.backgroundImage=item.bgImage?'url("'+item.bgImage+'")':'';
+    const st=(item.styles||{})[deviceKey()]||{};
+    if(st.x!==undefined||st.y!==undefined)el.style.translate=(st.x||0)+'px '+(st.y||0)+'px';
+    if(st.w!==undefined)el.style.width=st.w+'px';
+    if(st.h!==undefined)el.style.height=st.h+'px';
+    if(st.fontSize!==undefined&&st.fontSize!=='')el.style.fontSize=st.fontSize+'px';
+    if(st.radius!==undefined&&st.radius!=='')el.style.borderRadius=st.radius+'px';
+    if(st.color)el.style.color=st.color;
+    if(st.background)el.style.backgroundColor=st.background;
+  }
+  refreshInspector();
+}
+function loadDraft(){try{const raw=localStorage.getItem(DRAFT_KEY);if(raw){draft=JSON.parse(raw);if(!draft.items)draft={items:{}}}}catch{draft={items:{}}}}
+function saveDraft(){localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));toast('💾 Đã lưu nháp trên máy')}
+async function loadPublished(){
+  const r=await window.supabaseClient.from('site_builder_versions').select('id,version_no,config,created_at').eq('site_key','default').eq('status','published').maybeSingle();
+  if(r.error){$('history').innerHTML='<div class="muted">CMS chưa có Builder V2. Chạy migration trước khi Publish.</div>';return}
+  if(r.data?.config?.items&&!localStorage.getItem(DRAFT_KEY))draft=r.data.config;
+  const h=await window.supabaseClient.from('site_builder_versions').select('id,version_no,status,created_at').eq('site_key','default').order('version_no',{ascending:false}).limit(15);
+  if(h.error){$('history').innerHTML='<div class="muted">Không đọc được lịch sử.</div>';return}
+  $('history').innerHTML=h.data?.length?h.data.map(v=>'<div class="history-item"><div><b>V'+v.version_no+'</b> <small>'+v.status+' · '+new Date(v.created_at).toLocaleString('vi-VN')+'</small></div>'+(v.status!=='published'?'<button class="btn" data-version="'+v.id+'">Khôi phục</button>':'<small>LIVE</small>')+'</div>').join(''):'<div class="muted">Chưa có version.</div>';
+  $('history').querySelectorAll('[data-version]').forEach(b=>b.onclick=()=>rollback(b.dataset.version));
+}
+async function rollback(id){
+  if(!confirm('Khôi phục version này và xuất bản thành bản mới?'))return;
+  setStatus('Đang rollback…');const r=await window.supabaseClient.rpc('apple_seed_builder_rollback',{p_version_id:id});
+  if(r.error){toast('Rollback lỗi: '+r.error.message);setStatus('Lỗi');return}
+  toast('↩️ Đã rollback và xuất bản');setStatus('Đã rollback');await loadPublished();location.reload();
+}
+async function upload(file){
+  const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');
+  const path='builder/'+Date.now()+'-'+Math.random().toString(36).slice(2,8)+'.'+ext;
+  const r=await window.supabaseClient.storage.from('site-images').upload(path,file,{upsert:false,contentType:file.type});
+  if(r.error)throw r.error;
+  return window.supabaseClient.storage.from('site-images').getPublicUrl(path).data.publicUrl;
+}
+$('preview').addEventListener('load',async()=>{
+  doc=$('preview').contentDocument;
+  doc.addEventListener('click',e=>{if(!editable(e.target))return;e.preventDefault();e.stopPropagation();choose(e.target)},true);
+  doc.addEventListener('mousedown',e=>{
+    const el=e.target;if(!editable(el))return;choose(el);
+    drag={type:'move',sx:e.clientX,sy:e.clientY,el,bx:currentStyle().x??styleObject(el).x,by:currentStyle().y??styleObject(el).y,moved:false};e.preventDefault();
+  },true);
+  doc.addEventListener('mousemove',e=>{
+    if(!drag)return;const dx=e.clientX-drag.sx,dy=e.clientY-drag.sy;if(Math.abs(dx)+Math.abs(dy)<3)return;drag.moved=true;
+    if(drag.type==='move'){const x=Math.round(drag.bx+dx),y=Math.round(drag.by+dy);drag.el.style.translate=x+'px '+y+'px';$('x').value=x;$('y').value=y}
+    else{let w=drag.bw,h=drag.bh;if(drag.type==='se'){w+=dx;h+=dy}if(drag.type==='ne'){w+=dx;h-=dy}if(drag.type==='sw'){w-=dx;h+=dy}if(drag.type==='nw'){w-=dx;h-=dy}w=Math.max(30,Math.round(w));h=Math.max(20,Math.round(h));drag.el.style.width=w+'px';drag.el.style.height=h+'px';$('w').value=w;$('h').value=h}
+    refreshOverlay();
+  },true);
+  doc.addEventListener('mouseup',()=>{if(drag?.moved){checkpoint();const v=getItem().styles[deviceKey()];v.x=parseFloat($('x').value)||0;v.y=parseFloat($('y').value)||0;v.w=parseFloat($('w').value)||undefined;v.h=parseFloat($('h').value)||undefined;saveDraft();toast('Đã chỉnh — bản nháp')}drag=null},true);
+  loadDraft();await loadPublished();applyAll();setStatus('Sẵn sàng — bấm trực tiếp để chỉnh');renderLayers();
+});
+$('applyText').onclick=()=>{if(!selected||!textEditable(selected))return;checkpoint();selected.textContent=$('text').value;getItem().text=selected.textContent;saveDraft();refreshInspector();toast('Đã đổi chữ')};
+$('applyStyle').onclick=()=>{if(!selected)return;checkpoint();const v=getItem().styles[deviceKey()];for(const k of ['x','y','w','h']){const n=parseFloat($(k).value);if(Number.isFinite(n))v[k]=n}for(const k of ['fontSize','radius']){const n=parseFloat($(k).value);if(Number.isFinite(n))v[k]=n}v.color=$('color').value.trim();v.background=$('background').value.trim();selected.style.translate=(v.x||0)+'px '+(v.y||0)+'px';if(v.w)selected.style.width=v.w+'px';if(v.h)selected.style.height=v.h+'px';if(v.fontSize)selected.style.fontSize=v.fontSize+'px';if(v.radius!==undefined)selected.style.borderRadius=v.radius+'px';if(v.color)selected.style.color=v.color;if(v.background)selected.style.backgroundColor=v.background;saveDraft();refreshOverlay();toast('Đã áp dụng giao diện')};
+$('pick').onclick=()=>$('file').click();$('file').onchange=e=>{pendingFile=e.target.files[0]||null;if(pendingFile)$('imagePreview').src=URL.createObjectURL(pendingFile)};
+$('applyImage').onclick=async()=>{if(!selected)return;let url=$('imageUrl').value.trim();try{if(pendingFile){url=await upload(pendingFile);pendingFile=null}}catch(e){toast('Upload lỗi: '+e.message);return}if(!url)return;checkpoint();const item=getItem();if(selected.tagName==='IMG'){selected.src=url;item.src=url}else{selected.style.backgroundImage='url("'+url+'")';item.bgImage=url}saveDraft();refreshInspector();toast('Đã thay hình')};
+$('desktopBtn').onclick=()=>{device='desktop';$('desktopBtn').classList.add('active');$('mobileBtn').classList.remove('active');$('frame').classList.remove('mobile');applyAll()};
+$('mobileBtn').onclick=()=>{device='mobile';$('mobileBtn').classList.add('active');$('desktopBtn').classList.remove('active');$('frame').classList.add('mobile');applyAll()};
+$('undo').onclick=()=>{if(!history.length)return;future.push(snapshot());draft=history.pop();saveDraft();applyAll();toast('↶ Undo')};
+$('redo').onclick=()=>{if(!future.length)return;history.push(snapshot());draft=future.pop();saveDraft();applyAll();toast('↷ Redo')};
+$('save').onclick=saveDraft;$('reload').onclick=()=>location.reload();$('clear').onclick=()=>{if(confirm('Xóa toàn bộ nháp Builder trên máy?')){localStorage.removeItem(DRAFT_KEY);location.reload()}};
+$('publish').onclick=async()=>{if(!allowed){toast('Tài khoản không có quyền');return}saveDraft();setStatus('Đang xuất bản version mới…');const r=await window.supabaseClient.rpc('apple_seed_builder_publish',{p_config:draft,p_site_key:'default'});if(r.error){toast('Publish lỗi: '+r.error.message);setStatus('Publish lỗi — website chưa đổi');return}toast('🚀 Đã xuất bản V'+(r.data?.version_no||''));setStatus('Đã xuất bản');await loadPublished()};
+$('loginBtn').onclick=async()=>{const r=await window.supabaseClient.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(r.error){$('loginMsg').textContent=r.error.message;return}location.reload()};
+async function checkRole(){
+  const s=await window.supabaseClient.auth.getSession();if(!s.data.session){$('login').style.display='flex';return}
+  const u=await window.supabaseClient.auth.getUser();if(!u.data.user){$('login').style.display='flex';return}
+  const r=await window.supabaseClient.from('profiles').select('role').eq('id',u.data.user.id).maybeSingle();
+  if(r.error||!r.data||!['admin','staff'].includes(r.data.role)){$('login').style.display='flex';$('loginMsg').textContent='Tài khoản không có quyền Visual Site Builder.';return}
+  allowed=true;$('login').style.display='none';setStatus('Đã xác thực · '+r.data.role);
+}
+(function wireResizeHandles(){
+  const handles=[['nw','nw'],['ne','ne'],['sw','sw'],['se','se']];
+  handles.forEach(function(pair){
+    const el=document.querySelector('.handle.'+pair[0]);
+    el.addEventListener('mousedown',function(e){
+      if(!selected)return;e.preventDefault();e.stopPropagation();
+      const st=styleObject(selected);drag={type:pair[1],sx:e.clientX,sy:e.clientY,el:selected,bx:st.x,by:st.y,bw:st.w,bh:st.h,moved:false};
+    });
+  });
+})();
+(async()=>{await checkRole()})();
+</script></body></html>
