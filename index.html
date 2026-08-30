@@ -2965,6 +2965,13 @@ form.onsubmit=async e=>{
 })();
 </script>
 
+<style id="apple-seed-builder-page-bg-single-source">
+#apple-seed-premium-home.builder-has-page-bg .as3-stage,
+#apple-seed-premium-home.builder-has-page-bg .as3-stage:before{
+  background-image:none!important;
+  background-color:transparent!important;
+}
+</style>
 <script id="apple-seed-final-ux">
 (function(){
   "use strict";
@@ -3476,13 +3483,32 @@ body.apple-seed-chat-open #apple-seed-ai-board-float{
       if(target){
         var img=page.bgImage?String(page.bgImage).replace(/\\/g,"\\\\").replace(/"/g,'\\\"'):"";
         var ov=page.overlay&&page.overlay!=="transparent"?String(page.overlay):"";
+        var isHero=(page.target!=="main" && (target.matches&&target.matches("#apple-seed-premium-home,.as3-hero,.hero,section:first-of-type")));
         if(img&&ov) target.style.setProperty("background-image",'linear-gradient('+ov+','+ov+'),url("'+img+'")',"important");
         else if(img) target.style.setProperty("background-image",'url("'+img+'")',"important");
         else if(ov) target.style.setProperty("background-image",'linear-gradient('+ov+','+ov+')',"important");
+        else if(!img) target.style.removeProperty("background-image");
         if(page.bgColor) target.style.setProperty("background-color",String(page.bgColor),"important");
         if(page.bgSize) target.style.setProperty("background-size",String(page.bgSize),"important");
         if(page.bgPosition) target.style.setProperty("background-position",String(page.bgPosition),"important");
         target.style.setProperty("background-repeat","no-repeat","important");
+
+        /* Builder Hero background is the single source of truth.
+           The old Hero stage contains hard-coded hero-mau-35.png; hide it
+           whenever the user has selected a Builder Hero background. */
+        if(isHero){
+          var rootHero=document.querySelector("#apple-seed-premium-home")||target;
+          if(img){
+            rootHero.classList.add("builder-has-page-bg");
+            var legacyStage=rootHero.querySelector(".as3-stage");
+            if(legacyStage){
+              legacyStage.style.setProperty("background-image","none","important");
+              legacyStage.style.setProperty("background-color","transparent","important");
+            }
+          }else{
+            rootHero.classList.remove("builder-has-page-bg");
+          }
+        }
       }
     }finally{applying=false}
   }
