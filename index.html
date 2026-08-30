@@ -3458,9 +3458,7 @@ body.apple-seed-chat-open #apple-seed-ai-board-float{
         if(page.bgPosition) target.style.setProperty("background-position",String(page.bgPosition),"important");
         target.style.setProperty("background-repeat","no-repeat","important");
 
-        /* Builder Hero background is the single source of truth.
-           The old Hero stage contains hard-coded hero-mau-35.png; hide it
-           whenever the user has selected a Builder Hero background. */
+        /* Builder Hero background is the single source of truth. */
         if(isHero){
           var rootHero=document.querySelector("#apple-seed-premium-home")||target;
           if(img){
