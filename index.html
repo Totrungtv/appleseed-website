@@ -3493,6 +3493,34 @@ body.apple-seed-chat-open #apple-seed-ai-board-float{
     if(!el) return;
 
     if(item.text!==undefined && textEditable(el)) el.textContent=String(item.text);
+
+    /* Builder link — persisted with the item and applied on LIVE. */
+    if(item.link && typeof item.link.url==="string" && item.link.url.trim()){
+      var linkUrl=item.link.url.trim();
+      var linkTarget=item.link.target==="_blank"?"_blank":"_self";
+      if(el.tagName==="A"){
+        el.setAttribute("href",linkUrl);
+        if(linkTarget==="_blank"){
+          el.setAttribute("target","_blank");
+          el.setAttribute("rel","noopener noreferrer");
+        }else{
+          el.removeAttribute("target");
+          el.removeAttribute("rel");
+        }
+      }else{
+        el.setAttribute("data-apple-seed-link",linkUrl);
+        el.setAttribute("data-apple-seed-link-target",linkTarget);
+        el.style.setProperty("cursor","pointer","important");
+      }
+    }else if(el.tagName==="A"){
+      el.removeAttribute("href");
+      el.removeAttribute("target");
+      el.removeAttribute("rel");
+    }else{
+      el.removeAttribute("data-apple-seed-link");
+      el.removeAttribute("data-apple-seed-link-target");
+    }
+
     if(item.src!==undefined && el.tagName==="IMG") el.src=String(item.src);
 
     if(item.bgImage!==undefined && el.tagName!=="IMG"){
@@ -3529,6 +3557,16 @@ body.apple-seed-chat-open #apple-seed-ai-board-float{
     setStyle(el,"color",st.color||undefined);
     setStyle(el,"background-color",st.background||undefined);
   }
+
+  document.addEventListener("click",function(e){
+    var linked=e.target && e.target.closest ? e.target.closest("[data-apple-seed-link]") : null;
+    if(!linked || linked.tagName==="A") return;
+    var url=linked.getAttribute("data-apple-seed-link");
+    if(!url) return;
+    var target=linked.getAttribute("data-apple-seed-link-target")||"_self";
+    if(target==="_blank") window.open(url,"_blank","noopener,noreferrer");
+    else window.location.href=url;
+  },true);
 
   function applyConfig(){
     if(applying || !currentConfig || !currentConfig.items) return;
