@@ -592,4 +592,95 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
  });
 })();
 </script>
+
+<script>
+/* ===== APPLE SEED MEMBER LOGIN GATE =====
+   Full UI remains visible. Protected AI/YouTube/community actions
+   require a Member session and open the existing login modal when
+   the visitor is logged out.
+*/
+(()=>{
+  const sb=window.supabaseClient;
+  const $=id=>document.getElementById(id);
+
+  async function requireMemberLogin(){
+    try{
+      const r=await sb?.auth?.getSession();
+      if(r?.data?.session?.user) return true;
+    }catch(e){
+      console.warn('Apple Seed Member session check:',e);
+    }
+
+    $('asAccountBtn')?.click();
+    setTimeout(()=>{
+      const st=$('asAuthStatus');
+      if(st){
+        st.textContent='🔐 Vui lòng đăng nhập Member để sử dụng tính năng này.';
+        st.className='as-status show err';
+      }
+    },0);
+    return false;
+  }
+
+  window.__appleSeedRequireMemberLogin=requireMemberLogin;
+
+  const clickSelectors=[
+    '#youtubeSearchBtn',
+    '#youtubeOpenUrl',
+    '.youtube-card',
+    '.repair-video-card',
+    '#boardOpenVideoSubmit',
+    '#youtubeSubmitBtn',
+    '#analyze',
+    '#upload',
+    '#asAnalyzeSchematic',
+    '#asPostCase',
+    '#asCaseChat',
+    '#asPrivateChatBtn'
+  ];
+
+  document.addEventListener('click',async e=>{
+    const target=e.target?.closest?.(clickSelectors.join(','));
+    if(!target) return;
+
+    const ok=await requireMemberLogin();
+    if(!ok){
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+    }
+  },true);
+
+  document.addEventListener('submit',async e=>{
+    if(e.target?.id!=='youtubeSubmitForm') return;
+    const ok=await requireMemberLogin();
+    if(!ok){
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+    }
+  },true);
+
+  document.addEventListener('keydown',async e=>{
+    if(e.key!=='Enter' || e.target?.id!=='youtubeQuery') return;
+    const ok=await requireMemberLogin();
+    if(!ok){
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+    }
+  },true);
+
+  document.addEventListener('change',async e=>{
+    if(e.target?.id!=='boardVideoCategory') return;
+    const ok=await requireMemberLogin();
+    if(!ok){
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+    }
+  },true);
+})();
+</script>
+
 </body></html>
