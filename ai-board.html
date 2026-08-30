@@ -170,8 +170,22 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
     <div class="as-chat-layout">
       <aside class="as-chat-side">
         <div class="as-chat-tabs"><button class="active" id="asGroupTab" type="button">👥 Nhóm</button><button id="asPrivateTab" type="button">🔒 Riêng</button></div>
-        <div id="asGroupPanel"><h3>Nhóm của tôi</h3><div id="asGroupList" class="as-chat-list"></div></div>
-        <div id="asPrivatePanel" style="display:none"><h3>Tìm kỹ thuật viên</h3><div class="as-search-member"><input id="asMemberSearch" placeholder="Tên thành viên..."><button class="as-smallbtn primary" id="asMemberSearchBtn" type="button">🔎</button></div><div id="asMemberResults" class="as-member-results"></div></div>
+        <div id="asGroupPanel">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h3 style="margin:0">Nhóm của tôi</h3><button class="as-smallbtn primary" id="asCreateGroupBtn" type="button">＋ Tạo nhóm</button></div>
+          <div id="asCreateGroupBox" style="display:none;margin:10px 0">
+            <input id="asGroupNameInput" placeholder="Tên nhóm kỹ thuật..." maxlength="80" style="width:100%;box-sizing:border-box;margin-bottom:7px">
+            <div class="as-chat-note">Chọn thành viên ở tab <b>🔒 Riêng</b> bằng nút <b>＋ Nhóm</b>.</div>
+            <div id="asGroupSelectedMembers" class="as-member-results"></div>
+            <div style="display:flex;gap:6px;margin-top:7px"><button class="as-smallbtn primary" id="asCreateGroupConfirm" type="button">Tạo nhóm</button><button class="as-smallbtn" id="asCreateGroupCancel" type="button">Hủy</button></div>
+          </div>
+          <div id="asGroupList" class="as-chat-list"></div>
+        </div>
+        <div id="asPrivatePanel" style="display:none">
+          <h3>Thành viên & bạn bè</h3>
+          <div class="as-search-member"><input id="asMemberSearch" placeholder="Tìm tên kỹ thuật viên..." autocomplete="off"><button class="as-smallbtn primary" id="asMemberSearchBtn" type="button">🔎</button></div>
+          <div id="asFriendList" class="as-member-results"><div class="as-empty">Đang tải bạn bè…</div></div>
+          <div id="asMemberResults" class="as-member-results"></div>
+        </div>
       </aside>
       <section class="as-chat-main">
         <div class="as-chat-title" id="asChatTitle">Chọn một cuộc trò chuyện</div>
@@ -584,6 +598,55 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
       box.innerHTML='<div class="as-empty">Không tải được thông báo chat.</div>';
     }
   }
+  async function loadFriends(){
+    if(!user)return;
+    const r=await sb.rpc('chat_list_friendships');
+    const box=$('asFriendList');
+    if(r.error){box.innerHTML='<div class="as-empty">Không tải được danh sách bạn bè.</div>';return;}
+    const rows=r.data||[];
+    if(!rows.length){box.innerHTML='<div class="as-empty">Chưa có bạn bè. Tìm thành viên bên dưới để kết bạn.</div>';return;}
+    box.innerHTML='<div style="font-size:11px;font-weight:900;color:#647b98;margin:8px 0">BẠN BÈ / LỜI MỜI</div>'+rows.map(function(x){
+      const status=String(x.status||'');
+      const incoming=status==='pending'&&!x.is_requester;
+      let action='',label='⏳ Đã gửi';
+      if(status==='accepted'){label='💬 Chat';action='data-chat-user="'+esc(x.id)+'" data-chat-name="'+esc(x.full_name||'Thành viên')+'"';}
+      else if(incoming){label='✅ Chấp nhận';action='data-accept-user="'+esc(x.id)+'"';}
+      return '<div class="as-member-result"><span>👤 '+esc(x.full_name||'Thành viên')+' '+(x.online?'🟢':'⚪')+'<small style="display:block;color:#7a8da8">'+esc(status==='accepted'?'Bạn bè':incoming?'Đang chờ bạn xác nhận':'Đang chờ phản hồi')+'</small></span><button class="as-smallbtn '+(status==='accepted'?'primary':'')+'" type="button" '+action+'>'+label+'</button></div>';
+    }).join('');
+    box.querySelectorAll('[data-chat-user]').forEach(function(b){b.onclick=function(){startDirect(b.dataset.chatUser,b.dataset.chatName);};});
+    box.querySelectorAll('[data-accept-user]').forEach(function(b){b.onclick=async function(){b.disabled=true;const q=await sb.rpc('chat_respond_friend_request',{p_other_user_id:b.dataset.acceptUser,p_accept:true});if(q.error)alert(q.error.message);await loadFriends();await loadMembers();};});
+  }
+  async function sendFriend(targetId,btn){
+    if(!user||targetId===user.id)return;
+    btn.disabled=true; const r=await sb.rpc('chat_send_friend_request',{p_other_user_id:targetId});
+    if(r.error)alert(r.error.message);
+    await loadFriends(); await loadMembers();
+  }
+  async function loadMembers(){
+    const q=$('asMemberSearch').value.trim();
+    const r=await sb.rpc('chat_search_members',{p_query:q});
+    if(r.error){$('asMemberResults').innerHTML='<div class="as-empty">Không tải được danh sách thành viên.</div>';return;}
+    const rows=(r.data||[]).filter(function(x){return x.id!==user.id;});
+    $('asMemberResults').innerHTML=rows.length?'<div style="font-size:11px;font-weight:900;color:#647b98;margin:10px 0 6px">THÀNH VIÊN APPLE SEED</div>'+rows.map(function(x){
+      groupMemberNames.set(x.id,x.full_name||'Thành viên');
+      return '<div class="as-member-result"><span>👤 '+esc(x.full_name||'Thành viên')+' '+(x.online?'🟢':'⚪')+'<small style="display:block;color:#7a8da8">'+esc(x.role||'member')+'</small></span><div style="display:flex;gap:5px"><button class="as-smallbtn" type="button" data-add-friend="'+esc(x.id)+'">🤝 Kết bạn</button><button class="as-smallbtn" type="button" data-add-group="'+esc(x.id)+'">＋ Nhóm</button><button class="as-smallbtn primary" type="button" data-use="'+esc(x.id)+'" data-name="'+esc(x.full_name||'Thành viên')+'">💬 Chat</button></div></div>';
+    }).join(''):'<div class="as-empty">Không có thành viên phù hợp.</div>';
+    $('asMemberResults').querySelectorAll('[data-use]').forEach(function(b){b.onclick=function(){startDirect(b.dataset.use,b.dataset.name);};});
+    $('asMemberResults').querySelectorAll('[data-add-friend]').forEach(function(b){b.onclick=function(){sendFriend(b.dataset.addFriend,b);};});
+    $('asMemberResults').querySelectorAll('[data-add-group]').forEach(function(b){b.onclick=function(){selectedGroupMembers.add(b.dataset.addGroup);renderSelectedGroupMembers();$('asCreateGroupBox').style.display='block';$('asGroupNameInput').focus();};});
+  }
+  async function createGroup(){
+    if(!user)return;
+    const name=$('asGroupNameInput').value.trim();
+    if(!name){alert('Vui lòng nhập tên nhóm.');return;}
+    const ids=Array.from(selectedGroupMembers);
+    const c=await sb.from('chat_conversations').insert({type:'group',name:name,created_by:user.id}).select('id,name').single();
+    if(c.error){alert(c.error.message);return;}
+    const participants=[{conversation_id:c.data.id,user_id:user.id}].concat(ids.filter(function(id){return id!==user.id;}).map(function(id){return {conversation_id:c.data.id,user_id:id};}));
+    const p=await sb.from('chat_participants').insert(participants);
+    if(p.error){alert(p.error.message);return;}
+    selectedGroupMembers.clear();$('asGroupNameInput').value='';$('asCreateGroupBox').style.display='none';renderSelectedGroupMembers();await loadGroups();openConversation(c.data.id,'👥 '+name);
+  }
   async function loadGroups(){
     if(!user)return; const p=await sb.from('chat_participants').select('conversation_id').eq('user_id',user.id); const ids=(p.data||[]).map(x=>x.conversation_id);
     if(!ids.length){groups=[];$('asGroupList').innerHTML='<div class="as-empty">Bạn chưa tham gia nhóm nào.</div>';return;}
@@ -598,8 +661,12 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
     $('asMemberResults').querySelectorAll('[data-user]').forEach(b=>b.onclick=()=>startDirect(b.dataset.user,b.dataset.name));
   }
   $('asMemberSearchBtn').onclick=loadMembers; $('asMemberSearch').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();loadMembers();}};
-  $('asGroupTab').onclick=()=>{ $('asGroupTab').classList.add('active');$('asPrivateTab').classList.remove('active');$('asGroupPanel').style.display='block';$('asPrivatePanel').style.display='none';};
-  $('asPrivateTab').onclick=()=>{ $('asPrivateTab').classList.add('active');$('asGroupTab').classList.remove('active');$('asGroupPanel').style.display='none';$('asPrivatePanel').style.display='block';};
+  $('asCreateGroupBtn').onclick=function(){$('asCreateGroupBox').style.display='block';renderSelectedGroupMembers();};
+  $('asCreateGroupCancel').onclick=function(){$('asCreateGroupBox').style.display='none';};
+  $('asCreateGroupConfirm').onclick=createGroup;
+  function renderSelectedGroupMembers(){const box=$('asGroupSelectedMembers');const ids=Array.from(selectedGroupMembers);box.innerHTML=ids.length?ids.map(function(id){return '<span class="pill" style="display:inline-flex;margin:2px">👤 '+esc(groupMemberNames.get(id)||id)+' <button type="button" data-remove-group="'+esc(id)+'" style="border:0;background:none;cursor:pointer">×</button></span>';}).join(''):'<div class="muted">Chưa chọn thành viên.</div>';box.querySelectorAll('[data-remove-group]').forEach(function(b){b.onclick=function(){selectedGroupMembers.delete(b.dataset.removeGroup);renderSelectedGroupMembers();};});}
+  $('asGroupTab').onclick=()=>{ $('asGroupTab').classList.add('active');$('asPrivateTab').classList.remove('active');$('asGroupPanel').style.display='block';$('asPrivatePanel').style.display='none';loadGroups();};
+  $('asPrivateTab').onclick=()=>{ $('asPrivateTab').classList.add('active');$('asGroupTab').classList.remove('active');$('asGroupPanel').style.display='none';$('asPrivatePanel').style.display='block';loadFriends();loadMembers();};
   async function startDirect(targetId,targetName){
     if(!user||targetId===user.id)return;
     // Reuse an existing direct conversation where both users participate.
