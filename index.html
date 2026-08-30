@@ -644,7 +644,7 @@ img{-webkit-user-drag:none}
     height:auto!important;
     min-height:0!important;
     display:grid!important;
-    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    grid-template-columns:repeat(6,minmax(0,1fr))!important;
     grid-template-rows:46px 50px!important;
     align-items:center!important;
     gap:7px!important;
@@ -655,7 +655,7 @@ img{-webkit-user-drag:none}
     white-space:normal!important;
   }
 
-  /* Exactly five usable top navigation actions. */
+  /* Six navigation actions share one compact row; Member actions use the second row. */
   .site-header .menu > a{
     width:100%!important;
     min-width:0!important;
@@ -997,8 +997,7 @@ body{
   color:transparent!important;
   background:linear-gradient(105deg,#151a20,#5e6369 56%,#a07a30)!important;
   -webkit-background-clip:text!important;
-  background-clip:text!important;
-}
+  background-clip:text!important;}
 .as3-sub{
   color:#3f454c!important;
   font-size:15px!important;
@@ -1260,479 +1259,7 @@ body{
 @media(max-width:1100px){.as3-discover{bottom:-8px!important;}}
 @media(max-width:760px){.as3-discover{bottom:-8px!important;}}
 </style>
-<style id="apple-seed-mobile-header-hero-hard-fix-v4">
-/* APPLE SEED MOBILE HEADER / HERO HARD FIX V4
-   Mobile Safari/iOS: header must stay in document flow.
-   Hero must NEVER begin underneath the header. */
-@media (pointer:coarse){
-  html,body{width:100%!important;max-width:100%!important;overflow-x:hidden!important}
-  body{padding-top:0!important;margin:0!important}
-
-  .site-header{
-    position:relative!important;top:auto!important;left:auto!important;right:auto!important;
-    width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;
-    overflow:visible!important;z-index:5000!important;
-  }
-  .site-header .nav{
-    width:100%!important;max-width:none!important;height:auto!important;min-height:0!important;
-    margin:0!important;padding:8px 10px 10px!important;
-    display:flex!important;flex-direction:column!important;align-items:center!important;
-    justify-content:flex-start!important;gap:7px!important;flex-wrap:nowrap!important;
-  }
-  .site-header .brand{
-    width:auto!important;min-width:0!important;height:50px!important;min-height:50px!important;
-    margin:0!important;display:flex!important;align-items:center!important;justify-content:center!important;
-    flex:0 0 50px!important;gap:8px!important;
-  }
-  .site-header .brand img{width:46px!important;height:46px!important;flex:none!important}
-  .site-header .brand-title{font-size:20px!important;line-height:1!important}
-  .site-header .brand-sub{font-size:8px!important;line-height:1!important;letter-spacing:1.5px!important;margin-top:5px!important}
-
-  .site-header .menu{
-    width:100%!important;height:40px!important;min-height:40px!important;margin:0!important;padding:0!important;
-    display:flex!important;align-items:center!important;justify-content:space-around!important;gap:0!important;
-    flex:0 0 40px!important;flex-wrap:nowrap!important;overflow:visible!important;
-  }
-  .site-header .menu>a{
-    flex:0 0 44px!important;width:44px!important;height:40px!important;margin:0!important;padding:0!important;
-    display:flex!important;align-items:center!important;justify-content:center!important;
-  }
-  .site-header .menu>a .mi{width:30px!important;height:30px!important;display:grid!important;place-items:center!important;font-size:21px!important}
-  .site-header .menu>a span:last-child{display:none!important}
-  .site-header .booking-nav{width:48px!important;height:40px!important;flex:0 0 48px!important;padding:0!important;border-radius:11px!important}
-
-  .site-header .member-auth-buttons{
-    width:100%!important;height:42px!important;min-height:42px!important;margin:0!important;
-    display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;
-    flex:0 0 42px!important;overflow:visible!important;
-  }
-  .site-header .member-auth-btn{
-    width:auto!important;min-width:0!important;height:40px!important;min-height:40px!important;
-    padding:7px 16px!important;border-radius:11px!important;font-size:13px!important;line-height:1!important;
-  }
-
-  /* Absolute/negative positioning from older patches is neutralized here. */
-  #apple-seed-premium-home,.as3-hero{
-    position:relative!important;top:auto!important;left:auto!important;right:auto!important;
-    width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;
-    margin:0!important;padding:0!important;transform:none!important;clear:both!important;
-    overflow:hidden!important;
-  }
-  .as3-wrap{
-    width:100%!important;max-width:none!important;min-height:0!important;margin:0!important;
-    padding:26px 12px 12px!important;box-sizing:border-box!important;
-  }
-  .as3-main{
-    width:100%!important;min-height:0!important;margin:0!important;padding:0!important;
-    display:flex!important;flex-direction:column!important;gap:0!important;
-  }
-  .as3-copy{
-    width:100%!important;min-height:0!important;margin:0!important;padding:0!important;
-    position:relative!important;z-index:20!important;text-align:center!important;transform:none!important;
-  }
-  .as3-kicker{margin:0 0 9px!important;font-size:8px!important;line-height:1.2!important;letter-spacing:2.4px!important}
-  .as3-title{
-    display:block!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:30!important;
-    margin:0!important;padding:0!important;font-size:31px!important;line-height:1.02!important;
-    letter-spacing:-1.5px!important;transform:none!important;
-  }
-  .as3-sub{margin:12px 0 10px!important;font-size:9px!important;line-height:1.35!important;letter-spacing:1.7px!important}
-  .as3-desc{max-width:410px!important;margin:0 auto 13px!important;font-size:11px!important;line-height:1.55!important}
-  .as3-actions{width:100%!important;margin:0!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important}
-  .as3-btn{min-height:40px!important;padding:9px 12px!important;font-size:9px!important;border-radius:10px!important}
-  .as3-note{margin:10px auto 0!important;font-size:7px!important;line-height:1.45!important;letter-spacing:1.45px!important}
-
-  .as3-stage{
-    width:100%!important;height:285px!important;min-height:285px!important;margin:0!important;padding:0!important;
-    position:relative!important;transform:none!important;overflow:visible!important;
-    background-position:center center!important;background-size:contain!important;background-repeat:no-repeat!important;
-  }
-  .as3-stage>.as3-phone{display:none!important}
-  .as3-benefits{display:none!important}
-  /* Remove the old floating Discover label on mobile so it cannot appear in a second location. */
-  .as3-discover{display:none!important}
-
-  .as3-services{width:100%!important;grid-template-columns:1fr 1fr!important;gap:7px!important;margin:8px 0 0!important}
-  .as3-service{min-height:78px!important;padding:8px!important;border-radius:11px!important}
-  .as3-service .ico{width:32px!important;height:50px!important;font-size:17px!important}
-  .as3-service h3{font-size:8px!important;margin:0 0 3px!important}
-  .as3-service p{font-size:6.5px!important;line-height:1.35!important}
-  .as3-more{display:flex!important}
-  .as3-bottom{width:100%!important;grid-template-columns:1fr!important;gap:7px!important;margin-top:8px!important}
-}
-@media (pointer:coarse) and (max-width:480px){
-  .site-header .nav{padding:7px 8px 9px!important;gap:6px!important}
-  .site-header .brand{height:48px!important;min-height:48px!important;flex-basis:48px!important}
-  .site-header .brand img{width:44px!important;height:44px!important}
-  .site-header .brand-title{font-size:20px!important}
-  .site-header .menu{height:38px!important;min-height:38px!important;flex-basis:38px!important}
-  .site-header .menu>a{width:42px!important;height:38px!important;flex-basis:42px!important}
-  .site-header .menu>a .mi{font-size:21px!important}
-  .site-header .booking-nav{width:46px!important;height:38px!important;flex-basis:46px!important}
-  .site-header .member-auth-buttons{height:40px!important;min-height:40px!important;flex-basis:40px!important}
-  .site-header .member-auth-btn{height:38px!important;min-height:38px!important;padding:6px 14px!important;font-size:13px!important}
-  .as3-wrap{padding:22px 10px 10px!important}
-  .as3-title{font-size:30px!important}
-  .as3-stage{height:275px!important;min-height:275px!important}
-}
-</style>
-<style id="apple-seed-robot-icon-3">
-/* OPTION 3 — APPLE BOT: silver robot + blue Apple mark */
-.chat-btn{display:grid!important;place-items:center!important;padding:0!important}
-.as-chat-icon{
-  position:relative;display:block;width:38px;height:38px;border-radius:12px;
-  background:linear-gradient(145deg,#ffffff 0%,#edf3f8 58%,#c9d3dc 100%);
-  border:2px solid rgba(255,255,255,.95);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 4px 10px rgba(0,0,0,.16);
-}
-.as-chat-icon:before{
-  content:"";position:absolute;left:6px;right:6px;top:6px;height:20px;
-  border-radius:8px;background:linear-gradient(145deg,#18222d,#05080c);
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.16);
-}
-.as-chat-eye{position:absolute;top:12px;z-index:2;color:#25a9ff;font-size:7px;line-height:1}
-.as-chat-eye:nth-child(1){left:11px}.as-chat-eye:nth-child(2){right:11px}
-.as-chat-mouth{position:absolute;z-index:2;left:50%;top:16px;transform:translateX(-50%);color:#29b2ff;font-size:11px;font-weight:900;line-height:1}
-.as-chat-apple{position:absolute;z-index:2;left:50%;bottom:2px;transform:translateX(-50%);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;color:#1677ff;font-size:16px;font-weight:600;line-height:1}
-.as-chat-icon-mini{display:inline-block!important;width:25px!important;height:25px!important;border-radius:8px!important;vertical-align:middle;margin-right:6px}
-.as-chat-icon-mini:before{left:4px;right:4px;top:4px;height:13px;border-radius:5px}
-.as-chat-icon-mini .as-chat-eye{top:8px;font-size:5px}.as-chat-icon-mini .as-chat-eye:nth-child(1){left:7px}.as-chat-icon-mini .as-chat-eye:nth-child(2){right:7px}
-.as-chat-icon-mini .as-chat-mouth{top:10px;font-size:7px}.as-chat-icon-mini .as-chat-apple{bottom:1px;font-size:10px}
-.chat-head{gap:0!important}.chat-head>span:nth-child(2){flex:1}
-
-#asRobotFriend .asrf-torso{display:grid!important;place-items:center!important}
-#asRobotFriend .asrf-torso:after{display:none!important}
-#asRobotFriend .asrf-apple{
-  color:#1677ff;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;
-  font-size:20px;font-weight:600;line-height:1;text-shadow:0 1px 2px rgba(0,0,0,.12)
-}
-#asRobotFriend .asrf-head{background:linear-gradient(#fff,#e8eef4)!important;border-color:#aebbc7!important}
-#asRobotFriend .asrf-torso{background:linear-gradient(#fff,#e8eef4)!important;border-color:#aebbc7!important}
-#asRobotFriend .asrf-antenna,#asRobotFriend .asrf-arm,#asRobotFriend .asrf-leg{border-color:#aebbc7!important;background:#e4ebf2!important}
-</style>
-
-<style id="apple-seed-chat-icon-3-final">
-/* OPTION 3 FINAL — Apple Bot: bạc/trắng + visor đen + điểm nhấn xanh */
-.chat-btn{padding:5px!important;display:grid!important;place-items:center!important;overflow:visible!important}
-.as-chat-svg{display:block!important;width:48px!important;height:48px!important;filter:drop-shadow(0 3px 7px rgba(0,0,0,.18))}
-.as-chat-svg-mini{width:26px!important;height:26px!important;flex:0 0 26px!important;margin-right:7px!important;filter:none!important}
-.chat-head{display:flex!important;align-items:center!important;gap:0!important}
-.chat-head>span:nth-of-type(1){flex:1!important}
-@media(max-width:560px){.chat-btn{width:62px!important;height:62px!important;right:16px!important;bottom:16px!important}.as-chat-svg{width:50px!important;height:50px!important}}
-</style>
-<style id="apple-seed-hero-motion-v1">
-/* APPLE-SEED-HERO-MOTION-V1 - subtle premium motion for the Hero phones */
-.as3-stage{isolation:isolate}
-.as3-stage .as3-motion-glow{
-  position:absolute;inset:7% 5% 8%;pointer-events:none;z-index:1;border-radius:50%;
-  background:
-    radial-gradient(circle at 28% 42%,rgba(255,255,255,.34),transparent 17%),
-    radial-gradient(circle at 63% 38%,rgba(214,226,255,.22),transparent 24%),
-    radial-gradient(circle at 78% 62%,rgba(255,208,116,.18),transparent 22%);
-  filter:blur(8px);opacity:.72;animation:asHeroAmbient 7s ease-in-out infinite alternate;
-}
-.as3-stage .as3-phone{will-change:transform,filter;transform-origin:50% 85%}
-.as3-stage .as3-phone:nth-child(1){animation:asHeroPhoneFloat1 5.8s ease-in-out infinite}
-.as3-stage .as3-phone:nth-child(2){animation:asHeroPhoneFloat2 6.4s ease-in-out .25s infinite}
-.as3-stage .as3-phone:nth-child(3){animation:asHeroPhoneFloat3 6s ease-in-out .55s infinite}
-.as3-stage .as3-phone:nth-child(4){animation:asHeroPhoneFloat4 6.8s ease-in-out .15s infinite}
-.as3-stage .as3-phone:nth-child(5){animation:asHeroPhoneFloat5 6.2s ease-in-out .8s infinite}
-.as3-stage .as3-phone:nth-child(6){animation:asHeroPhoneFloat6 7s ease-in-out .4s infinite}
-.as3-stage .as3-phone-screen{position:relative;overflow:hidden}
-.as3-stage .as3-phone-screen img{
-  transition:filter .35s ease,transform .35s ease;
-  animation:asHeroScreenBreath 4.5s ease-in-out infinite;
-}
-.as3-stage .as3-phone-screen .as3-screen-shimmer{
-  position:absolute;inset:-35% -70%;pointer-events:none;z-index:4;
-  background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.05) 45%,rgba(255,255,255,.62) 50%,rgba(255,255,255,.08) 55%,transparent 63%);
-  transform:translateX(-72%) rotate(8deg);
-  animation:asHeroScreenSweep 5.8s ease-in-out infinite;
-  mix-blend-mode:screen;
-}
-.as3-stage .as3-phone-screen .as3-screen-glow{
-  position:absolute;inset:0;pointer-events:none;z-index:3;
-  box-shadow:inset 0 0 22px rgba(125,184,255,.08);
-  animation:asHeroScreenGlow 3.8s ease-in-out infinite;
-}
-@keyframes asHeroAmbient{from{opacity:.45;transform:scale(.94) translate3d(-1%,0,0)}to{opacity:.82;transform:scale(1.05) translate3d(2%,-1%,0)}}
-@keyframes asHeroScreenSweep{0%,42%{transform:translateX(-72%) rotate(8deg);opacity:0}50%{opacity:1}68%,100%{transform:translateX(72%) rotate(8deg);opacity:0}}
-@keyframes asHeroScreenGlow{0%,100%{box-shadow:inset 0 0 16px rgba(125,184,255,.04)}50%{box-shadow:inset 0 0 30px rgba(125,184,255,.16)}}
-@keyframes asHeroScreenBreath{0%,100%{filter:brightness(1) saturate(1)}50%{filter:brightness(1.045) saturate(1.04)}}
-@keyframes asHeroPhoneFloat1{0%,100%{transform:translate3d(0,0,0) rotate(0)}50%{transform:translate3d(-3px,-8px,0) rotate(-.45deg)}}
-@keyframes asHeroPhoneFloat2{0%,100%{transform:translate3d(0,0,0) rotate(0)}50%{transform:translate3d(2px,-10px,0) rotate(.4deg)}}
-@keyframes asHeroPhoneFloat3{0%,100%{transform:translate3d(0,0,0) rotate(0)}50%{transform:translate3d(0,-7px,0) rotate(-.3deg)}}
-@keyframes asHeroPhoneFloat4{0%,100%{transform:translate3d(0,0,0) rotate(0)}50%{transform:translate3d(3px,-9px,0) rotate(.35deg)}}
-@keyframes asHeroPhoneFloat5{0%,100%{transform:translate3d(0,0,0) rotate(0)}50%{transform:translate3d(-2px,-7px,0) rotate(-.3deg)}}
-@keyframes asHeroPhoneFloat6{0%,100%{transform:translate3d(0,0,0) rotate(0)}50%{transform:translate3d(2px,-8px,0) rotate(.3deg)}}
-@media (prefers-reduced-motion:reduce){
-  .as3-stage .as3-motion-glow,.as3-stage .as3-phone,.as3-stage .as3-phone-screen img,
-  .as3-stage .as3-screen-shimmer,.as3-stage .as3-screen-glow{animation:none!important}
-}
-@media (pointer:coarse){
-  .as3-stage .as3-motion-glow{inset:3% 2% 7%;filter:blur(12px);opacity:.55;animation-duration:8s}
-  .as3-stage{animation:asHeroMobileFloat 7s ease-in-out infinite alternate}
-  @keyframes asHeroMobileFloat{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(0,-4px,0) scale(1.012)}}
-}
-</style>
-<script id="apple-seed-hero-motion-script-v1">
-(function(){
-  "use strict";
-  function install(){
-    document.querySelectorAll(".as3-stage").forEach(function(stage){
-      if(!stage.querySelector(".as3-motion-glow")){
-        var glow=document.createElement("span");
-        glow.className="as3-motion-glow";
-        glow.setAttribute("aria-hidden","true");
-        stage.appendChild(glow);
-      }
-      stage.querySelectorAll(".as3-phone-screen").forEach(function(screen){
-        if(screen.querySelector(".as3-screen-shimmer")) return;
-        var shimmer=document.createElement("span");
-        shimmer.className="as3-screen-shimmer";
-        shimmer.setAttribute("aria-hidden","true");
-        var glow=document.createElement("span");
-        glow.className="as3-screen-glow";
-        glow.setAttribute("aria-hidden","true");
-        screen.appendChild(glow);
-        screen.appendChild(shimmer);
-      });
-    });
-  }
-  install();
-  window.addEventListener("load",install,{once:true});
-  setTimeout(install,400);
-  setTimeout(install,1200);
-})();
-</script>
-
-
-<style id="apple-seed-mobile-person-visibility-v1">
-/* APPLE SEED MOBILE HERO — KEEP PERSON VISIBLE V1
-   Mobile-only, UI/CSS patch.
-   Keep the existing phone artwork; reduce its crop so the technician
-   remains visible and the service cards do not overlap the Hero.
-*/
-@media (pointer:coarse) and (max-width:760px){
-  .as3-stage{
-    height:300px!important;
-    min-height:300px!important;
-    margin:0!important;
-    transform:none!important;
-    overflow:visible!important;
-    background-size:108% auto!important;
-    background-position:45% top!important;
-    background-repeat:no-repeat!important;
-  }
-
-  .as3-stage > .as3-phone{
-    display:none!important;
-  }
-
-  .as3-services{
-    margin-top:8px!important;
-  }
-}
-
-@media (pointer:coarse) and (max-width:480px){
-  .as3-stage{
-    height:292px!important;
-    min-height:292px!important;
-    background-size:108% auto!important;
-    background-position:45% top!important;
-  }
-}
-</style>
-
-<style id="apple-seed-mobile-header-repair-20260830-v2">
-/* MOBILE HEADER REPAIR V2
-   Six navigation items fit on one clean row.
-   Member account is isolated below; nothing can overflow to the right.
-*/
-@media (pointer:coarse) and (max-width:760px){
-  html,body{width:100%!important;max-width:100%!important;overflow-x:hidden!important}
-  body{padding-top:0!important}
-
-  .site-header{
-    position:relative!important;
-    top:auto!important;left:auto!important;right:auto!important;
-    width:100%!important;
-    height:auto!important;min-height:0!important;max-height:none!important;
-    overflow:visible!important;
-  }
-  .site-header .nav{
-    width:100%!important;max-width:none!important;
-    height:auto!important;min-height:0!important;
-    margin:0!important;
-    padding:8px 8px 9px!important;
-    display:flex!important;flex-direction:column!important;
-    align-items:center!important;justify-content:flex-start!important;
-    gap:6px!important;flex-wrap:nowrap!important;
-  }
-  .site-header .brand{
-    width:auto!important;min-width:0!important;
-    height:50px!important;min-height:50px!important;
-    margin:0!important;flex:0 0 50px!important;
-    display:flex!important;align-items:center!important;justify-content:center!important;
-    gap:8px!important;padding:0!important;
-  }
-  .site-header .brand img{width:46px!important;height:46px!important;flex:none!important}
-  .site-header .brand-title{font-size:20px!important;line-height:1!important;letter-spacing:-.3px!important}
-  .site-header .brand-sub{font-size:8px!important;line-height:1!important;letter-spacing:1.5px!important;margin-top:4px!important;white-space:nowrap!important}
-
-  /* The six real navigation links always occupy exactly one row. */
-  .site-header .menu{
-    width:100%!important;height:40px!important;min-height:40px!important;
-    margin:0!important;padding:0!important;
-    display:flex!important;align-items:center!important;
-    justify-content:space-between!important;gap:0!important;
-    flex:0 0 40px!important;flex-wrap:nowrap!important;
-    overflow:hidden!important;white-space:nowrap!important;
-  }
-  .site-header .menu>a{
-    width:42px!important;height:40px!important;min-width:42px!important;
-    flex:0 0 42px!important;margin:0!important;padding:0!important;
-    display:flex!important;align-items:center!important;justify-content:center!important;
-    gap:0!important;overflow:hidden!important;
-  }
-  .site-header .menu>a .mi{
-    width:30px!important;height:30px!important;
-    display:grid!important;place-items:center!important;
-    font-size:21px!important;line-height:1!important;
-  }
-  .site-header .menu>a>span:last-child{display:none!important}
-  .site-header .menu>a.booking-nav{
-    width:46px!important;min-width:46px!important;flex-basis:46px!important;
-    height:40px!important;padding:0!important;border-radius:10px!important;
-  }
-
-  /* Logged-in member / login controls are below the nav, never in the icon row. */
-  .site-header .member-auth-buttons{
-    width:100%!important;height:42px!important;min-height:42px!important;
-    flex:0 0 42px!important;margin:0!important;padding:0!important;
-    display:flex!important;align-items:center!important;justify-content:center!important;
-    gap:8px!important;overflow:hidden!important;
-  }
-  .site-header .member-auth-btn{
-    width:auto!important;min-width:0!important;height:40px!important;
-    padding:6px 14px!important;border-radius:11px!important;
-    font-size:13px!important;line-height:1!important;white-space:nowrap!important;
-  }
-  .site-header .member-user-pill{
-    width:auto!important;max-width:100%!important;min-width:0!important;
-    height:40px!important;display:flex!important;align-items:center!important;
-    justify-content:center!important;gap:6px!important;overflow:hidden!important;
-    white-space:nowrap!important;font-size:12px!important;
-  }
-  .site-header .member-user-pill>span{
-    min-width:0!important;max-width:calc(100vw - 110px)!important;
-    overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;
-  }
-  .site-header .member-logout-btn{flex:none!important;font-size:12px!important;padding:5px 6px!important}
-
-  /* Do not leave an empty 52px AI slot under the header on mobile if it is not rendered. */
-  #apple-seed-ai-top.apple-seed-ai-float:empty{display:none!important}
-
-  /* Hero follows the actual header height; no fixed/padding double-counting. */
-  .as3-hero{
-    position:relative!important;top:auto!important;left:auto!important;right:auto!important;
-    width:100%!important;min-height:0!important;margin:0!important;
-    overflow:hidden!important;transform:none!important;
-  }
-}
-</style><style id="apple-seed-mobile-header-overflow-final-20260830-v3">
-/* FINAL MOBILE HEADER OVERFLOW FIX V3
-   The Member block is a child of .menu, so it must be removed from
-   the six-icon flex row. Keep it inside the header as an independent
-   contained row; never allow email/account text to push the icons.
-*/
-@media (pointer:coarse) and (max-width:760px){
-  .site-header .nav{position:relative!important;padding-bottom:54px!important}
-
-  .site-header .menu{
-    position:relative!important;
-    width:100%!important;
-    display:flex!important;
-    flex-wrap:nowrap!important;
-    overflow:visible!important;
-  }
-
-  /* Six navigation actions only in this row. */
-  .site-header .menu>a{
-    flex:0 0 42px!important;
-    width:42px!important;
-    min-width:42px!important;
-    max-width:42px!important;
-  }
-  .site-header .menu>a.booking-nav{
-    flex:0 0 46px!important;
-    width:46px!important;
-    min-width:46px!important;
-    max-width:46px!important;
-  }
-
-  /* Member account is NOT a seventh item in the icon row. */
-  .site-header .member-auth-buttons{
-    position:absolute!important;
-    left:12px!important;
-    right:12px!important;
-    top:108px!important;
-    width:auto!important;
-    height:38px!important;
-    min-height:38px!important;
-    max-width:none!important;
-    margin:0!important;
-    padding:0 4px!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    gap:7px!important;
-    overflow:hidden!important;
-    z-index:5!important;
-  }
-  .site-header .member-user-pill{
-    width:auto!important;
-    max-width:100%!important;
-    min-width:0!important;
-    height:38px!important;
-    flex:0 1 auto!important;
-    display:none!important;
-    align-items:center!important;
-    justify-content:center!important;
-    gap:5px!important;
-    overflow:hidden!important;
-    white-space:nowrap!important;
-    font-size:12px!important;
-  }
-  .site-header .member-user-pill.show{display:flex!important}
-  .site-header .member-user-pill>span{
-    display:block!important;
-    min-width:0!important;
-    max-width:calc(100vw - 130px)!important;
-    overflow:hidden!important;
-    text-overflow:ellipsis!important;
-    white-space:nowrap!important;
-  }
-  .site-header .member-logout-btn{
-    flex:0 0 auto!important;
-    font-size:12px!important;
-    padding:5px 6px!important;
-  }
-
-  /* Logged-out state: login/signup stay contained too. */
-  .site-header .member-auth-buttons .member-auth-btn{
-    flex:0 1 auto!important;
-    width:auto!important;
-    max-width:46vw!important;
-    height:36px!important;
-    min-height:36px!important;
-    padding:6px 12px!important;
-    font-size:12px!important;
-    overflow:hidden!important;
-    text-overflow:ellipsis!important;
-  }
-}
-</style></head>
+</head>
 
 <body>
 
@@ -1932,29 +1459,9 @@ body{
   </div>
 </div>
 
-<button class="chat-btn" id="chatBtn" aria-label="Mở trợ lý Apple Seed">
-<svg class="as-chat-svg" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
-<circle cx="50" cy="50" r="47" fill="#fff"/>
-<circle cx="50" cy="50" r="45" fill="url(#asBotBg)"/>
-<rect x="28" y="10" width="4" height="13" rx="2" fill="#7c8b99"/>
-<circle cx="30" cy="8" r="5" fill="#2aa9ff"/>
-<rect x="18" y="22" width="64" height="43" rx="17" fill="url(#asBotSilver)" stroke="#aebbc7" stroke-width="2"/>
-<rect x="25" y="29" width="50" height="27" rx="11" fill="#0b1118"/>
-<circle cx="39" cy="42" r="4.2" fill="#25b5ff"/>
-<circle cx="61" cy="42" r="4.2" fill="#25b5ff"/>
-<path d="M44 48 Q50 54 56 48" fill="none" stroke="#25b5ff" stroke-width="2.5" stroke-linecap="round"/>
-<rect x="25" y="65" width="50" height="25" rx="10" fill="url(#asBotSilver)" stroke="#aebbc7" stroke-width="2"/>
-<path d="M50 71c-4-5-12-1-9 5 2 4 6 7 9 10 3-3 7-6 9-10 3-6-5-10-9-5z" fill="#1677ff"/>
-<path d="M51 69c1-4 4-5 7-5-1 3-3 5-6 6" fill="#1677ff"/>
-<path d="M25 70l-8 8" stroke="#aebbc7" stroke-width="7" stroke-linecap="round"/>
-<path d="M75 70l8 8" stroke="#aebbc7" stroke-width="7" stroke-linecap="round"/>
-<defs>
-<linearGradient id="asBotBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f8fcff"/><stop offset="1" stop-color="#dce8f2"/></linearGradient>
-<linearGradient id="asBotSilver" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="0.58" stop-color="#eef3f7"/><stop offset="1" stop-color="#c9d3dc"/></linearGradient>
-</defs>
-</svg></button>
+<button class="chat-btn" id="chatBtn" aria-label="Mở trợ lý Apple Seed">🤖</button>
 <div class="chat-box" id="chatBox" aria-label="Trợ lý Apple Seed">
-<div class="chat-head"><svg class="as-chat-svg as-chat-svg-mini" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="50" cy="50" r="47" fill="#fff"/><circle cx="50" cy="50" r="45" fill="#e9f2f9"/><rect x="28" y="10" width="4" height="13" rx="2" fill="#7c8b99"/><circle cx="30" cy="8" r="5" fill="#2aa9ff"/><rect x="18" y="22" width="64" height="43" rx="17" fill="#f5f8fb" stroke="#aebbc7" stroke-width="2"/><rect x="25" y="29" width="50" height="27" rx="11" fill="#0b1118"/><circle cx="39" cy="42" r="4.2" fill="#25b5ff"/><circle cx="61" cy="42" r="4.2" fill="#25b5ff"/><path d="M44 48 Q50 54 56 48" fill="none" stroke="#25b5ff" stroke-width="2.5" stroke-linecap="round"/><rect x="25" y="65" width="50" height="25" rx="10" fill="#eef3f7" stroke="#aebbc7" stroke-width="2"/><path d="M50 71c-4-5-12-1-9 5 2 4 6 7 9 10 3-3 7-6 9-10 3-6-5-10-9-5z" fill="#1677ff"/><path d="M51 69c1-4 4-5 7-5-1 3-3 5-6 6" fill="#1677ff"/></svg><span>Trợ lý Apple Seed</span><button class="chat-close" id="chatClose">×</button></div>
+<div class="chat-head"><span>🤖 Trợ lý Apple Seed</span><button class="chat-close" id="chatClose">×</button></div>
 <div class="chat-body" id="chatBody">
 <div class="msg bot">Xin chào 👋 Tôi là trợ lý Apple Seed. Bạn cần hỏi về sửa iPhone, Face ID, main, linh kiện hay địa chỉ cửa hàng?</div>
 <a class="chat-booking" href="booking.html">📅 Đặt lịch sửa</a>
@@ -2489,8 +1996,7 @@ body{
 
   function fixNavigation(){
     ensureBookingNav();
-    document.querySelectorAll('.menu a').forEach(a=>{
-      const label=(a.textContent||'').normalize('NFD')
+    document.querySelectorAll('.menu a').forEach(a=>{      const label=(a.textContent||'').normalize('NFD')
         .replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
 
       let target='';
@@ -2569,66 +2075,6 @@ body{
     setBg(hero);
     return true;
   }
-  // ===== APPLE SEED CMS HERO IMAGE BRIDGE =====
-  // Đọc trực tiếp các URL đã lưu trong APPLESEED_HERO_IMAGES và áp dụng
-  // vào Hero thật, không phụ thuộc riêng vào CSS injection.
-  function applyAppleSeedCmsHeroImages(css){
-    const raw=String(css||'');
-    const start='/* APPLESEED_HERO_IMAGES_START */';
-    const end='/* APPLESEED_HERO_IMAGES_END */';
-    const a=raw.indexOf(start), b=raw.indexOf(end);
-    if(a<0 || b<=a)return false;
-    const block=raw.slice(a,b+end.length);
-    const hero=document.querySelector('#apple-seed-premium-home');
-    const stage=hero?.querySelector('.as3-stage');
-    if(!hero || !stage)return false;
-
-    const readUrl=(selector)=>{
-      const esc=selector.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-      const re=new RegExp(esc+"\\s*\\{[\\s\\S]*?background(?:-image)?\\s*:\s*[^;]*?url\\(\\s*[\"']?([^\"')]+)[\"']?\\s*\\)",'i');
-      const m=block.match(re);
-      return m?.[2]||'';
-    };
-    const setBg=(el,url,fit='contain')=>{
-      if(!el||!url)return;
-      const safe=String(url).replace(/\\/g,'\\\\').replace(/"/g,'\\"');
-      el.style.setProperty('background-image',`url("${safe}")`,'important');
-      el.style.setProperty('background-size',fit,'important');
-      el.style.setProperty('background-position','center center','important');
-      el.style.setProperty('background-repeat','no-repeat','important');
-    };
-
-    const fit=(block.match(/\/\\* hero-image-fit:([^*]+) \\*\//i)||[])[1]?.trim()||'contain';
-    const bgFit=(block.match(/\/\\* hero-background-fit:([^*]+) \\*\//i)||[])[1]?.trim()||'cover';
-    const bg=readUrl('.as3-stage') || readUrl('.as3-hero') || readUrl('#apple-seed-premium-home');
-    if(bg)setBg(hero,bg,bgFit);
-    if(bg){
-      hero.classList.add('has-cms-hero-bg');
-      stage.classList.remove('has-cms-hero-bg');
-      stage.style.removeProperty('background-image');
-      stage.style.removeProperty('background-size');
-      stage.style.removeProperty('background-position');
-      stage.style.removeProperty('background-repeat');
-    }
-
-    for(let i=1;i<=6;i++){
-      const phone=hero.querySelector('.as3-p'+i);
-      if(!phone)continue;
-      const url=readUrl('#apple-seed-premium-home .as3-p'+i) || readUrl('.as3-hero .as3-p'+i);
-      if(!url)continue;
-      setBg(phone,url,fit);
-      phone.style.setProperty('background-color','transparent','important');
-      const screen=phone.querySelector('.as3-screen');
-      if(screen){
-        screen.style.setProperty('background','transparent','important');
-        screen.querySelectorAll('img').forEach(img=>img.style.setProperty('display','none','important'));
-      }
-      phone.querySelector('.as3-island')?.style.setProperty('display','none','important');
-      phone.querySelector('.as3-label')?.style.setProperty('display','none','important');
-    }
-    return true;
-  }
-
   async function load(){
     if(!sb){staticFallback();bindProductCards();fixNavigation();return}
     try{
@@ -2637,15 +2083,71 @@ body{
         publicCmsFetch('site_nav_items','?select=label,icon,url,is_active,sort_order&is_active=eq.true&order=sort_order.asc'),
         publicCmsFetch('site_home_sections','?select=*&is_active=eq.true&order=sort_order.asc,id.asc')
       ]);
-      const t={data:themeRows?.[0]||null}; window.__appleSeedThemeCustomCss=String(t.data?.custom_css||'');
+      const t={data:themeRows?.[0]||null};
       const n={data:Array.isArray(navRows)?navRows:[],error:null};
       const s={data:Array.isArray(sectionRows)?sectionRows:[],error:null};
-      if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){const normalizedHeroCss=normalizeHeroCssOrder(t.data.custom_css);const st=document.createElement('style');st.textContent=normalizedHeroCss;document.head.appendChild(st);applyAppleSeedCmsHeroBackground(normalizedHeroCss);applyAppleSeedCmsHeroImages(normalizedHeroCss);requestAnimationFrame(()=>{const hero=document.querySelector('#apple-seed-premium-home');if(!hero)return;const marker=normalizedHeroCss.match(/\/\* APPLESEED_HERO_IMAGES_START \*\/([\s\S]*?)\/\* APPLESEED_HERO_IMAGES_END \*\//i);const block=marker?marker[1]:normalizedHeroCss;const bg=block.match(/(?:^|})\s*(?:#apple-seed-premium-home\s+)?\.as3-stage\s*\{[\s\S]*?background(?:-image)?\s*:\s*[^;]*url\(\s*[\"']([^\"']+)[\"']\s*\)/i)||block.match(/(?:^|})\s*(?:#apple-seed-premium-home\s+)?\.as3-hero\s*\{[\s\S]*?background(?:-image)?\s*:\s*[^;]*url\(\s*[\"']([^\"']+)[\"']\s*\)/i);if(bg&&bg[1]){const heroUrl=bg[1];hero.style.setProperty('--cms-hero-bg',`url(\"${heroUrl.replace(/\"/g,'\\\"')}\")`,'important');hero.style.setProperty('background-image',`url(\"${heroUrl.replace(/\"/g,'\\\"')}\")`,'important');hero.style.setProperty('background-size','cover','important');hero.style.setProperty('background-position','center center','important');hero.style.setProperty('background-repeat','no-repeat','important');hero.style.setProperty('background-color','#f7f7f5','important');hero.classList.add('has-cms-hero-bg');const stage=hero.querySelector('.as3-stage');if(stage){stage.style.removeProperty('--cms-hero-bg');stage.style.removeProperty('background-image');stage.style.removeProperty('background-size');stage.style.removeProperty('background-position');stage.style.removeProperty('background-repeat');stage.classList.remove('has-cms-hero-bg');}}})}if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){
+      if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){const normalizedHeroCss=normalizeHeroCssOrder(t.data.custom_css);const st=document.createElement('style');st.textContent=normalizedHeroCss;document.head.appendChild(st);applyAppleSeedCmsHeroBackground(normalizedHeroCss);requestAnimationFrame(()=>{const hero=document.querySelector('#apple-seed-premium-home');if(!hero)return;const marker=normalizedHeroCss.match(/\/\* APPLESEED_HERO_IMAGES_START \*\/([\s\S]*?)\/\* APPLESEED_HERO_IMAGES_END \*\//i);const block=marker?marker[1]:normalizedHeroCss;const bg=block.match(/(?:^|})\s*(?:#apple-seed-premium-home\s+)?\.as3-stage\s*\{[\s\S]*?background(?:-image)?\s*:\s*[^;]*url\(\s*[\"']([^\"']+)[\"']\s*\)/i)||block.match(/(?:^|})\s*(?:#apple-seed-premium-home\s+)?\.as3-hero\s*\{[\s\S]*?background(?:-image)?\s*:\s*[^;]*url\(\s*[\"']([^\"']+)[\"']\s*\)/i);if(bg&&bg[1]){const heroUrl=bg[1];hero.style.setProperty('--cms-hero-bg',`url(\"${heroUrl.replace(/\"/g,'\\\"')}\")`,'important');hero.style.setProperty('background-image',`url(\"${heroUrl.replace(/\"/g,'\\\"')}\")`,'important');hero.style.setProperty('background-size','cover','important');hero.style.setProperty('background-position','center center','important');hero.style.setProperty('background-repeat','no-repeat','important');hero.style.setProperty('background-color','#f7f7f5','important');hero.classList.add('has-cms-hero-bg');const stage=hero.querySelector('.as3-stage');if(stage){stage.style.removeProperty('--cms-hero-bg');stage.style.removeProperty('background-image');stage.style.removeProperty('background-size');stage.style.removeProperty('background-position');stage.style.removeProperty('background-repeat');stage.classList.remove('has-cms-hero-bg');}}})}if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){
       const menu=document.querySelector('.menu');
       const memberAuth=document.getElementById('memberAuthButtons');
-      menu.querySelectorAll(':scope > a').forEach(a=>a.remove());
-      menu.insertAdjacentHTML('afterbegin',n.data.map(x=>`<a href="${esc(x.url||'#')}"><span class="mi">${esc(x.icon||'')}</span><span>${esc(x.label)}</span></a>`).join(''));
-      if(memberAuth) menu.appendChild(memberAuth);
+      /*
+       * MOBILE/DESKTOP HEADER STABILITY:
+       * CMS may contain old/custom emoji icons. Do NOT paint those over the
+       * stable header while the page is loading. Keep one canonical icon per
+       * navigation label; CMS still controls label/URL/active/order.
+       */
+      const canonicalIcons={
+        'dich vu':'🔧',
+        'san pham':'🛍',
+        'giai tri':'🎬',
+        'video':'🎬',
+        'gioi thieu':'ⓘ',
+        'lien he':'☎',
+        'dat lich':'📅'
+      };
+      const normalizeNavLabel=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+      /*
+       * IMPORTANT: Do not remove/rebuild the existing menu after first paint.
+       * Rebuilding it caused a visible icon swap on reload while Supabase was
+       * loading. Keep the original DOM nodes and only synchronize label/URL.
+       * Icons always come from the canonical map above.
+       */
+      const cmsItems=n.data.map(x=>({
+        label:String(x.label||'').trim(),
+        key:normalizeNavLabel(x.label),
+        url:String(x.url||'#')
+      })).filter(x=>x.label);
+
+      const existingLinks=[...menu.querySelectorAll(':scope > a')];
+      const used=new Set();
+      cmsItems.forEach(item=>{
+        let a=existingLinks.find((candidate,i)=>{
+          if(used.has(i))return false;
+          const candidateLabel=normalizeNavLabel(candidate.querySelector('span:last-child')?.textContent||candidate.textContent||'');
+          return candidateLabel===item.key ||
+            (item.key.includes('video') && candidateLabel.includes('video')) ||
+            (item.key.includes('giai tri') && candidateLabel.includes('giai tri'));
+        });
+        if(!a){
+          a=document.createElement('a');
+          menu.insertBefore(a,memberAuth||null);
+          existingLinks.push(a);
+        }
+        const idx=existingLinks.indexOf(a);
+        if(idx>=0)used.add(idx);
+        const icon=canonicalIcons[item.key] || (item.key.includes('video')?'🎬':'');
+        a.setAttribute('href',item.url);
+        a.innerHTML=`<span class="mi">${icon}</span><span>${esc(item.label)}</span>`;
+      });
+
+      // Remove only stale CMS nav links that are not part of the current menu.
+      // Never touch the member-auth container or its buttons.
+      existingLinks.forEach((a,i)=>{
+        if(!used.has(i) && !a.classList.contains('booking-nav') && !a.dataset.appleSeedVideoNav){
+          const label=normalizeNavLabel(a.querySelector('span:last-child')?.textContent||a.textContent||'');
+          if(label && !['dich vu','san pham','giai tri','video','gioi thieu','lien he','dat lich'].includes(label)) a.remove();
+        }
+      });
+      if(memberAuth && memberAuth.parentElement!==menu) menu.appendChild(memberAuth);
     }
       // CMS có thể trả về danh sách nav thiếu Đặt lịch -> tự bổ sung lại.
       ensureBookingNav();
@@ -3146,13 +2648,16 @@ function answerFallback(q){
   return "Tôi chưa hiểu rõ câu hỏi. Bạn thử ghi model + lỗi, ví dụ: “iPhone 13 Pro Max mất nguồn”, “iPhone 12 đơ cảm ứng” hoặc “Apple Seed ở đâu?”";
 }
 
-async function askAppleSeedAI(message,onDelta){
+async function askAppleSeedAI(message, onDelta){
   const sb=window.supabaseClient;
   if(!sb) throw new Error("Chưa khởi tạo Supabase.");
 
   const baseUrl=String(sb.supabaseUrl||"").replace(/\/+$/,"");
   const anonKey=sb.supabaseKey;
-  if(!baseUrl||!anonKey) throw new Error("Thiếu cấu hình Supabase.");
+
+  if(!baseUrl || !anonKey){
+    throw new Error("Thiếu cấu hình Supabase.");
+  }
 
   const controller=new AbortController();
   const timeout=setTimeout(()=>controller.abort(),60000);
@@ -3165,41 +2670,51 @@ async function askAppleSeedAI(message,onDelta){
         "apikey":anonKey,
         "Authorization":"Bearer "+anonKey
       },
-      body:JSON.stringify({message:String(message),source:"homepage-chat"}),
+      body:JSON.stringify({message}),
       signal:controller.signal
     });
 
-    const raw=await response.text();
-
     if(!response.ok){
-      let detail="";
+      const raw=await response.text();
+      let msg="Apple Seed AI đang gặp lỗi.";
       try{
         const data=JSON.parse(raw);
-        detail=data?.error||data?.message||"";
+        msg=data?.error||msg;
       }catch(_){}
-      throw new Error(detail||("Apple Seed AI HTTP "+response.status));
+      throw new Error(msg);
     }
 
-    if(!raw.trim()) throw new Error("AI không trả về nội dung.");
+    if(!response.body){
+      throw new Error("AI không trả về dữ liệu stream.");
+    }
 
-    // Accept normal JSON responses, plain text, or SSE/data chunks.
-    let text=raw;
-    try{
-      const data=JSON.parse(raw);
-      text=data?.reply||data?.answer||data?.content||data?.text||data?.message||raw;
-    }catch(_){}
+    const reader=response.body.getReader();
+    const decoder=new TextDecoder("utf-8");
+    let received=false;
 
-    text=String(text)
-      .replace(/^data:\s*/gm,"")
-      .replace(/\n\s*\n/g,"\n")
-      .trim();
+    while(true){
+      const {value,done}=await reader.read();
+      if(done) break;
 
-    if(!text) throw new Error("AI không trả về nội dung.");
-    onDelta(text);
+      const chunk=decoder.decode(value,{stream:true});
+      if(chunk){
+        received=true;
+        onDelta(chunk);
+      }
+    }
+
+    const tail=decoder.decode();
+    if(tail){
+      received=true;
+      onDelta(tail);
+    }
+
+    if(!received) throw new Error("AI chưa trả về nội dung.");
   }finally{
     clearTimeout(timeout);
   }
 }
+
 form.onsubmit=async e=>{
   e.preventDefault();
   const q=input.value.trim();
@@ -3228,7 +2743,7 @@ form.onsubmit=async e=>{
       body.scrollTop=body.scrollHeight;
     });
   }catch(error){
-    console.error("AppleSeed AI SERVER ERROR:",error);
+    console.error("AppleSeed AI:",error);
 
     // Nếu AI thật lỗi, giữ chatbot không bị chết:
     // dùng bộ trả lời cục bộ cũ làm phương án dự phòng.
@@ -3329,74 +2844,58 @@ form.onsubmit=async e=>{
     }
   },true);
 
-  /* Robot friend — connected through the SAME Supabase client used by the chatbot. */
-  async function initRobot(){
-    if(document.getElementById("asRobotFriend")) return;
+  /* Soft robot friend: one appearance per browser session. */
+  function initRobot(){
+    try{if(sessionStorage.getItem("asrf_final_seen")==="1")return;sessionStorage.setItem("asrf_final_seen","1")}catch(_){}
+    const target=document.getElementById("chatBtn");
+    if(!target||document.getElementById("asRobotFriend"))return;
 
-    const robot=document.createElement("div");
-    robot.id="asRobotFriend";
-    robot.innerHTML=
+    const el=document.createElement("div");
+    el.id="asRobotFriend";
+    el.innerHTML=
       '<div class="asrf-body">'+
         '<div class="asrf-antenna"></div>'+
-        '<div class="asrf-head">'+
-          '<span class="asrf-eye l"></span><span class="asrf-eye r"></span><span class="asrf-mouth"></span>'+
-        '</div>'+
-        '<div class="asrf-torso"><span class="asrf-apple"></span></div>'+
+        '<div class="asrf-head"><span class="asrf-eye l"></span><span class="asrf-eye r"></span><span class="asrf-mouth"></span></div>'+
         '<div class="asrf-arm l"></div><div class="asrf-arm r"></div>'+
+        '<div class="asrf-torso"></div>'+
         '<div class="asrf-leg l"></div><div class="asrf-leg r"></div>'+
         '<div class="asrf-shadow"></div>'+
       '</div>'+
-      '<div class="asrf-bubble">Apple Seed AI</div>';
-    document.body.appendChild(robot);
+      '<div class="asrf-bubble">Xin chào 👋</div>';
+    document.body.appendChild(el);
 
-    const sb=window.supabaseClient;
-    const baseUrl=String(sb?.supabaseUrl||"").replace(/\\/+$/,"");
-    const anonKey=sb?.supabaseKey||"";
-    if(!baseUrl || !anonKey){
-      robot.remove();
-      console.warn("[Apple Seed Robot] Supabase client chưa sẵn sàng.");
-      return;
-    }
+    const vw=innerWidth,vh=innerHeight;
+    el.style.left=(vw*.50)+"px";
+    el.style.top=(vh*.42)+"px";
+    el.classList.add("asrf-show");
 
-    try{
-      robot.classList.add("asrf-show","asrf-walk");
-      const controller=new AbortController();
-      const timer=setTimeout(()=>controller.abort(),7000);
+    const move=(x,y,d)=>el.animate(
+      [{left:el.style.left,top:el.style.top},{left:x+"px",top:y+"px"}],
+      {duration:d,easing:"cubic-bezier(.2,.75,.25,1)",fill:"forwards"}
+    ).finished.then(()=>{el.style.left=x+"px";el.style.top=y+"px"});
 
-      const res=await fetch(baseUrl+"/functions/v1/appleseed-ai",{
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json",
-          "apikey":anonKey,
-          "Authorization":"Bearer "+anonKey
-        },
-        body:JSON.stringify({
-          message:"PING",
-          source:"homepage-chat",
-          mode:"healthcheck"
-        }),
-        signal:controller.signal
-      });
-      clearTimeout(timer);
+    const home=()=>{
+      const r=target.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
+      el.classList.remove("asrf-walk");el.classList.add("asrf-fly");
+      el.animate(
+        [{left:el.style.left,top:el.style.top},{left:(x-65)+"px",top:(y-95)+"px"},{left:x+"px",top:y+"px"}],
+        {duration:900,easing:"cubic-bezier(.22,.75,.18,1)",fill:"forwards"}
+      ).finished.then(()=>el.remove()).catch(()=>el.remove());
+    };
 
-      if(!res.ok) throw new Error("Server AI HTTP "+res.status);
-
-      robot.dataset.server="connected";
-      setTimeout(()=>{
-        robot.classList.remove("asrf-walk");
-        robot.classList.add("asrf-fly");
-        setTimeout(()=>robot.remove(),750);
-      },1800);
-    }catch(err){
-      console.warn("[Apple Seed Robot] Server chưa kết nối:",err);
-      robot.classList.remove("asrf-walk");
-      robot.classList.add("asrf-fly");
-      setTimeout(()=>robot.remove(),750);
-    }
+    setTimeout(()=>{
+      el.classList.add("asrf-walk");
+      move(vw*.32,vh*.40,650)
+      .then(()=>move(vw*.58,vh*.32,700))
+      .then(()=>move(vw*.72,vh*.48,700))
+      .then(()=>move(vw*.64,vh*.60,650))
+      .then(()=>setTimeout(home,180))
+      .catch(()=>el.remove());
+    },500);
   }
 
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>setTimeout(initRobot,900));
-  else setTimeout(initRobot,900);
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>setTimeout(initRobot,250));
+  else setTimeout(initRobot,250);
 })();
 </script>
 
@@ -3496,8 +2995,7 @@ function apply(){
    img.onerror=()=>img.remove(); screen.appendChild(img); screen.dataset.bound="1";
    const label=screen.parentElement.querySelector(".as3-label"); if(label&&item.product?.name)label.textContent=item.product.name;
  });
- return true;
-}
+ return true;}
 let n=0;const t=setInterval(()=>{if(apply()||++n>50)clearInterval(t)},400);
 })();
 </script>
@@ -3574,493 +3072,6 @@ let n=0;const t=setInterval(()=>{if(apply()||++n>50)clearInterval(t)},400);
   setTimeout(finalCmsHeroFix,1000);
 })();
 </script>
-
-<script id="apple-seed-discover-relocation">
-(function(){
- function move(){
-   const hero=document.querySelector('#apple-seed-premium-home'), d=hero?.querySelector('.as3-discover'), main=hero?.querySelector('.as3-main');
-   if(hero&&d&&main&&d.parentElement!==main) main.appendChild(d);
- }
- move(); window.addEventListener('load',move,{once:true}); setTimeout(move,250); setTimeout(move,1000);
-})();
-</script>
-
-
-
-<style id="apple-seed-mobile-final-fix">
-<!-- APPLE SEED MOBILE FINAL FIX V1 -->
-/* Mobile layout final: keep header compact and keep Hero completely below it. */
-@media (max-width:760px){
-  html,body{width:100%;max-width:100%;overflow-x:hidden!important}
-  body{padding-top:0!important}
-
-  .site-header{
-    position:relative!important;
-    height:auto!important;
-    min-height:0!important;
-    z-index:5000!important;
-  }
-  .site-header .nav{
-    width:100%!important;
-    max-width:none!important;
-    height:auto!important;
-    min-height:0!important;
-    padding:10px 12px 8px!important;
-    display:grid!important;
-    grid-template-columns:1fr!important;
-    gap:8px!important;
-    align-items:center!important;
-  }
-  .site-header .brand{
-    width:100%!important;
-    min-width:0!important;
-    height:54px!important;
-    display:flex!important;
-    justify-content:center!important;
-    gap:9px!important;
-    margin:0!important;
-  }
-  .site-header .brand img{width:48px!important;height:48px!important;flex:none!important}
-  .site-header .brand-title{font-size:21px!important;line-height:1!important}
-  .site-header .brand-sub{font-size:8px!important;letter-spacing:1.7px!important;margin-top:5px!important}
-
-  .site-header .menu{
-    width:100%!important;
-    height:40px!important;
-    min-height:40px!important;
-    margin:0!important;
-    padding:0!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:space-around!important;
-    gap:4px!important;
-    flex-wrap:nowrap!important;
-    overflow:visible!important;
-  }
-  .site-header .menu>a{
-    flex:0 0 auto!important;
-    width:46px!important;
-    height:40px!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    gap:0!important;
-    padding:0!important;
-  }
-  .site-header .menu>a .mi{
-    width:30px!important;height:30px!important;
-    display:grid!important;place-items:center!important;
-    font-size:23px!important;
-  }
-  .site-header .menu>a span:last-child{display:none!important}
-  .site-header .booking-nav{
-    width:52px!important;height:40px!important;
-    padding:0!important;border-radius:11px!important;
-  }
-  .site-header .booking-nav .mi{font-size:22px!important}
-
-  .site-header .member-auth-buttons{
-    width:100%!important;
-    margin:0!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    gap:8px!important;
-    min-height:42px!important;
-  }
-  .site-header .member-auth-btn{
-    width:auto!important;
-    min-width:0!important;
-    height:40px!important;
-    padding:7px 16px!important;
-    border-radius:12px!important;
-    font-size:14px!important;
-    line-height:1!important;
-  }
-  .site-header .member-user-pill{
-    max-width:100%!important;
-    display:flex!important;
-    align-items:center!important;
-    gap:6px!important;
-  }
-
-  /* Hero starts after the compact header; no title can hide underneath it. */
-  .as3-hero{
-    position:relative!important;
-    width:100%!important;
-    min-height:0!important;
-    overflow:hidden!important;
-  }
-  .as3-wrap{
-    width:100%!important;
-    max-width:none!important;
-    min-height:0!important;
-    padding:30px 14px 18px!important;
-    box-sizing:border-box!important;
-  }
-  .as3-main{
-    width:100%!important;
-    display:flex!important;
-    flex-direction:column!important;
-    min-height:0!important;
-    gap:0!important;
-  }
-  .as3-copy{
-    width:100%!important;
-    text-align:center!important;
-    padding:0!important;
-    position:relative!important;
-    z-index:20!important;
-  }
-  .as3-kicker{
-    font-size:9px!important;
-    letter-spacing:2.8px!important;
-    margin-bottom:10px!important;
-  }
-  .as3-title{
-    font-size:34px!important;
-    line-height:1.02!important;
-    letter-spacing:-1.8px!important;
-    margin:0!important;
-  }
-  .as3-sub{
-    margin:13px 0 12px!important;
-    font-size:10px!important;
-    line-height:1.35!important;
-    letter-spacing:2px!important;
-  }
-  .as3-desc{
-    max-width:430px!important;
-    margin:0 auto 17px!important;
-    font-size:12px!important;
-    line-height:1.65!important;
-  }
-  .as3-actions{
-    width:100%!important;
-    display:flex!important;
-    justify-content:center!important;
-    gap:8px!important;
-  }
-  .as3-btn{
-    min-height:42px!important;
-    padding:10px 14px!important;
-    font-size:10px!important;
-    border-radius:10px!important;
-  }
-  .as3-note{
-    margin-top:11px!important;
-    font-size:7px!important;
-    letter-spacing:1.5px!important;
-    line-height:1.5!important;
-  }
-
-  /* Phone artwork: scale by CSS dimensions, not a huge negative margin. */
-  .as3-stage{
-    width:100%!important;
-    height:315px!important;
-    margin:4px 0 0!important;
-    transform:none!important;
-    overflow:visible!important;
-    perspective:none!important;
-    position:relative!important;
-  }
-  .as3-stage > .as3-phone{display:none!important}
-  .as3-stage{
-    background-size:contain!important;
-    background-position:center top!important;
-    background-repeat:no-repeat!important;
-  }
-  .as3-discover{
-    left:50%!important;
-    bottom:2px!important;
-    transform:translateX(-50%)!important;
-    gap:7px!important;
-    font-size:7px!important;
-    letter-spacing:1.5px!important;
-    white-space:nowrap!important;
-    z-index:50!important;
-  }
-  .as3-play{
-    width:38px!important;height:38px!important;
-    flex:none!important;
-  }
-
-  .as3-services{
-    width:100%!important;
-    grid-template-columns:1fr 1fr!important;
-    gap:7px!important;
-    margin-top:8px!important;
-  }
-  .as3-service{
-    min-height:82px!important;
-    padding:9px!important;
-    gap:7px!important;
-    border-radius:12px!important;
-  }
-  .as3-service .ico{
-    width:35px!important;height:54px!important;
-    font-size:18px!important;
-  }
-  .as3-service h3{font-size:9px!important;margin-bottom:4px!important}
-  .as3-service p{font-size:7px!important;line-height:1.4!important}
-  .as3-more{display:flex!important;min-height:82px!important}
-
-  .as3-bottom{
-    width:100%!important;
-    grid-template-columns:1fr!important;
-    gap:8px!important;
-    margin-top:10px!important;
-    padding-bottom:10px!important;
-  }
-  .as3-stats{grid-template-columns:repeat(2,1fr)!important}
-  .as3-stat{padding:13px 11px!important}
-  .as3-stat b{font-size:13px!important;margin-bottom:4px!important}
-  .as3-stat span{font-size:7px!important}
-  .as3-store{min-height:150px!important}
-  .as3-store img{min-height:150px!important}
-}
-
-@media (max-width:480px){
-  .site-header .nav{padding:8px 10px 7px!important}
-  .site-header .brand{height:50px!important}
-  .site-header .brand img{width:44px!important;height:44px!important}
-  .site-header .brand-title{font-size:20px!important}
-  .site-header .menu{height:38px!important;min-height:38px!important}
-  .site-header .menu>a{height:38px!important;width:42px!important}
-  .site-header .menu>a .mi{font-size:21px!important}
-  .site-header .booking-nav{height:38px!important;width:48px!important}
-  .site-header .member-auth-buttons{min-height:40px!important}
-  .site-header .member-auth-btn{height:38px!important;padding:6px 14px!important;font-size:13px!important}
-
-  .as3-wrap{padding:24px 12px 14px!important}
-  .as3-kicker{font-size:8px!important;letter-spacing:2.4px!important}
-  .as3-title{font-size:31px!important;letter-spacing:-1.5px!important}
-  .as3-sub{font-size:9px!important;letter-spacing:1.7px!important}
-  .as3-desc{font-size:11px!important;line-height:1.55!important;margin-bottom:14px!important}
-  .as3-actions .as3-btn{min-height:40px!important;padding:9px 11px!important;font-size:9px!important}
-  .as3-stage{height:285px!important;margin-top:2px!important}
-  .as3-discover{bottom:0!important}
-}
-</style>
-
-
-<style id="apple-seed-touch-device-override">
-/* APPLE SEED TOUCH DEVICE OVERRIDE V2
-   Do not depend on CSS viewport width: iOS can be in "Request Desktop Website".
-   Target touch devices directly so the header can never cover the Hero.
-*/
-@media (pointer:coarse){
-  html,body{overflow-x:hidden!important}
-  body{padding-top:0!important}
-
-  .site-header{
-    position:relative!important;
-    top:auto!important;left:auto!important;right:auto!important;
-    width:100%!important;
-    height:156px!important;
-    min-height:156px!important;
-    max-height:156px!important;
-    overflow:hidden!important;
-  }
-  .site-header .nav{
-    width:100%!important;
-    height:156px!important;
-    min-height:156px!important;
-    max-width:none!important;
-    padding:8px 10px!important;
-    margin:0!important;
-    display:flex!important;
-    flex-direction:column!important;
-    justify-content:flex-start!important;
-    align-items:center!important;
-    gap:7px!important;
-  }
-  .site-header .brand{
-    width:auto!important;
-    min-width:0!important;
-    height:48px!important;
-    flex:0 0 48px!important;
-    margin:0!important;
-    justify-content:center!important;
-    gap:8px!important;
-  }
-  .site-header .brand img{width:44px!important;height:44px!important}
-  .site-header .brand-title{font-size:20px!important;line-height:1!important}
-  .site-header .brand-sub{font-size:8px!important;letter-spacing:1.5px!important;margin-top:4px!important}
-
-  .site-header .menu{
-    width:100%!important;
-    height:38px!important;
-    min-height:38px!important;
-    flex:0 0 38px!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:space-around!important;
-    gap:0!important;
-    margin:0!important;
-    padding:0!important;
-    overflow:hidden!important;
-  }
-  .site-header .menu>a{
-    flex:0 0 44px!important;
-    width:44px!important;height:38px!important;
-    display:flex!important;align-items:center!important;justify-content:center!important;
-    padding:0!important;margin:0!important;
-  }
-  .site-header .menu>a span:last-child{display:none!important}
-  .site-header .menu>a .mi{
-    display:grid!important;place-items:center!important;
-    width:30px!important;height:30px!important;font-size:21px!important;
-  }
-  .site-header .booking-nav{
-    width:48px!important;height:38px!important;
-    flex-basis:48px!important;border-radius:10px!important;
-  }
-
-  .site-header .member-auth-buttons{
-    width:100%!important;
-    height:42px!important;
-    min-height:42px!important;
-    flex:0 0 42px!important;
-    margin:0!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    gap:8px!important;
-    overflow:hidden!important;
-  }
-  .site-header .member-auth-btn{
-    height:40px!important;
-    min-height:40px!important;
-    padding:6px 16px!important;
-    border-radius:11px!important;
-    font-size:13px!important;
-    line-height:1!important;
-  }
-
-  .as3-hero{
-    position:relative!important;
-    top:auto!important;
-    width:100%!important;
-    min-height:0!important;
-    margin:0!important;
-    overflow:hidden!important;
-  }
-  .as3-wrap{
-    width:100%!important;
-    max-width:none!important;
-    min-height:0!important;
-    padding:24px 12px 12px!important;
-    margin:0!important;
-  }
-  .as3-main{
-    width:100%!important;
-    display:flex!important;
-    flex-direction:column!important;
-    min-height:0!important;
-    align-items:stretch!important;
-  }
-  .as3-copy{
-    width:100%!important;
-    padding:0!important;
-    margin:0!important;
-    text-align:center!important;
-  }
-  .as3-kicker{font-size:8px!important;letter-spacing:2.4px!important;margin-bottom:9px!important}
-  .as3-title{
-    font-size:31px!important;
-    line-height:1.02!important;
-    letter-spacing:-1.5px!important;
-    margin:0!important;
-  }
-  .as3-sub{font-size:9px!important;line-height:1.35!important;letter-spacing:1.7px!important;margin:12px 0 10px!important}
-  .as3-desc{font-size:11px!important;line-height:1.55!important;max-width:410px!important;margin:0 auto 13px!important}
-  .as3-actions{display:flex!important;justify-content:center!important;gap:8px!important}
-  .as3-btn{min-height:40px!important;padding:9px 12px!important;font-size:9px!important;border-radius:10px!important}
-  .as3-note{font-size:7px!important;line-height:1.45!important;letter-spacing:1.45px!important;margin-top:10px!important}
-
-  .as3-stage{
-    width:100%!important;
-    height:285px!important;
-    margin:0!important;
-    transform:none!important;
-    transform-origin:center center!important;
-    overflow:visible!important;
-    background-size:contain!important;
-    background-position:center center!important;
-    background-repeat:no-repeat!important;
-  }
-  .as3-stage > .as3-phone{display:none!important}
-  .as3-benefits{display:none!important}
-  .as3-discover{
-    left:50%!important;
-    right:auto!important;
-    bottom:0!important;
-    transform:translateX(-50%)!important;
-    z-index:100!important;
-  }
-
-  .as3-services{
-    width:100%!important;
-    grid-template-columns:repeat(2,minmax(0,1fr))!important;
-    gap:7px!important;
-    margin:8px 0 0!important;
-  }
-  .as3-service{min-height:78px!important;padding:8px!important;border-radius:11px!important}
-  .as3-service .ico{width:32px!important;height:50px!important;font-size:17px!important}
-  .as3-service h3{font-size:8px!important;margin:0 0 3px!important}
-  .as3-service p{font-size:6.5px!important;line-height:1.35!important}
-  .as3-more{display:flex!important}
-
-  .as3-bottom{
-    width:100%!important;
-    grid-template-columns:1fr!important;
-    gap:7px!important;
-    margin-top:8px!important;
-  }
-}
-@supports (-webkit-touch-callout:none){
-  .site-header{position:relative!important}
-  body{padding-top:0!important}
-}
-</style>
-
-
-
-<style id="apple-seed-hero-mobile-straight-final">
-/* APPLE SEED HERO MOBILE — FINAL STRAIGHT ROLLBACK
-   No Hero motion overlays, no stage scaling/negative margins,
-   centered showcase and no horizontal crop on touch devices. */
-@media (pointer:coarse){
-  .as3-stage{
-    transform:none!important;
-    transform-origin:center center!important;
-    margin:0!important;
-    overflow:visible!important;
-    perspective:none!important;
-    height:240px!important;
-    background-size:100% auto!important;
-    background-position:center top!important;
-    background-repeat:no-repeat!important;
-  }
-  .as3-stage .as3-live-light,
-  .as3-stage .as3-live-pulse,
-  .as3-stage .as3-motion-glow{
-    display:none!important;
-    animation:none!important;
-  }
-}
-@media (max-width:760px){
-  .as3-stage{
-    transform:none!important;
-    margin:0!important;
-    height:285px!important;
-    background-size:100% auto!important;
-    background-position:center top!important;
-  }
-}
-</style>
-
 </body>
 </html>
 <footer class="apple-seed-copyright" aria-label="Bản quyền Apple Seed">
@@ -4069,3 +3080,120 @@ let n=0;const t=setInterval(()=>{if(apply()||++n>50)clearInterval(t)},400);
 </footer>
 
 
+
+<style id="apple-seed-mobile-header-final-override">
+/* FINAL MOBILE HEADER OVERRIDE — must be last so later responsive CSS cannot undo it. */
+@media (max-width:760px){
+  :root{--apple-seed-mobile-header-h:196px!important;}
+
+  body{
+    padding-top:196px!important;
+    overflow-x:hidden!important;
+  }
+
+  .site-header{
+    position:fixed!important;
+    top:0!important;
+    left:0!important;
+    right:0!important;
+    width:100%!important;
+    height:196px!important;
+    min-height:196px!important;
+    max-height:196px!important;
+    overflow:hidden!important;
+    z-index:5000!important;
+  }
+
+  .site-header .nav{
+    width:100%!important;
+    max-width:none!important;
+    height:196px!important;
+    min-height:196px!important;
+    padding:10px 12px 12px!important;
+    margin:0!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    justify-content:flex-start!important;
+    gap:8px!important;
+  }
+
+  .site-header .brand{
+    width:100%!important;
+    min-width:0!important;
+    height:72px!important;
+    flex:0 0 72px!important;
+    padding:0 8px!important;
+    display:flex!important;
+    align-items:center!important;
+  }
+
+  .site-header .menu{
+    width:100%!important;
+    height:98px!important;
+    min-height:98px!important;
+    flex:0 0 98px!important;
+    margin:0!important;
+    padding:0!important;
+    display:grid!important;
+    grid-template-columns:repeat(6,minmax(0,1fr))!important;
+    grid-template-rows:42px 50px!important;
+    column-gap:6px!important;
+    row-gap:6px!important;
+    align-items:center!important;
+  }
+
+  .site-header .menu > a{
+    width:100%!important;
+    min-width:0!important;
+    height:42px!important;
+    padding:0!important;
+    margin:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    flex:none!important;
+  }
+
+  .site-header .menu > a .mi{
+    width:30px!important;
+    height:30px!important;
+    font-size:21px!important;
+    line-height:1!important;
+  }
+
+  .site-header .menu > a > span:last-child{display:none!important;}
+
+  .site-header .menu > a.booking-nav{
+    background:linear-gradient(135deg,#1769ff,#3d94ff)!important;
+    color:#fff!important;
+    border-radius:12px!important;
+  }
+
+  .site-header .member-auth-buttons{
+    grid-column:1 / -1!important;
+    grid-row:2!important;
+    width:100%!important;
+    height:50px!important;
+    min-height:50px!important;
+    margin:0!important;
+    padding:0!important;
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:8px!important;
+  }
+
+  .site-header .member-auth-buttons .member-auth-btn{
+    width:100%!important;
+    height:50px!important;
+    min-height:50px!important;
+    margin:0!important;
+    padding:0 8px!important;
+    border-radius:14px!important;
+    font-size:15px!important;
+    white-space:nowrap!important;
+  }
+
+  .site-header .member-user-pill{grid-column:1 / -1!important;width:100%!important;}
+}
+</style>
