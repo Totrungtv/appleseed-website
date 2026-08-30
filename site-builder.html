@@ -220,6 +220,7 @@ async function loadPublished(forcePublished=false){
   // - The published Supabase version is the baseline for a fresh Builder session.
   // - A local draft is kept only while it belongs to the same published version.
   // This prevents an old localStorage draft from hiding a newly published Hero/image.
+  let publishedVersion='';
   const r=await window.supabaseClient.from('site_builder_versions')
     .select('id,version_no,config,created_at')
     .eq('site_key','default')
@@ -232,7 +233,7 @@ async function loadPublished(forcePublished=false){
     return;
   }
   if(r.data?.config){
-    const publishedVersion=String(r.data.version_no||'');
+    publishedVersion=String(r.data.version_no||'');
     const localRaw=localStorage.getItem(DRAFT_KEY);
     const localBase=localStorage.getItem(PUBLISHED_VERSION_KEY);
     if(forcePublished || !localRaw || !localBase || localBase!==publishedVersion){
