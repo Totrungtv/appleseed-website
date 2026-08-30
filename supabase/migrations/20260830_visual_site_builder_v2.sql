@@ -87,13 +87,13 @@ declare
   row public.site_builder_versions;
   v bigint;
 begin
-  perform pg_advisory_xact_lock(hashtextextended(src.site_key,0));
   if uid is null then raise exception 'AUTH_REQUIRED'; end if;
   if not exists(select 1 from public.profiles p where p.id=uid and p.role in ('admin','staff')) then
     raise exception 'BUILDER_FORBIDDEN';
   end if;
   select * into src from public.site_builder_versions where id=p_version_id;
   if not found then raise exception 'VERSION_NOT_FOUND'; end if;
+  perform pg_advisory_xact_lock(hashtextextended(src.site_key,0));
   v := public.apple_seed_builder_next_version(src.site_key);
   update public.site_builder_versions set status='archived' where site_key=src.site_key and status='published';
   insert into public.site_builder_versions(site_key,version_no,config,status,created_by,published_at)
