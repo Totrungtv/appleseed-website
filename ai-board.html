@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Apple Seed AI Board</title>
+<title>Apple Seed AI Board • Full</title>
 <style>
 body{margin:0;font-family:Inter,system-ui,sans-serif;background:linear-gradient(135deg,#f7fbff,#eef7ff 52%,#e8f2ff);color:#10233f}
 .wrap{max-width:1180px;margin:auto;padding:30px}.top{display:flex;justify-content:space-between;gap:20px;align-items:center;flex-wrap:wrap}
@@ -14,7 +14,7 @@ label{font-size:12px;font-weight:800;color:#46617f}input,select,textarea{width:1
 textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;padding:12px 18px;font-weight:800;cursor:pointer}.btn:disabled{opacity:.6;cursor:wait}.primary{background:linear-gradient(135deg,#1479e8,#3ba7ff);color:white}.secondary{background:#eaf4ff;color:#145ca8}
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}.result{margin-top:14px;padding:14px 16px;background:#f5faff;border-left:4px solid #278cf0;border-radius:12px}
 .pill{display:inline-block;padding:5px 9px;border-radius:999px;background:#eaf4ff;color:#155b9e;border:1px solid #cce3f8;font-size:12px;margin:3px}
-.case{padding:13px;border:1px solid #d5e5f5;border-radius:13px;background:#fff;margin-top:10px}.drop{min-height:120px;margin-top:15px;border:1.5px dashed #8bb9e8;border-radius:15px;display:grid;place-items:center;text-align:center;background:#f4faff}
+.file-picked{margin-top:8px;padding:10px 12px;border:1px solid #cfe2f7;border-radius:11px;background:#f7fbff;color:#46617f;font-size:13px}.file-picked.show{display:block}.case{padding:13px;border:1px solid #d5e5f5;border-radius:13px;background:#fff;margin-top:10px}.drop{min-height:120px;margin-top:15px;border:1.5px dashed #8bb9e8;border-radius:15px;display:grid;place-items:center;text-align:center;background:#f4faff}
 @media(max-width:800px){.grid,.fields{grid-template-columns:1fr}.full{grid-column:auto}h1{font-size:30px}}
 
 /* Apple Seed AI confirmation modal */
@@ -87,7 +87,8 @@ body.apple-seed-member-logged-in .member-required-banner {
 <div class="field"><label>Diode / Resistance</label><input placeholder="Giá trị đo"></div>
 <div class="field"><label>I2C / SDA / SCL</label><input placeholder="Địa chỉ / tình trạng"></div>
 </div>
-<div class="drop" id="aiBoardDrop" style="cursor:pointer">📷<br><strong>Thả ảnh main / schematic / boardview</strong><br><span class="muted">Bấm để chọn hoặc kéo thả ảnh • PNG / JPG / WEBP</span><input id="aiBoardFile" type="file" accept="image/png,image/jpeg,image/webp" hidden></div>
+<div class="drop" id="aiBoardDrop" style="cursor:pointer;min-height:125px">📷<br><strong>Chọn / kéo thả ảnh main / boardview vào đây</strong><br><span class="muted">PNG / JPG / WEBP • ảnh dùng cho AI Board Diagnosis</span><input id="aiBoardFile" type="file" accept="image/png,image/jpeg,image/webp" hidden></div>
+<div class="file-picked" id="aiBoardPicked" hidden></div>
 <div class="actions"><button class="btn primary" id="analyze">⚡ PHÂN TÍCH AI · 20 COIN</button></div><div id="result" class="result">Chưa phân tích.</div></div>
 
 <div class="card"><h2>🧠 AI Diagnosis</h2><div class="muted">Evidence-first • không kết luận khi thiếu dữ liệu.</div>
@@ -97,6 +98,8 @@ body.apple-seed-member-logged-in .member-required-banner {
 <div class="field"><label>Tài liệu</label><select id="schematicType"><option>Schematic</option><option>Boardview / ZXW</option><option>Pinout</option><option>Ảnh main</option><option>Ảnh đo diode / trở</option></select></div>
 <div class="field"><label>Vùng / linh kiện</label><input id="schematicArea" placeholder="U5200 / I2C compass / PP_VDD"></div>
 </div>
+<div class="drop" id="schematicDrop" style="cursor:pointer;min-height:105px">📐<br><strong>Chọn / kéo thả ảnh Schematic / Boardview vào đây</strong><br><span class="muted">PNG / JPG / WEBP • ảnh chỉ dùng cho Schematic Intelligence</span><input id="schematicFile" type="file" accept="image/png,image/jpeg,image/webp" hidden></div>
+<div class="file-picked" id="schematicPicked" hidden></div>
 <div class="actions"><button class="btn primary" id="analyzeSchematic" type="button">📐 ANALYZE SCHEMATIC · 20 COIN</button></div>
 <div id="schematicStatus" class="muted" style="margin-top:9px"></div>
 <div id="schematicResult" class="result">Chưa có phân tích sơ đồ.</div></div>
@@ -123,6 +126,8 @@ body.apple-seed-member-logged-in .member-required-banner {
 <script src="supabase-config.js"></script>
 <script>
 const sb = window.supabaseClient;
+
+if(!sb){ console.error("Apple Seed AI Board: supabaseClient chưa sẵn sàng."); }
 
 const AI_COST = 20;
 let aiBoardSelectedFile = null;
@@ -401,167 +406,53 @@ document.getElementById("coinAccept").onclick = async ()=>{
   await confirmedRun(mode);
 };
 
-/* Main image picker */
-document.getElementById("aiBoardFile").onchange=e=>{
-  aiBoardSelectedFile=e.target.files?.[0]||null;
-  const status=document.getElementById("uploadStatus");
-  if(status) status.textContent=aiBoardSelectedFile
-    ? "📷 Đã chọn ảnh AI: "+aiBoardSelectedFile.name+" — "+Math.round(aiBoardSelectedFile.size/1024)+" KB"
-    : "Chưa chọn ảnh.";
-};
-
-/* Main image drag/drop */
-const drop=document.getElementById("aiBoardDrop");
-if(drop){
-  drop.onclick=e=>{
-    if(e.target.id!=="aiBoardFile") document.getElementById("aiBoardFile").click();
-  };
-
-  ["dragenter","dragover"].forEach(ev=>drop.addEventListener(ev,e=>{
-    e.preventDefault();
-    drop.style.borderColor="#1479e8";
-    drop.style.background="#edf7ff";
-  }));
-
-  ["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{
-    e.preventDefault();
-    drop.style.borderColor="#8bb9e8";
-    drop.style.background="#f4faff";
-  }));
-
-  drop.addEventListener("drop",e=>{
-    const f=e.dataTransfer.files?.[0];
-    if(!f)return;
-    if(!/^image\/(png|jpeg|webp)$/.test(f.type)){
-      document.getElementById("uploadStatus").textContent="AI hiện nhận PNG, JPG hoặc WEBP.";
-      return;
+/* ---------- File selection ---------- */
+function isAllowedImage(file){
+  return !!file && /^image\/(png|jpeg|webp)$/.test(file.type);
+}
+function fileLabel(file){
+  if(!file) return "";
+  const kb=Math.max(1,Math.round(file.size/1024));
+  return `${file.name} — ${kb} KB`;
+}
+function showPicked(id,file,icon){
+  const el=document.getElementById(id);
+  if(!el) return;
+  if(!file){ el.hidden=true; el.classList.remove("show"); el.textContent=""; return; }
+  el.hidden=false; el.classList.add("show"); el.textContent=`${icon} Đã chọn: ${fileLabel(file)}`;
+}
+function bindImageDrop(dropId,inputId,getter,setter,pickedId,icon,statusFn){
+  const drop=document.getElementById(dropId), input=document.getElementById(inputId);
+  if(!drop || !input) return;
+  const choose=(file)=>{
+    if(!isAllowedImage(file)){
+      statusFn("AI hiện nhận PNG, JPG hoặc WEBP.",true);
+      input.value="";
+      return false;
     }
-    aiBoardSelectedFile=f;
-    document.getElementById("uploadStatus").textContent =
-      "📷 Đã chọn ảnh AI: "+f.name+" — "+Math.round(f.size/1024)+" KB";
-  });
-}
-
-/* Separate schematic picker */
-const schematicDrop = document.getElementById("schematicDrop");
-const schematicFile = document.getElementById("schematicFile");
-
-if(schematicFile){
-  schematicFile.onchange=e=>{
-    schematicSelectedFile=e.target.files?.[0]||null;
-    aiBoardSetSchematicStatus(
-      schematicSelectedFile
-        ? "📐 Đã chọn schematic: "+schematicSelectedFile.name+" — "+Math.round(schematicSelectedFile.size/1024)+" KB"
-        : "Chưa chọn file schematic."
-    );
+    setter(file); showPicked(pickedId,file,icon); statusFn(`${icon} Đã chọn: ${fileLabel(file)}`); return true;
   };
+  input.addEventListener("change",()=>choose(input.files?.[0]||null));
+  drop.addEventListener("click",()=>input.click());
+  ["dragenter","dragover"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.style.borderColor="#1479e8";drop.style.background="#edf7ff";}));
+  ["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.style.borderColor="#8bb9e8";drop.style.background="#f4faff";}));
+  drop.addEventListener("drop",e=>choose(e.dataTransfer.files?.[0]||null));
 }
 
-if(schematicDrop && schematicFile){
-  schematicDrop.onclick=e=>{
-    if(e.target.id!=="schematicFile") schematicFile.click();
-  };
+bindImageDrop("aiBoardDrop","aiBoardFile",()=>aiBoardSelectedFile,f=>{aiBoardSelectedFile=f;},"aiBoardPicked","📷",(m,e)=>{
+  const el=document.getElementById("uploadStatus"); if(el){el.textContent=m;el.style.color=e?"#b42318":"#647b98";}
+});
+bindImageDrop("schematicDrop","schematicFile",()=>schematicSelectedFile,f=>{schematicSelectedFile=f;},"schematicPicked","📐",aiBoardSetSchematicStatus);
 
-  ["dragenter","dragover"].forEach(ev=>schematicDrop.addEventListener(ev,e=>{
-    e.preventDefault();
-    schematicDrop.style.borderColor="#1479e8";
-    schematicDrop.style.background="#edf7ff";
-  }));
-
-  ["dragleave","drop"].forEach(ev=>schematicDrop.addEventListener(ev,e=>{
-    e.preventDefault();
-    schematicDrop.style.borderColor="#8bb9e8";
-    schematicDrop.style.background="#f4faff";
-  }));
-
-  schematicDrop.addEventListener("drop",e=>{
-    const f=e.dataTransfer.files?.[0];
-    if(!f)return;
-    if(!/^image\/(png|jpeg|webp)$/.test(f.type)){
-      aiBoardSetSchematicStatus("AI hiện nhận PNG, JPG hoặc WEBP.",true);
-      return;
-    }
-    schematicSelectedFile=f;
-    aiBoardSetSchematicStatus(
-      "📐 Đã chọn schematic: "+f.name+" — "+Math.round(f.size/1024)+" KB"
-    );
-  });
-}
-
-/* Schematic library demo upload */
+/* Schematic library upload: keep the library selector independent from AI image selectors. */
 document.getElementById("upload").onclick=()=>{
-  const f=document.getElementById("file").files[0];
-  document.getElementById("uploadStatus").textContent=f
-    ? "Đã chọn: "+f.name+" — thư viện file giữ nguyên chức năng."
-    : "Chưa chọn file.";
+  const f=document.getElementById("file")?.files?.[0];
+  const el=document.getElementById("uploadStatus");
+  if(el) el.textContent=f ? `📚 Đã chọn: ${f.name} — sẵn sàng thêm vào thư viện.` : "Chưa chọn file thư viện.";
 };
 
-/* Buttons */
 document.getElementById("analyze").onclick=()=>runAppleSeedBoardAI("panic");
 document.getElementById("analyzeSchematic").onclick=()=>runAppleSeedBoardAI("schematic");
-
-/*
-  The current HTML did not have a dedicated schematic input.
-  Create it dynamically inside the Schematic Intelligence drop zone
-  if the old markup is still present.
-*/
-(function ensureSchematicInput(){
-  const old = document.getElementById("schematicDrop");
-  if(old) return;
-
-  const heading = document.getElementById("analyzeSchematic");
-  if(!heading) return;
-
-  const wrap = document.createElement("div");
-  wrap.id = "schematicDrop";
-  wrap.className = "drop";
-  wrap.style.cursor = "pointer";
-  wrap.innerHTML =
-    "📐<br><strong>Chọn / kéo thả ảnh Schematic / Boardview vào đây</strong><br>" +
-    "<span class=\"muted\">PNG / JPG / WEBP • ảnh chỉ dùng cho Schematic Intelligence</span>" +
-    "<input id=\"schematicFile\" type=\"file\" accept=\"image/png,image/jpeg,image/webp\" hidden>";
-
-  heading.parentElement.insertBefore(wrap,heading);
-
-  const fileInput = document.getElementById("schematicFile");
-  fileInput.onchange=e=>{
-    schematicSelectedFile=e.target.files?.[0]||null;
-    aiBoardSetSchematicStatus(
-      schematicSelectedFile
-        ? "📐 Đã chọn schematic: "+schematicSelectedFile.name+" — "+Math.round(schematicSelectedFile.size/1024)+" KB"
-        : "Chưa chọn file schematic."
-    );
-  };
-
-  wrap.onclick=e=>{
-    if(e.target.id!=="schematicFile") fileInput.click();
-  };
-
-  ["dragenter","dragover"].forEach(ev=>wrap.addEventListener(ev,e=>{
-    e.preventDefault();
-    wrap.style.borderColor="#1479e8";
-    wrap.style.background="#edf7ff";
-  }));
-
-  ["dragleave","drop"].forEach(ev=>wrap.addEventListener(ev,e=>{
-    e.preventDefault();
-    wrap.style.borderColor="#8bb9e8";
-    wrap.style.background="#f4faff";
-  }));
-
-  wrap.addEventListener("drop",e=>{
-    const f=e.dataTransfer.files?.[0];
-    if(!f)return;
-    if(!/^image\/(png|jpeg|webp)$/.test(f.type)){
-      aiBoardSetSchematicStatus("AI hiện nhận PNG, JPG hoặc WEBP.",true);
-      return;
-    }
-    schematicSelectedFile=f;
-    aiBoardSetSchematicStatus(
-      "📐 Đã chọn schematic: "+f.name+" — "+Math.round(f.size/1024)+" KB"
-    );
-  });
-})();
 </script>
 <div id="coinSecurityNote" style="display:none">
   Coin phải được trừ ở server/RPC sau khi thành viên bấm “Đồng ý, phân tích”.
@@ -658,12 +549,12 @@ document.getElementById("analyzeSchematic").onclick=()=>runAppleSeedBoardAI("sch
 
   async function refreshMemberGate(){
     try{
-      if(!window.memberSB || !window.memberSB.auth){
+      if(!window.supabaseClient || !window.supabaseClient.auth){
         setMemberGate(false);
         return;
       }
 
-      const { data, error } = await window.memberSB.auth.getSession();
+      const { data, error } = await window.supabaseClient.auth.getSession();
       if(error){
         console.warn("Member gate session error:", error);
         setMemberGate(false);
@@ -680,8 +571,8 @@ document.getElementById("analyzeSchematic").onclick=()=>runAppleSeedBoardAI("sch
   function startMemberGate(){
     refreshMemberGate();
 
-    if(window.memberSB?.auth){
-      window.memberSB.auth.onAuthStateChange(function(_event, session){
+    if(window.supabaseClient?.auth){
+      window.supabaseClient.auth.onAuthStateChange(function(_event, session){
         setMemberGate(!!session?.user);
         /* Chạy lại sau khi CMS/UI kịp render */
         setTimeout(refreshMemberGate, 50);
