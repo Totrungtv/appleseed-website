@@ -98,7 +98,7 @@ function currentStyle(){return getItem().styles[deviceKey()]||{}}
 function ensurePage(){draft.page=draft.page||{};draft.page.desktop=draft.page.desktop||{};draft.page.mobile=draft.page.mobile||{};return draft.page[deviceKey()]}
 function findPageTarget(kind='hero'){
   if(!doc)return null;
-  const map=kind==='main'?['main','#main','.main']:['.as3-hero','.hero','section:first-of-type','main'];
+  const map=kind==='main'?['main','#main','.main']:['#apple-seed-premium-home','.as3-hero','.hero','section:first-of-type','main'];
   for(const s of map){try{const el=doc.querySelector(s);if(el)return el}catch{}}
   return doc.body;
 }
@@ -131,8 +131,17 @@ function applyPageToTarget(target,p){
   if(p.bgImage){
     const safe=String(p.bgImage).replace(/\\/g,'\\\\').replace(/"/g,'\\\"');
     target.style.setProperty('background-image','url("'+safe+'")','important');
+    if(target.id==='apple-seed-premium-home'){
+      target.classList.add('builder-has-page-bg');
+      const stage=target.querySelector('.as3-stage');
+      if(stage){
+        stage.style.setProperty('background-image','none','important');
+        stage.style.setProperty('background-color','transparent','important');
+      }
+    }
   }else{
     target.style.removeProperty('background-image');
+    if(target.id==='apple-seed-premium-home')target.classList.remove('builder-has-page-bg');
   }
   if(p.bgColor)target.style.setProperty('background-color',String(p.bgColor),'important');
   if(p.bgSize)target.style.setProperty('background-size',String(p.bgSize),'important');
@@ -152,7 +161,17 @@ function refreshInspector(){
   $('imagePanel').hidden=!(selected.tagName==='IMG'||getComputedStyle(selected).backgroundImage!=='none');
   $('stylePanel').hidden=false;
   if(textEditable(selected))$('text').value=selected.textContent;
-  if(selected.tagName==='IMG'){$('imagePreview').src=selected.currentSrc||selected.src;$('imageUrl').value=selected.src}
+  if(selected.tagName==='IMG'){
+    $('imagePreview').src=selected.currentSrc||selected.src;
+    $('imageUrl').value=selected.src;
+  }else{
+    const item=getItem();
+    const raw=item.bgImage||selected.style.backgroundImage||getComputedStyle(selected).backgroundImage||'';
+    const m=raw.match(/url\\((?:"|')?(.*?)(?:"|')?\\)/i);
+    const bgUrl=m?m[1]:'';
+    $('imagePreview').src=item.bgImage||bgUrl||'';
+    $('imageUrl').value=item.bgImage||bgUrl||'';
+  }
   const st=styleObject(selected),v=currentStyle();
   $('x').value=v.x??st.x;$('y').value=v.y??st.y;$('w').value=v.w??st.w;$('h').value=v.h??st.h;$('fontSize').value=v.fontSize??st.fontSize;$('radius').value=v.radius??st.radius;$('color').value=/^#[0-9a-f]{6}$/i.test(v.color??st.color)?(v.color??st.color):'#17233d';$('backgroundColor').value=/^#[0-9a-f]{6}$/i.test(v.background??st.background)?(v.background??st.background):'#ffffff';$('deviceLabel').textContent=device==='mobile'?'Mobile':'Desktop';
   refreshOverlay();renderLayers();
@@ -193,7 +212,19 @@ function applyAll(){
     let el;try{el=doc.querySelector(s)}catch{continue}if(!el)continue;
     if(item.text!==undefined&&textEditable(el))el.textContent=item.text;
     if(item.src!==undefined&&el.tagName==='IMG')el.src=item.src;
-    if(item.bgImage!==undefined&&el.tagName!=='IMG')el.style.backgroundImage=item.bgImage?'url("'+item.bgImage+'")':'';
+    if(item.bgImage!==undefined&&el.tagName!=='IMG'){
+      if(item.bgImage){
+        const safe=String(item.bgImage).replace(/\\/g,'\\\\').replace(/"/g,'\\\"');
+        el.style.setProperty('background-image','url("'+safe+'")','important');
+        if(el.matches&&el.matches('.as3-p1,.as3-p2,.as3-p3,.as3-p4,.as3-p5,.as3-p6')){
+          el.style.setProperty('background-size','contain','important');
+          el.style.setProperty('background-position','center','important');
+          el.style.setProperty('background-repeat','no-repeat','important');
+        }
+      }else{
+        el.style.removeProperty('background-image');
+      }
+    }
     // Important: Desktop and Mobile are independent. Clear only Builder-controlled
     // inline styles first, then apply the selected device's draft values.
     controlled.forEach(k=>{el.style[k]=''});
@@ -464,7 +495,13 @@ refreshPageDesign();
 $('applyText').onclick=()=>{if(!selected||!textEditable(selected))return;checkpoint();selected.textContent=$('text').value;getItem().text=selected.textContent;saveDraft();refreshInspector();toast('Đã đổi chữ')};
 $('applyStyle').onclick=()=>{if(!selected)return;checkpoint();const v=getItem().styles[deviceKey()];for(const k of ['x','y','w','h']){const n=parseFloat($(k).value);if(Number.isFinite(n))v[k]=n}for(const k of ['fontSize','radius']){const n=parseFloat($(k).value);if(Number.isFinite(n))v[k]=n}v.color=$('color').value;v.background=$('backgroundColor').value;selected.style.translate=(v.x||0)+'px '+(v.y||0)+'px';if(v.w)selected.style.width=v.w+'px';if(v.h)selected.style.height=v.h+'px';if(v.fontSize)selected.style.fontSize=v.fontSize+'px';if(v.radius!==undefined)selected.style.borderRadius=v.radius+'px';if(v.color)selected.style.color=v.color;if(v.background)selected.style.backgroundColor=v.background;saveDraft();refreshOverlay();toast('Đã áp dụng giao diện')};
 $('pick').onclick=()=>$('file').click();$('file').onchange=e=>{pendingFile=e.target.files[0]||null;if(pendingFile)$('imagePreview').src=URL.createObjectURL(pendingFile)};
-$('applyImage').onclick=async()=>{if(!selected)return;let url=$('imageUrl').value.trim();try{if(pendingFile){url=await upload(pendingFile);pendingFile=null}}catch(e){toast('Upload lỗi: '+e.message);return}if(!url)return;checkpoint();const item=getItem();if(selected.tagName==='IMG'){selected.src=url;item.src=url}else{selected.style.backgroundImage='url("'+url+'")';item.bgImage=url}saveDraft();refreshInspector();toast('Đã thay hình')};
+$('applyImage').onclick=async()=>{if(!selected)return;let url=$('imageUrl').value.trim();try{if(pendingFile){url=await upload(pendingFile);pendingFile=null}}catch(e){toast('Upload lỗi: '+e.message);return}if(!url)return;checkpoint();const item=getItem();if(selected.tagName==='IMG'){
+  selected.src=url;
+  item.src=url;
+}else{
+  selected.style.setProperty('background-image','url("'+String(url).replace(/\\/g,'\\\\').replace(/"/g,'\\\"')+'")','important');
+  item.bgImage=url;
+}saveDraft();refreshInspector();toast('Đã thay hình')};
 $('desktopBtn').onclick=()=>{device='desktop';$('desktopBtn').classList.add('active');$('mobileBtn').classList.remove('active');$('frame').classList.remove('mobile');applyAll();refreshInspector();};
 $('mobileBtn').onclick=()=>{device='mobile';$('mobileBtn').classList.add('active');$('desktopBtn').classList.remove('active');$('frame').classList.add('mobile');applyAll();refreshInspector();};
 $('undo').onclick=()=>{if(!history.length)return;future.push(snapshot());draft=history.pop();saveDraft();applyAll();toast('↶ Undo')};
