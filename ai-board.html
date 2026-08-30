@@ -181,10 +181,28 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
           <div id="asGroupList" class="as-chat-list"></div>
         </div>
         <div id="asPrivatePanel" style="display:none">
-          <h3>Thành viên & bạn bè</h3>
-          <div class="as-search-member"><input id="asMemberSearch" placeholder="Tìm tên kỹ thuật viên..." autocomplete="off"><button class="as-smallbtn primary" id="asMemberSearchBtn" type="button">🔎</button></div>
-          <div id="asFriendList" class="as-member-results"><div class="as-empty">Đang tải bạn bè…</div></div>
-          <div id="asMemberResults" class="as-member-results"></div>
+          <div class="as-directory-head">
+            <div>
+              <h3>Thành viên & bạn bè</h3>
+              <div class="as-directory-sub">Tìm kỹ thuật viên nhanh, không cần cuộn hàng trăm tài khoản.</div>
+            </div>
+            <span class="as-directory-count" id="asMemberCount">0</span>
+          </div>
+          <div class="as-member-search-pro">
+            <span>🔎</span>
+            <input id="asMemberSearch" placeholder="Tìm tên kỹ thuật viên..." autocomplete="off" aria-label="Tìm kỹ thuật viên">
+            <button id="asMemberSearchClear" type="button" title="Xóa tìm kiếm" aria-label="Xóa tìm kiếm">×</button>
+            <button class="as-smallbtn primary" id="asMemberSearchBtn" type="button">Tìm</button>
+          </div>
+          <div class="as-directory-hint" id="asMemberSearchHint">Bạn bè và lời mời hiển thị ở đây. Gõ ít nhất 2 ký tự để tìm thành viên.</div>
+          <div class="as-directory-section" id="asFriendsSection">
+            <div class="as-directory-section-title"><span>BẠN BÈ & LỜI MỜI</span><span id="asFriendCount"></span></div>
+            <div id="asFriendList" class="as-member-results"><div class="as-empty">Đang tải bạn bè…</div></div>
+          </div>
+          <div class="as-directory-section" id="asSearchSection" style="display:none">
+            <div class="as-directory-section-title"><span>KẾT QUẢ THÀNH VIÊN</span><span id="asSearchCount"></span></div>
+            <div id="asMemberResults" class="as-member-results"></div>
+          </div>
         </div>
       </aside>
       <section class="as-chat-main">
@@ -628,18 +646,46 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
     if(r.error)alert(r.error.message);
     await loadFriends(); await loadMembers();
   }
+  let memberSearchTimer=null;
   async function loadMembers(){
-    const q=$('asMemberSearch').value.trim();
+    if(!user)return;
+    const input=$('asMemberSearch');
+    const q=(input?.value||'').trim();
+    const results=$('asMemberResults');
+    const searchSection=$('asSearchSection');
+    const hint=$('asMemberSearchHint');
+    if(q.length<2){
+      if(searchSection)searchSection.style.display='none';
+      if(hint)hint.textContent=q?'Gõ thêm ký tự để tìm kỹ thuật viên.':'Bạn bè và lời mời hiển thị ở đây. Gõ ít nhất 2 ký tự để tìm thành viên.';
+      if($('asMemberCount'))$('asMemberCount').textContent='';
+      return;
+    }
+    if(searchSection)searchSection.style.display='block';
+    if(results)results.innerHTML='<div class="as-directory-loading">🔎 Đang tìm kỹ thuật viên…</div>';
     const r=await sb.rpc('chat_search_members',{p_query:q});
-    if(r.error){$('asMemberResults').innerHTML='<div class="as-empty">Không tải được danh sách thành viên.</div>';return;}
-    const rows=(r.data||[]).filter(function(x){return x.id!==user.id;});
-    $('asMemberResults').innerHTML=rows.length?'<div style="font-size:11px;font-weight:900;color:#647b98;margin:10px 0 6px">THÀNH VIÊN APPLE SEED</div>'+rows.map(function(x){
+    if(r.error){
+      console.error('chat_search_members',r.error);
+      if(results)results.innerHTML='<div class="as-empty">Không tải được kết quả tìm kiếm.</div>';
+      return;
+    }
+    const rows=(r.data||[]).filter(x=>x.id!==user.id).slice(0,50);
+    if($('asMemberCount'))$('asMemberCount').textContent=rows.length;
+    if($('asSearchCount'))$('asSearchCount').textContent=rows.length?rows.length+' kết quả':'Không có';
+    if(hint)hint.textContent=rows.length?'Chọn một thành viên để mở chat, kết bạn hoặc thêm vào nhóm.':'Không tìm thấy kỹ thuật viên phù hợp.';
+    results.innerHTML=rows.length?rows.map(function(x){
       groupMemberNames.set(x.id,x.full_name||'Thành viên');
-      return '<div class="as-member-result"><span>👤 '+esc(x.full_name||'Thành viên')+' '+(x.online?'🟢':'⚪')+'<small style="display:block;color:#7a8da8">'+esc(x.role||'member')+'</small></span><div style="display:flex;gap:5px"><button class="as-smallbtn" type="button" data-add-friend="'+esc(x.id)+'">🤝 Kết bạn</button><button class="as-smallbtn" type="button" data-add-group="'+esc(x.id)+'">＋ Nhóm</button><button class="as-smallbtn primary" type="button" data-use="'+esc(x.id)+'" data-name="'+esc(x.full_name||'Thành viên')+'">💬 Chat</button></div></div>';
+      const online=!!x.online;
+      return '<div class="as-member-card">'+
+        '<button class="as-member-main" type="button" data-use="'+esc(x.id)+'" data-name="'+esc(x.full_name||'Thành viên')+'">'+
+          '<span class="as-member-avatar">'+(online?'🟢':'👤')+'</span>'+
+          '<span class="as-member-copy"><b>'+esc(x.full_name||'Thành viên')+'</b><small>'+esc(x.role||'member')+' · '+(online?'Đang online':'Ngoại tuyến')+'</small></span>'+
+        '</button>'+
+        '<div class="as-member-actions-pro"><button class="as-icon-action" type="button" data-add-friend="'+esc(x.id)+'" title="Kết bạn">🤝</button><button class="as-icon-action" type="button" data-add-group="'+esc(x.id)+'" title="Thêm vào nhóm">＋</button><button class="as-icon-action primary" type="button" data-use="'+esc(x.id)+'" data-name="'+esc(x.full_name||'Thành viên')+'" title="Chat riêng">💬</button></div>'+
+      '</div>';
     }).join(''):'<div class="as-empty">Không có thành viên phù hợp.</div>';
-    $('asMemberResults').querySelectorAll('[data-use]').forEach(function(b){b.onclick=function(){startDirect(b.dataset.use,b.dataset.name);};});
-    $('asMemberResults').querySelectorAll('[data-add-friend]').forEach(function(b){b.onclick=function(){sendFriend(b.dataset.addFriend,b);};});
-    $('asMemberResults').querySelectorAll('[data-add-group]').forEach(function(b){b.onclick=function(){selectedGroupMembers.add(b.dataset.addGroup);renderSelectedGroupMembers();$('asCreateGroupBox').style.display='block';$('asGroupNameInput').focus();};});
+    results.querySelectorAll('.as-member-main,[data-use]').forEach(function(b){b.onclick=function(){startDirect(b.dataset.use,b.dataset.name);};});
+    results.querySelectorAll('[data-add-friend]').forEach(function(b){b.onclick=function(){sendFriend(b.dataset.addFriend,b);};});
+    results.querySelectorAll('[data-add-group]').forEach(function(b){b.onclick=function(){selectedGroupMembers.add(b.dataset.addGroup);renderSelectedGroupMembers();$('asCreateGroupBox').style.display='block';$('asGroupNameInput').focus();};});
   }
   async function createGroup(){
     if(!user)return;
@@ -867,3 +913,37 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
 </script>
 
 </body></html>
+<style id="apple-seed-pro-chat-directory">
+.as-chat-modal.open:not(.chat-minimized) .as-modal-box{width:min(1080px,calc(100vw - 32px));max-height:90vh}
+.as-chat-layout{grid-template-columns:330px minmax(0,1fr);min-height:620px}
+.as-chat-side{padding:14px;background:linear-gradient(180deg,#f8fbff,#f3f8fe);overflow:hidden}
+.as-chat-tabs{padding:3px;background:#eaf2fb;border-radius:12px;gap:3px}
+.as-chat-tabs button{border:0;background:transparent;border-radius:9px;padding:10px}
+.as-chat-tabs button.active{box-shadow:0 5px 15px #1769ff22}
+.as-directory-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin:12px 2px 10px}
+.as-directory-head h3{margin:0 0 3px!important;font-size:15px!important;color:#102f53!important}
+.as-directory-sub{font-size:11px;color:#71849b;line-height:1.4}
+.as-directory-count{min-width:24px;height:24px;padding:0 7px;border-radius:999px;background:#e6f1ff;color:#1769ff;font-size:11px;font-weight:900;display:grid;place-items:center}
+.as-member-search-pro{display:flex;align-items:center;gap:6px;padding:5px 6px 5px 10px;background:#fff;border:1px solid #cfe0f3;border-radius:12px;box-shadow:0 5px 15px #1b5d9210}
+.as-member-search-pro>span{font-size:14px}.as-member-search-pro input{border:0!important;outline:0!important;background:transparent!important;box-shadow:none!important;padding:7px 2px!important;min-width:0;flex:1;font-size:12px}.as-member-search-pro>button{flex:0 0 auto}.as-member-search-pro #asMemberSearchClear{border:0;background:transparent;color:#7a8da5;font-size:18px;cursor:pointer;padding:3px 5px}
+.as-directory-hint{font-size:10.5px;color:#72869e;padding:8px 3px;line-height:1.45}
+.as-directory-section{margin-top:4px}.as-directory-section-title{display:flex;justify-content:space-between;align-items:center;padding:5px 2px;font-size:10px;font-weight:950;color:#58718f;letter-spacing:.05em}
+.as-member-results{max-height:360px;overflow:auto;padding-right:2px}
+.as-member-card{display:flex;align-items:center;gap:6px;padding:7px;margin-bottom:6px;border:1px solid #dbe7f3;border-radius:12px;background:#fff;box-shadow:0 3px 12px #1b5d9208}
+.as-member-card:hover{border-color:#8bbcf0;box-shadow:0 7px 18px #1b5d9212}
+.as-member-main{display:flex;align-items:center;gap:8px;min-width:0;flex:1;border:0;background:transparent;text-align:left;cursor:pointer;padding:0}
+.as-member-avatar{width:32px;height:32px;flex:0 0 32px;border-radius:10px;background:#edf5ff;display:grid;place-items:center;font-size:13px}
+.as-member-copy{min-width:0}.as-member-copy b{display:block;font-size:12px;color:#17395f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.as-member-copy small{display:block;margin-top:2px;font-size:10px;color:#8293a7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.as-member-actions-pro{display:flex;gap:3px}.as-icon-action{width:29px;height:29px;border:1px solid #d5e3f1;background:#f8fbff;border-radius:8px;cursor:pointer;font-size:12px}.as-icon-action:hover{background:#edf6ff;border-color:#8bbcf0}.as-icon-action.primary{background:#1769ff;border-color:#1769ff;color:#fff}
+.as-directory-loading{padding:18px 8px;text-align:center;color:#64809e;font-size:11px;border:1px dashed #cfe0f2;border-radius:10px;background:#fff}
+.as-chat-main{background:#fff}
+.as-chat-title{min-height:52px;box-sizing:border-box}
+.as-chat-messages{min-height:430px;max-height:none}
+@media(max-width:760px){.as-chat-layout{grid-template-columns:1fr}.as-chat-side{max-height:430px;border-right:0;border-bottom:1px solid #e5edf6}.as-member-results{max-height:250px}.as-chat-messages{min-height:300px}.as-chat-modal.open:not(.chat-minimized) .as-modal-box{width:calc(100vw - 16px)}}
+</style>
+<script>
+(()=>{const i=document.getElementById('asMemberSearch'),c=document.getElementById('asMemberSearchClear');if(!i)return;
+ i.addEventListener('input',()=>{if(c)c.style.visibility=i.value?'visible':'hidden';clearTimeout(window.__asMemberSearchTimer);window.__asMemberSearchTimer=setTimeout(()=>{const b=document.getElementById('asMemberSearchBtn');if(b)b.click();},280)});
+ if(c){c.style.visibility='hidden';c.onclick=()=>{i.value='';c.style.visibility='hidden';document.getElementById('asSearchSection').style.display='none';document.getElementById('asMemberCount').textContent='';document.getElementById('asMemberSearchHint').textContent='Bạn bè và lời mời hiển thị ở đây. Gõ ít nhất 2 ký tự để tìm thành viên.';i.focus();};}
+})();
+</script>
