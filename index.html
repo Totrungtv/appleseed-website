@@ -1381,13 +1381,6 @@ body{
 }
 </style>
 
-
-<style id="apple-seed-ai-board-chat-safe-final">
-/* FINAL CHAT SAFE: AI BOARD không được đè lên cửa sổ Trợ lý Apple Seed. */
-body.apple-chat-open #apple-seed-ai-board-float{
-  display:none!important;
-}
-</style>
 </head>
 
 <body>
@@ -2727,8 +2720,8 @@ const btn=document.getElementById("chatBtn"),box=document.getElementById("chatBo
 const close=document.getElementById("chatClose"),body=document.getElementById("chatBody");
 const form=document.getElementById("chatForm"),input=document.getElementById("chatInput");
 
-btn.onclick=()=>{const open=box.classList.toggle("open");document.body.classList.toggle("apple-chat-open",open);if(open)input.focus()};
-close.onclick=()=>{box.classList.remove("open");document.body.classList.remove("apple-chat-open")};
+btn.onclick=()=>{box.classList.toggle("open");if(box.classList.contains("open"))input.focus()};
+close.onclick=()=>box.classList.remove("open");
 
 /*
  * APPLE SEED AI — STREAMING FRONTEND
