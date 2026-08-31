@@ -640,7 +640,7 @@ $('preview').addEventListener('load',async()=>{
     if(!drag.moved && Math.hypot(dx,dy)<3)return;
     drag.moved=true;
     if(drag.type==='move'){
-      const x=Math.round(drag.bx+dx),y=Math.round(drag.by+dy);
+      let x=Math.round(drag.bx+dx),y=Math.round(drag.by+dy);
       const bounded=clampHeroTranslate(drag.el,x,y); x=bounded.x; y=bounded.y;
       if(groupPhones&&drag.el.classList.contains('as3-phone')){
         Object.entries(drag.groupBases||{}).forEach(([sel,base])=>{
