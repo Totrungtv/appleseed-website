@@ -42,7 +42,7 @@ label{font-size:12px;font-weight:800;color:#46617f} input,select{width:100%;bord
 .icloud-result p{margin:7px 0 0;line-height:1.5} .icloud-checklist{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;font-size:12px;color:#46617f} .icloud-checklist strong{width:100%;color:#10233f;font-size:13px} .icloud-checklist span{padding:6px 9px;border:1px solid #d5e5f5;background:#fff;border-radius:999px}
 .rules{margin-top:18px;padding:16px;border:1px solid #d5e5f5;background:#fff;border-radius:14px} .rules ul{margin:8px 0 0;padding-left:20px;color:#46617f;line-height:1.7}
 @media(max-width:800px){.fields{grid-template-columns:1fr}.full{grid-column:auto}h1{font-size:30px}}
-</style>
+.result-shell{display:grid;grid-template-columns:300px minmax(0,1fr);gap:18px;margin-top:18px}.device-card{background:linear-gradient(180deg,#f8fbff,#eef6ff);border:1px solid #cfe2f7;border-radius:18px;padding:18px;text-align:center;position:relative;overflow:hidden}.device-card:before{content:"";position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,#1479e8,#55c7ff,#1479e8)}.device-kicker{font-size:11px;font-weight:900;letter-spacing:.12em;color:#6480a0;text-transform:uppercase}.device-name{font-size:22px;font-weight:900;margin:10px 0 4px;color:#10233f}.device-meta{font-size:13px;color:#647b98}.phone{width:142px;height:278px;margin:16px auto;border-radius:27px;background:#111827;padding:7px;box-shadow:0 16px 35px #1e508233;position:relative}.phone:before{content:"";position:absolute;top:8px;left:50%;transform:translateX(-50%);width:70px;height:19px;border-radius:14px;background:#000;z-index:2}.phone-screen{height:100%;border-radius:21px;background:linear-gradient(160deg,#0b1220,#183b69 55%,#08111e);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;box-sizing:border-box;padding:34px 10px 18px}.phone-logo{font-size:30px;opacity:.95}.phone-status{font-size:11px;font-weight:800;letter-spacing:.04em;text-align:center}.phone-value{font-size:10px;opacity:.78;word-break:break-all;text-align:center}.mini-list{text-align:left;border-top:1px solid #d9e7f5;margin-top:10px;padding-top:12px;display:grid;gap:8px;font-size:12px;color:#46617f}.mini-row{display:flex;justify-content:space-between;gap:8px}.mini-row b{color:#10233f}.result-panel{background:#fff;border:1px solid #cfe2f7;border-radius:18px;padding:18px}.result-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;border-radius:14px;padding:14px 16px;margin-bottom:14px}.result-banner.ok{background:#effcf2;border:1px solid #b8e0c2;color:#166534}.result-banner.danger{background:#fff2f2;border:1px solid #efb8b8;color:#991b1b}.result-banner.warn{background:#fff9ed;border:1px solid #f1d58b;color:#7a5b00}.result-banner-title{font-size:18px;font-weight:900}.result-banner-sub{font-size:12px;margin-top:4px;opacity:.85}.result-icon{font-size:28px;flex:0 0 auto}.result-section{border:1px solid #e0ebf6;border-radius:14px;padding:14px;margin-top:12px}.result-section h3{margin:0 0 12px;font-size:14px;color:#145ca8}.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px 22px}.result-item{display:flex;justify-content:space-between;gap:14px;border-bottom:1px dashed #e2ebf4;padding:7px 0;font-size:13px}.result-item span:first-child{color:#647b98}.result-item strong{text-align:right;color:#10233f;word-break:break-word}.result-value.ok{color:#15803d}.result-value.danger{color:#b91c1c}.result-value.warn{color:#a16207}.result-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}@media(max-width:900px){.result-shell{grid-template-columns:1fr}.result-grid{grid-template-columns:1fr}}</style>
 </head>
 <body>
 <main class="wrap">
@@ -57,7 +57,7 @@ label{font-size:12px;font-weight:800;color:#46617f} input,select{width:100%;bord
 <div class="icloud-note"><strong>⚠️ Nội quy</strong><br>Không nhập mật khẩu Apple Account. Chỉ nhập Serial hoặc IMEI. Không tự kết luận LOCKED/UNLOCKED khi nguồn kiểm tra chưa xác minh hợp lệ.</div>
 <div class="fields">
 <div class="field"><label>Kiểu định danh</label><select id="icloudIdType"><option value="serial">Serial Number</option><option value="imei">IMEI</option></select></div>
-<div class="field"><label>Model (không bắt buộc)</label><select id="icloudModel"><option value="">Tự nhận diện / chưa rõ</option><option>iPhone 16 Pro Max</option><option>iPhone 16 Pro</option><option>iPhone 16</option><option>iPhone 15 Pro Max</option><option>iPhone 15 Pro</option><option>iPhone 15</option><option>iPhone 14 Pro Max</option><option>iPhone 14 Pro</option><option>iPhone 14</option><option>iPhone 13 Pro Max</option><option>iPhone 13 Pro</option><option>iPhone 13</option><option>iPhone 12 Pro Max</option><option>iPhone 12 Pro</option><option>iPhone 12</option></select></div>
+<div class="field"><label>Model (không bắt buộc)</label><select id="icloudModel"><option value="">Tự nhận diện / chưa rõ</option><option>iPhone 17 Pro Max</option><option>iPhone 17 Pro</option><option>iPhone 17</option><option>iPhone 16 Pro Max</option><option>iPhone 16 Pro</option><option>iPhone 16</option><option>iPhone 15 Pro Max</option><option>iPhone 15 Pro</option><option>iPhone 15</option><option>iPhone 14 Pro Max</option><option>iPhone 14 Pro</option><option>iPhone 14</option><option>iPhone 13 Pro Max</option><option>iPhone 13 Pro</option><option>iPhone 13</option><option>iPhone 12 Pro Max</option><option>iPhone 12 Pro</option><option>iPhone 12</option></select></div>
 <div class="field full"><label id="icloudIdLabel">Serial Number</label><input id="icloudIdentifier" autocomplete="off" spellcheck="false" placeholder="Nhập Serial Number"></div>
 </div>
 <div class="actions"><button class="btn primary" id="icloudCheckBtn" type="button">☁️ KIỂM TRA ICLOUD — 5.000đ</button><button class="btn secondary" id="icloudClearBtn" type="button">Xóa</button></div>
@@ -109,6 +109,57 @@ function escHtml(value){const d=document.createElement('div');d.textContent=Stri
     result.className='icloud-result '+(kind||'');
     result.innerHTML='<strong>'+escHtml(title)+'</strong><p>'+escHtml(text)+'</p>';
   }
+
+  function pick(obj,keys){
+    for(const key of keys){
+      let cur=obj;
+      for(const part of key.split('.')){if(cur==null)break;cur=cur[part];}
+      if(cur!==undefined&&cur!==null&&String(cur).trim()!=='')return cur;
+    }
+    return null;
+  }
+  function formatValue(value){
+    if(value===undefined||value===null||value==='')return 'Không có dữ liệu';
+    if(typeof value==='object')return JSON.stringify(value);
+    return String(value);
+  }
+  function statusValue(value){
+    const v=String(value??'').toLowerCase().trim();
+    if(/^(on|locked|true|yes|enabled|active)$/.test(v))return {text:'Đang bật / đang khóa',kind:'danger'};
+    if(/^(off|unlocked|false|no|disabled|inactive|clean|clear)$/.test(v))return {text:'Đã tắt / sạch',kind:'ok'};
+    return {text:formatValue(value),kind:'warn'};
+  }
+  function renderVerifiedResult(data,type,identifier){
+    const raw=data?.provider_response||{};
+    const modelName=pick(raw,['model','device_model','deviceModel','productName','device.name'])||model.value||'Thiết bị Apple';
+    const serial=pick(raw,['serial','serialNumber','serial_number'])||(type==='serial'?identifier:null);
+    const imei=pick(raw,['imei','IMEI','imei1','data.imei'])||(type==='imei'?identifier:null);
+    const capacity=pick(raw,['storage','capacity','memory','data.storage']);
+    const color=pick(raw,['color','colour','data.color']);
+    const modelNumber=pick(raw,['modelNumber','model_number','modelCode','data.model']);
+    const activation=pick(raw,['activation_lock','activationLock','activation','data.activation_lock']);
+    const fmi=pick(raw,['fmi','findMy','find_my','data.fmi']);
+    const icloud=pick(raw,['icloud','icloud_status','icloudStatus','data.icloud']);
+    const blacklist=pick(raw,['blacklist','blacklisted','lost_stolen','lostStolen','data.blacklist']);
+    const simlock=pick(raw,['simlock','sim_lock','simLock','carrier_lock','data.simlock']);
+    const replacement=pick(raw,['replacement','replacement_device','replacementDevice','data.replacement']);
+    const carrier=pick(raw,['carrier','network','operator','data.carrier']);
+    const country=pick(raw,['country','countryName','data.country']);
+    const purchase=pick(raw,['purchase_type','purchaseType','data.purchase_type']);
+    const status=data.status==='LOCKED'?'danger':data.status==='UNLOCKED'?'ok':'warn';
+    const headline=data.status==='LOCKED'?'🔒 ACTIVATION LOCK: ĐANG KHÓA':data.status==='UNLOCKED'?'✓ CLEAN — ACTIVATION LOCK ĐÃ TẮT':'⚠ CHƯA XÁC MINH';
+    const icon=status==='ok'?'✓':status==='danger'?'!':'?';
+    const masked=identifier.slice(0,4)+'••••••'+identifier.slice(-4);
+    const row=(label,value,kind='')=>'<div class="result-item"><span>'+escHtml(label)+'</span><strong class="result-value '+kind+'">'+escHtml(formatValue(value))+'</strong></div>';
+    const statRow=(label,value)=>{const s=statusValue(value);return '<div class="result-item"><span>'+escHtml(label)+'</span><strong class="result-value '+s.kind+'">'+escHtml(s.text)+'</strong></div>';};
+    result.className='icloud-result';
+    result.innerHTML='<div class="result-shell"><aside class="device-card"><div class="device-kicker">THIẾT BỊ ĐÃ KIỂM TRA</div><div class="phone"><div class="phone-screen"><div class="phone-logo"></div><div class="phone-status">'+escHtml(modelName)+'</div><div class="phone-value">'+escHtml(masked)+'</div><div class="phone-status">'+escHtml(data.status||'UNKNOWN')+'</div></div></div><div class="device-name">'+escHtml(modelName)+'</div><div class="device-meta">'+escHtml(formatValue(color||'Apple device'))+(capacity?' • '+escHtml(formatValue(capacity)):'')+'</div><div class="mini-list">'+(serial?'<div class="mini-row"><span>Serial</span><b>'+escHtml(formatValue(serial))+'</b></div>':'')+(imei?'<div class="mini-row"><span>IMEI</span><b>'+escHtml(formatValue(imei))+'</b></div>':'')+'<div class="mini-row"><span>Nguồn</span><b>'+escHtml(formatValue(data.provider||'Provider'))+'</b></div></div></aside><div class="result-panel"><div class="result-banner '+status+'"><div><div class="result-banner-title">'+headline+'</div><div class="result-banner-sub">'+escHtml(data.message||'Kết quả lấy từ nguồn kiểm tra đã cấu hình.')+'</div></div><div class="result-icon">'+icon+'</div></div><div class="result-section"><h3>THÔNG TIN THIẾT BỊ</h3><div class="result-grid">'+row('Tên thiết bị',modelName)+row('Dung lượng',capacity)+row('Màu sắc',color)+row('Model',modelNumber)+row('IMEI',imei)+row('Số sê-ri',serial)+'</div></div><div class="result-section"><h3>TRẠNG THÁI ICLOUD</h3><div class="result-grid">'+statRow('Find My iPhone',fmi)+statRow('Activation Lock',activation||data.status)+statRow('iCloud Status',icloud||data.status)+statRow('Blacklist',blacklist)+statRow('SIM Lock',simlock)+statRow('Replacement Device',replacement)+'</div></div><div class="result-section"><h3>THÔNG TIN BỔ SUNG</h3><div class="result-grid">'+row('Quốc gia',country)+row('Nhà mạng',carrier)+row('Purchase Type',purchase)+row('Mã xác minh',data.code)+'</div></div><div class="result-actions"><button class="btn primary" type="button" id="icloudRecheckBtn">↻ Kiểm tra lại</button><button class="btn secondary" type="button" id="icloudCopyBtn">⧉ Sao chép kết quả</button></div></div></div>';
+    document.getElementById('icloudRecheckBtn')?.addEventListener('click',()=>checkBtn.click());
+    document.getElementById('icloudCopyBtn')?.addEventListener('click',async()=>{
+      const summary=[modelName,imei?'IMEI: '+imei:'',serial?'Serial: '+serial:'','Status: '+data.status,data.message||''].filter(Boolean).join('\n');
+      try{await navigator.clipboard.writeText(summary);setPaymentStatus('✓ Đã sao chép tóm tắt kết quả.','success');}catch{}
+    });
+  }
   function sync(){
     const imei=idType.value==='imei';
     idLabel.textContent=imei?'IMEI':'Serial Number';
@@ -147,8 +198,7 @@ function escHtml(value){const d=document.createElement('div');d.textContent=Stri
     });
     if(call.error) throw call.error;
     const data=call.data||{};
-    if(data.status==='LOCKED') show('danger','🔒 ACTIVATION LOCK: ĐANG KHÓA',data.message||'Thiết bị vẫn đang liên kết với Tài khoản Apple.');
-    else if(data.status==='UNLOCKED') show('ok','✅ ACTIVATION LOCK: ĐÃ TẮT',data.message||'Nguồn kiểm tra xác nhận thiết bị không còn Activation Lock.');
+    if(data.status==='LOCKED'||data.status==='UNLOCKED') renderVerifiedResult(data,type,identifier);
     else show('warn','⚠️ CHƯA XÁC MINH',data.message||'Nguồn kiểm tra chưa trả về trạng thái chắc chắn. Không tự kết luận LOCKED/UNLOCKED.');
   }
 
