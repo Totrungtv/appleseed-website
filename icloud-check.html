@@ -143,7 +143,7 @@ function escHtml(value){const d=document.createElement('div');d.textContent=Stri
   async function runPaidCheck(type,identifier){
     show('loading','⏳ Đã nhận thanh toán — đang kiểm tra', 'Đang gửi định danh tới bộ kiểm tra iCloud của Apple Seed…');
     const call=await window.supabaseClient.functions.invoke('check-icloud-status',{
-      body:{identifier_type:type,identifier,device_model:model.value||null}
+      body:{payment_id:paymentId,identifier_type:type,identifier,device_model:model.value||null}
     });
     if(call.error) throw call.error;
     const data=call.data||{};
