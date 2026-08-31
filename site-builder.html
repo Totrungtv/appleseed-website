@@ -69,6 +69,9 @@
 <div class="ai-modal" id="aiModal"><div class="ai-card"><div class="ai-head"><div style="font-size:25px">🤖</div><div><h2>Apple Seed AI Designer</h2><div class="muted">AI tư vấn bố cục, responsive, nội dung và phong cách Apple Seed.</div></div><button class="btn ai-close" id="aiClose">✕</button></div><div class="ai-actions"><button class="ai-chip" data-ai="review">🔎 Phân tích trang</button><button class="ai-chip" data-ai="mobile">📱 Tối ưu Mobile</button><button class="ai-chip" data-ai="premium">✨ Cao cấp</button><button class="ai-chip" data-ai="simple">🧹 Đơn giản</button><button class="ai-chip" data-ai="seo">🚀 SEO</button><button class="ai-chip ai-fix" id="aiFixWebsite" type="button">🛠️ FIX LỖI TOÀN WEBSITE</button></div><div class="ai-log" id="aiLog"><div class="ai-msg ai-bot">Chào bro 👋 Tôi có thể phân tích trang đang thiết kế và đề xuất cách chỉnh. AI không tự ý sửa production.</div></div><div class="ai-row"><textarea id="aiInput" placeholder="Ví dụ: Làm Hero gọn hơn trên mobile nhưng giữ cụm iPhone nổi bật..."></textarea><button class="btn primary" id="aiSend">Gửi AI</button></div></div></div>
 <script>
 window.__APPLE_SEED_BUILDER_SAFE_SYNC__=true;
+/* Drag hardening: movement is always based on the position captured at pointerdown. */
+window.__APPLE_SEED_BUILDER_DRAG_SAFE__=true;
+
 window.liveItemCount=Number.isFinite(Number(window.liveItemCount))?Number(window.liveItemCount):0;
 let liveItemCount=window.liveItemCount;
 const $=id=>document.getElementById(id);
@@ -559,8 +562,10 @@ $('preview').addEventListener('load',async()=>{
     if(e.button!==0||!editable(el))return;
     /*
      * Hero phones are real individual .as3-phone elements with nested
-     * .as3-screen/.as3-island/.as3-label children.  A click on the screen
-     * must select the phone itself, otherwise only the nested screen moves.
+     * .as3-screen/.as3-island/.as3-label children. A click on any child
+     * selects the phone itself. Every drag starts from the RENDERED inline
+     * position and snapshots group positions once, so a second drag can
+     * never accumulate movement from the previous pointermove frame.
      */
     const phone=el.closest?.('.as3-phone');
     if(phone)el=phone;
@@ -568,9 +573,24 @@ $('preview').addEventListener('load',async()=>{
     choose(el);
     const before=snapshot();
     const st=currentStyle(),base=styleObject(el);
-    drag={type:'move',sx:e.clientX,sy:e.clientY,el,before,
-      bx:Number.isFinite(Number(st.x))?Number(st.x):base.x,
-      by:Number.isFinite(Number(st.y))?Number(st.y):base.y,moved:false,pointerId:e.pointerId};
+    const hasInlineTranslate=String(el.style.translate||'').trim().length>0;
+    const bx=hasInlineTranslate?base.x:(Number.isFinite(Number(st.x))?Number(st.x):base.x);
+    const by=hasInlineTranslate?base.y:(Number.isFinite(Number(st.y))?Number(st.y):base.y);
+    const groupBases={};
+    if(groupPhones&&el.classList.contains('as3-phone')){
+      [...doc.querySelectorAll('.as3-phone')].forEach(phoneEl=>{
+        const sel=stableSelector(phoneEl);
+        const stored=draft.items?.[sel]?.styles?.[deviceKey()]||{};
+        const rendered=styleObject(phoneEl);
+        const hasTranslate=String(phoneEl.style.translate||'').trim().length>0;
+        groupBases[sel]={
+          el:phoneEl,
+          x:hasTranslate?rendered.x:(Number.isFinite(Number(stored.x))?Number(stored.x):rendered.x),
+          y:hasTranslate?rendered.y:(Number.isFinite(Number(stored.y))?Number(stored.y):rendered.y)
+        };
+      });
+    }
+    drag={type:'move',sx:e.clientX,sy:e.clientY,el,before,bx,by,groupBases,moved:false,pointerId:e.pointerId};
     try{el.setPointerCapture(e.pointerId)}catch(_){}
     e.preventDefault();
     e.stopPropagation();
@@ -591,8 +611,18 @@ $('preview').addEventListener('load',async()=>{
     if(drag.type==='move'){
       const x=Math.round(drag.bx+dx),y=Math.round(drag.by+dy);
       if(groupPhones&&drag.el.classList.contains('as3-phone')){
-        [...doc.querySelectorAll('.as3-phone')].forEach(phone=>{const s=styleObject(phone),sel=stableSelector(phone);if(!draft.items[sel])draft.items[sel]={styles:{desktop:{},mobile:{}}};draft.items[sel].styles[deviceKey()].x=Math.round(s.x+dx);draft.items[sel].styles[deviceKey()].y=Math.round(s.y+dy);phone.style.translate=Math.round(s.x+dx)+'px '+Math.round(s.y+dy)+'px'});
-      }else{drag.el.style.translate=x+'px '+y+'px';const v=getItem().styles[deviceKey()];v.x=x;v.y=y}
+        Object.entries(drag.groupBases||{}).forEach(([sel,base])=>{
+          if(!base?.el)return;
+          const item=draft.items[sel]||(draft.items[sel]={styles:{desktop:{},mobile:{}}});
+          item.styles=item.styles||{};item.styles[deviceKey()]=item.styles[deviceKey()]||{};
+          const gx=Math.round(base.x+dx),gy=Math.round(base.y+dy);
+          item.styles[deviceKey()].x=gx;item.styles[deviceKey()].y=gy;
+          base.el.style.translate=gx+'px '+gy+'px';
+        });
+      }else{
+        drag.el.style.translate=x+'px '+y+'px';
+        const v=getItem().styles[deviceKey()];v.x=x;v.y=y;
+      }
       $('x').value=x;$('y').value=y;
     }
     refreshOverlay();
@@ -603,9 +633,11 @@ $('preview').addEventListener('load',async()=>{
     if(e&&drag.pointerId!==undefined&&e.pointerId!==undefined&&drag.pointerId!==e.pointerId)return;
     if(drag.moved){
       if(drag.before)history.push(drag.before);else checkpoint();
-      const v=getItem().styles[deviceKey()];
-      v.x=parseFloat($('x').value)||0;
-      v.y=parseFloat($('y').value)||0;
+      if(!(groupPhones&&drag.el.classList.contains('as3-phone'))){
+        const v=getItem().styles[deviceKey()];
+        v.x=parseFloat($('x').value)||0;
+        v.y=parseFloat($('y').value)||0;
+      }
       saveDraft();
       refreshOverlay();
       toast('Đã di chuyển — bản nháp');
