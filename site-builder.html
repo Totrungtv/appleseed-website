@@ -157,7 +157,11 @@ function localAutoFix(report){
   }
   const errors=report?.builderErrors||[];
   if(errors.some(x=>/liveItemCount.*not defined/i.test(String(x.message||'')))){
-    window.liveItemCount=0;liveItemCount=0;fixes.push('đã khôi phục bộ đếm runtime liveItemCount');
+    window.liveItemCount=0;liveItemCount=0;
+    for(let i=APPLE_SEED_RUNTIME_ERRORS.length-1;i>=0;i--){
+      if(/liveItemCount.*not defined/i.test(String(APPLE_SEED_RUNTIME_ERRORS[i]?.message||'')))APPLE_SEED_RUNTIME_ERRORS.splice(i,1);
+    }
+    fixes.push('đã khôi phục bộ đếm runtime liveItemCount và xóa lỗi runtime đã xử lý');
   }
   if(selected&&selected.tagName==='IMG'){
     const src=selected.currentSrc||selected.src||'';
