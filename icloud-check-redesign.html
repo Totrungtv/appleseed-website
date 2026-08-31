@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Apple Seed • Kiểm tra iCloud</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<style>
+:root{
+  --bg:#07111f;--panel:#0c1728;--panel2:#101d31;--line:#21324b;
+  --text:#edf5ff;--muted:#8ea1ba;--blue:#4b8dff;--cyan:#50d7ff;
+  --green:#38e39a;--red:#ff6575;--yellow:#f7c85c;
+}
+*{box-sizing:border-box}
+body{margin:0;background:
+ radial-gradient(circle at 15% 0%,#182b57 0,transparent 35%),
+ radial-gradient(circle at 90% 20%,#142d48 0,transparent 30%),
+ linear-gradient(145deg,#050b15,#081221 55%,#06101d);
+ color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
+.wrap{width:min(1120px,calc(100% - 32px));margin:auto;padding:42px 0 70px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;margin-bottom:24px}
+.kicker{font-size:11px;letter-spacing:.18em;font-weight:800;color:#6f8eb7}
+h1{font-size:38px;line-height:1.05;margin:8px 0}
+h2{margin:0;font-size:21px}.muted{color:var(--muted);line-height:1.55}
+.back{color:#b9cdf0;text-decoration:none;border:1px solid #29405f;border-radius:12px;padding:11px 15px;background:#0b1728}
+.card{background:linear-gradient(180deg,rgba(16,29,49,.97),rgba(9,20,35,.97));border:1px solid var(--line);border-radius:22px;box-shadow:0 28px 80px #0007;overflow:hidden}
+.card-head{padding:25px 28px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:20px;align-items:center}
+.price{font-size:24px;font-weight:900;color:var(--green)}
+.body{padding:28px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.field.full{grid-column:1/-1}
+label{display:block;font-size:12px;font-weight:800;color:#9eb2cd;margin-bottom:8px}
+input,select{width:100%;border:1px solid #2b405e;background:#091524;color:#edf5ff;border-radius:12px;padding:14px;font:inherit;outline:none}
+input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c}
+.actions{display:flex;gap:10px;margin-top:22px}
+.btn{border:0;border-radius:12px;padding:13px 18px;font-weight:850;cursor:pointer}
+.btn.primary{background:linear-gradient(135deg,#397ff5,#744cff);color:white;box-shadow:0 10px 30px #4b65ff2b}
+.btn.secondary{background:#14243a;color:#bcd0ee;border:1px solid #29405f}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.notice{margin-top:20px;padding:15px 17px;border:1px solid #29405f;border-radius:14px;background:#0a1728;color:#a9bad2;font-size:13px;line-height:1.6}
+#paymentArea{display:none;margin-top:20px}
+.payment{border:1px solid #2a4162;background:linear-gradient(180deg,#0d1b30,#091524);border-radius:20px;padding:25px}
+.payment-top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px}
+.payment-title{font-weight:900;font-size:18px}.payment-ref{font-family:ui-monospace,monospace;color:#8fa9cf;font-size:13px;margin-top:5px}
+.amount{font-size:28px;font-weight:950;color:var(--green);white-space:nowrap}
+.qr-wrap{display:grid;grid-template-columns:330px 1fr;gap:28px;align-items:center;margin-top:22px}
+.qr-box{background:#fff;border-radius:18px;padding:14px;width:100%;max-width:330px;margin:auto}
+.qr-box img{display:block;width:100%;height:auto}
+.bank-info{display:grid;gap:11px}
+.info-row{display:flex;justify-content:space-between;gap:18px;border-bottom:1px solid #1d304a;padding-bottom:10px}
+.info-row span:first-child{color:#8297b4}.info-row strong{color:#eaf2ff;text-align:right}
+.status{margin-top:22px;border-radius:14px;padding:16px 18px;background:#10233b;border:1px solid #23456d;display:flex;align-items:center;gap:13px}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--yellow);box-shadow:0 0 0 6px #f7c85c18}
+.spinner{width:24px;height:24px;border:3px solid #34506f;border-top-color:#69a1ff;border-radius:50%;animation:spin .8s linear infinite;flex:0 0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.wait{font-weight:800}.wait small{display:block;color:#8297b4;font-weight:500;margin-top:3px}
+.processing{display:none;margin-top:20px}
+.processing-card{padding:40px 28px;text-align:center;border:1px solid #29405f;background:#0b1728;border-radius:20px}
+.processing-card .spinner{width:48px;height:48px;border-width:4px;margin:0 auto 18px}
+.processing-card h3{font-size:23px;margin:0 0 10px}
+.processing-card p{margin:0;color:#91a5c0;line-height:1.6}
+.result{display:none;margin-top:20px}
+.result-card{border-radius:20px;padding:28px;border:1px solid #2b405e;background:#0b1728}
+.result-card.ok{border-color:#1e7659;background:linear-gradient(180deg,#0b211c,#091824)}
+.result-card.locked{border-color:#7d3440;background:linear-gradient(180deg,#261016,#0b1724)}
+.result-icon{font-size:44px}.result-title{font-size:25px;font-weight:950;margin:8px 0}
+.meta{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:20px}
+.meta div{background:#091524;border:1px solid #20324b;border-radius:12px;padding:13px}
+.meta span{display:block;color:#8094af;font-size:11px;margin-bottom:4px}.meta strong{font-size:14px;word-break:break-word}
+.history{margin-top:20px}
+.history summary{cursor:pointer;color:#a9c2e7;font-weight:800}
+.history-box{margin-top:12px;border:1px solid #243a57;border-radius:14px;overflow:hidden}
+.history-row{display:grid;grid-template-columns:1fr 110px 100px;gap:12px;padding:13px 15px;border-bottom:1px solid #1b2c43;font-size:13px}
+.history-row:last-child{border-bottom:0}.history-status{font-weight:800}
+.empty{padding:20px;color:#7f93ad;text-align:center}
+@media(max-width:760px){
+ .wrap{width:min(100% - 20px,1120px);padding-top:22px}
+ h1{font-size:30px}.top{flex-direction:column}.fields,.qr-wrap,.meta{grid-template-columns:1fr}
+ .field.full{grid-column:auto}.card-head,.body{padding:20px}.payment{padding:18px}
+ .payment-top{flex-direction:column}.amount{font-size:24px}
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="top">
+  <div>
+    <div class="kicker">APPLE SEED • SECURE SERVICE</div>
+    <h1>☁️ Kiểm tra iCloud / Activation Lock</h1>
+    <div class="muted">Thanh toán được xác nhận tự động. Không cần gửi ảnh chuyển khoản và không có nút “đã thanh toán” giả.</div>
+  </div>
+  <a class="back" href="ai-board.html">← Về AI Board</a>
+</header>
+
+<section class="card">
+  <div class="card-head">
+    <div>
+      <h2>Tra cứu thiết bị</h2>
+      <div class="muted">Nhập đúng định danh thiết bị. QR chỉ xuất hiện sau khi hệ thống tạo đơn thanh toán.</div>
+    </div>
+    <div class="price">5.000đ</div>
+  </div>
+
+  <div class="body">
+    <div class="fields">
+      <div class="field">
+        <label for="idType">KIỂU ĐỊNH DANH</label>
+        <select id="idType">
+          <option value="imei">IMEI</option>
+          <option value="serial">Serial Number</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="model">MODEL (KHÔNG BẮT BUỘC)</label>
+        <select id="model">
+          <option value="">Tự nhận diện / chưa rõ</option>
+          <option>iPhone 17 Pro Max</option><option>iPhone 17 Pro</option><option>iPhone 17</option>
+          <option>iPhone 16 Pro Max</option><option>iPhone 16 Pro</option><option>iPhone 16</option>
+          <option>iPhone 15 Pro Max</option><option>iPhone 15 Pro</option><option>iPhone 15</option>
+          <option>iPhone 14 Pro Max</option><option>iPhone 14 Pro</option><option>iPhone 14</option>
+          <option>iPhone 13 Pro Max</option><option>iPhone 13 Pro</option><option>iPhone 13</option>
+          <option>iPhone 12 Pro Max</option><option>iPhone 12 Pro</option><option>iPhone 12</option>
+        </select>
+      </div>
+      <div class="field full">
+        <label id="idLabel" for="identifier">IMEI</label>
+        <input id="identifier" autocomplete="off" spellcheck="false" inputmode="numeric" placeholder="Nhập IMEI">
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" id="startBtn" type="button">☁️ KIỂM TRA — 5.000đ</button>
+      <button class="btn secondary" id="clearBtn" type="button">Xóa</button>
+    </div>
+
+    <div class="notice">
+      🔐 <strong>An toàn:</strong> không nhập mật khẩu Apple Account. Hệ thống chỉ dùng IMEI/Serial để tạo đơn.
+      Kết quả chỉ hiển thị khi nguồn kiểm tra trả về dữ liệu xác minh được.
+    </div>
+
+    <section id="paymentArea">
+      <div class="payment">
+        <div class="payment-top">
+          <div>
+            <div class="payment-title">Thanh toán để bắt đầu tra cứu</div>
+            <div class="payment-ref" id="paymentRef">—</div>
+          </div>
+          <div class="amount">5.000đ</div>
+        </div>
+
+        <div class="qr-wrap">
+          <div class="qr-box"><img id="qr" alt="QR thanh toán Apple Seed"></div>
+          <div class="bank-info">
+            <div class="info-row"><span>Ngân hàng</span><strong>MB Bank</strong></div>
+            <div class="info-row"><span>Số tài khoản</span><strong>0898888269</strong></div>
+            <div class="info-row"><span>Chủ tài khoản</span><strong>TÔ THANH TRUNG</strong></div>
+            <div class="info-row"><span>Nội dung</span><strong id="transferContent">—</strong></div>
+            <div class="notice" style="margin-top:2px">Quét đúng QR và chuyển đúng <strong>5.000đ</strong>. Hệ thống tự nhận tiền qua webhook SePay.</div>
+          </div>
+        </div>
+
+        <div class="status">
+          <span class="dot"></span>
+          <div class="wait">Đang chờ thanh toán
+            <small>Không cần bấm xác nhận. Hệ thống sẽ tự kiểm tra giao dịch.</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="processing" id="processingArea">
+      <div class="processing-card">
+        <div class="spinner"></div>
+        <h3>Bạn hãy chờ trong giây lát</h3>
+        <p>Chúng tôi sẽ giải quyết giao dịch này trong giây lát.<br>Thanh toán đã được hệ thống tiếp nhận và đang xử lý kiểm tra iCloud.</p>
+      </div>
+    </section>
+
+    <section class="result" id="resultArea">
+      <div class="result-card" id="resultCard">
+        <div class="result-icon" id="resultIcon">✓</div>
+        <div class="result-title" id="resultTitle">Kết quả</div>
+        <div class="muted" id="resultMessage"></div>
+        <div class="meta">
+          <div><span>ĐỊNH DANH</span><strong id="resultIdentifier">—</strong></div>
+          <div><span>MÃ THANH TOÁN</span><strong id="resultRef">—</strong></div>
+          <div><span>GIAO DỊCH NGÂN HÀNG</span><strong id="resultTxn">—</strong></div>
+          <div><span>THỜI GIAN</span><strong id="resultTime">—</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <details class="history">
+      <summary>Lịch sử giao dịch trên thiết bị này</summary>
+      <div class="history-box" id="historyBox"><div class="empty">Chưa có giao dịch trong phiên này.</div></div>
+    </details>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const idType=$('idType'), identifier=$('identifier'), idLabel=$('idLabel'), model=$('model');
+  const startBtn=$('startBtn'), clearBtn=$('clearBtn');
+  const paymentArea=$('paymentArea'), processingArea=$('processingArea'), resultArea=$('resultArea');
+  const paymentRef=$('paymentRef'), transferContent=$('transferContent'), qr=$('qr');
+
+  let paymentId=null, paymentRefValue=null, pollTimer=null, checkStarted=false;
+
+  function esc(v){
+    const d=document.createElement('div'); d.textContent=String(v??''); return d.innerHTML;
+  }
+  function normalize(){
+    return identifier.value.trim().replace(/[\s-]/g,'').toUpperCase();
+  }
+  function valid(v,t){
+    if(t==='imei') return /^\d{14,16}$/.test(v);
+    return /^[A-Z0-9]{8,20}$/.test(v);
+  }
+  function setType(){
+    const imei=idType.value==='imei';
+    idLabel.textContent=imei?'IMEI':'SERIAL NUMBER';
+    identifier.placeholder=imei?'Nhập IMEI':'Nhập Serial Number';
+    identifier.inputMode=imei?'numeric':'text';
+  }
+  function showError(msg){
+    alert(msg);
+  }
+  function reset(){
+    clearTimeout(pollTimer); pollTimer=null; paymentId=null; paymentRefValue=null; checkStarted=false;
+    paymentArea.style.display='none'; processingArea.style.display='none'; resultArea.style.display='none';
+    identifier.value=''; model.value=''; startBtn.disabled=false; setType(); identifier.focus();
+  }
+  function setQr(ref){
+    const url='https://img.vietqr.io/image/MB-0898888269-compact2.png'
+      +'?amount=5000&addInfo='+encodeURIComponent(ref)
+      +'&accountName='+encodeURIComponent('TO THANH TRUNG');
+    qr.src=url;
+  }
+  function saveHistory(row){
+    const key='apple_seed_icloud_history';
+    const old=JSON.parse(localStorage.getItem(key)||'[]');
+    old.unshift(row);
+    localStorage.setItem(key,JSON.stringify(old.slice(0,20)));
+    renderHistory();
+  }
+  function renderHistory(){
+    const box=$('historyBox');
+    const old=JSON.parse(localStorage.getItem('apple_seed_icloud_history')||'[]');
+    if(!old.length){box.innerHTML='<div class="empty">Chưa có giao dịch trong trình duyệt này.</div>';return;}
+    box.innerHTML=old.map(x=>`
+      <div class="history-row">
+        <div><strong>${esc(x.ref)}</strong><br><span style="color:#7f93ad">${esc(x.identifier)}</span></div>
+        <div>${esc(x.time)}</div>
+        <div class="history-status">${esc(x.status)}</div>
+      </div>`).join('');
+  }
+  function showProcessing(){
+    paymentArea.style.display='none';
+    processingArea.style.display='block';
+    resultArea.style.display='none';
+  }
+  function showResult(data, status){
+    processingArea.style.display='none';
+    resultArea.style.display='block';
+    const card=$('resultCard');
+    card.className='result-card '+(status==='UNLOCKED'?'ok':status==='LOCKED'?'locked':'');
+    $('resultIcon').textContent=status==='UNLOCKED'?'✓':status==='LOCKED'?'!':'?';
+    $('resultTitle').textContent=status==='UNLOCKED'?'ACTIVATION LOCK: ĐÃ TẮT':
+      status==='LOCKED'?'ACTIVATION LOCK: ĐANG KHÓA':'CHƯA XÁC MINH';
+    $('resultMessage').textContent=data.message||'Nguồn kiểm tra chưa trả về kết quả chắc chắn.';
+    $('resultIdentifier').textContent=normalize();
+    $('resultRef').textContent=paymentRefValue||'—';
+    $('resultTxn').textContent=data.provider_transaction_id||'—';
+    $('resultTime').textContent=new Date().toLocaleString('vi-VN');
+    startBtn.disabled=false;
+    saveHistory({ref:paymentRefValue||'—',identifier:normalize(),time:new Date().toLocaleString('vi-VN'),
+      status:status==='UNLOCKED'?'Đã hoàn tất':status==='LOCKED'?'Đã khóa':'Chưa xác minh'});
+  }
+
+  async function rpc(name,args){
+    if(!window.supabaseClient) throw new Error('Supabase client chưa sẵn sàng.');
+    const r=await window.supabaseClient.rpc(name,args);
+    if(r.error) throw r.error;
+    return r.data;
+  }
+
+  async function begin(){
+    if(startBtn.disabled) return;
+    const type=idType.value, value=normalize();
+    if(!valid(value,type)){
+      showError(type==='imei'?'IMEI phải là chuỗi 14–16 số.':'Serial không hợp lệ.');
+      return;
+    }
+
+    startBtn.disabled=true;
+    paymentArea.style.display='none'; processingArea.style.display='none'; resultArea.style.display='none';
+
+    try{
+      const created=await rpc('create_icloud_check_payment',{
+        p_identifier_type:type,p_identifier:value,p_device_model:model.value||null
+      });
+      paymentId=created.id;
+      paymentRefValue=String(created.payment_ref||'');
+      if(!paymentId||!paymentRefValue) throw new Error('Không tạo được đơn thanh toán.');
+
+      paymentRef.textContent='Mã đơn: '+paymentRefValue;
+      transferContent.textContent=paymentRefValue;
+      setQr(paymentRefValue);
+      paymentArea.style.display='block';
+      startBtn.disabled=false;
+      pollPayment();
+    }catch(e){
+      startBtn.disabled=false;
+      showError(e?.message||'Không thể tạo đơn thanh toán.');
+    }
+  }
+
+  async function pollPayment(){
+    if(!paymentId) return;
+    try{
+      const s=await rpc('get_icloud_check_payment_status',{p_payment_id:paymentId});
+      if(!s?.ok) throw new Error('Không đọc được trạng thái đơn.');
+      const status=String(s.status||'').toLowerCase();
+
+      if(status==='paid'){
+        if(checkStarted) return;
+        checkStarted=true;
+        showProcessing();
+        await runIcloudCheck();
+        return;
+      }
+      if(status==='processing'){
+        if(!checkStarted){checkStarted=true;showProcessing();}
+        return;
+      }
+      if(status==='completed' && s.check_result){
+        checkStarted=true;
+        showResult(s.check_result,String(s.check_result.status||'UNKNOWN'));
+        return;
+      }
+    }catch(e){
+      console.warn('payment poll:',e);
+    }
+    pollTimer=setTimeout(pollPayment,2000);
+  }
+
+  async function runIcloudCheck(){
+    try{
+      if(!window.supabaseClient) throw new Error('Supabase client chưa sẵn sàng.');
+      const r=await window.supabaseClient.functions.invoke('check-icloud-status',{
+        body:{payment_id:paymentId}
+      });
+      if(r.error){
+        const msg=r.error?.context?.body?.message||r.error.message||'Máy chủ kiểm tra chưa phản hồi.';
+        throw new Error(msg);
+      }
+      const data=r.data||{};
+      if(data.status==='ERROR'){
+        throw new Error(data.message||'Kiểm tra iCloud thất bại.');
+      }
+      showResult(data,String(data.status||'UNKNOWN'));
+    }catch(e){
+      processingArea.style.display='none';
+      resultArea.style.display='block';
+      const card=$('resultCard'); card.className='result-card';
+      $('resultIcon').textContent='×';
+      $('resultTitle').textContent='GIAO DỊCH CHƯA HOÀN TẤT';
+      $('resultMessage').textContent=e?.message||'Nguồn kiểm tra không phản hồi. Khoản thanh toán đã được ghi nhận, vui lòng kiểm tra lại.';
+      $('resultIdentifier').textContent=normalize();
+      $('resultRef').textContent=paymentRefValue||'—';
+      $('resultTxn').textContent='—';
+      $('resultTime').textContent=new Date().toLocaleString('vi-VN');
+      startBtn.disabled=false;
+      saveHistory({ref:paymentRefValue||'—',identifier:normalize(),time:new Date().toLocaleString('vi-VN'),status:'Lỗi xử lý'});
+    }
+  }
+
+  idType.addEventListener('change',setType);
+  startBtn.addEventListener('click',begin);
+  clearBtn.addEventListener('click',reset);
+  identifier.addEventListener('keydown',e=>{if(e.key==='Enter')begin();});
+  renderHistory(); setType();
+})();
+</script>
+</body>
+</html>
