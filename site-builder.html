@@ -96,7 +96,7 @@ let localPreviewObjectUrl='';
 let pagePreviewObjectUrl='';
 function showLocalImagePreview(file,inputId,previewId){
   if(!file)return false;
-  if(!/^image\\/(png|jpe?g|webp|gif)$/i.test(String(file.type||''))){
+  if(!/^image\/(png|jpe?g|webp|gif)$/i.test(String(file.type||''))){
     toast('⚠️ Chỉ nhận PNG, JPG, WEBP hoặc GIF');return false;
   }
   if(file.size>20*1024*1024){toast('⚠️ Ảnh quá lớn (tối đa 20MB)');return false;}
@@ -490,7 +490,7 @@ async function rollback(id){
 }
 async function upload(file){
   if(!file||typeof file!=='object')throw new Error('Chưa có file ảnh để upload.');
-  if(!/^image\\/(png|jpe?g|webp|gif)$/i.test(String(file.type||'')))throw new Error('Định dạng ảnh không được hỗ trợ.');
+  if(!/^image\/(png|jpe?g|webp|gif)$/i.test(String(file.type||'')))throw new Error('Định dạng ảnh không được hỗ trợ.');
   if(file.size>20*1024*1024)throw new Error('Ảnh quá lớn (tối đa 20MB).');
   const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
   const path='builder/'+Date.now()+'-'+Math.random().toString(36).slice(2,8)+'.'+ext;
