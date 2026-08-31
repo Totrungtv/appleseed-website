@@ -73,7 +73,7 @@ let liveItemCount=0;
 const $=id=>document.getElementById(id);
 const DRAFT_KEY='appleSeedVisualBuilderV2';
 const PUBLISHED_VERSION_KEY='appleSeedVisualBuilderPublishedVersionV3';
-let doc=null,selected=null,selector='',device='desktop',draft={items:{},page:{desktop:{},mobile:{}}},history=[],future=[],drag=null,pendingFile=null,pagePendingFile=null,allowed=false,groupPhones=false,simpleMode=false,overlayActive=false;
+let doc=null,selected=null,selector='',device='desktop',draft={items:{},page:{desktop:{},mobile:{}}},history=[],future=[],drag=null,pendingFile=null,pagePendingFile=null,allowed=false,groupPhones=false,simpleMode=false,overlayActive=false,overlayHideTimer=null;
 
 function toast(msg){$('toast').textContent=msg;$('toast').style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>{$('toast').style.display='none'},2200)}
 function setStatus(msg){$('status').textContent=msg}
@@ -172,11 +172,17 @@ function refreshOverlay(){
   o.classList.toggle('active',overlayActive);
 }
 function setOverlayActive(active){
+  if(active&&overlayHideTimer){clearTimeout(overlayHideTimer);overlayHideTimer=null}
   overlayActive=!!active;
   const o=$('overlay');
   if(!selected){overlayActive=false;o.style.display='none';o.classList.remove('active');return}
   o.style.display='block';
   o.classList.toggle('active',overlayActive);
+}
+function hideOverlaySoon(delay=450){
+  if(!selected||drag)return;
+  if(overlayHideTimer)clearTimeout(overlayHideTimer);
+  overlayHideTimer=setTimeout(()=>{overlayHideTimer=null;if(!drag)setOverlayActive(false)},delay);
 }
 function refreshInspector(){
   if(!selected){setOverlayActive(false);$('info').textContent='Chưa chọn';$('tag').hidden=true;$('contentPanel').hidden=true;$('imagePanel').hidden=true;$('stylePanel').hidden=true;$('layerList').innerHTML='<div class="muted">Chưa chọn đối tượng.</div>';refreshOverlay();return}
@@ -451,7 +457,8 @@ $('preview').addEventListener('load',async()=>{
       let hoverEl=e.target;
       const hoverPhone=hoverEl?.closest?.('.as3-phone');
       if(hoverPhone)hoverEl=hoverPhone;
-      setOverlayActive(!!selected && (hoverEl===selected || selected?.contains?.(hoverEl)));
+      if(selected && (hoverEl===selected || selected?.contains?.(hoverEl)))setOverlayActive(true);
+      else hideOverlaySoon();
       return;
     }
     const dx=e.clientX-drag.sx,dy=e.clientY-drag.sy;
@@ -484,7 +491,7 @@ $('preview').addEventListener('load',async()=>{
   }
   doc.addEventListener('pointerup',finishMove,true);
   doc.addEventListener('pointercancel',finishMove,true);
-  doc.addEventListener('pointerleave',()=>{if(!drag)setOverlayActive(false)},true);
+  doc.addEventListener('pointerleave',()=>{if(!drag)hideOverlaySoon(700)},true);
   await loadPublished();applyAll();refreshPageDesign();setStatus('Sẵn sàng — bấm trực tiếp để chỉnh');renderLayers();
   // One-shot recovery for a stale/blank iframe cache. Never loops.
   setTimeout(function(){
