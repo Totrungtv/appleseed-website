@@ -69,7 +69,8 @@
 <div class="ai-modal" id="aiModal"><div class="ai-card"><div class="ai-head"><div style="font-size:25px">🤖</div><div><h2>Apple Seed AI Designer</h2><div class="muted">AI tư vấn bố cục, responsive, nội dung và phong cách Apple Seed.</div></div><button class="btn ai-close" id="aiClose">✕</button></div><div class="ai-actions"><button class="ai-chip" data-ai="review">🔎 Phân tích trang</button><button class="ai-chip" data-ai="mobile">📱 Tối ưu Mobile</button><button class="ai-chip" data-ai="premium">✨ Cao cấp</button><button class="ai-chip" data-ai="simple">🧹 Đơn giản</button><button class="ai-chip" data-ai="seo">🚀 SEO</button><button class="ai-chip ai-fix" id="aiFixWebsite" type="button">🛠️ FIX LỖI TOÀN WEBSITE</button></div><div class="ai-log" id="aiLog"><div class="ai-msg ai-bot">Chào bro 👋 Tôi có thể phân tích trang đang thiết kế và đề xuất cách chỉnh. AI không tự ý sửa production.</div></div><div class="ai-row"><textarea id="aiInput" placeholder="Ví dụ: Làm Hero gọn hơn trên mobile nhưng giữ cụm iPhone nổi bật..."></textarea><button class="btn primary" id="aiSend">Gửi AI</button></div></div></div>
 <script>
 window.__APPLE_SEED_BUILDER_SAFE_SYNC__=true;
-let liveItemCount=0;
+window.liveItemCount=Number.isFinite(Number(window.liveItemCount))?Number(window.liveItemCount):0;
+let liveItemCount=window.liveItemCount;
 const $=id=>document.getElementById(id);
 const DRAFT_KEY='appleSeedVisualBuilderV2';
 const PUBLISHED_VERSION_KEY='appleSeedVisualBuilderPublishedVersionV3';
@@ -82,6 +83,91 @@ function recordRuntimeError(source,message,stack){
 }
 window.addEventListener('error',e=>recordRuntimeError('Builder',e.message,e.error?.stack||e.filename||''),true);
 window.addEventListener('unhandledrejection',e=>recordRuntimeError('Builder Promise',e.reason?.message||String(e.reason||''),e.reason?.stack||''),true);
+function syncLiveItemCount(){
+  const n=Number(window.liveItemCount);
+  if(!Number.isFinite(n)||n<0)window.liveItemCount=0;
+  liveItemCount=Number(window.liveItemCount)||0;
+  return liveItemCount;
+}
+function safeRevokeObjectUrl(url){
+  try{if(typeof url==='string'&&url.startsWith('blob:'))URL.revokeObjectURL(url)}catch(_){}
+}
+let localPreviewObjectUrl='';
+let pagePreviewObjectUrl='';
+function showLocalImagePreview(file,inputId,previewId){
+  if(!file)return false;
+  if(!/^image\\/(png|jpe?g|webp|gif)$/i.test(String(file.type||''))){
+    toast('⚠️ Chỉ nhận PNG, JPG, WEBP hoặc GIF');return false;
+  }
+  if(file.size>20*1024*1024){toast('⚠️ Ảnh quá lớn (tối đa 20MB)');return false;}
+  const preview=$(previewId);
+  if(!preview)return false;
+  if(previewId==='imagePreview'){safeRevokeObjectUrl(localPreviewObjectUrl);localPreviewObjectUrl=URL.createObjectURL(file);preview.src=localPreviewObjectUrl;}
+  else {safeRevokeObjectUrl(pagePreviewObjectUrl);pagePreviewObjectUrl=URL.createObjectURL(file);}
+  preview.hidden=false;
+  preview.onload=()=>{if(previewId==='imagePreview')toast('🖼️ Ảnh đã nạp vào Builder — bấm Áp dụng hình');};
+  preview.onerror=()=>{toast('⚠️ Không đọc được ảnh đã chọn');};
+  return true;
+}
+function healBrokenImageUrl(url){
+  const s=String(url||'').trim();
+  if(!s)return '';
+  if(s.includes('/storage/v1/render/image/public/'))return s.replace('/storage/v1/render/image/public/','/storage/v1/object/public/');
+  return s;
+}
+async function verifyImageUrl(url){
+  return await new Promise(resolve=>{
+    const img=new Image();
+    let done=false;
+    const finish=v=>{if(done)return;done=true;resolve(v)};
+    img.onload=()=>finish(img.naturalWidth>0);
+    img.onerror=()=>finish(false);
+    img.src=String(url||'');
+    setTimeout(()=>finish(false),8000);
+  });
+}
+function rebindUploadControls(){
+  const file=$('file'),pick=$('pick'),pageFile=$('pageFile'),pagePick=$('pagePick');
+  if(pick&&file&&!pick.dataset.selfHealBound){
+    pick.dataset.selfHealBound='1';
+    pick.addEventListener('click',()=>file.click());
+  }
+  if(pagePick&&pageFile&&!pagePick.dataset.selfHealBound){
+    pagePick.dataset.selfHealBound='1';
+    pagePick.addEventListener('click',()=>pageFile.click());
+  }
+  syncLiveItemCount();
+  return true;
+}
+function localAutoFix(report){
+  const fixes=[];
+  syncLiveItemCount();
+  rebindUploadControls();
+  if(!doc||!doc.documentElement||!doc.body){
+    const p=$('preview');
+    if(p){
+      p.dataset.builderRetry='1';
+      p.src='index.html?appleSeedBuilderPreview=1&builderCanvas=1&v=heal-'+Date.now();
+      fixes.push('đã nạp lại Preview');
+    }
+  }
+  if(doc){
+    const broken=[...(doc.images||[])].filter(img=>img.complete&&img.naturalWidth===0&&String(img.currentSrc||img.src||'').trim());
+    broken.slice(0,10).forEach(img=>{
+      const src=healBrokenImageUrl(img.currentSrc||img.src);
+      if(src&&src!==(img.currentSrc||img.src)){img.src=src+'?v='+Date.now();fixes.push('đã thử URL ảnh dự phòng')}
+    });
+  }
+  const errors=report?.builderErrors||[];
+  if(errors.some(x=>/liveItemCount.*not defined/i.test(String(x.message||'')))){
+    window.liveItemCount=0;liveItemCount=0;fixes.push('đã khôi phục bộ đếm runtime liveItemCount');
+  }
+  if(selected&&selected.tagName==='IMG'){
+    const src=selected.currentSrc||selected.src||'';
+    if(src&&!selected.complete)selected.loading='eager';
+  }
+  return fixes;
+}
 function collectWebsiteDiagnostics(){
   const issues=[];
   try{
@@ -93,6 +179,10 @@ function collectWebsiteDiagnostics(){
     if(doc)doc.querySelectorAll('[id]').forEach(el=>{const id=String(el.id);ids[id]=(ids[id]||0)+1});
     Object.keys(ids).filter(id=>ids[id]>1).slice(0,20).forEach(id=>issues.push({type:'dom',message:'ID bị trùng: #'+id+' ('+ids[id]+' lần)'}));
     if(doc)doc.querySelectorAll('a[href]').forEach(a=>{const h=String(a.getAttribute('href')||'').trim();if(h==='#' || /^javascript:/i.test(h))issues.push({type:'link',message:'Liên kết không an toàn/không đích: '+h,selector:stableSelector(a)})});
+    if(!$('file')||!$('pick'))issues.push({type:'upload',message:'Thiếu control upload ảnh của Builder.'});
+    if($('file')&&$('file').disabled)issues.push({type:'upload',message:'Input upload ảnh đang bị disabled.'});
+    if(selected&&selected.tagName==='IMG'&&selected.src&&!selected.complete)issues.push({type:'upload-preview',message:'Ảnh đang chọn chưa hoàn tất tải.',selector});
+    syncLiveItemCount();
   }catch(e){issues.push({type:'diagnostic',message:'Không thể quét đầy đủ preview: '+(e?.message||String(e))})}
   return {builderErrors:APPLE_SEED_RUNTIME_ERRORS.slice(-15),issues,checkedAt:new Date().toISOString()};
 }
@@ -405,11 +495,22 @@ async function rollback(id){
   toast('↩️ Đã rollback và xuất bản');setStatus('Đã rollback');await loadPublished();location.reload();
 }
 async function upload(file){
-  const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');
+  if(!file||typeof file!=='object')throw new Error('Chưa có file ảnh để upload.');
+  if(!/^image\\/(png|jpe?g|webp|gif)$/i.test(String(file.type||'')))throw new Error('Định dạng ảnh không được hỗ trợ.');
+  if(file.size>20*1024*1024)throw new Error('Ảnh quá lớn (tối đa 20MB).');
+  const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
   const path='builder/'+Date.now()+'-'+Math.random().toString(36).slice(2,8)+'.'+ext;
-  const r=await window.supabaseClient.storage.from('site-images').upload(path,file,{upsert:false,contentType:file.type});
+  const r=await window.supabaseClient.storage.from('site-images').upload(path,file,{upsert:false,contentType:file.type||'image/jpeg',cacheControl:'31536000'});
   if(r.error)throw r.error;
-  return window.supabaseClient.storage.from('site-images').getPublicUrl(path).data.publicUrl;
+  const url=window.supabaseClient.storage.from('site-images').getPublicUrl(path).data.publicUrl;
+  if(!url)throw new Error('Storage không trả về URL ảnh.');
+  const ok=await verifyImageUrl(url);
+  if(!ok){
+    const fallback=healBrokenImageUrl(url);
+    if(fallback&&fallback!==url&&await verifyImageUrl(fallback))return fallback;
+    throw new Error('Upload thành công nhưng URL ảnh không tải được.');
+  }
+  return url;
 }
 let lastCanvasFingerprint='';
 function canvasFingerprint(){
@@ -521,7 +622,7 @@ $('preview').addEventListener('load',async()=>{
   doc.addEventListener('pointerup',finishMove,true);
   doc.addEventListener('pointercancel',finishMove,true);
   doc.addEventListener('pointerleave',()=>{if(!drag)hideOverlaySoon(700)},true);
-  await loadPublished();applyAll();refreshPageDesign();setStatus('Sẵn sàng — bấm trực tiếp để chỉnh');renderLayers();
+  await loadPublished();applyAll();refreshPageDesign();rebindUploadControls();syncLiveItemCount();setStatus('Sẵn sàng — bấm trực tiếp để chỉnh');renderLayers();
   // One-shot recovery for a stale/blank iframe cache. Never loops.
   setTimeout(function(){
     try{
@@ -586,26 +687,34 @@ async function runWebsiteFix(){
   const btn=$('aiFixWebsite');
   if(btn)btn.disabled=true;
   try{
+    syncLiveItemCount();
+    const before=collectWebsiteDiagnostics();
+    aiAdd('user','🛠️ FIX LỖI TOÀN WEBSITE');
+    const localFixes=localAutoFix(before);
+    if(localFixes.length)aiAdd('bot','🔧 Bộ tự phục hồi đã sửa trực tiếp: '+localFixes.join(', ')+'.');
+    await new Promise(r=>setTimeout(r,120));
     const report=collectWebsiteDiagnostics();
     const total=(report.issues?.length||0)+(report.builderErrors?.length||0);
-    aiAdd('user','🛠️ FIX LỖI TOÀN WEBSITE');
     if(!total){
-      aiAdd('bot','✅ Đã quét Builder + Website Preview: chưa phát hiện lỗi runtime, ảnh hỏng, DOM trống hoặc lỗi cấu hình cơ bản. Không tự ý sửa gì.');
+      aiAdd('bot',(localFixes.length?'✅ Đã sửa và kiểm tra lại thành công.':'✅ Đã quét và không phát hiện lỗi.')+' Không tự ý thay đổi phần khác.');
       return;
     }
-    aiAdd('bot','🔎 Phát hiện '+total+' dấu hiệu cần kiểm tra. Đang yêu cầu AI xử lý theo chế độ an toàn…');
-    const prompt='Hãy kiểm tra và KHẮC PHỤC các sự cố của Apple Seed Visual Site Builder dựa trên báo cáo chẩn đoán bên dưới. Ưu tiên sửa lỗi hiển thị/bố cục/ảnh/cấu hình Builder có selector chắc chắn tồn tại. Tuyệt đối không đụng auth, Member, Coin/payment, Supabase security, database, hoặc tạo JavaScript mới. Không được tự ý xóa nội dung. Nếu lỗi là lỗi JavaScript/code mà schema Builder không thể sửa, KHÔNG giả vờ đã sửa; hãy báo rõ lỗi và selector/nguồn liên quan. Chỉ trả JSON đúng schema hiện có. Báo cáo: '+JSON.stringify(report);
+    aiAdd('bot','🔎 Còn '+total+' dấu hiệu cần xử lý. Đang cho AI phân tích và áp dụng thay đổi an toàn…');
+    const prompt='Bạn là bộ sửa lỗi thật của Apple Seed Visual Site Builder. Hãy phân tích báo cáo và tạo CHỈ các thay đổi có thể áp dụng trực tiếp vào Builder. Ưu tiên lỗi ảnh, DOM, bố cục, selector, responsive và cấu hình Builder. Không đụng auth, Member, Coin/payment, Supabase security hoặc database. Không xóa nội dung. Nếu lỗi là JavaScript/source-code mà Builder hiện tại không thể sửa trực tiếp, phải trả changes=[] và nói rõ chưa thể sửa, tuyệt đối không giả vờ. Sau khi áp dụng, Builder sẽ kiểm tra lại. Trả JSON DUY NHẤT theo schema hiện có. Báo cáo: '+JSON.stringify(report);
     const raw=await askBuilderAI(prompt);
     const result=parseAIEditor(raw);
     if(result){
       const n=applyAIChanges(result);
-      aiAdd('bot',(result.reply||'Đã kiểm tra sự cố.')+'\n\n'+(n?'✅ Đã áp dụng '+n+' thay đổi an toàn vào bản nháp Builder. Chưa xuất bản LIVE.':'ℹ️ Không có thay đổi Builder nào đủ chắc chắn để tự áp dụng. Không giả vờ sửa lỗi code.'));
+      await new Promise(r=>setTimeout(r,80));
+      const after=collectWebsiteDiagnostics();
+      const remaining=(after.issues?.length||0)+(after.builderErrors?.length||0);
+      aiAdd('bot',(result.reply||'Đã xử lý sự cố.')+'\n\n'+(n?'✅ Đã áp dụng '+n+' thay đổi thật vào bản nháp Builder.':'ℹ️ Không có thay đổi Builder đủ an toàn để áp dụng.')+'\n'+(remaining?'⚠️ Kiểm tra lại vẫn còn '+remaining+' dấu hiệu cần sửa.':'🟢 Kiểm tra lại: không còn lỗi mà Builder có thể tự xử lý.'));
     }else{
-      aiAdd('bot',raw);
+      aiAdd('bot',raw+'\n\n⚠️ Chưa có patch tự động — không báo giả là đã sửa.');
     }
   }catch(e){
     recordRuntimeError('Whole-site fix',e.message,e.stack);
-    aiAdd('bot','⚠️ Bộ sửa lỗi gặp sự cố: '+(e?.message||String(e)));
+    aiAdd('bot','🔴 FIX thất bại: '+(e?.message||String(e))+' — không giả vờ đã sửa.');
   }finally{
     if(btn)btn.disabled=false;
   }
@@ -626,8 +735,11 @@ $('applyPageDesign').onclick=async()=>{
   if(pagePendingFile){try{$('pageBgUrl').value=await upload(pagePendingFile);pagePendingFile=null;$('pageFile').value=''}catch(e){toast('Upload nền lỗi: '+e.message);return}}
   applyPageDesign();applyAll();refreshOverlay();
 };
-$('pagePick').onclick=()=>$('pageFile').click();
-$('pageFile').onchange=e=>{pagePendingFile=e.target.files[0]||null;if(pagePendingFile){$('pageBgUrl').value='';toast('🖼️ Đã chọn ảnh nền — bấm Áp dụng nền Hero / Trang')};};
+$('pagePick').onclick=()=>{$('pageFile').click()};
+$('pageFile').onchange=e=>{
+  pagePendingFile=e.target.files[0]||null;
+  if(pagePendingFile&&showLocalImagePreview(pagePendingFile,'pageFile','imagePreview')){$('pageBgUrl').value='';toast('🖼️ Đã chọn ảnh nền — bấm Áp dụng nền Hero / Trang')}
+};
 $('reloadCanvas').onclick=()=>{
   const p=$('preview');p.dataset.builderRetry='1';
   p.src='index.html?appleSeedBuilderPreview=1&builderCanvas=1&v='+Date.now();
@@ -638,7 +750,12 @@ $('applyText').onclick=()=>{if(!selected||!textEditable(selected))return;checkpo
 $('applyLink').onclick=()=>{if(!selected)return;const url=$('linkUrl').value.trim();const target=$('linkTarget').value==='_blank'?'_blank':'_self';checkpoint();const item=getItem();if(url)item.link={url,target};else delete item.link;applyAll();saveDraft();refreshInspector();toast(url?'🔗 Đã áp dụng liên kết':'🔗 Đã xóa liên kết')};
 $('clearLink').onclick=()=>{if(!selected)return;checkpoint();delete getItem().link;applyAll();saveDraft();refreshInspector();toast('🔗 Đã xóa liên kết')};
 $('applyStyle').onclick=()=>{if(!selected)return;checkpoint();const v=getItem().styles[deviceKey()];for(const k of ['x','y','w','h']){const n=parseFloat($(k).value);if(Number.isFinite(n))v[k]=n}for(const k of ['fontSize','radius']){const n=parseFloat($(k).value);if(Number.isFinite(n))v[k]=n}v.color=$('color').value;v.background=$('backgroundColor').value;selected.style.translate=(v.x||0)+'px '+(v.y||0)+'px';if(v.w)selected.style.width=v.w+'px';if(v.h)selected.style.height=v.h+'px';if(v.fontSize)selected.style.fontSize=v.fontSize+'px';if(v.radius!==undefined)selected.style.borderRadius=v.radius+'px';if(v.color)selected.style.color=v.color;if(v.background)selected.style.backgroundColor=v.background;saveDraft();refreshOverlay();toast('Đã áp dụng giao diện')};
-$('pick').onclick=()=>$('file').click();$('file').onchange=e=>{pendingFile=e.target.files[0]||null;if(pendingFile)$('imagePreview').src=URL.createObjectURL(pendingFile)};
+$('pick').onclick=()=>{$('file').click()};
+$('file').onchange=e=>{
+  pendingFile=e.target.files[0]||null;
+  if(pendingFile)showLocalImagePreview(pendingFile,'file','imagePreview');
+};
+rebindUploadControls();
 $('deleteImage').onclick=()=>{if(!selected){toast('Chưa chọn đối tượng ảnh');return}checkpoint();const item=getItem();if(selected.tagName==='IMG'){selected.removeAttribute('src');selected.removeAttribute('srcset');item.src=''}else{selected.style.removeProperty('background-image');delete item.bgImage;const nested=selected.querySelector?.('.as3-screen > img');if(nested){nested.removeAttribute('src');nested.removeAttribute('srcset')}}pendingFile=null;$('file').value='';$('imageUrl').value='';$('imagePreview').removeAttribute('src');saveDraft();refreshInspector();toast('🗑️ Đã xóa ảnh')};
 $('deletePageImage').onclick=()=>{checkpoint();const p=ensurePage();p.bgImage='';$('pageBgUrl').value='';pagePendingFile=null;$('pageFile').value='';const target=findPageTarget(pageStyleTarget());if(target)target.style.removeProperty('background-image');saveDraft();refreshPageDesign();toast('🗑️ Đã xóa ảnh nền')};
 $('applyImage').onclick=async()=>{if(!selected)return;let url=$('imageUrl').value.trim();try{if(pendingFile){url=await upload(pendingFile);pendingFile=null}}catch(e){toast('Upload lỗi: '+e.message);return}if(!url)return;checkpoint();const item=getItem();if(selected.tagName==='IMG'){selected.src=url;item.src=url}else{selected.style.backgroundImage='url("'+url+'")';item.bgImage=url}saveDraft();refreshInspector();toast('Đã thay hình')};
