@@ -75,7 +75,7 @@
 const $=id=>document.getElementById(id);
 const DRAFT_KEY='appleSeedVisualBuilderV2';
 const PUBLISHED_VERSION_KEY='appleSeedVisualBuilderPublishedVersionV3';
-let doc=null,selected=null,selector='',device='desktop',draft={items:{},page:{desktop:{},mobile:{}}},history=[],future=[],drag=null,pendingFile=null,pagePendingFile=null,allowed=false,groupPhones=false,simpleMode=false;
+let doc=null,selected=null,selector='',device='desktop',draft={items:{},page:{desktop:{},mobile:{}}},history=[],future=[],drag=null,pendingFile=null,pagePendingFile=null,allowed=false,groupPhones=false,simpleMode=false,builderReady=false;
 
 function toast(msg){$('toast').textContent=msg;$('toast').style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>{$('toast').style.display='none'},2200)}
 function setStatus(msg){$('status').textContent=msg}
@@ -407,6 +407,7 @@ function applyAll(){
 function loadDraft(){try{const raw=localStorage.getItem(DRAFT_KEY);if(raw){draft=JSON.parse(raw);if(!draft.items)draft.items={};if(!draft.page)draft.page={desktop:{},mobile:{}};draft.page.desktop=draft.page.desktop||{};draft.page.mobile=draft.page.mobile||{}}}catch{draft={items:{},page:{desktop:{},mobile:{}}}}}
 function saveDraft(){localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));toast('💾 Đã lưu nháp trên máy')}
 async function loadPublished(forcePublished=false){
+  builderReady=false;
   // SINGLE SOURCE OF TRUTH:
   // Supabase published config is the LIVE source. Local draft is used only
   // when explicitly retained for the same published version.
@@ -444,6 +445,7 @@ async function loadPublished(forcePublished=false){
   }
   refreshPageDesign();
   applyAll();
+  builderReady=true;
   setStatus('Đồng bộ LIVE · V'+publishedVersion);
   const h=await window.supabaseClient.from('site_builder_versions')
     .select('id,version_no,status,created_at')
@@ -765,14 +767,36 @@ $('backAdmin').onclick=()=>{location.href='admin.html'};
 $('save').onclick=saveDraft;$('reload').onclick=()=>location.reload();$('clear').onclick=()=>{if(confirm('Xóa toàn bộ nháp Builder trên máy?')){localStorage.removeItem(DRAFT_KEY);location.reload()}};
 $('syncLive').onclick=async()=>{
   if(!allowed){toast('Tài khoản không có quyền');return}
+  if(!builderReady){toast('⏳ Builder chưa tải xong cấu hình — chưa đồng bộ để tránh làm mất thiết kế');return}
   if(!confirm('Đồng bộ TOÀN BỘ thiết kế hiện tại lên website LIVE? Thao tác này sẽ dùng đúng cấu hình đang có trong khung Thiết kế.'))return;
 
   try{
     saveDraft();
+    setStatus('Đang kiểm tra cấu hình trước khi đồng bộ…');
+
+    /* Safety gate: never publish an empty Builder snapshot over a real LIVE
+       configuration. This protects against iframe/network race conditions. */
+    const localPayload=snapshot();
+    const localItemCount=Object.keys(localPayload.items||{}).length;
+    const latest=await window.supabaseClient.from('site_builder_versions')
+      .select('version_no,config')
+      .eq('site_key','default')
+      .eq('status','published')
+      .order('version_no',{ascending:false})
+      .limit(1)
+      .maybeSingle();
+    if(latest.error)throw latest.error;
+    const liveItemCount=Object.keys(latest.data?.config?.items||{}).length;
+    if(localItemCount===0 && liveItemCount>0){
+      toast('❌ Chặn đồng bộ rỗng: cấu hình Thiết kế chưa sẵn sàng');
+      setStatus('Đã chặn — LIVE vẫn giữ nguyên');
+      return;
+    }
+
     setStatus('Đang đồng bộ TOÀN BỘ lên LIVE…');
 
     /* Builder is the source of truth for this action. Never pull LIVE here. */
-    const payload=snapshot();
+    const payload=localPayload;
     payload.builder_version='V3';
     payload.builder_features=['blocks','responsive','group-drag','presets','ai-designer','full-sync'];
 
@@ -826,9 +850,12 @@ $('syncLive').onclick=async()=>{
 };
 $('publish').onclick=async()=>{
   if(!allowed){toast('Tài khoản không có quyền');return}
+  if(!builderReady){toast('⏳ Builder chưa tải xong cấu hình — chưa xuất bản');return}
   saveDraft();
   setStatus('Đang xuất bản version mới…');
-  const payload=snapshot();payload.builder_version='V3';payload.builder_features=['blocks','responsive','group-drag','presets','ai-designer'];
+  const payload=snapshot();
+  if(Object.keys(payload.items||{}).length===0){toast('❌ Không thể xuất bản cấu hình rỗng');return}
+  payload.builder_version='V3';payload.builder_features=['blocks','responsive','group-drag','presets','ai-designer'];
   const r=await window.supabaseClient.rpc('apple_seed_builder_publish',{p_config:payload,p_site_key:'default'});
   if(r.error){toast('Publish lỗi: '+r.error.message);setStatus('Publish lỗi — website chưa đổi');return}
   const versionNo=r.data?.version_no;
