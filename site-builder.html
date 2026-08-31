@@ -410,18 +410,25 @@ function applyLinkToElement(el,item){
     el.style.removeProperty('cursor');
   }
 }
-function clampHeroTranslate(el,x,y){
+function clampHeroTranslate(el,x,y,dragState){
   if(!el||!el.closest?.('.as3-hero'))return{x,y};
   const hero=el.closest('.as3-hero');
-  const hr=hero.getBoundingClientRect();
-  const er=el.getBoundingClientRect();
-  const currentX=Number.isFinite(x)?x:0,currentY=Number.isFinite(y)?y:0;
-  let nx=currentX,ny=currentY;
-  const minLeft=hr.left+8,maxRight=hr.right-8,minTop=hr.top+8,maxBottom=hr.bottom-8;
-  if(er.left<minLeft)nx+=minLeft-er.left;
-  if(er.right>maxRight)nx-=er.right-maxRight;
-  if(er.top<minTop)ny+=minTop-er.top;
-  if(er.bottom>maxBottom)ny-=er.bottom-maxBottom;
+  const hr=dragState?.heroRect||hero.getBoundingClientRect();
+  let er=dragState?.baseRect;
+  if(!er){
+    const prev=el.style.translate;
+    el.style.translate='0 0';
+    er=el.getBoundingClientRect();
+    el.style.translate=prev;
+  }
+  let nx=Number.isFinite(Number(x))?Number(x):0;
+  let ny=Number.isFinite(Number(y))?Number(y):0;
+  const minX=hr.left+8-er.left;
+  const maxX=hr.right-8-er.right;
+  const minY=hr.top+8-er.top;
+  const maxY=hr.bottom-8-er.bottom;
+  if(minX<=maxX)nx=Math.min(maxX,Math.max(minX,nx));
+  if(minY<=maxY)ny=Math.min(maxY,Math.max(minY,ny));
   return{x:Math.round(nx),y:Math.round(ny)};
 }
 function normalizeHeroCopy(){
@@ -607,6 +614,15 @@ $('preview').addEventListener('load',async()=>{
     const hasInlineTranslate=String(el.style.translate||'').trim().length>0;
     const bx=hasInlineTranslate?base.x:(Number.isFinite(Number(st.x))?Number(st.x):base.x);
     const by=hasInlineTranslate?base.y:(Number.isFinite(Number(st.y))?Number(st.y):base.y);
+    let heroRect=null,baseRect=null;
+    const hero=el.closest?.('.as3-hero');
+    if(hero){
+      heroRect=hero.getBoundingClientRect();
+      const prev=el.style.translate;
+      el.style.translate='0 0';
+      baseRect=el.getBoundingClientRect();
+      el.style.translate=prev;
+    }
     const groupBases={};
     if(groupPhones&&el.classList.contains('as3-phone')){
       [...doc.querySelectorAll('.as3-phone')].forEach(phoneEl=>{
@@ -621,7 +637,7 @@ $('preview').addEventListener('load',async()=>{
         };
       });
     }
-    drag={type:'move',sx:e.clientX,sy:e.clientY,el,before,bx,by,groupBases,moved:false,pointerId:e.pointerId};
+    drag={type:'move',sx:e.clientX,sy:e.clientY,el,before,bx,by,groupBases,heroRect,baseRect,moved:false,pointerId:e.pointerId};
     try{el.setPointerCapture(e.pointerId)}catch(_){}
     e.preventDefault();
     e.stopPropagation();
@@ -640,8 +656,11 @@ $('preview').addEventListener('load',async()=>{
     if(!drag.moved && Math.hypot(dx,dy)<3)return;
     drag.moved=true;
     if(drag.type==='move'){
-      let x=Math.round(drag.bx+dx),y=Math.round(drag.by+dy);
-      const bounded=clampHeroTranslate(drag.el,x,y); x=bounded.x; y=bounded.y;
+      const rawX=Math.round(drag.bx+dx);
+      const rawY=Math.round(drag.by+dy);
+      const bounded=clampHeroTranslate(drag.el,rawX,rawY,drag);
+      const x=bounded.x;
+      const y=bounded.y;
       if(groupPhones&&drag.el.classList.contains('as3-phone')){
         Object.entries(drag.groupBases||{}).forEach(([sel,base])=>{
           if(!base?.el)return;
