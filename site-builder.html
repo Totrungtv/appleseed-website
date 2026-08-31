@@ -60,7 +60,7 @@
     <div class="grid2"><div class="field"><label>Màu chữ</label><input id="color" type="color" value="#17233d" title="Chọn màu chữ"></div><div class="field"><label>Nền</label><input id="backgroundColor" type="color" value="#ffffff" title="Chọn màu nền"></div></div>
     <button class="btn primary" id="applyStyle" style="width:100%">Áp dụng giao diện</button>
   </div>
-  <div class="panel" id="palettePanel"><h3>🎨 Bảng màu toàn trang</h3><div class="muted" style="margin-bottom:8px">Bấm vào ô màu để chọn trực tiếp — không cần nhập mã.</div><div class="grid2"><div class="field"><label>Màu chủ đạo</label><input id="palPrimary" type="color" value="#d7aa4d"></div><div class="field"><label>Màu chữ</label><input id="palInk" type="color" value="#18212b"></div><div class="field"><label>Nền trang</label><input id="palPage" type="color" value="#ffffff"></div><div class="field"><label>Nền thẻ</label><input id="palCard" type="color" value="#ffffff"></div></div><button class="btn primary" id="applyPalette" style="width:100%">🎨 Áp dụng màu toàn trang</button><button class="btn" id="resetPalette" style="width:100%;margin-top:6px">↺ Về màu Apple Seed</button></div><div class="panel advanced-only"><h3>🎨 Preset nhanh</h3><div class="preset-grid"><button class="preset" data-preset="title">Tiêu đề Premium</button><button class="preset" data-preset="button">Nút Apple Seed</button><button class="preset" data-preset="card">Card dịch vụ</button><button class="preset" data-preset="clean">Tối giản</button></div></div>
+  <div class="panel" id="palettePanel"><h3>🎨 Bảng màu toàn trang</h3><div class="muted" style="margin-bottom:8px">Bấm vào ô màu để chọn trực tiếp — không cần nhập mã.</div><div class="grid2"><div class="field"><label>Màu chủ đạo</label><input id="palPrimary" type="color" value="#d7aa4d"></div><div class="field"><label>Màu chữ</label><input id="palInk" type="color" value="#18212b"></div><div class="field"><label>Nền trang</label><input id="palPage" type="color" value="#ffffff"></div><div class="field"><label>Nền thẻ</label><input id="palCard" type="color" value="#ffffff"></div></div><button class="btn primary" id="applyPalette" style="width:100%">🎨 Áp dụng màu toàn trang</button><button class="btn" id="resetPalette" style="width:100%;margin-top:6px">↺ Về toàn bộ màu Apple Seed</button></div><div class="panel advanced-only"><h3>🎨 Preset nhanh</h3><div class="preset-grid"><button class="preset" data-preset="title">Tiêu đề Premium</button><button class="preset" data-preset="button">Nút Apple Seed</button><button class="preset" data-preset="card">Card dịch vụ</button><button class="preset" data-preset="clean">Tối giản</button></div></div>
   <div class="panel"><h3>🕘 Lịch sử xuất bản</h3><div id="history" class="history"><div class="muted">Chưa tải.</div></div></div>
 </aside>
 </div></div>
@@ -131,7 +131,44 @@ html,body{background:${pageBg}!important;color:${ink}!important}
 .as3-service h3,.as3-stat span,.as3-service p{color:${ink}!important}.as3-more{background:${ink}!important;border-color:${ink}!important}
 .site-header .menu,.site-header .menu a{color:${ink}!important}.site-header .menu a:hover{color:${primary}!important}.site-header .brand-title{color:${ink}!important}
 .services,.contact,.dynamic-pages-section{background:${pageBg}!important}`}
-function savePalette(reset){checkpoint();const values=reset?defaultPalette():{'--gold':$('palPrimary').value,'--ink':$('palInk').value,'--apple-seed-page-bg':$('palPage').value,'--apple-seed-card-bg':$('palCard').value};draft.page=draft.page||{};draft.page.desktop=draft.page.desktop||{};draft.page.mobile=draft.page.mobile||{};draft.page.desktop.palette=JSON.parse(JSON.stringify(values));draft.page.mobile.palette=JSON.parse(JSON.stringify(values));applyAll();saveDraft();refreshPalette();toast(reset?'↺ Đã về màu Apple Seed':'🎨 Đã áp dụng bảng màu')}function refreshPageDesign(){
+function savePalette(reset){
+  checkpoint();
+  draft.page=draft.page||{};
+  draft.page.desktop=draft.page.desktop||{};
+  draft.page.mobile=draft.page.mobile||{};
+  const values=reset
+    ? defaultPalette()
+    : {'--gold':$('palPrimary').value,'--ink':$('palInk').value,'--apple-seed-page-bg':$('palPage').value,'--apple-seed-card-bg':$('palCard').value};
+  draft.page.desktop.palette=JSON.parse(JSON.stringify(values));
+  draft.page.mobile.palette=JSON.parse(JSON.stringify(values));
+
+  if(reset){
+    /*
+     * Full Apple Seed reset:
+     * remove Builder-created per-element color overrides so the original
+     * index.html palette/CSS becomes the source of truth again. This covers
+     * text, buttons, cards and inline backgrounds without touching position,
+     * size, content, links or images.
+     */
+    Object.values(draft.items||{}).forEach(item=>{
+      ['desktop','mobile'].forEach(dk=>{
+        const st=item?.styles?.[dk];
+        if(!st)return;
+        delete st.color;
+        delete st.background;
+      });
+    });
+    /* Return page background color controls to the original white canvas.
+       Keep any selected Hero image intact. */
+    draft.page.desktop.bgColor='#ffffff';
+    draft.page.mobile.bgColor='#ffffff';
+  }
+
+  applyAll();
+  saveDraft();
+  refreshPalette();
+  toast(reset?'↺ Đã về TOÀN BỘ màu Apple Seed':'🎨 Đã áp dụng bảng màu');
+}function refreshPageDesign(){
   const p=ensurePage();
   $('pageBgUrl').value=p.bgImage||'';
   $('pageBgColor').value=p.bgColor||'#ffffff';
