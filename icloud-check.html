@@ -20,8 +20,23 @@ label{font-size:12px;font-weight:800;color:#46617f} input,select{width:100%;bord
 .primary{background:linear-gradient(135deg,#1479e8,#3ba7ff);color:white} .secondary{background:#eaf4ff;color:#145ca8}
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}
 .icloud-note{margin-top:14px;padding:12px 14px;border:1px solid #d7e7f7;background:#f7fbff;border-radius:12px;color:#46617f;font-size:13px;line-height:1.5}
-.icloud-price{margin-top:14px;padding:14px 16px;border:1px solid #f0d48a;background:#fffaf0;border-radius:12px;display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}
-.icloud-price strong{font-size:20px;color:#9a6b00}
+.icloud-price{margin-top:14px;padding:14px 16px;border:1px solid #bfdbfe;background:#eff6ff;border-radius:12px;display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap}
+.icloud-price strong{font-size:20px;color:#1261c9}
+.payment-box{display:none;margin-top:16px;padding:18px;border:1px solid #bfdbfe;background:#f8fbff;border-radius:16px}
+.payment-box.active{display:block}
+.payment-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.payment-title{font-size:18px;font-weight:900;color:#10233f}
+.payment-amount{font-size:22px;font-weight:900;color:#1261c9}
+.payment-grid{display:grid;grid-template-columns:190px 1fr;gap:18px;align-items:center;margin-top:14px}
+.payment-qr{width:180px;height:180px;object-fit:contain;background:#fff;border:1px solid #d5e5f5;border-radius:12px}
+.payment-info{display:grid;gap:8px;font-size:14px;color:#46617f}
+.payment-info strong{color:#10233f}
+.payment-ref{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:900;color:#1261c9;word-break:break-all}
+.payment-status{margin-top:12px;padding:10px 12px;border-radius:10px;background:#eff6ff;color:#145ca8;font-weight:700}
+.payment-status.success{background:#f0fff4;color:#166534}
+.payment-status.expired{background:#fff5f5;color:#991b1b}
+.payment-note{margin-top:10px;font-size:12px;line-height:1.5;color:#647b98}
+@media(max-width:800px){.fields{grid-template-columns:1fr}.full{grid-column:auto}h1{font-size:30px}.payment-grid{grid-template-columns:1fr}.payment-qr{margin:auto}}
 .icloud-result{margin-top:14px;padding:16px;border:1px solid #d5e5f5;background:#f8fbff;border-radius:14px;min-height:64px}
 .icloud-result.ok{border-color:#b8e0c2;background:#f3fff5;color:#155724} .icloud-result.warn{border-color:#f1d58b;background:#fffaf0;color:#7a5b00} .icloud-result.danger{border-color:#f1b8b8;background:#fff5f5;color:#9f1c1c} .icloud-result.loading{border-color:#b9d8f6;background:#f5faff;color:#145ca8}
 .icloud-result p{margin:7px 0 0;line-height:1.5} .icloud-checklist{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;font-size:12px;color:#46617f} .icloud-checklist strong{width:100%;color:#10233f;font-size:13px} .icloud-checklist span{padding:6px 9px;border:1px solid #d5e5f5;background:#fff;border-radius:999px}
@@ -45,7 +60,21 @@ label{font-size:12px;font-weight:800;color:#46617f} input,select{width:100%;bord
 <div class="field"><label>Model (không bắt buộc)</label><select id="icloudModel"><option value="">Tự nhận diện / chưa rõ</option><option>iPhone 16 Pro Max</option><option>iPhone 16 Pro</option><option>iPhone 16</option><option>iPhone 15 Pro Max</option><option>iPhone 15 Pro</option><option>iPhone 15</option><option>iPhone 14 Pro Max</option><option>iPhone 14 Pro</option><option>iPhone 14</option><option>iPhone 13 Pro Max</option><option>iPhone 13 Pro</option><option>iPhone 13</option><option>iPhone 12 Pro Max</option><option>iPhone 12 Pro</option><option>iPhone 12</option></select></div>
 <div class="field full"><label id="icloudIdLabel">Serial Number</label><input id="icloudIdentifier" autocomplete="off" spellcheck="false" placeholder="Nhập Serial Number"></div>
 </div>
-<div class="actions"><button class="btn primary" id="icloudCheckBtn" type="button">☁️ KIỂM TRA ICLOUD</button><button class="btn secondary" id="icloudClearBtn" type="button">Xóa</button></div>
+<div class="actions"><button class="btn primary" id="icloudCheckBtn" type="button">☁️ KIỂM TRA ICLOUD — 5.000đ</button><button class="btn secondary" id="icloudClearBtn" type="button">Xóa</button></div>
+<div id="icloudPayment" class="payment-box">
+  <div class="payment-head"><div class="payment-title">💳 Thanh toán trước khi tra cứu</div><div class="payment-amount">5.000đ</div></div>
+  <div class="payment-grid">
+    <img id="icloudPaymentQr" class="payment-qr" alt="QR thanh toán iCloud">
+    <div class="payment-info">
+      <div><strong>Ngân hàng:</strong> MB Bank</div>
+      <div><strong>Số tài khoản:</strong> 0898888269</div>
+      <div><strong>Chủ tài khoản:</strong> TÔ THANH TRUNG</div>
+      <div><strong>Nội dung:</strong> <span id="icloudPaymentRef" class="payment-ref"></span></div>
+      <div id="icloudPaymentStatus" class="payment-status">⏳ Chờ hệ thống xác nhận thanh toán…</div>
+      <div class="payment-note">Quét đúng QR và giữ nguyên nội dung chuyển khoản. Hệ thống chỉ chạy tra cứu khi giao dịch 5.000đ được provider xác nhận; không có nút xác nhận thủ công và không dùng Coin AI Board.</div>
+    </div>
+  </div>
+</div>
 <div id="icloudResult" class="icloud-result"><strong>Chưa kiểm tra</strong><p>Nhập Serial hoặc IMEI rồi bấm kiểm tra.</p></div>
 <div class="icloud-checklist"><strong>Checklist kỹ thuật</strong><span>① Find My</span><span>② Activation Lock</span><span>③ “iPhone bị khóa cho chủ sở hữu”</span><span>④ Xóa máy / kích hoạt lại trước khi nhận máy cũ</span></div>
 <div class="rules"><strong>📌 Quy định kết quả</strong><ul><li>Kết quả chỉ hiển thị khi server có nguồn xác minh hợp lệ.</li><li>Nếu server/provider không phản hồi, hệ thống báo chưa xác minh — không giả kết quả.</li><li>Phần thanh toán 5.000đ sẽ được nối riêng với module này, không dùng Coin AI Board.</li></ul></div>
@@ -88,8 +117,73 @@ function escHtml(value){const d=document.createElement('div');d.textContent=Stri
     idInput.value='';
     show('', 'Chưa kiểm tra', 'Nhập '+(imei?'IMEI':'Serial Number')+' rồi bấm kiểm tra.');
   }
-  idType.addEventListener('change',sync);
-  clearBtn?.addEventListener('click',()=>{idInput.value='';model.value='';show('', 'Chưa kiểm tra','Nhập Serial hoặc IMEI rồi bấm kiểm tra.');idInput.focus();});
+  idType.addEventListener('change',()=>{stopPaymentWatch();document.getElementById('icloudPayment')?.classList.remove('active');sync();});
+  clearBtn?.addEventListener('click',()=>{
+    stopPaymentWatch();
+    document.getElementById('icloudPayment')?.classList.remove('active');
+    idInput.value='';model.value='';
+    show('', 'Chưa kiểm tra','Nhập Serial hoặc IMEI rồi bấm kiểm tra.');
+    idInput.focus();
+  });
+
+  let paymentTimer=null;
+  let paymentId=null;
+
+  function stopPaymentWatch(){
+    if(paymentTimer){clearInterval(paymentTimer);paymentTimer=null;}
+  }
+
+  function setPaymentStatus(text,kind=''){
+    const el=document.getElementById('icloudPaymentStatus');
+    if(!el)return;
+    el.className='payment-status '+kind;
+    el.textContent=text;
+  }
+
+  async function runPaidCheck(type,identifier){
+    show('loading','⏳ Đã nhận thanh toán — đang kiểm tra', 'Đang gửi định danh tới bộ kiểm tra iCloud của Apple Seed…');
+    const call=await window.supabaseClient.functions.invoke('check-icloud-status',{
+      body:{identifier_type:type,identifier,device_model:model.value||null}
+    });
+    if(call.error) throw call.error;
+    const data=call.data||{};
+    if(data.status==='LOCKED') show('danger','🔒 ACTIVATION LOCK: ĐANG KHÓA',data.message||'Thiết bị vẫn đang liên kết với Tài khoản Apple.');
+    else if(data.status==='UNLOCKED') show('ok','✅ ACTIVATION LOCK: ĐÃ TẮT',data.message||'Nguồn kiểm tra xác nhận thiết bị không còn Activation Lock.');
+    else show('warn','⚠️ CHƯA XÁC MINH',data.message||'Nguồn kiểm tra chưa trả về trạng thái chắc chắn. Không tự kết luận LOCKED/UNLOCKED.');
+  }
+
+  async function watchPayment(order,type,identifier){
+    stopPaymentWatch();
+    const paymentBox=document.getElementById('icloudPayment');
+    paymentBox?.classList.add('active');
+    const qr=document.getElementById('icloudPaymentQr');
+    const ref=document.getElementById('icloudPaymentRef');
+    ref.textContent=order.payment_ref;
+    qr.src='https://img.vietqr.io/image/MB-0898888269-compact2.png?amount=5000&addInfo='+encodeURIComponent(order.payment_ref)+'&accountName='+encodeURIComponent('TO THANH TRUNG');
+    setPaymentStatus('⏳ Chờ hệ thống xác nhận thanh toán…');
+    paymentId=order.id;
+    paymentTimer=setInterval(async()=>{
+      try{
+        const q=await window.supabaseClient.from('icloud_check_payments')
+          .select('status,expires_at,paid_at')
+          .eq('id',paymentId).maybeSingle();
+        if(q.error) throw q.error;
+        const row=q.data;
+        if(!row)return;
+        if(row.status==='paid'||row.status==='processing'||row.status==='completed'){
+          stopPaymentWatch();
+          setPaymentStatus('✅ Đã xác nhận thanh toán — đang tra cứu…','success');
+          await runPaidCheck(type,identifier);
+        }else if(row.status==='expired'||(row.expires_at&&new Date(row.expires_at).getTime()<Date.now())){
+          stopPaymentWatch();
+          setPaymentStatus('⌛ Đơn thanh toán đã hết hạn. Bấm kiểm tra lại để tạo mã mới.','expired');
+          show('warn','⌛ THANH TOÁN HẾT HẠN','Đơn thanh toán đã hết thời gian chờ. Chưa thực hiện tra cứu và không dùng Coin.');
+        }
+      }catch(err){
+        setPaymentStatus('⚠️ Chưa đọc được trạng thái thanh toán — hệ thống sẽ tự thử lại.');
+      }
+    },3000);
+  }
 
   checkBtn.addEventListener('click',async()=>{
     const type=idType.value;
@@ -99,22 +193,27 @@ function escHtml(value){const d=document.createElement('div');d.textContent=Stri
       return;
     }
     checkBtn.disabled=true;
-    show('loading','⏳ Đang kiểm tra','Đang gửi định danh an toàn tới bộ kiểm tra iCloud của Apple Seed…');
+    stopPaymentWatch();
     try{
       if(!window.supabaseClient) throw new Error('Supabase client chưa sẵn sàng.');
       const session=(await window.supabaseClient.auth.getSession())?.data?.session;
       if(!session?.user) throw new Error('Vui lòng đăng nhập Apple Seed Member trước khi kiểm tra.');
-      const call=await window.supabaseClient.functions.invoke('check-icloud-status',{
-        body:{identifier_type:type,identifier,device_model:model.value||null}
+
+      const created=await window.supabaseClient.rpc('create_icloud_check_payment',{
+        p_identifier_type:type,
+        p_identifier:identifier,
+        p_device_model:model.value||null
       });
-      if(call.error) throw call.error;
-      const data=call.data||{};
-      if(data.status==='LOCKED') show('danger','🔒 ACTIVATION LOCK: ĐANG KHÓA',data.message||'Thiết bị vẫn đang liên kết với Tài khoản Apple. Không nhận máy theo dạng máy sạch.');
-      else if(data.status==='UNLOCKED') show('ok','✅ ACTIVATION LOCK: ĐÃ TẮT',data.message||'Nguồn kiểm tra xác nhận thiết bị không còn Activation Lock.');
-      else show('warn','⚠️ CHƯA XÁC MINH',data.message||'Nguồn kiểm tra chưa trả về trạng thái chắc chắn. Không tự kết luận LOCKED/UNLOCKED.');
+      if(created.error) throw created.error;
+      const order=created.data;
+      if(!order?.id||!order?.payment_ref) throw new Error('Không tạo được đơn thanh toán iCloud.');
+      show('loading','💳 ĐÃ TẠO ĐƠN THANH TOÁN','Quét QR 5.000đ và chờ hệ thống tự xác nhận giao dịch.');
+      await watchPayment(order,type,identifier);
     }catch(err){
-      show('warn','⚠️ CHƯA CÓ KẾT NỐI TRA CỨU',err?.message||'Bộ kiểm tra iCloud chưa được kết nối với nguồn dữ liệu server. Giao diện đã sẵn sàng nhưng không giả lập kết quả.');
-    }finally{checkBtn.disabled=false;}
+      show('warn','⚠️ KHÔNG THỂ TẠO ĐƠN',err?.message||'Không thể khởi tạo thanh toán iCloud.');
+    }finally{
+      checkBtn.disabled=false;
+    }
   });
 })();
 </script>
