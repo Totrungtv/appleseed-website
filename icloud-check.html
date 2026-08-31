@@ -246,9 +246,8 @@ function escHtml(value){const d=document.createElement('div');d.textContent=Stri
     stopPaymentWatch();
     try{
       if(!window.supabaseClient) throw new Error('Supabase client chưa sẵn sàng.');
-      const session=(await window.supabaseClient.auth.getSession())?.data?.session;
-      if(!session?.user) throw new Error('Vui lòng đăng nhập Apple Seed Member trước khi kiểm tra.');
-
+      // Check iCloud là dịch vụ công khai: không yêu cầu Member đăng nhập.
+      // Thanh toán 5.000đ là điều kiện duy nhất trước khi gọi provider.
       const created=await window.supabaseClient.rpc('create_icloud_check_payment',{
         p_identifier_type:type,
         p_identifier:identifier,
