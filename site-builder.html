@@ -164,6 +164,8 @@ function applyPageToTarget(target,p){
    * Builder phải dùng inline !important để ảnh/màu chọn trong Builder
    * thắng CSS mặc định và hiện NGAY trên canvas, không cần reload.
    */
+  const isHero=!!(target.matches?.('#apple-seed-premium-home,.as3-hero,.hero'));
+  const rootHero=doc?.querySelector?.('#apple-seed-premium-home')||target;
   if(p.bgImage){
     const safe=String(p.bgImage).replace(/\\/g,'\\\\').replace(/"/g,'\\\"');
     target.style.setProperty('background-image','url("'+safe+'")','important');
@@ -174,6 +176,22 @@ function applyPageToTarget(target,p){
   if(p.bgSize)target.style.setProperty('background-size',String(p.bgSize),'important');
   if(p.bgPosition)target.style.setProperty('background-position',String(p.bgPosition),'important');
   target.style.setProperty('background-repeat','no-repeat','important');
+
+  /* The Hero has an opaque :before layer in the base design. When Builder
+     owns the Hero image that layer must be transparent, otherwise the
+     parent's background image is technically applied but never visible. */
+  if(isHero && doc){
+    let st=doc.getElementById('apple-seed-builder-page-bg-canvas');
+    if(!st){
+      st=doc.createElement('style');
+      st.id='apple-seed-builder-page-bg-canvas';
+      doc.head.appendChild(st);
+    }
+    st.textContent=p.bgImage
+      ? '#apple-seed-premium-home.builder-has-page-bg:before,#apple-seed-premium-home.builder-has-page-bg:after,#apple-seed-premium-home.builder-has-page-bg .as3-stage,#apple-seed-premium-home.builder-has-page-bg .as3-stage:before{background-image:none!important;background-color:transparent!important}'
+      : '';
+    rootHero.classList.toggle('builder-has-page-bg',!!p.bgImage);
+  }
 }
 
 function refreshOverlay(){
