@@ -485,7 +485,31 @@ $('preview').addEventListener('load',async()=>{
       }else{drag.el.style.translate=x+'px '+y+'px';const v=getItem().styles[deviceKey()];v.x=x;v.y=y}
       $('x').value=x;$('y').value=y;
     }
-    refreshOverlay();
+    /*
+     * Keep the selection frame visually anchored while the user drags an
+     * object.  The old behavior called refreshOverlay() on every pointermove,
+     * so the blue frame chased the object vertically and made the drag feel
+     * unstable.  Freeze the frame during the gesture and snap it to the
+     * final object position only after release.
+     */
+    if(!drag.overlayFrozen){
+      const o=$('overlay');
+      const or=o.getBoundingClientRect();
+      drag.overlayFrozen={
+        left:or.left,top:or.top,width:or.width,height:or.height,
+        display:o.style.display
+      };
+    }
+    const of=drag.overlayFrozen;
+    if(of){
+      const pr=$('preview').getBoundingClientRect();
+      const o=$('overlay');
+      o.style.left=of.left+'px';
+      o.style.top=of.top+'px';
+      o.style.width=of.width+'px';
+      o.style.height=of.height+'px';
+      o.style.display=of.display||'block';
+    }
     e.preventDefault();
   },true);
   function finishMove(e){
@@ -501,7 +525,10 @@ $('preview').addEventListener('load',async()=>{
       toast('Đã di chuyển — bản nháp');
     }
     try{if(drag.el&&drag.pointerId!=null)drag.el.releasePointerCapture(drag.pointerId)}catch(_){}
+    const done=drag;
     drag=null;
+    /* Re-anchor the blue frame to the object's final position after release. */
+    if(done&&selected)requestAnimationFrame(()=>refreshOverlay());
   }
   doc.addEventListener('pointerup',finishMove,true);
   doc.addEventListener('pointercancel',finishMove,true);
