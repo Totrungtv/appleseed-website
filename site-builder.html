@@ -873,6 +873,10 @@ $('undo').onclick=()=>{if(!history.length)return;future.push(snapshot());draft=h
 $('redo').onclick=()=>{if(!future.length)return;history.push(snapshot());draft=future.pop();saveDraft();applyAll();toast('↷ Redo')};
 $('backAdmin').onclick=()=>{location.href='admin.html'};
 $('save').onclick=saveDraft;$('reload').onclick=()=>location.reload();$('clear').onclick=()=>{if(confirm('Xóa toàn bộ nháp Builder trên máy?')){localStorage.removeItem(DRAFT_KEY);location.reload()}};
+function liveItemKeysCount(items){
+  return items && typeof items==='object' && !Array.isArray(items) ? Object.keys(items).length : 0;
+}
+
 $('syncLive').onclick=async()=>{
   if(!allowed){toast('Tài khoản không có quyền');return}
   if(!builderReady){toast('⏳ Builder chưa tải xong cấu hình — chưa đồng bộ để tránh làm mất thiết kế');return}
@@ -896,8 +900,8 @@ $('syncLive').onclick=async()=>{
     if(latest.error)throw latest.error;
     const liveConfig=latest.data?.config||{};
     const liveItems=liveConfig.items||{};
-    const liveItemCount=Object.keys(liveItems).length;
     const liveItemKeys=Object.keys(liveItems);
+    const liveItemCount = liveItemKeysCount(liveItems);
     const localItemKeys=Object.keys(localPayload.items||{});
     const missingLiveKeys=liveItemKeys.filter(k=>!Object.prototype.hasOwnProperty.call(localPayload.items||{},k));
 
