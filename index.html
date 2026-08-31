@@ -1370,7 +1370,7 @@ body{
    This layer intentionally sits after the existing premium/light themes.
    The Builder palette controls are the source of truth for these four colors. */
 :root{
-  --apple-seed-primary:#1769ff;
+  --apple-seed-primary:#d7aa4d;
   --apple-seed-ink:#17233d;
   --apple-seed-page-bg:#ffffff;
   --apple-seed-card-bg:#ffffff;
@@ -3029,18 +3029,10 @@ form.onsubmit=async e=>{
 </script>
 
 <style id="apple-seed-builder-page-bg-single-source">
-/* Builder Hero background is the single source of truth.
-   The Hero's opaque pseudo layers must become transparent or they hide
-   the background image applied to #apple-seed-premium-home. */
-#apple-seed-premium-home.builder-has-page-bg:before,
-#apple-seed-premium-home.builder-has-page-bg:after,
 #apple-seed-premium-home.builder-has-page-bg .as3-stage,
 #apple-seed-premium-home.builder-has-page-bg .as3-stage:before{
   background-image:none!important;
   background-color:transparent!important;
-}
-#apple-seed-premium-home.builder-has-page-bg{
-  background-repeat:no-repeat!important;
 }
 </style>
 <script id="apple-seed-final-ux">
@@ -3348,7 +3340,7 @@ body.apple-seed-chat-open #apple-seed-ai-board-float{
   z-index:1005!important;
 }
 </style>
-<script src="site-builder-runtime.js?v=20260831-v8"></script>
+<script src="site-builder-runtime.js?v=20260830-v6"></script>
 
 <style id="apple-seed-ai-assistant-presence-v1">
 /* AI ASSISTANT PRESENCE — floating identity/status next to the robot launcher. */
@@ -3551,26 +3543,15 @@ body.apple-seed-chat-open #apple-seed-ai-board-float{
     }
 
     var styles=item.styles||{};
-    var dk=isMobile?"mobile":"desktop";
-    var st=styles[dk]||{};
-    var resized=!!(item.meta&&item.meta.resized&&item.meta.resized[dk]);
-    var flowText=/^(H1|H2|H3|H4|H5|H6|P|LI|SPAN)$/.test(el.tagName) &&
-      !(el.closest&&el.closest(".as3-phone,.as3-screen,.as3-stage"));
+    var st=styles[isMobile?"mobile":"desktop"]||{};
 
     if(st.x!==undefined || st.y!==undefined){
       el.style.setProperty("translate",(Number(st.x)||0)+"px "+(Number(st.y)||0)+"px","important");
     }else{
       el.style.removeProperty("translate");
     }
-
-    /*
-     * Flow text must keep the site's native width/height unless the user
-     * explicitly resized it. Otherwise an old Builder width (for example
-     * 280px) changes the layout in LIVE even though the Builder canvas shows
-     * the heading centered/full-width.
-     */
-    setStyle(el,"width",Number(st.w)>0 && (!flowText||resized)?Number(st.w)+"px":undefined);
-    setStyle(el,"height",Number(st.h)>0 && (!flowText||resized)?Number(st.h)+"px":undefined);
+    setStyle(el,"width",Number(st.w)>0?Number(st.w)+"px":undefined);
+    setStyle(el,"height",Number(st.h)>0?Number(st.h)+"px":undefined);
     setStyle(el,"font-size",Number(st.fontSize)>0?Number(st.fontSize)+"px":undefined);
     setStyle(el,"border-radius",Number(st.radius)>=0 && st.radius!==""?Number(st.radius)+"px":undefined);
     setStyle(el,"color",st.color||undefined);
@@ -3594,7 +3575,7 @@ body.apple-seed-chat-open #apple-seed-ai-board-float{
       var isMobile=mobileQuery.matches;
       var page=(currentConfig.page||{})[isMobile?"mobile":"desktop"]||{};
       var pal=page.palette||{};
-      var primary=String(pal["--gold"]||"#1769ff");
+      var primary=String(pal["--gold"]||"#d7aa4d");
       var ink=String(pal["--ink"]||"#17233d");
       var pageBg=String(pal["--apple-seed-page-bg"]||"#ffffff");
       var cardBg=String(pal["--apple-seed-card-bg"]||"#ffffff");
@@ -3670,10 +3651,8 @@ body.apple-seed-chat-open #apple-seed-ai-board-float{
       window.appleSeedBuilderPublishedConfig=currentConfig;
       window.dispatchEvent(new CustomEvent("appleSeedBuilderConfigReady"));
       applyConfig();
-      /* Dynamic Hero/product loaders can recreate phone nodes after the first
-         paint. Re-apply the SAME published config without fetching anything
-         else, so Builder-selected images/positions survive those loaders. */
-      [250,500,1000,1500,2500,4000].forEach(function(ms){window.setTimeout(applyConfig,ms)});
+      window.setTimeout(applyConfig,500);
+      window.setTimeout(applyConfig,1500);
     }catch(e){
       console.warn("[Apple Seed Builder] Runtime:",e);
     }
