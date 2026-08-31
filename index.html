@@ -1479,6 +1479,17 @@ html,body{background:var(--apple-seed-page-bg)!important;color:var(--apple-seed-
 </div>
 </nav>
 </header>
+
+<style id="apple-seed-hero-copy-visibility-fix">
+/* Keep Hero copy visible even when an old Builder draft contains a bad translate. */
+.as3-hero{overflow:hidden!important;}
+.as3-copy{position:relative!important;min-width:0!important;max-width:100%!important;overflow:visible!important;}
+.as3-copy .as3-title,.as3-copy .as3-kicker,.as3-copy .as3-sub,.as3-copy .as3-desc,.as3-copy .as3-actions,.as3-copy .as3-note{max-width:100%!important;overflow:visible!important;}
+@media(min-width:761px){
+  .as3-main{min-width:0!important;}
+  .as3-copy{transform:none;}
+}
+</style>
 <section class="as3-hero" id="apple-seed-premium-home" aria-label="Apple Seed Premium iPhone">
 <div class="as3-wrap">
 <div class="as3-main">
