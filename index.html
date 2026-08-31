@@ -3551,15 +3551,26 @@ body.apple-seed-chat-open #apple-seed-ai-board-float{
     }
 
     var styles=item.styles||{};
-    var st=styles[isMobile?"mobile":"desktop"]||{};
+    var dk=isMobile?"mobile":"desktop";
+    var st=styles[dk]||{};
+    var resized=!!(item.meta&&item.meta.resized&&item.meta.resized[dk]);
+    var flowText=/^(H1|H2|H3|H4|H5|H6|P|LI|SPAN)$/.test(el.tagName) &&
+      !(el.closest&&el.closest(".as3-phone,.as3-screen,.as3-stage"));
 
     if(st.x!==undefined || st.y!==undefined){
       el.style.setProperty("translate",(Number(st.x)||0)+"px "+(Number(st.y)||0)+"px","important");
     }else{
       el.style.removeProperty("translate");
     }
-    setStyle(el,"width",Number(st.w)>0?Number(st.w)+"px":undefined);
-    setStyle(el,"height",Number(st.h)>0?Number(st.h)+"px":undefined);
+
+    /*
+     * Flow text must keep the site's native width/height unless the user
+     * explicitly resized it. Otherwise an old Builder width (for example
+     * 280px) changes the layout in LIVE even though the Builder canvas shows
+     * the heading centered/full-width.
+     */
+    setStyle(el,"width",Number(st.w)>0 && (!flowText||resized)?Number(st.w)+"px":undefined);
+    setStyle(el,"height",Number(st.h)>0 && (!flowText||resized)?Number(st.h)+"px":undefined);
     setStyle(el,"font-size",Number(st.fontSize)>0?Number(st.fontSize)+"px":undefined);
     setStyle(el,"border-radius",Number(st.radius)>=0 && st.radius!==""?Number(st.radius)+"px":undefined);
     setStyle(el,"color",st.color||undefined);
