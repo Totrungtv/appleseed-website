@@ -18,7 +18,7 @@
   <div class="brand">APPLE SEED <small>VISUAL SITE BUILDER V3</small></div>
   <button class="btn active" id="desktopBtn">🖥 Desktop</button><button class="btn" id="mobileBtn">📱 Mobile</button><button class="btn" id="simpleMode">✨ Đơn giản</button><button class="btn" id="aiOpen">🤖 AI Designer</button>
   <span class="spacer"></span><span class="status" id="status">Đang kiểm tra quyền…</span>
-  <button class="btn" id="backAdmin">← Admin</button><button class="btn" id="undo">↶</button><button class="btn" id="redo">↷</button><button class="btn" id="save">💾 Nháp</button><button class="btn" id="syncLive">🔄 Đồng bộ → LIVE</button><button class="btn primary" id="publish">🚀 Xuất bản</button>
+  <button class="btn" id="backAdmin">← Admin</button><button class="btn" id="undo">↶</button><button class="btn" id="redo">↷</button><button class="btn" id="save">💾 Nháp</button><button class="btn" id="syncLive">🔄 Đồng bộ INDEX / LIVE</button><button class="btn primary" id="publish">🚀 Xuất bản</button>
 </header>
 <div class="workspace">
 <aside class="side left">
@@ -794,6 +794,10 @@ $('syncLive').onclick=async()=>{
        configuration. This protects against iframe/network race conditions. */
     const localPayload=snapshot();
     const localItemCount=Object.keys(localPayload.items||{}).length;
+    const currentIndexFp=cleanIndexFingerprint();
+    const savedIndexFp=localStorage.getItem(BASE_INDEX_FINGERPRINT_KEY)||'';
+    const indexWasRestoredOrReplaced=!!(currentIndexFp && savedIndexFp && currentIndexFp!==savedIndexFp);
+    const syncFromCurrentIndex=indexWasRestoredOrReplaced || (localItemCount===0 && !localStorage.getItem(PUBLISHED_VERSION_KEY));
     const latest=await window.supabaseClient.from('site_builder_versions')
       .select('version_no,config')
       .eq('site_key','default')
@@ -803,16 +807,24 @@ $('syncLive').onclick=async()=>{
       .maybeSingle();
     if(latest.error)throw latest.error;
     const liveItemCount=Object.keys(latest.data?.config?.items||{}).length;
-    if(localItemCount===0 && liveItemCount>0){
+    if(localItemCount===0 && liveItemCount>0 && !syncFromCurrentIndex){
       toast('❌ Chặn đồng bộ rỗng: cấu hình Thiết kế chưa sẵn sàng');
       setStatus('Đã chặn — LIVE vẫn giữ nguyên');
       return;
     }
 
-    setStatus('Đang đồng bộ TOÀN BỘ lên LIVE…');
+    setStatus(syncFromCurrentIndex
+      ? 'Đang đồng bộ ĐÚNG BẢN INDEX HIỆN TẠI lên LIVE…'
+      : 'Đang đồng bộ TOÀN BỘ thiết kế hiện tại lên LIVE…');
 
-    /* Builder is the source of truth for this action. Never pull LIVE here. */
-    const payload=localPayload;
+    /* IMPORTANT: if the physical index.html was restored/replaced, it is the
+       source of truth. Publish an EMPTY Builder override so the LIVE runtime
+       stops applying the stale Supabase design and the public page becomes
+       exactly the current index.html. In normal editing mode, publish the
+       current Builder draft as before. */
+    const payload=syncFromCurrentIndex
+      ? {items:{},page:{desktop:{},mobile:{}}}
+      : localPayload;
     payload.builder_version='V3';
     payload.builder_features=['blocks','responsive','group-drag','presets','ai-designer','full-sync'];
 
@@ -847,11 +859,19 @@ $('syncLive').onclick=async()=>{
        Reloading the iframe is also unnecessary and can re-run legacy Hero
        loaders before the Builder runtime applies the published config. */
     localStorage.setItem(PUBLISHED_VERSION_KEY,String(verify.data.version_no||versionNo||''));
+    if(currentIndexFp)localStorage.setItem(BASE_INDEX_FINGERPRINT_KEY,currentIndexFp);
     refreshPageDesign();
     applyAll();
 
-    setStatus('Đã đồng bộ TOÀN BỘ LIVE · V'+(verify.data.version_no||versionNo||''));
-    toast('🔄 Đã đồng bộ toàn bộ thông số từ Thiết kế lên website LIVE');
+    if(syncFromCurrentIndex){
+      draft={items:{},page:{desktop:{},mobile:{}}};
+      localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));
+      setStatus('Đã đồng bộ ĐÚNG BẢN INDEX HIỆN TẠI · V'+(verify.data.version_no||versionNo||''));
+      toast('🔄 LIVE đã trở về đúng bản index.html hiện tại — không dùng thiết kế cũ');
+    }else{
+      setStatus('Đã đồng bộ TOÀN BỘ LIVE · V'+(verify.data.version_no||versionNo||''));
+      toast('🔄 Đã đồng bộ toàn bộ thông số từ Thiết kế lên website LIVE');
+    }
   }catch(err){
     console.error('Full LIVE sync:',err);
     toast('❌ Đồng bộ lỗi: '+(err?.message||err));
