@@ -1481,6 +1481,15 @@ html,body{background:var(--apple-seed-page-bg)!important;color:var(--apple-seed-
 </nav>
 </header>
 
+
+<style id="apple-seed-hero-white-overlay-fix">
+/* Hero copy must never paint an opaque white rectangle over its own text. */
+.as3-main{position:relative!important;z-index:20!important;overflow:visible!important;}
+.as3-copy{position:relative!important;z-index:1000!important;background:transparent!important;background-color:transparent!important;isolation:isolate!important;}
+.as3-copy>*{position:relative;z-index:1;}
+.as3-copy .as3-title,.as3-copy .as3-kicker,.as3-copy .as3-sub,.as3-copy .as3-desc,.as3-copy .as3-actions,.as3-copy .as3-note{background:transparent!important;background-color:transparent!important;}
+.as3-stage{z-index:1!important;}
+</style>
 <style id="apple-seed-hero-copy-visibility-fix">
 /* Keep Hero copy visible even when an old Builder draft contains a bad translate. */
 .as3-hero{overflow:hidden!important;}
