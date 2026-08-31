@@ -190,11 +190,11 @@ function escHtml(value){const d=document.createElement('div');d.textContent=Stri
     paymentId=order.id;
     paymentTimer=setInterval(async()=>{
       try{
-        const q=await window.supabaseClient.from('icloud_check_payments')
-          .select('status,expires_at,paid_at')
-          .eq('id',paymentId).maybeSingle();
+        const q=await window.supabaseClient.rpc('get_icloud_check_payment_status',{
+          p_payment_id:paymentId
+        });
         if(q.error) throw q.error;
-        const row=q.data;
+        const row=q.data?.ok?q.data:null;
         if(!row)return;
         if(row.status==='paid'||row.status==='processing'||row.status==='completed'){
           stopPaymentWatch();
