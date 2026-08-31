@@ -430,11 +430,27 @@ async function loadPublished(forcePublished=false){
     return;
   }
   if(r.data?.config){
-    publishedVersion=String(r.data.version_no||'');
+    /* If a bad/empty publish slipped through, recover the newest archived
+       non-empty Builder version instead of replacing the canvas with nothing. */
+    let source=r.data;
+    const sourceItemCount=Object.keys(source.config?.items||{}).length;
+    if(sourceItemCount===0){
+      const recovery=await window.supabaseClient.from('site_builder_versions')
+        .select('id,version_no,config,created_at')
+        .eq('site_key','default')
+        .eq('status','archived')
+        .order('version_no',{ascending:false})
+        .limit(20);
+      if(!recovery.error){
+        const recovered=recovery.data?.find(v=>Object.keys(v.config?.items||{}).length>0);
+        if(recovered)source=recovered;
+      }
+    }
+    publishedVersion=String(source.version_no||'');
     const localRaw=localStorage.getItem(DRAFT_KEY);
     const localBase=localStorage.getItem(PUBLISHED_VERSION_KEY);
     if(forcePublished || !localRaw || !localBase || localBase!==publishedVersion){
-      draft=JSON.parse(JSON.stringify(r.data.config));
+      draft=JSON.parse(JSON.stringify(source.config));
       draft.items=draft.items||{};
       draft.page=draft.page||{desktop:{},mobile:{}};
       draft.page.desktop=draft.page.desktop||{};
