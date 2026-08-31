@@ -202,10 +202,23 @@ function applyPageToTarget(target,p){
   }
 }
 
+let overlayHideTimer=null;
+function hideSelectionOverlay(){
+  clearTimeout(overlayHideTimer);overlayHideTimer=null;
+  const o=$('overlay');if(o)o.style.display='none';
+}
+function scheduleSelectionOverlayHide(delay=1200){
+  clearTimeout(overlayHideTimer);
+  overlayHideTimer=setTimeout(()=>hideSelectionOverlay(),delay);
+}
 function refreshOverlay(){
-  const o=$('overlay');if(!selected){o.style.display='none';return}
+  const o=$('overlay');if(!selected){hideSelectionOverlay();return}
   const r=selected.getBoundingClientRect(),fr=$('preview').getBoundingClientRect();
   o.style.display='block';o.style.left=(fr.left+r.left)+'px';o.style.top=(fr.top+r.top)+'px';o.style.width=r.width+'px';o.style.height=r.height+'px';$('overlayLabel').textContent=selected.tagName.toLowerCase();
+}
+function showSelectionOverlayForUse(){
+  refreshOverlay();
+  scheduleSelectionOverlayHide();
 }
 function refreshInspector(){
   if(!selected){$('info').textContent='Chưa chọn';$('tag').hidden=true;$('contentPanel').hidden=true;$('imagePanel').hidden=true;$('stylePanel').hidden=true;$('layerList').innerHTML='<div class="muted">Chưa chọn đối tượng.</div>';refreshOverlay();return}
@@ -235,7 +248,7 @@ function refreshInspector(){
   $('x').value=v.x??st.x;$('y').value=v.y??st.y;$('w').value=v.w??st.w;$('h').value=v.h??st.h;$('fontSize').value=v.fontSize??st.fontSize;$('radius').value=v.radius??st.radius;$('color').value=/^#[0-9a-f]{6}$/i.test(v.color??st.color)?(v.color??st.color):'#17233d';$('backgroundColor').value=/^#[0-9a-f]{6}$/i.test(v.background??st.background)?(v.background??st.background):'#ffffff';$('deviceLabel').textContent=device==='mobile'?'Mobile':'Desktop';
   refreshOverlay();renderLayers();
 }
-function choose(el){if(!editable(el))return;selected=el;selector=stableSelector(el);refreshInspector()}
+function choose(el){if(!editable(el))return;selected=el;selector=stableSelector(el);refreshInspector();showSelectionOverlayForUse()}
 function findBlockTarget(type){
   if(!doc)return null;
   const map={hero:['.hero','.as3-hero','header'],services:['#services','.services','.service-grid','.service-card'],why:['.why','.benefits','.features'],process:['.process','.repair-process'],cases:['.repair-case','.repair-cases','.articles','.posts'],booking:['#booking','.booking','.booking-section'],articles:['.articles','.posts','.blog'],map:['#map','.map','.contact-map','.contact']};
@@ -464,6 +477,7 @@ $('preview').addEventListener('load',async()=>{
     if(phone)el=phone;
     if(!editable(el))return;
     choose(el);
+    clearTimeout(overlayHideTimer);
     const before=snapshot();
     const st=currentStyle(),base=styleObject(el);
     drag={type:'move',sx:e.clientX,sy:e.clientY,el,before,
@@ -527,6 +541,9 @@ $('preview').addEventListener('load',async()=>{
     }
     try{if(drag.el&&drag.pointerId!=null)drag.el.releasePointerCapture(drag.pointerId)}catch(_){}
     drag=null;
+    /* After the movement is finished and the Builder is no longer being used,
+       automatically hide the blue selection frame. */
+    scheduleSelectionOverlayHide();
   }
   doc.addEventListener('pointerup',finishMove,true);
   doc.addEventListener('pointercancel',finishMove,true);
