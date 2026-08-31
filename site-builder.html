@@ -128,14 +128,8 @@ async function verifyImageUrl(url){
 }
 function rebindUploadControls(){
   const file=$('file'),pick=$('pick'),pageFile=$('pageFile'),pagePick=$('pagePick');
-  if(pick&&file&&!pick.dataset.selfHealBound){
-    pick.dataset.selfHealBound='1';
-    pick.addEventListener('click',()=>file.click());
-  }
-  if(pagePick&&pageFile&&!pagePick.dataset.selfHealBound){
-    pagePick.dataset.selfHealBound='1';
-    pagePick.addEventListener('click',()=>pageFile.click());
-  }
+  if(pick&&file&&!pick.onclick)pick.onclick=()=>file.click();
+  if(pagePick&&pageFile&&!pagePick.onclick)pagePick.onclick=()=>pageFile.click();
   syncLiveItemCount();
   return true;
 }
