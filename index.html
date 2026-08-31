@@ -3029,10 +3029,18 @@ form.onsubmit=async e=>{
 </script>
 
 <style id="apple-seed-builder-page-bg-single-source">
+/* Builder Hero background is the single source of truth.
+   The Hero's opaque pseudo layers must become transparent or they hide
+   the background image applied to #apple-seed-premium-home. */
+#apple-seed-premium-home.builder-has-page-bg:before,
+#apple-seed-premium-home.builder-has-page-bg:after,
 #apple-seed-premium-home.builder-has-page-bg .as3-stage,
 #apple-seed-premium-home.builder-has-page-bg .as3-stage:before{
   background-image:none!important;
   background-color:transparent!important;
+}
+#apple-seed-premium-home.builder-has-page-bg{
+  background-repeat:no-repeat!important;
 }
 </style>
 <script id="apple-seed-final-ux">
