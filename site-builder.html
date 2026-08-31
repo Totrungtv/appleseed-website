@@ -521,14 +521,12 @@ $('preview').addEventListener('load',async()=>{
       v.x=parseFloat($('x').value)||0;
       v.y=parseFloat($('y').value)||0;
       saveDraft();
-      refreshOverlay();
+      /* Intentionally do NOT move the blue selection frame. It stays at the
+         original selection position until the user selects another object. */
       toast('Đã di chuyển — bản nháp');
     }
     try{if(drag.el&&drag.pointerId!=null)drag.el.releasePointerCapture(drag.pointerId)}catch(_){}
-    const done=drag;
     drag=null;
-    /* Re-anchor the blue frame to the object's final position after release. */
-    if(done&&selected)requestAnimationFrame(()=>refreshOverlay());
   }
   doc.addEventListener('pointerup',finishMove,true);
   doc.addEventListener('pointercancel',finishMove,true);
@@ -601,7 +599,7 @@ document.querySelectorAll('[data-ai]').forEach(b=>b.onclick=()=>runAI({review:'P
 document.querySelectorAll('[data-block]').forEach(b=>b.onclick=()=>blockAction(b.dataset.block));document.querySelectorAll('[data-preset]').forEach(b=>b.onclick=()=>applyPreset(b.dataset.preset));
 $('simpleMode').onclick=()=>{simpleMode=!simpleMode;document.body.classList.toggle('simple-mode',simpleMode);$('simpleMode').classList.toggle('active',simpleMode);toast(simpleMode?'✨ Chế độ đơn giản':'🔧 Chế độ nâng cao')};
 $('groupPhones').onclick=()=>{groupPhones=!groupPhones;$('groupPhones').classList.toggle('active',groupPhones);toast(groupPhones?'📱 Đã bật kéo cả cụm iPhone':'📱 Đã tắt kéo cả cụm')};
-$('centerSelected').onclick=()=>{if(!selected){toast('Chọn đối tượng trước');return}checkpoint();const v=getItem().styles[deviceKey()];v.x=0;selected.style.translate='0px '+(v.y||0)+'px';$('x').value=0;saveDraft();refreshOverlay();toast('↔️ Đã căn giữa')};
+$('centerSelected').onclick=()=>{if(!selected){toast('Chọn đối tượng trước');return}checkpoint();const v=getItem().styles[deviceKey()];v.x=0;selected.style.translate='0px '+(v.y||0)+'px';$('x').value=0;saveDraft();toast('↔️ Đã căn giữa')};
 $('targetHero').onclick=()=>{$('pageDesignPanel').dataset.target='hero';refreshPageDesign();toast('🎯 Đang chỉnh nền Hero')};
 $('targetMain').onclick=()=>{$('pageDesignPanel').dataset.target='main';refreshPageDesign();toast('🎯 Đang chỉnh nền Main')};$('applyPalette').onclick=()=>savePalette(false);$('resetPalette').onclick=()=>savePalette(true);refreshPalette();
 $('applyPageDesign').onclick=async()=>{
@@ -661,7 +659,10 @@ $('applyStyle').onclick=()=>{
   if(v.radius!==undefined)selected.style.borderRadius=v.radius+'px';
   if(v.color)selected.style.color=v.color;
   if(v.background)selected.style.backgroundColor=v.background;
-  saveDraft();refreshOverlay();toast('Đã áp dụng giao diện')
+  saveDraft();
+  /* Position/size changes must not make the blue selection frame follow.
+     It is only refreshed when the user selects a different element. */
+  toast('Đã áp dụng giao diện')
 };
 $('pick').onclick=()=>$('file').click();$('file').onchange=e=>{pendingFile=e.target.files[0]||null;if(pendingFile)$('imagePreview').src=URL.createObjectURL(pendingFile)};
 $('applyImage').onclick=async()=>{if(!selected)return;let url=$('imageUrl').value.trim();try{if(pendingFile){url=await upload(pendingFile);pendingFile=null}}catch(e){toast('Upload lỗi: '+e.message);return}if(!url)return;checkpoint();const item=getItem();if(selected.tagName==='IMG'){selected.src=url;item.src=url}else{selected.style.backgroundImage='url("'+url+'")';item.bgImage=url}saveDraft();refreshInspector();toast('Đã thay hình')};
