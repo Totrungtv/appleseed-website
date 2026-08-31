@@ -114,10 +114,27 @@
         .order('version_no',{ascending:false})
         .limit(1)
         .maybeSingle()
-        .then(function(r){
-          if(r.error||!r.data||!r.data.config||!r.data.config.items)return;
-          var cfg=r.data.config;
-          var viewKey=String(r.data.version_no)+'-'+deviceKey();
+        .then(async function(r){
+          if(r.error||!r.data||!r.data.config)return;
+          var source=r.data;
+          /* Safety fallback: if the newest published version is empty, use the
+             newest archived non-empty Builder version. An empty publish must
+             never make the public homepage lose its last working design. */
+          if(Object.keys(source.config.items||{}).length===0){
+            try{
+              var recovery=await window.supabaseClient.from('site_builder_versions')
+                .select('version_no,config,created_at')
+                .eq('site_key','default').eq('status','archived')
+                .order('version_no',{ascending:false}).limit(20);
+              if(!recovery.error){
+                var recovered=(recovery.data||[]).find(function(v){return Object.keys((v.config||{}).items||{}).length>0;});
+                if(recovered)source=recovered;
+              }
+            }catch(_){ }
+          }
+          if(!source.config||!source.config.items)return;
+          var cfg=source.config;
+          var viewKey=String(source.version_no)+'-'+deviceKey();
           if(viewKey===appliedVersion)return;
           var mobile=deviceKey()==='mobile';
           var page=(cfg.page||{})[mobile?'mobile':'desktop']||{};
