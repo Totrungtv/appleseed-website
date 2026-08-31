@@ -3,244 +3,27 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Apple Seed • Check iCloud</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase-config.js"></script>
+<meta name="robots" content="noindex,nofollow">
+<title>Apple Seed • Check iCloud — Tạm khóa</title>
 <style>
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#030914;color:#eef5ff;min-height:100vh}
-body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 18% 18%,#4c2cff20,transparent 30%),radial-gradient(circle at 82% 20%,#00c6ff16,transparent 28%),linear-gradient(180deg,#06101f,#020712 75%);z-index:-1}
-.wrap{max-width:1280px;margin:auto;padding:0 28px 42px}.top{min-height:76px;display:flex;justify-content:space-between;gap:24px;align-items:center;border-bottom:1px solid #ffffff12}.brand{display:flex;align-items:center;gap:12px}.brand-mark{width:42px;height:42px;border-radius:13px;background:linear-gradient(145deg,#fff,#b8c6ff);color:#07101f;display:grid;place-items:center;font-size:24px;box-shadow:0 0 30px #6c5ce733}.brand-name{font-weight:950;font-size:19px}.brand-name b{color:#35e6a2}.brand-sub{font-size:10px;color:#9aabc2;letter-spacing:.08em}.nav{display:flex;align-items:center;gap:24px;color:#aebed4;font-size:13px;font-weight:750}.nav a{color:inherit;text-decoration:none}.nav a.active{color:#a970ff}.nav-btn{padding:11px 16px;border-radius:11px;background:linear-gradient(135deg,#6332e8,#933dff);color:#fff!important}
-.hero{text-align:center;padding:56px 0 30px}.kicker{font-size:11px;font-weight:950;letter-spacing:.22em;color:#7187a6}.hero h1{font-size:clamp(42px,6vw,72px);line-height:.98;margin:12px 0 14px;font-weight:950;letter-spacing:-.05em}.hero h1 span{background:linear-gradient(90deg,#fff,#4ca8ff 48%,#b34dff);-webkit-background-clip:text;background-clip:text;color:transparent}.hero p{margin:0;color:#a9bad0;font-size:17px}.hero-badges{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:24px}.badge{padding:9px 15px;border:1px solid #ffffff12;background:#ffffff07;border-radius:999px;color:#d8e3f2;font-size:12px;font-weight:800}.badge strong{color:#42f2aa}.badge.purple strong{color:#b46cff}
-.card{background:linear-gradient(145deg,#0b1525e8,#07111ee8);border:1px solid #ffffff15;border-radius:22px;padding:25px;box-shadow:0 25px 80px #00000055;position:relative;overflow:hidden}.card:before{content:"";position:absolute;inset:0 0 auto;height:2px;background:linear-gradient(90deg,#27e7a0,#4c9dff,#a84cff)}
-.checker-head{display:flex;justify-content:space-between;gap:20px;align-items:center}.checker-title{font-size:20px;font-weight:900}.checker-title small{display:block;color:#8295af;font-size:12px;font-weight:500;margin-top:5px}.price{padding:12px 18px;border:1px solid #3d67a555;background:#102442;border-radius:14px;text-align:right}.price span{display:block;color:#8095b0;font-size:11px}.price b{font-size:21px;color:#39f1a5}
-.fields{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}.full{grid-column:1/-1}.field{display:flex;flex-direction:column;gap:7px}.field label{font-size:11px;font-weight:850;color:#91a6c1}input,select{width:100%;border:1px solid #ffffff17;background:#07111f;color:#edf5ff;border-radius:12px;padding:14px;font:inherit;outline:none}input:focus,select:focus{border-color:#7d52ff;box-shadow:0 0 0 3px #7d52ff1c}select option{background:#07111f}
-.btn{border:0;border-radius:12px;padding:13px 18px;font-weight:850;cursor:pointer;text-decoration:none;display:inline-block}.btn:disabled{opacity:.55;cursor:wait}.primary{background:linear-gradient(135deg,#6735ed,#9b3dff);color:#fff;box-shadow:0 12px 30px #7b3aff2e}.secondary{background:#102039;color:#c9d7ea;border:1px solid #ffffff12}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}
-.icloud-note,.rules{margin-top:14px;padding:13px 15px;border:1px solid #ffffff12;background:#071221;border-radius:13px;color:#93a7c1;font-size:12px;line-height:1.55}.icloud-note strong{color:#f2c45c}.rules strong{color:#dce8f8}.rules ul{margin:8px 0 0;padding-left:19px}
-.payment-box{display:none;margin-top:16px;padding:19px;border:1px solid #744bff55;background:#0b1426;border-radius:17px}.payment-box.active{display:block}.payment-head{display:flex;justify-content:space-between;gap:12px;align-items:center}.payment-title{font-size:17px;font-weight:900}.payment-amount{font-size:23px;font-weight:950;color:#39f1a5}.payment-grid{display:grid;grid-template-columns:190px 1fr;gap:18px;align-items:center;margin-top:14px}.payment-qr{width:180px;height:180px;object-fit:contain;background:#fff;border-radius:12px}.payment-info{display:grid;gap:8px;font-size:13px;color:#9aadc5}.payment-info strong{color:#e8f1ff}.payment-ref{font-family:ui-monospace,Consolas,monospace;font-weight:900;color:#6fa9ff;word-break:break-all}.payment-status{margin-top:12px;padding:10px 12px;border-radius:10px;background:#102a4b;color:#76b5ff;font-weight:750}.payment-status.success{background:#0d3023;color:#5df0ad}.payment-status.expired{background:#351818;color:#ff8d8d}.payment-note{margin-top:9px;font-size:11px;line-height:1.5;color:#7186a0}
-.icloud-result{margin-top:14px;padding:16px;border:1px solid #ffffff12;background:#07111f;border-radius:14px;min-height:64px;color:#dbe7f5}.icloud-result.ok{border-color:#2ed88b55;background:#082218}.icloud-result.warn{border-color:#e0aa3b55;background:#241b09}.icloud-result.danger{border-color:#ff5e5e55;background:#2a0d10}.icloud-result.loading{border-color:#559eff55;background:#081b32}.icloud-result p{margin:7px 0 0;line-height:1.5;color:#9db0c8}.icloud-checklist{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;font-size:11px;color:#8397b0}.icloud-checklist strong{width:100%;color:#cbd8e8;font-size:12px}.icloud-checklist span{padding:7px 10px;border:1px solid #ffffff12;background:#091524;border-radius:999px}
-.process{margin-top:18px;padding:25px;border:1px solid #ffffff12;background:#07111fdd;border-radius:22px}.process h2{text-align:center;margin:0 0 22px;font-size:16px}.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}.step{text-align:center;position:relative}.step:not(:last-child):after{content:"›";position:absolute;right:-12px;top:10px;color:#8e64ff;font-size:28px}.step-icon{width:48px;height:48px;margin:auto;border-radius:50%;display:grid;place-items:center;background:#152d55;color:#5fa9ff;font-size:20px;border:1px solid #4e7bca55}.step:nth-child(1) .step-icon{background:#073726;color:#32f2a4}.step:nth-child(4) .step-icon{background:#281341;color:#cf72ff}.step b{display:block;margin-top:10px;font-size:12px}.step span{display:block;margin-top:4px;color:#7f94ad;font-size:11px}
-.features{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:18px}.feature{padding:19px;border:1px solid #ffffff12;background:#07111fdd;border-radius:17px}.feature .ico{font-size:28px}.feature b{display:block;margin-top:8px;font-size:13px}.feature p{margin:5px 0 0;color:#8296b0;font-size:11px;line-height:1.5}.feature:nth-child(1) b{color:#39f1a5}.feature:nth-child(2) b{color:#4da8ff}.feature:nth-child(3) b{color:#c66bff}.feature:nth-child(4) b{color:#ffc14d}
-.notice{margin-top:18px;padding:18px;border:1px solid #b87b1680;background:#17140d;border-radius:17px}.notice b{color:#ffc14d}.notice ul{margin:9px 0 0;padding-left:20px;color:#a9a59a;font-size:12px;line-height:1.7}.footer{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;padding-top:25px;margin-top:18px;border-top:1px solid #ffffff12;color:#71859f;font-size:11px}.footer strong{color:#3af0a4;font-size:15px}
-.result-shell{display:grid;grid-template-columns:290px minmax(0,1fr);gap:18px;margin-top:4px}.device-card{background:linear-gradient(180deg,#0d1b2e,#08111f);border:1px solid #ffffff14;border-radius:18px;padding:18px;text-align:center}.device-kicker{font-size:10px;font-weight:900;letter-spacing:.12em;color:#7087a4}.device-name{font-size:20px;font-weight:900;margin:10px 0 4px}.device-meta{font-size:12px;color:#7e93ad}.phone{width:142px;height:278px;margin:16px auto;border-radius:27px;background:#02050a;padding:7px;box-shadow:0 20px 45px #0008}.phone-screen{height:100%;border-radius:21px;background:linear-gradient(160deg,#07101e,#193e6e 55%,#070e18);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;padding:34px 10px 18px}.phone-logo{font-size:30px}.phone-status{font-size:11px;font-weight:800;text-align:center}.phone-value{font-size:10px;opacity:.72;word-break:break-all;text-align:center}.mini-list{text-align:left;border-top:1px solid #ffffff12;margin-top:10px;padding-top:12px;display:grid;gap:8px;font-size:11px;color:#8095af}.mini-row{display:flex;justify-content:space-between;gap:8px}.mini-row b{color:#d7e4f3}.result-panel{background:#081220;border:1px solid #ffffff14;border-radius:18px;padding:18px}.result-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;border-radius:14px;padding:14px 16px;margin-bottom:14px}.result-banner.ok{background:#092519;border:1px solid #2ed88b55;color:#5df0ad}.result-banner.danger{background:#2b0d10;border:1px solid #ff656555;color:#ff9c9c}.result-banner.warn{background:#251b09;border:1px solid #e0aa3b55;color:#ffd27a}.result-banner-title{font-size:17px;font-weight:900}.result-banner-sub{font-size:11px;margin-top:4px;opacity:.8}.result-icon{font-size:27px}.result-section{border:1px solid #ffffff10;border-radius:14px;padding:14px;margin-top:12px}.result-section h3{margin:0 0 12px;font-size:12px;color:#79aeff}.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px 22px}.result-item{display:flex;justify-content:space-between;gap:14px;border-bottom:1px dashed #ffffff10;padding:7px 0;font-size:12px}.result-item span:first-child{color:#7389a4}.result-item strong{text-align:right;color:#dce7f4;word-break:break-word}.result-value.ok{color:#48e99f}.result-value.danger{color:#ff8585}.result-value.warn{color:#ffc766}.result-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
-@media(max-width:900px){.nav{display:none}.fields,.steps,.features{grid-template-columns:1fr 1fr}.full{grid-column:1/-1}.result-shell{grid-template-columns:1fr}.result-grid{grid-template-columns:1fr}.step:not(:last-child):after{display:none}}@media(max-width:620px){.wrap{padding:0 15px 30px}.hero{padding-top:38px}.checker-head{align-items:flex-start;flex-direction:column}.price{width:100%;text-align:left}.fields,.steps,.features{grid-template-columns:1fr}.payment-grid{grid-template-columns:1fr}.payment-qr{margin:auto}.full{grid-column:auto}}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#030914;color:#eef5ff;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:24px}
+.card{width:min(680px,100%);padding:38px 28px;border:1px solid #ffffff18;border-radius:24px;background:linear-gradient(145deg,#0b1525,#07111e);box-shadow:0 25px 80px #0008;text-align:center}
+.icon{font-size:54px;margin-bottom:14px}.brand{font-weight:900;font-size:20px}.brand b{color:#35e6a2}
+h1{font-size:32px;margin:18px 0 10px}p{color:#9eb0c7;line-height:1.7;margin:8px 0}.status{display:inline-block;margin:18px 0;padding:10px 16px;border-radius:999px;background:#3a2110;border:1px solid #b8792b66;color:#ffc56a;font-weight:800;font-size:13px}
+a{display:inline-block;margin-top:18px;padding:12px 18px;border-radius:12px;background:#102442;color:#dce9f8;text-decoration:none;border:1px solid #ffffff12;font-weight:800}
+.note{margin-top:20px;font-size:12px;color:#71859f}
 </style>
 </head>
 <body>
-<main class="wrap">
-<header class="top"><div class="brand"><div class="brand-mark"></div><div><div class="brand-name"><b>Apple Seed</b></div><div class="brand-sub">REPAIR & SERVICE</div></div></div><nav class="nav"><a href="index.html">Trang chủ</a><a href="services.html">Dịch vụ</a><a href="price.html">Bảng giá</a><a class="active" href="icloud-check.html">Check iCloud</a><a href="news.html">Tin tức</a><a href="contact.html">Liên hệ</a><a class="nav-btn" href="#icloudChecker">Lịch sử kiểm tra</a></nav></header><section class="hero"><div class="kicker">APPLE SEED • DEVICE STATUS</div><h1>CHECK <span>iCLOUD</span></h1><p>Kiểm tra trạng thái iCloud / Find My iPhone<br>Nhanh chóng — Chính xác — Bảo mật</p><div class="hero-badges"><div class="badge"><strong>✓ Kết quả chính xác</strong></div><div class="badge purple"><strong>♙ Bảo mật tuyệt đối</strong></div><div class="badge purple"><strong>₫ Chỉ 5.000đ / lần</strong></div></div></section>
-<section class="card" id="icloudChecker">
-<h2>Kiểm tra iCloud / Activation Lock</h2>
-<div class="muted">Kiểm tra tình trạng liên kết tài khoản trước khi nhận máy, restore hoặc giao máy.</div>
-<div class="icloud-price"><span><strong>GIÁ DỊCH VỤ</strong><br>Kiểm tra iCloud / Activation Lock</span><strong>5.000đ / lần</strong></div>
-<div class="icloud-note"><strong>⚠️ Nội quy</strong><br>Không nhập mật khẩu Apple Account. Chỉ nhập Serial hoặc IMEI. Không tự kết luận LOCKED/UNLOCKED khi nguồn kiểm tra chưa xác minh hợp lệ.</div>
-<div class="fields">
-<div class="field"><label>Kiểu định danh</label><select id="icloudIdType"><option value="serial">Serial Number</option><option value="imei">IMEI</option></select></div>
-<div class="field"><label>Model (không bắt buộc)</label><select id="icloudModel"><option value="">Tự nhận diện / chưa rõ</option><option>iPhone 17 Pro Max</option><option>iPhone 17 Pro</option><option>iPhone 17</option><option>iPhone 16 Pro Max</option><option>iPhone 16 Pro</option><option>iPhone 16</option><option>iPhone 15 Pro Max</option><option>iPhone 15 Pro</option><option>iPhone 15</option><option>iPhone 14 Pro Max</option><option>iPhone 14 Pro</option><option>iPhone 14</option><option>iPhone 13 Pro Max</option><option>iPhone 13 Pro</option><option>iPhone 13</option><option>iPhone 12 Pro Max</option><option>iPhone 12 Pro</option><option>iPhone 12</option></select></div>
-<div class="field full"><label id="icloudIdLabel">Serial Number</label><input id="icloudIdentifier" autocomplete="off" spellcheck="false" placeholder="Nhập Serial Number"></div>
-</div>
-<div class="actions"><button class="btn primary" id="icloudCheckBtn" type="button">☁️ KIỂM TRA ICLOUD — 5.000đ</button><button class="btn secondary" id="icloudClearBtn" type="button">Xóa</button></div>
-<div id="icloudPayment" class="payment-box">
-  <div class="payment-head"><div class="payment-title">💳 Thanh toán trước khi tra cứu</div><div class="payment-amount">5.000đ</div></div>
-  <div class="payment-grid">
-    <img id="icloudPaymentQr" class="payment-qr" alt="QR thanh toán iCloud">
-    <div class="payment-info">
-      <div><strong>Ngân hàng:</strong> MB Bank</div>
-      <div><strong>Số tài khoản:</strong> 0898888269</div>
-      <div><strong>Chủ tài khoản:</strong> TÔ THANH TRUNG</div>
-      <div><strong>Nội dung:</strong> <span id="icloudPaymentRef" class="payment-ref"></span></div>
-      <div id="icloudPaymentStatus" class="payment-status">⏳ Chờ hệ thống xác nhận thanh toán…</div>
-      <div class="payment-note">Quét đúng QR và giữ nguyên nội dung chuyển khoản. Hệ thống chỉ chạy tra cứu khi giao dịch 5.000đ được provider xác nhận; không có nút xác nhận thủ công và không dùng Coin AI Board.</div>
-    </div>
-  </div>
-</div>
-<div id="icloudResult" class="icloud-result"><strong>Chưa kiểm tra</strong><p>Nhập Serial hoặc IMEI rồi bấm kiểm tra.</p></div>
-<div class="icloud-checklist"><strong>Checklist kỹ thuật</strong><span>① Find My</span><span>② Activation Lock</span><span>③ “iPhone bị khóa cho chủ sở hữu”</span><span>④ Xóa máy / kích hoạt lại trước khi nhận máy cũ</span></div>
-<div class="rules"><strong>📌 Quy định kết quả</strong><ul><li>Kết quả chỉ hiển thị khi server có nguồn xác minh hợp lệ.</li><li>Nếu server/provider không phản hồi, hệ thống báo chưa xác minh — không giả kết quả.</li><li>Phần thanh toán 5.000đ sẽ được nối riêng với module này, không dùng Coin AI Board.</li></ul></div>
-</section><section class="process"><h2>QUY TRÌNH KIỂM TRA</h2><div class="steps"><div class="step"><div class="step-icon">▣</div><b>1. Nhập IMEI</b><span>Nhập IMEI thiết bị</span></div><div class="step"><div class="step-icon">▤</div><b>2. Thanh toán 5.000đ</b><span>Thanh toán qua SePay</span></div><div class="step"><div class="step-icon">⌕</div><b>3. Xử lý hệ thống</b><span>Kiểm tra và phân tích</span></div><div class="step"><div class="step-icon">✓</div><b>4. Nhận kết quả</b><span>Hiển thị ngay lập tức</span></div></div></section><section class="features"><div class="feature"><div class="ico">🛡️</div><b>BẢO MẬT TUYỆT ĐỐI</b><p>Không yêu cầu mật khẩu Apple Account.</p></div><div class="feature"><div class="ico">⚡</div><b>KẾT QUẢ NHANH</b><p>Tự động xử lý sau khi thanh toán.</p></div><div class="feature"><div class="ico">🎯</div><b>CHÍNH XÁC</b><p>Chỉ hiển thị kết quả khi nguồn xác minh hợp lệ.</p></div><div class="feature"><div class="ico">🔒</div><b>KHÔNG LƯU MẬT KHẨU</b><p>Không bao giờ yêu cầu thông tin đăng nhập iCloud.</p></div></section><section class="notice"><b>ⓘ LƯU Ý QUAN TRỌNG</b><ul><li>Kiểm tra iCloud là kiểm tra trạng thái Activation Lock của thiết bị Apple.</li><li>Vui lòng nhập đúng IMEI/Serial để có kết quả chính xác.</li><li>Phí kiểm tra 5.000đ không hoàn lại sau khi giao dịch đã được xác nhận.</li></ul></section><footer class="footer"><div>© 2026 Apple Seed — Repair & Service<br>Uy tín tạo nên thương hiệu</div><div>Hotline <strong>0898 888 269</strong><br>8:00 — 20:00</div><div>292 Phạm Ngũ Lão, P. Trà Vinh, TP. Vĩnh Long</div></footer></main><script>
-function escHtml(value){const d=document.createElement('div');d.textContent=String(value??'');return d.innerHTML;}
-/* ---------- iCloud / Activation Lock checker ----------
-   Frontend adapter only. No Apple Account password is ever accepted.
-   A live result requires the server-side Apple-authorized/approved data source
-   to be connected at /functions/v1/check-icloud-status. The UI deliberately
-   refuses to invent a LOCKED/UNLOCKED result when that source is unavailable.
-*/
-(function(){
-  const idType=document.getElementById('icloudIdType');
-  const idInput=document.getElementById('icloudIdentifier');
-  const idLabel=document.getElementById('icloudIdLabel');
-  const model=document.getElementById('icloudModel');
-  const result=document.getElementById('icloudResult');
-  const checkBtn=document.getElementById('icloudCheckBtn');
-  const clearBtn=document.getElementById('icloudClearBtn');
-  if(!idType||!idInput||!result||!checkBtn)return;
-
-  function normalize(){
-    return idInput.value.trim().replace(/[\s-]/g,'').toUpperCase();
-  }
-  function valid(v,type){
-    if(type==='imei') return /^\d{14,16}$/.test(v);
-    return /^[A-Z0-9]{8,20}$/.test(v);
-  }
-  function show(kind,title,text){
-    result.className='icloud-result '+(kind||'');
-    result.innerHTML='<strong>'+escHtml(title)+'</strong><p>'+escHtml(text)+'</p>';
-  }
-
-  function pick(obj,keys){
-    for(const key of keys){
-      let cur=obj;
-      for(const part of key.split('.')){if(cur==null)break;cur=cur[part];}
-      if(cur!==undefined&&cur!==null&&String(cur).trim()!=='')return cur;
-    }
-    return null;
-  }
-  function formatValue(value){
-    if(value===undefined||value===null||value==='')return 'Không có dữ liệu';
-    if(typeof value==='object')return JSON.stringify(value);
-    return String(value);
-  }
-  function statusValue(value){
-    const v=String(value??'').toLowerCase().trim();
-    if(/^(on|locked|true|yes|enabled|active)$/.test(v))return {text:'Đang bật / đang khóa',kind:'danger'};
-    if(/^(off|unlocked|false|no|disabled|inactive|clean|clear)$/.test(v))return {text:'Đã tắt / sạch',kind:'ok'};
-    return {text:formatValue(value),kind:'warn'};
-  }
-  function renderVerifiedResult(data,type,identifier){
-    const raw=data?.provider_response||{};
-    const modelName=pick(raw,['model','device_model','deviceModel','productName','device.name'])||model.value||'Thiết bị Apple';
-    const serial=pick(raw,['serial','serialNumber','serial_number'])||(type==='serial'?identifier:null);
-    const imei=pick(raw,['imei','IMEI','imei1','data.imei'])||(type==='imei'?identifier:null);
-    const capacity=pick(raw,['storage','capacity','memory','data.storage']);
-    const color=pick(raw,['color','colour','data.color']);
-    const modelNumber=pick(raw,['modelNumber','model_number','modelCode','data.model']);
-    const activation=pick(raw,['activation_lock','activationLock','activation','data.activation_lock']);
-    const fmi=pick(raw,['fmi','findMy','find_my','data.fmi']);
-    const icloud=pick(raw,['icloud','icloud_status','icloudStatus','data.icloud']);
-    const blacklist=pick(raw,['blacklist','blacklisted','lost_stolen','lostStolen','data.blacklist']);
-    const simlock=pick(raw,['simlock','sim_lock','simLock','carrier_lock','data.simlock']);
-    const replacement=pick(raw,['replacement','replacement_device','replacementDevice','data.replacement']);
-    const carrier=pick(raw,['carrier','network','operator','data.carrier']);
-    const country=pick(raw,['country','countryName','data.country']);
-    const purchase=pick(raw,['purchase_type','purchaseType','data.purchase_type']);
-    const status=data.status==='LOCKED'?'danger':data.status==='UNLOCKED'?'ok':'warn';
-    const headline=data.status==='LOCKED'?'🔒 ACTIVATION LOCK: ĐANG KHÓA':data.status==='UNLOCKED'?'✓ CLEAN — ACTIVATION LOCK ĐÃ TẮT':'⚠ CHƯA XÁC MINH';
-    const icon=status==='ok'?'✓':status==='danger'?'!':'?';
-    const masked=identifier.slice(0,4)+'••••••'+identifier.slice(-4);
-    const row=(label,value,kind='')=>'<div class="result-item"><span>'+escHtml(label)+'</span><strong class="result-value '+kind+'">'+escHtml(formatValue(value))+'</strong></div>';
-    const statRow=(label,value)=>{const s=statusValue(value);return '<div class="result-item"><span>'+escHtml(label)+'</span><strong class="result-value '+s.kind+'">'+escHtml(s.text)+'</strong></div>';};
-    result.className='icloud-result';
-    result.innerHTML='<div class="result-shell"><aside class="device-card"><div class="device-kicker">THIẾT BỊ ĐÃ KIỂM TRA</div><div class="phone"><div class="phone-screen"><div class="phone-logo"></div><div class="phone-status">'+escHtml(modelName)+'</div><div class="phone-value">'+escHtml(masked)+'</div><div class="phone-status">'+escHtml(data.status||'UNKNOWN')+'</div></div></div><div class="device-name">'+escHtml(modelName)+'</div><div class="device-meta">'+escHtml(formatValue(color||'Apple device'))+(capacity?' • '+escHtml(formatValue(capacity)):'')+'</div><div class="mini-list">'+(serial?'<div class="mini-row"><span>Serial</span><b>'+escHtml(formatValue(serial))+'</b></div>':'')+(imei?'<div class="mini-row"><span>IMEI</span><b>'+escHtml(formatValue(imei))+'</b></div>':'')+'<div class="mini-row"><span>Nguồn</span><b>'+escHtml(formatValue(data.provider||'Provider'))+'</b></div></div></aside><div class="result-panel"><div class="result-banner '+status+'"><div><div class="result-banner-title">'+headline+'</div><div class="result-banner-sub">'+escHtml(data.message||'Kết quả lấy từ nguồn kiểm tra đã cấu hình.')+'</div></div><div class="result-icon">'+icon+'</div></div><div class="result-section"><h3>THÔNG TIN THIẾT BỊ</h3><div class="result-grid">'+row('Tên thiết bị',modelName)+row('Dung lượng',capacity)+row('Màu sắc',color)+row('Model',modelNumber)+row('IMEI',imei)+row('Số sê-ri',serial)+'</div></div><div class="result-section"><h3>TRẠNG THÁI ICLOUD</h3><div class="result-grid">'+statRow('Find My iPhone',fmi)+statRow('Activation Lock',activation||data.status)+statRow('iCloud Status',icloud||data.status)+statRow('Blacklist',blacklist)+statRow('SIM Lock',simlock)+statRow('Replacement Device',replacement)+'</div></div><div class="result-section"><h3>THÔNG TIN BỔ SUNG</h3><div class="result-grid">'+row('Quốc gia',country)+row('Nhà mạng',carrier)+row('Purchase Type',purchase)+row('Mã xác minh',data.code)+'</div></div><div class="result-actions"><button class="btn primary" type="button" id="icloudRecheckBtn">↻ Kiểm tra lại</button><button class="btn secondary" type="button" id="icloudCopyBtn">⧉ Sao chép kết quả</button></div></div></div>';
-    document.getElementById('icloudRecheckBtn')?.addEventListener('click',()=>checkBtn.click());
-    document.getElementById('icloudCopyBtn')?.addEventListener('click',async()=>{
-      const summary=[modelName,imei?'IMEI: '+imei:'',serial?'Serial: '+serial:'','Status: '+data.status,data.message||''].filter(Boolean).join('\n');
-      try{await navigator.clipboard.writeText(summary);setPaymentStatus('✓ Đã sao chép tóm tắt kết quả.','success');}catch{}
-    });
-  }
-  function sync(){
-    const imei=idType.value==='imei';
-    idLabel.textContent=imei?'IMEI':'Serial Number';
-    idInput.placeholder=imei?'Nhập IMEI':'Nhập Serial Number';
-    idInput.inputMode=imei?'numeric':'text';
-    idInput.value='';
-    show('', 'Chưa kiểm tra', 'Nhập '+(imei?'IMEI':'Serial Number')+' rồi bấm kiểm tra.');
-  }
-  idType.addEventListener('change',()=>{stopPaymentWatch();document.getElementById('icloudPayment')?.classList.remove('active');sync();});
-  clearBtn?.addEventListener('click',()=>{
-    stopPaymentWatch();
-    document.getElementById('icloudPayment')?.classList.remove('active');
-    idInput.value='';model.value='';
-    show('', 'Chưa kiểm tra','Nhập Serial hoặc IMEI rồi bấm kiểm tra.');
-    idInput.focus();
-  });
-
-  let paymentTimer=null;
-  let paymentId=null;
-
-  function stopPaymentWatch(){
-    if(paymentTimer){clearInterval(paymentTimer);paymentTimer=null;}
-  }
-
-  function setPaymentStatus(text,kind=''){
-    const el=document.getElementById('icloudPaymentStatus');
-    if(!el)return;
-    el.className='payment-status '+kind;
-    el.textContent=text;
-  }
-
-  async function runPaidCheck(type,identifier){
-    show('loading','⏳ Đã nhận thanh toán — đang kiểm tra', 'Đang gửi định danh tới bộ kiểm tra iCloud của Apple Seed…');
-    const call=await window.supabaseClient.functions.invoke('check-icloud-status',{
-      body:{payment_id:paymentId,identifier_type:type,identifier,device_model:model.value||null}
-    });
-    if(call.error) throw call.error;
-    const data=call.data||{};
-    if(data.status==='LOCKED'||data.status==='UNLOCKED') renderVerifiedResult(data,type,identifier);
-    else show('warn','⚠️ CHƯA XÁC MINH',data.message||'Nguồn kiểm tra chưa trả về trạng thái chắc chắn. Không tự kết luận LOCKED/UNLOCKED.');
-  }
-
-  async function watchPayment(order,type,identifier){
-    stopPaymentWatch();
-    const paymentBox=document.getElementById('icloudPayment');
-    paymentBox?.classList.add('active');
-    const qr=document.getElementById('icloudPaymentQr');
-    const ref=document.getElementById('icloudPaymentRef');
-    ref.textContent=order.payment_ref;
-    qr.src='https://img.vietqr.io/image/MB-0898888269-compact2.png?amount=5000&addInfo='+encodeURIComponent(order.payment_ref)+'&accountName='+encodeURIComponent('TO THANH TRUNG');
-    setPaymentStatus('⏳ Chờ hệ thống xác nhận thanh toán…');
-    paymentId=order.id;
-    paymentTimer=setInterval(async()=>{
-      try{
-        const q=await window.supabaseClient.rpc('get_icloud_check_payment_status',{
-          p_payment_id:paymentId
-        });
-        if(q.error) throw q.error;
-        const row=q.data?.ok?q.data:null;
-        if(!row)return;
-        if(row.status==='paid'||row.status==='processing'||row.status==='completed'){
-          stopPaymentWatch();
-          setPaymentStatus('✅ Đã xác nhận thanh toán — đang tra cứu…','success');
-          await runPaidCheck(type,identifier);
-        }else if(row.status==='expired'||(row.expires_at&&new Date(row.expires_at).getTime()<Date.now())){
-          stopPaymentWatch();
-          setPaymentStatus('⌛ Đơn thanh toán đã hết hạn. Bấm kiểm tra lại để tạo mã mới.','expired');
-          show('warn','⌛ THANH TOÁN HẾT HẠN','Đơn thanh toán đã hết thời gian chờ. Chưa thực hiện tra cứu và không dùng Coin.');
-        }
-      }catch(err){
-        setPaymentStatus('⚠️ Chưa đọc được trạng thái thanh toán — hệ thống sẽ tự thử lại.');
-      }
-    },3000);
-  }
-
-  checkBtn.addEventListener('click',async()=>{
-    const type=idType.value;
-    const identifier=normalize();
-    if(!valid(identifier,type)){
-      show('danger','❌ Định dạng không hợp lệ',type==='imei'?'IMEI phải là chuỗi số hợp lệ.':'Serial phải là chuỗi ký tự định danh hợp lệ.');
-      return;
-    }
-    checkBtn.disabled=true;
-    stopPaymentWatch();
-    try{
-      if(!window.supabaseClient) throw new Error('Supabase client chưa sẵn sàng.');
-      // Check iCloud là dịch vụ công khai: không yêu cầu Member đăng nhập.
-      // Thanh toán 5.000đ là điều kiện duy nhất trước khi gọi provider.
-      const created=await window.supabaseClient.rpc('create_icloud_check_payment',{
-        p_identifier_type:type,
-        p_identifier:identifier,
-        p_device_model:model.value||null
-      });
-      if(created.error) throw created.error;
-      const order=created.data;
-      if(!order?.id||!order?.payment_ref) throw new Error('Không tạo được đơn thanh toán iCloud.');
-      show('loading','💳 ĐÃ TẠO ĐƠN THANH TOÁN','Quét QR 5.000đ và chờ hệ thống tự xác nhận giao dịch.');
-      await watchPayment(order,type,identifier);
-    }catch(err){
-      show('warn','⚠️ KHÔNG THỂ TẠO ĐƠN',err?.message||'Không thể khởi tạo thanh toán iCloud.');
-    }finally{
-      checkBtn.disabled=false;
-    }
-  });
-})();
-</script>
+<main class="card">
+<div class="icon">🔒</div>
+<div class="brand"><b>Apple Seed</b> • Repair & Service</div>
+<div class="status">TẠM KHÓA DỊCH VỤ CHECK iCLOUD</div>
+<h1>Dịch vụ đang được bảo trì</h1>
+<p>Chức năng Check iCloud hiện đang tạm khóa để kiểm tra và hoàn thiện hệ thống.</p>
+<p>Vui lòng quay lại sau khi dịch vụ được mở lại.</p>
+<a href="index.html">← Về trang chủ</a>
+<div class="note">Apple Seed • Device Status</div>
+</main>
 </body>
 </html>
