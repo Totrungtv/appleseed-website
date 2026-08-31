@@ -2,13 +2,13 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Apple Seed Builder - FIX nút Xóa ảnh | Apple Seed — Visual Site Builder</title>
+<title>Apple Seed — Visual Site Builder</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
 <style>
-:root{--gold:#1769ff;--blue:#1769ff;--ink:#18212b;--muted:#667085;--line:#e1e6ee}
+:root{--gold:#d7aa4d;--blue:#1769ff;--ink:#18212b;--muted:#667085;--line:#e1e6ee}
 *{box-sizing:border-box}html,body{margin:0;height:100%;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:#edf1f5}button,input,textarea{font:inherit}
-.app{height:100vh;display:grid;grid-template-rows:60px 1fr;overflow:hidden}.top{height:60px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;padding:0 12px;z-index:10}.brand{font-weight:900;letter-spacing:.6px;white-space:nowrap}.brand small{display:block;font-size:8px;letter-spacing:2px;color:#8a94a2}.spacer{flex:1}.status{font-size:11px;color:var(--muted);max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.btn{border:1px solid #d5dce5;background:#fff;color:var(--ink);border-radius:9px;padding:8px 11px;font-weight:800;cursor:pointer}.btn:hover{border-color:#b9c5d4}.btn.active{box-shadow:inset 0 0 0 2px #e4c579}.btn.primary{background:var(--gold);border-color:var(--gold);color:#18130a}.workspace{min-height:0;display:grid;grid-template-columns:235px minmax(0,1fr) 300px}.side{background:#fff;overflow:auto;padding:11px}.left{border-right:1px solid var(--line)}.right{border-left:1px solid var(--line)}.panel{border:1px solid var(--line);border-radius:12px;padding:11px;margin-bottom:10px;background:#fff}.panel h3{font-size:12px;margin:0 0 9px}.muted{font-size:11px;color:var(--muted);line-height:1.5}.canvas{min-width:0;min-height:0;display:flex;justify-content:center;overflow:auto;background:#cbd2db;padding:0}.frame{height:max-content;min-height:100%;width:1440px;max-width:100%;background:#fff;box-shadow:0 0 35px #0002;transition:width .15s}.frame.mobile{width:390px}.frame iframe{display:block;width:100%;height:1400px;min-height:1400px;border:0;background:#fff;opacity:1;visibility:visible}.hint{background:#fff8e9;border:1px solid #eed8a6;border-radius:9px;padding:9px;font-size:10px;line-height:1.5;color:#735719}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:7px}.field{margin-bottom:8px}.field label{display:flex;justify-content:space-between;font-size:10px;font-weight:850;color:#475467;margin-bottom:4px}.field input,.field textarea,.field select{width:100%;border:1px solid #d5dce5;border-radius:8px;padding:7px 8px;background:#fff;outline:0}.field textarea{min-height:74px;resize:vertical}.image-preview{max-width:100%;max-height:130px;display:block;margin:4px auto 8px;object-fit:contain}.drop{border:1px dashed #b9c4d1;border-radius:8px;padding:8px;text-align:center;font-size:10px;cursor:pointer}.layers{max-height:310px;overflow:auto;display:grid;gap:4px}.layer{width:100%;text-align:left;border:1px solid #e5e9ef;background:#fafbfc;border-radius:7px;padding:7px;font-size:10px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.layer.active{border-color:#8eb0ff;background:#eff5ff}.history{display:grid;gap:5px;max-height:230px;overflow:auto}.history-item{display:grid;grid-template-columns:1fr auto;gap:5px;align-items:center;border:1px solid #e5e9ef;border-radius:7px;padding:6px}.history-item small{font-size:9px;color:var(--muted)}.overlay{position:fixed;display:none;border:2px solid var(--blue);pointer-events:none;z-index:50}.overlay .label{position:absolute;left:-2px;top:-21px;background:var(--blue);color:#fff;padding:3px 6px;border-radius:4px 4px 0 0;font-size:9px;font-weight:850}.handle{position:absolute;width:9px;height:9px;background:#fff;border:2px solid var(--blue);border-radius:2px;pointer-events:auto}.nw{left:-6px;top:-6px;cursor:nwse-resize}.ne{right:-6px;top:-6px;cursor:nesw-resize}.sw{left:-6px;bottom:-6px;cursor:nesw-resize}.se{right:-6px;bottom:-6px;cursor:nwse-resize}.toast{position:fixed;right:16px;bottom:16px;background:#17202a;color:#fff;padding:9px 12px;border-radius:8px;font-size:11px;display:none;z-index:100}.login{position:fixed;inset:0;background:#101828dd;display:flex;align-items:center;justify-content:center;z-index:200}.login-card{width:min(390px,calc(100% - 24px));background:#fff;border-radius:15px;padding:20px;box-shadow:0 25px 70px #0005}.login-card h2{margin:0 0 6px}.danger{color:#b42318;font-size:10px;margin-top:7px}.danger-btn{border-color:#f0b7b2!important;color:#b42318!important;background:#fffafa!important}.danger-btn:hover{background:#fff1f0!important}#clearImage{display:block!important;visibility:visible!important;opacity:1!important;min-height:34px}.simple-mode .advanced-only{display:none!important}.block-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.block-btn{border:1px solid #e3e8ef;background:#fbfcfe;border-radius:9px;padding:8px 7px;text-align:left;font-size:10px;font-weight:800;cursor:pointer}.block-btn:hover{border-color:#1769ff;background:#eff5ff}.ai-modal{position:fixed;inset:0;background:#10182888;display:none;align-items:center;justify-content:center;z-index:180}.ai-card{width:min(620px,calc(100% - 24px));max-height:min(760px,calc(100vh - 30px));overflow:auto;background:#fff;border-radius:16px;box-shadow:0 30px 90px #0006;padding:16px}.ai-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}.ai-head h2{margin:0;font-size:17px}.ai-close{margin-left:auto}.ai-log{min-height:160px;max-height:330px;overflow:auto;background:#f7f9fc;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:11px;line-height:1.55}.ai-msg{margin:0 0 9px;padding:8px 10px;border-radius:9px;white-space:pre-wrap}.ai-user{background:#fff4d9}.ai-bot{background:#fff;border:1px solid #e6eaf0}.ai-row{display:flex;gap:7px;margin-top:9px}.ai-row textarea{flex:1;min-height:66px;border:1px solid #d5dce5;border-radius:9px;padding:8px;resize:vertical}.ai-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.ai-chip{border:1px solid #dfe5ed;background:#fff;border-radius:999px;padding:6px 9px;font-size:10px;font-weight:800;cursor:pointer}.section-list{display:grid;gap:5px;max-height:220px;overflow:auto}.preset-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.preset{border:1px solid #e3e8ef;background:#fff;border-radius:8px;padding:7px;font-size:10px;font-weight:800;cursor:pointer}.preset:hover{border-color:#d7aa4d}.color-row{display:flex;align-items:center;gap:6px}.color-row input[type=color]{width:44px;height:36px;padding:2px;border:1px solid #d5dce5;border-radius:8px;cursor:pointer}.swatches{display:flex;gap:7px;flex-wrap:wrap}.swatch{width:30px;height:30px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #cfd6df;cursor:pointer}.bg-preview{height:105px;border:1px solid #dfe5ed;border-radius:10px;background:#f7f9fc center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:#667085;font-size:10px;overflow:hidden;margin-bottom:7px}.bg-preview span{background:#ffffffdd;padding:5px 8px;border-radius:7px}
+.app{height:100vh;display:grid;grid-template-rows:60px 1fr;overflow:hidden}.top{height:60px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;padding:0 12px;z-index:10}.brand{font-weight:900;letter-spacing:.6px;white-space:nowrap}.brand small{display:block;font-size:8px;letter-spacing:2px;color:#8a94a2}.spacer{flex:1}.status{font-size:11px;color:var(--muted);max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.btn{border:1px solid #d5dce5;background:#fff;color:var(--ink);border-radius:9px;padding:8px 11px;font-weight:800;cursor:pointer}.btn:hover{border-color:#b9c5d4}.btn.active{box-shadow:inset 0 0 0 2px #e4c579}.btn.primary{background:var(--gold);border-color:var(--gold);color:#18130a}.workspace{min-height:0;display:grid;grid-template-columns:235px minmax(0,1fr) 300px}.side{background:#fff;overflow:auto;padding:11px}.left{border-right:1px solid var(--line)}.right{border-left:1px solid var(--line)}.panel{border:1px solid var(--line);border-radius:12px;padding:11px;margin-bottom:10px;background:#fff}.panel h3{font-size:12px;margin:0 0 9px}.muted{font-size:11px;color:var(--muted);line-height:1.5}.canvas{min-width:0;min-height:0;display:flex;justify-content:center;overflow:auto;background:#cbd2db;padding:0}.frame{height:max-content;min-height:100%;width:1440px;max-width:100%;background:#fff;box-shadow:0 0 35px #0002;transition:width .15s}.frame.mobile{width:390px}.frame iframe{display:block;width:100%;height:1400px;min-height:1400px;border:0;background:#fff;opacity:1;visibility:visible}.hint{background:#fff8e9;border:1px solid #eed8a6;border-radius:9px;padding:9px;font-size:10px;line-height:1.5;color:#735719}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:7px}.field{margin-bottom:8px}.field label{display:flex;justify-content:space-between;font-size:10px;font-weight:850;color:#475467;margin-bottom:4px}.field input,.field textarea,.field select{width:100%;border:1px solid #d5dce5;border-radius:8px;padding:7px 8px;background:#fff;outline:0}.field textarea{min-height:74px;resize:vertical}.image-preview{max-width:100%;max-height:130px;display:block;margin:4px auto 8px;object-fit:contain}.drop{border:1px dashed #b9c4d1;border-radius:8px;padding:8px;text-align:center;font-size:10px;cursor:pointer}.layers{max-height:310px;overflow:auto;display:grid;gap:4px}.layer{width:100%;text-align:left;border:1px solid #e5e9ef;background:#fafbfc;border-radius:7px;padding:7px;font-size:10px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.layer.active{border-color:#8eb0ff;background:#eff5ff}.history{display:grid;gap:5px;max-height:230px;overflow:auto}.history-item{display:grid;grid-template-columns:1fr auto;gap:5px;align-items:center;border:1px solid #e5e9ef;border-radius:7px;padding:6px}.history-item small{font-size:9px;color:var(--muted)}.overlay{position:fixed;display:none;border:2px solid var(--blue);pointer-events:none;z-index:50}.overlay .label{position:absolute;left:-2px;top:-21px;background:var(--blue);color:#fff;padding:3px 6px;border-radius:4px 4px 0 0;font-size:9px;font-weight:850}.handle{position:absolute;width:9px;height:9px;background:#fff;border:2px solid var(--blue);border-radius:2px;pointer-events:auto}.nw{left:-6px;top:-6px;cursor:nwse-resize}.ne{right:-6px;top:-6px;cursor:nesw-resize}.sw{left:-6px;bottom:-6px;cursor:nesw-resize}.se{right:-6px;bottom:-6px;cursor:nwse-resize}.toast{position:fixed;right:16px;bottom:16px;background:#17202a;color:#fff;padding:9px 12px;border-radius:8px;font-size:11px;display:none;z-index:100}.login{position:fixed;inset:0;background:#101828dd;display:flex;align-items:center;justify-content:center;z-index:200}.login-card{width:min(390px,calc(100% - 24px));background:#fff;border-radius:15px;padding:20px;box-shadow:0 25px 70px #0005}.login-card h2{margin:0 0 6px}.danger{color:#b42318;font-size:10px;margin-top:7px}.simple-mode .advanced-only{display:none!important}.block-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.block-btn{border:1px solid #e3e8ef;background:#fbfcfe;border-radius:9px;padding:8px 7px;text-align:left;font-size:10px;font-weight:800;cursor:pointer}.block-btn:hover{border-color:#d7aa4d;background:#fffaf0}.ai-modal{position:fixed;inset:0;background:#10182888;display:none;align-items:center;justify-content:center;z-index:180}.ai-card{width:min(620px,calc(100% - 24px));max-height:min(760px,calc(100vh - 30px));overflow:auto;background:#fff;border-radius:16px;box-shadow:0 30px 90px #0006;padding:16px}.ai-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}.ai-head h2{margin:0;font-size:17px}.ai-close{margin-left:auto}.ai-log{min-height:160px;max-height:330px;overflow:auto;background:#f7f9fc;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:11px;line-height:1.55}.ai-msg{margin:0 0 9px;padding:8px 10px;border-radius:9px;white-space:pre-wrap}.ai-user{background:#fff4d9}.ai-bot{background:#fff;border:1px solid #e6eaf0}.ai-row{display:flex;gap:7px;margin-top:9px}.ai-row textarea{flex:1;min-height:66px;border:1px solid #d5dce5;border-radius:9px;padding:8px;resize:vertical}.ai-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.ai-chip{border:1px solid #dfe5ed;background:#fff;border-radius:999px;padding:6px 9px;font-size:10px;font-weight:800;cursor:pointer}.section-list{display:grid;gap:5px;max-height:220px;overflow:auto}.preset-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.preset{border:1px solid #e3e8ef;background:#fff;border-radius:8px;padding:7px;font-size:10px;font-weight:800;cursor:pointer}.preset:hover{border-color:#d7aa4d}.color-row{display:flex;align-items:center;gap:6px}.color-row input[type=color]{width:44px;height:36px;padding:2px;border:1px solid #d5dce5;border-radius:8px;cursor:pointer}.swatches{display:flex;gap:7px;flex-wrap:wrap}.swatch{width:30px;height:30px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #cfd6df;cursor:pointer}.bg-preview{height:105px;border:1px solid #dfe5ed;border-radius:10px;background:#f7f9fc center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:#667085;font-size:10px;overflow:hidden;margin-bottom:7px}.bg-preview span{background:#ffffffdd;padding:5px 8px;border-radius:7px}
 @media(max-width:980px){.workspace{grid-template-columns:200px minmax(0,1fr)}.right{display:none}.status{display:none}}@media(max-width:650px){.left{display:none}.workspace{grid-template-columns:1fr}.top .btn{padding:7px 8px}.brand small{display:none}}
 </style>
 </head>
@@ -18,7 +18,7 @@
   <div class="brand">APPLE SEED <small>VISUAL SITE BUILDER V3</small></div>
   <button class="btn active" id="desktopBtn">🖥 Desktop</button><button class="btn" id="mobileBtn">📱 Mobile</button><button class="btn" id="simpleMode">✨ Đơn giản</button><button class="btn" id="aiOpen">🤖 AI Designer</button>
   <span class="spacer"></span><span class="status" id="status">Đang kiểm tra quyền…</span>
-  <button class="btn" id="backAdmin">← Admin</button><button class="btn" id="undo">↶</button><button class="btn" id="redo">↷</button><button class="btn" id="save">💾 Nháp</button><button class="btn" id="syncLive">🔄 Đồng bộ INDEX / LIVE</button><button class="btn primary" id="publish">🚀 Xuất bản</button>
+  <button class="btn" id="backAdmin">← Admin</button><button class="btn" id="undo">↶</button><button class="btn" id="redo">↷</button><button class="btn" id="save">💾 Nháp</button><button class="btn" id="syncLive">🔄 Đồng bộ LIVE</button><button class="btn primary" id="publish">🚀 Xuất bản</button>
 </header>
 <div class="workspace">
 <aside class="side left">
@@ -38,19 +38,15 @@
 <aside class="side right">
   <div class="panel"><h3>🖱 Đối tượng</h3><div id="info" class="selected-name">Chưa chọn</div><span id="tag" class="tag" hidden></span></div>
   <div class="panel" id="contentPanel" hidden><h3>✏️ Nội dung</h3><div class="field"><label>Chữ</label><textarea id="text"></textarea></div><button class="btn primary" id="applyText" style="width:100%">Áp dụng chữ</button></div>
-  <div class="panel" id="imagePanel" hidden><h3>🖼 Hình ảnh</h3><img id="imagePreview" class="image-preview" alt=""><div class="drop" id="pick">Chọn ảnh từ máy</div><input id="file" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden><div class="field" style="margin-top:8px"><label>URL ảnh</label><input id="imageUrl" placeholder="https://…"></div><div class="grid2" style="margin-top:8px"><button type="button" class="btn primary" id="applyImage" style="width:100%">Áp dụng hình</button><button type="button" class="btn danger-btn" id="clearImage" style="width:100%;display:block!important;visibility:visible!important;opacity:1!important">🗑️ Xóa ảnh</button></div></div>
+  <div class="panel" id="imagePanel" hidden><h3>🖼 Hình ảnh</h3><img id="imagePreview" class="image-preview" alt=""><div class="drop" id="pick">Chọn ảnh từ máy</div><input id="file" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden><div class="field" style="margin-top:8px"><label>URL ảnh</label><input id="imageUrl" placeholder="https://…"></div><button class="btn primary" id="applyImage" style="width:100%">Áp dụng hình</button></div>
   <div class="panel" id="pageDesignPanel"><h3>🖼️ Thiết kế Trang / Hero</h3>
     <div class="muted" style="margin-bottom:8px">Chỉnh nền Hero/trang mà không cần chọn đúng ảnh. Mỗi Desktop/Mobile có nền riêng.</div>
-    <div id="pageBgPreview" class="bg-preview"><span>Chưa chọn ảnh nền</span></div>
     <div class="grid2"><button class="btn" id="targetHero">🎯 Hero</button><button class="btn" id="targetMain">📄 Main</button></div>
     <div class="field" style="margin-top:8px"><label>URL ảnh nền</label><input id="pageBgUrl" placeholder="https://…"></div>
     <div class="grid2"><div class="field"><label>Màu nền</label><input id="pageBgColor" type="color" value="#ffffff" title="Chọn màu nền"></div><div class="field"><label>Lớp phủ</label><input id="pageOverlayColor" type="color" value="#ffffff" title="Chọn màu phủ"></div></div>
     <div class="grid2"><div class="field"><label>Kích thước</label><select id="pageBgSize" style="width:100%;border:1px solid #d5dce5;border-radius:8px;padding:7px"><option value="cover">Cover</option><option value="contain">Contain</option><option value="100% 100%">100% 100%</option></select></div><div class="field"><label>Vị trí</label><select id="pageBgPosition" style="width:100%;border:1px solid #d5dce5;border-radius:8px;padding:7px"><option value="center">Center</option><option value="center top">Center top</option><option value="center bottom">Center bottom</option><option value="left center">Left center</option><option value="right center">Right center</option></select></div></div>
-    <div class="field" style="margin-top:8px"><label>Ảnh nền từ máy</label><label class="drop" id="pagePick" for="pageFile">🖼️ Chọn ảnh nền từ máy</label><input id="pageFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden></div>
-    <div class="grid2">
-      <button class="btn primary" id="applyPageDesign">Áp dụng nền Hero / Trang</button>
-      <button class="btn danger-btn" id="clearPageBg">🗑️ Xóa ảnh nền</button>
-    </div>
+    <div class="field" style="margin-top:8px"><label>Ảnh nền từ máy</label><div class="drop" id="pagePick">Chọn ảnh nền từ máy</div><input id="pageFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden></div>
+    <button class="btn primary" id="applyPageDesign" style="width:100%">Áp dụng nền Hero / Trang</button>
     <button class="btn" id="reloadCanvas" style="width:100%;margin-top:6px">↻ Nạp lại ảnh & trang gốc</button>
   </div>
   <div class="panel" id="stylePanel" hidden><h3>🎨 Giao diện — <span id="deviceLabel">Desktop</span></h3>
@@ -63,7 +59,7 @@
     <div class="grid2"><div class="field"><label>Màu chữ</label><input id="color" type="color" value="#17233d" title="Chọn màu chữ"></div><div class="field"><label>Nền</label><input id="backgroundColor" type="color" value="#ffffff" title="Chọn màu nền"></div></div>
     <button class="btn primary" id="applyStyle" style="width:100%">Áp dụng giao diện</button>
   </div>
-  <div class="panel" id="palettePanel"><h3>🎨 Bảng màu toàn trang</h3><div class="muted" style="margin-bottom:8px">Bấm vào ô màu để chọn trực tiếp — không cần nhập mã.</div><div class="grid2"><div class="field"><label>Màu chủ đạo</label><input id="palPrimary" type="color" value="#1769ff"></div><div class="field"><label>Màu chữ</label><input id="palInk" type="color" value="#18212b"></div><div class="field"><label>Nền trang</label><input id="palPage" type="color" value="#ffffff"></div><div class="field"><label>Nền thẻ</label><input id="palCard" type="color" value="#ffffff"></div></div><button class="btn primary" id="applyPalette" style="width:100%">🎨 Áp dụng màu toàn trang</button><button class="btn" id="resetPalette" style="width:100%;margin-top:6px">↺ Về toàn bộ màu Apple Seed</button></div><div class="panel advanced-only"><h3>🎨 Preset nhanh</h3><div class="preset-grid"><button class="preset" data-preset="title">Tiêu đề Premium</button><button class="preset" data-preset="button">Nút Apple Seed</button><button class="preset" data-preset="card">Card dịch vụ</button><button class="preset" data-preset="clean">Tối giản</button></div></div>
+  <div class="panel" id="palettePanel"><h3>🎨 Bảng màu toàn trang</h3><div class="muted" style="margin-bottom:8px">Bấm vào ô màu để chọn trực tiếp — không cần nhập mã.</div><div class="grid2"><div class="field"><label>Màu chủ đạo</label><input id="palPrimary" type="color" value="#d7aa4d"></div><div class="field"><label>Màu chữ</label><input id="palInk" type="color" value="#18212b"></div><div class="field"><label>Nền trang</label><input id="palPage" type="color" value="#ffffff"></div><div class="field"><label>Nền thẻ</label><input id="palCard" type="color" value="#ffffff"></div></div><button class="btn primary" id="applyPalette" style="width:100%">🎨 Áp dụng màu toàn trang</button><button class="btn" id="resetPalette" style="width:100%;margin-top:6px">↺ Về màu Apple Seed</button></div><div class="panel advanced-only"><h3>🎨 Preset nhanh</h3><div class="preset-grid"><button class="preset" data-preset="title">Tiêu đề Premium</button><button class="preset" data-preset="button">Nút Apple Seed</button><button class="preset" data-preset="card">Card dịch vụ</button><button class="preset" data-preset="clean">Tối giản</button></div></div>
   <div class="panel"><h3>🕘 Lịch sử xuất bản</h3><div id="history" class="history"><div class="muted">Chưa tải.</div></div></div>
 </aside>
 </div></div>
@@ -75,7 +71,7 @@
 const $=id=>document.getElementById(id);
 const DRAFT_KEY='appleSeedVisualBuilderV2';
 const PUBLISHED_VERSION_KEY='appleSeedVisualBuilderPublishedVersionV3';
-let doc=null,selected=null,selector='',device='desktop',draft={items:{},page:{desktop:{},mobile:{}}},history=[],future=[],drag=null,pendingFile=null,pagePendingFile=null,allowed=false,groupPhones=false,simpleMode=false,builderReady=false;
+let doc=null,selected=null,selector='',device='desktop',draft={items:{},page:{desktop:{},mobile:{}}},history=[],future=[],drag=null,pendingFile=null,pagePendingFile=null,allowed=false,groupPhones=false,simpleMode=false;
 
 function toast(msg){$('toast').textContent=msg;$('toast').style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>{$('toast').style.display='none'},2200)}
 function setStatus(msg){$('status').textContent=msg}
@@ -99,16 +95,8 @@ function stableSelector(el){
 }
 function editable(el){return !!el&&el!==doc.body&&el!==doc.documentElement&&!['SCRIPT','STYLE','SVG','PATH','IFRAME','INPUT','TEXTAREA','SELECT','VIDEO','AUDIO','CANVAS'].includes(el.tagName)}
 function textEditable(el){return editable(el)&&el.tagName!=='IMG'&&el.children.length===0&&el.textContent.trim().length>0}
-function getItem(){if(!draft.items[selector])draft.items[selector]={styles:{desktop:{},mobile:{}}};const i=draft.items[selector];i.styles=i.styles||{};i.styles.desktop=i.styles.desktop||{};i.styles.mobile=i.styles.mobile||{};i.meta=i.meta||{};i.meta.resized=i.meta.resized||{desktop:false,mobile:false};return i}
-function isFlowTextElement(el){
-  return !!el && /^(H1|H2|H3|H4|H5|H6|P|LI|SPAN)$/.test(el.tagName) &&
-    !el.closest?.('.as3-phone,.as3-screen,.as3-stage');
-}
-function sizeWasExplicitlyEdited(item,dk){return !!(item?.meta?.resized?.[dk])}
-function styleObject(el){
-  const s=el.style,r=el.getBoundingClientRect(),tr=(s.translate||'').trim().split(/\s+/);
-  return{x:parseFloat(tr[0])||0,y:parseFloat(tr[1])||0,w:parseFloat(s.width)||Math.round(r.width),h:parseFloat(s.height)||Math.round(r.height),fontSize:parseFloat(s.fontSize)||'',radius:parseFloat(s.borderRadius)||'',color:s.color||'',background:s.backgroundColor||''}
-}
+function getItem(){if(!draft.items[selector])draft.items[selector]={styles:{desktop:{},mobile:{}}};const i=draft.items[selector];i.styles=i.styles||{};i.styles.desktop=i.styles.desktop||{};i.styles.mobile=i.styles.mobile||{};return i}
+function styleObject(el){const s=el.style,r=el.getBoundingClientRect(),tr=(s.translate||'').trim().split(/\s+/);return{x:parseFloat(tr[0])||0,y:parseFloat(tr[1])||0,w:parseFloat(s.width)||Math.round(r.width),h:parseFloat(s.height)||Math.round(r.height),fontSize:parseFloat(s.fontSize)||'',radius:parseFloat(s.borderRadius)||'',color:s.color||'',background:s.backgroundColor||''}}
 function currentStyle(){return getItem().styles[deviceKey()]||{}}
 function ensurePage(){draft.page=draft.page||{};draft.page.desktop=draft.page.desktop||{};draft.page.mobile=draft.page.mobile||{};return draft.page[deviceKey()]}
 function findPageTarget(kind='hero'){
@@ -118,14 +106,10 @@ function findPageTarget(kind='hero'){
   return doc.body;
 }
 function pageStyleTarget(){return $('pageDesignPanel').dataset.target||ensurePage().target||'hero'}
-function overlayToUi(v){const m=String(v||'').match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\s*\)/i);return m?{color:'#'+[m[1],m[2],m[3]].map(x=>parseInt(x,10).toString(16).padStart(2,'0')).join(''),alpha:Math.round((m[4]===undefined?1:+m[4])*100)}:{color:'#ffffff',alpha:0}}function defaultPalette(){
-  /* Canonical Apple Seed palette from the current homepage.
-     Blue is the primary brand color; gold is NOT the reset color. */
-  return {'--gold':'#1769ff','--ink':'#17233d','--apple-seed-page-bg':'#ffffff','--apple-seed-card-bg':'#ffffff'}
-}
+function overlayToUi(v){const m=String(v||'').match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\s*\)/i);return m?{color:'#'+[m[1],m[2],m[3]].map(x=>parseInt(x,10).toString(16).padStart(2,'0')).join(''),alpha:Math.round((m[4]===undefined?1:+m[4])*100)}:{color:'#ffffff',alpha:0}}function defaultPalette(){return {'--gold':'#d7aa4d','--ink':'#18212b','--apple-seed-page-bg':'#ffffff','--apple-seed-card-bg':'#ffffff'}}
 function paletteFromDraft(){const d=draft.page||{};const cur=(d[deviceKey()]&&d[deviceKey()].palette)||{};const other=(d[device==='mobile'?'desktop':'mobile']&&d[device==='mobile'?'desktop':'mobile'].palette)||{};return Object.keys(cur).length?cur:(Object.keys(other).length?other:defaultPalette())}
-function refreshPalette(){const p=paletteFromDraft();$('palPrimary').value=p['--gold']||'#1769ff';$('palInk').value=p['--ink']||'#18212b';$('palPage').value=p['--apple-seed-page-bg']||'#ffffff';$('palCard').value=p['--apple-seed-card-bg']||'#ffffff'}
-function applyPagePalette(p){if(!doc)return;const pal=p.palette||{};const primary=pal['--gold']||'#1769ff';const ink=pal['--ink']||'#18212b';const pageBg=pal['--apple-seed-page-bg']||'#ffffff';const cardBg=pal['--apple-seed-card-bg']||'#ffffff';const root=doc.documentElement;root.style.setProperty('--gold',primary,'important');root.style.setProperty('--blue',primary,'important');root.style.setProperty('--as-gold',primary,'important');root.style.setProperty('--as-gold-light',primary,'important');root.style.setProperty('--as-light-gold',primary,'important');root.style.setProperty('--as-light-gold-2',primary,'important');root.style.setProperty('--ink',ink,'important');root.style.setProperty('--as-light-ink',ink,'important');root.style.setProperty('--apple-seed-primary',primary,'important');root.style.setProperty('--apple-seed-ink',ink,'important');root.style.setProperty('--apple-seed-page-bg',pageBg,'important');root.style.setProperty('--apple-seed-card-bg',cardBg,'important');Object.entries(pal).forEach(([k,v])=>{if(/^--[a-z0-9-]+$/.test(k)&&typeof v==='string')root.style.setProperty(k,v,'important')});doc.body.style.setProperty('background-color',pageBg,'important');applyGlobalPaletteCss(primary,ink,pageBg,cardBg)}
+function refreshPalette(){const p=paletteFromDraft();$('palPrimary').value=p['--gold']||'#d7aa4d';$('palInk').value=p['--ink']||'#18212b';$('palPage').value=p['--apple-seed-page-bg']||'#ffffff';$('palCard').value=p['--apple-seed-card-bg']||'#ffffff'}
+function applyPagePalette(p){if(!doc)return;const pal=p.palette||{};const primary=pal['--gold']||'#d7aa4d';const ink=pal['--ink']||'#18212b';const pageBg=pal['--apple-seed-page-bg']||'#ffffff';const cardBg=pal['--apple-seed-card-bg']||'#ffffff';const root=doc.documentElement;root.style.setProperty('--gold',primary,'important');root.style.setProperty('--blue',primary,'important');root.style.setProperty('--as-gold',primary,'important');root.style.setProperty('--as-gold-light',primary,'important');root.style.setProperty('--as-light-gold',primary,'important');root.style.setProperty('--as-light-gold-2',primary,'important');root.style.setProperty('--ink',ink,'important');root.style.setProperty('--as-light-ink',ink,'important');root.style.setProperty('--apple-seed-primary',primary,'important');root.style.setProperty('--apple-seed-ink',ink,'important');root.style.setProperty('--apple-seed-page-bg',pageBg,'important');root.style.setProperty('--apple-seed-card-bg',cardBg,'important');Object.entries(pal).forEach(([k,v])=>{if(/^--[a-z0-9-]+$/.test(k)&&typeof v==='string')root.style.setProperty(k,v,'important')});doc.body.style.setProperty('background-color',pageBg,'important');applyGlobalPaletteCss(primary,ink,pageBg,cardBg)}
 function applyGlobalPaletteCss(primary,ink,pageBg,cardBg){if(!doc)return;let st=doc.getElementById('apple-seed-builder-global-palette');if(!st){st=doc.createElement('style');st.id='apple-seed-builder-global-palette';doc.head.appendChild(st)}st.textContent=`:root{--apple-seed-primary:${primary};--apple-seed-ink:${ink};--apple-seed-page-bg:${pageBg};--apple-seed-card-bg:${cardBg};--blue:${primary}!important;--ink:${ink}!important;--as-gold:${primary}!important;--as-gold-light:${primary}!important;--as-light-gold:${primary}!important;--as-light-gold-2:${primary}!important;--as-light-bg:${pageBg}!important;--as-light-ink:${ink}!important}
 html,body{background:${pageBg}!important;color:${ink}!important}
 .as3-hero{background:${pageBg}!important;color:${ink}!important}
@@ -138,65 +122,12 @@ html,body{background:${pageBg}!important;color:${ink}!important}
 .as3-service h3,.as3-stat span,.as3-service p{color:${ink}!important}.as3-more{background:${ink}!important;border-color:${ink}!important}
 .site-header .menu,.site-header .menu a{color:${ink}!important}.site-header .menu a:hover{color:${primary}!important}.site-header .brand-title{color:${ink}!important}
 .services,.contact,.dynamic-pages-section{background:${pageBg}!important}`}
-function savePalette(reset){
-  checkpoint();
-  draft.page=draft.page||{};
-  draft.page.desktop=draft.page.desktop||{};
-  draft.page.mobile=draft.page.mobile||{};
-  const values=reset
-    ? defaultPalette()
-    : {'--gold':$('palPrimary').value,'--ink':$('palInk').value,'--apple-seed-page-bg':$('palPage').value,'--apple-seed-card-bg':$('palCard').value};
-  draft.page.desktop.palette=JSON.parse(JSON.stringify(values));
-  draft.page.mobile.palette=JSON.parse(JSON.stringify(values));
-
-  if(reset){
-    /*
-     * Full Apple Seed reset:
-     * remove Builder-created per-element color overrides so the original
-     * index.html palette/CSS becomes the source of truth again. This covers
-     * text, buttons, cards and inline backgrounds without touching position,
-     * size, content, links or images.
-     */
-    Object.values(draft.items||{}).forEach(item=>{
-      ['desktop','mobile'].forEach(dk=>{
-        const st=item?.styles?.[dk];
-        if(!st)return;
-        delete st.color;
-        delete st.background;
-      });
-    });
-    /* Return page background color controls to the original white canvas.
-       Keep any selected Hero image intact. */
-    draft.page.desktop.bgColor='#ffffff';
-    draft.page.mobile.bgColor='#ffffff';
-  }
-
-  applyAll();
-  saveDraft();
-  refreshPalette();
-  toast(reset?'↺ Đã về TOÀN BỘ màu Apple Seed':'🎨 Đã áp dụng bảng màu');
-}function refreshPageDesign(){
+function savePalette(reset){checkpoint();const values=reset?defaultPalette():{'--gold':$('palPrimary').value,'--ink':$('palInk').value,'--apple-seed-page-bg':$('palPage').value,'--apple-seed-card-bg':$('palCard').value};draft.page=draft.page||{};draft.page.desktop=draft.page.desktop||{};draft.page.mobile=draft.page.mobile||{};draft.page.desktop.palette=JSON.parse(JSON.stringify(values));draft.page.mobile.palette=JSON.parse(JSON.stringify(values));applyAll();saveDraft();refreshPalette();toast(reset?'↺ Đã về màu Apple Seed':'🎨 Đã áp dụng bảng màu')}function refreshPageDesign(){
   const p=ensurePage();
-  $('pageBgUrl').value=p.bgImage||'';
-  $('pageBgColor').value=p.bgColor||'#ffffff';
-  $('pageOverlayColor').value='#ffffff';
+  $('pageBgUrl').value=p.bgImage||'';$('pageBgColor').value=p.bgColor||'#ffffff';$('pageOverlayColor').value='#ffffff';const bp=$('pageBgPreview');if(bp){bp.style.backgroundImage=p.bgImage?'url("'+p.bgImage.replace(/"/g,'\\\"')+'")':'none';bp.innerHTML=p.bgImage?'':'<span>Chưa chọn ảnh nền</span>'}
   $('pageBgSize').value=p.bgSize||'cover';
   $('pageBgPosition').value=p.bgPosition||'center';
   $('pageDesignPanel').dataset.target=p.target||'hero';
-  const bp=$('pageBgPreview');
-  if(bp){
-    bp.innerHTML='';
-    if(p.bgImage){
-      const img=document.createElement('img');
-      img.src=p.bgImage;
-      img.alt='Ảnh nền Hero hiện tại';
-      img.loading='eager';
-      img.onerror=()=>{bp.innerHTML='<span>Không tải được ảnh nền</span>'};
-      bp.appendChild(img);
-    }else{
-      bp.innerHTML='<span>Chưa chọn ảnh nền</span>';
-    }
-  }
 }
 function applyPageDesign(){
   const target=findPageTarget(pageStyleTarget());if(!target){toast('Không tìm thấy Hero/Trang');return}
@@ -216,8 +147,6 @@ function applyPageToTarget(target,p){
    * Builder phải dùng inline !important để ảnh/màu chọn trong Builder
    * thắng CSS mặc định và hiện NGAY trên canvas, không cần reload.
    */
-  const isHero=!!(target.matches?.('#apple-seed-premium-home,.as3-hero,.hero'));
-  const rootHero=doc?.querySelector?.('#apple-seed-premium-home')||target;
   if(p.bgImage){
     const safe=String(p.bgImage).replace(/\\/g,'\\\\').replace(/"/g,'\\\"');
     target.style.setProperty('background-image','url("'+safe+'")','important');
@@ -228,41 +157,12 @@ function applyPageToTarget(target,p){
   if(p.bgSize)target.style.setProperty('background-size',String(p.bgSize),'important');
   if(p.bgPosition)target.style.setProperty('background-position',String(p.bgPosition),'important');
   target.style.setProperty('background-repeat','no-repeat','important');
-
-  /* The Hero has an opaque :before layer in the base design. When Builder
-     owns the Hero image that layer must be transparent, otherwise the
-     parent's background image is technically applied but never visible. */
-  if(isHero && doc){
-    let st=doc.getElementById('apple-seed-builder-page-bg-canvas');
-    if(!st){
-      st=doc.createElement('style');
-      st.id='apple-seed-builder-page-bg-canvas';
-      doc.head.appendChild(st);
-    }
-    st.textContent=p.bgImage
-      ? '#apple-seed-premium-home.builder-has-page-bg:before,#apple-seed-premium-home.builder-has-page-bg:after,#apple-seed-premium-home.builder-has-page-bg .as3-stage,#apple-seed-premium-home.builder-has-page-bg .as3-stage:before{background-image:none!important;background-color:transparent!important}'
-      : '';
-    rootHero.classList.toggle('builder-has-page-bg',!!p.bgImage);
-  }
 }
 
-let overlayHideTimer=null;
-function hideSelectionOverlay(){
-  clearTimeout(overlayHideTimer);overlayHideTimer=null;
-  const o=$('overlay');if(o)o.style.display='none';
-}
-function scheduleSelectionOverlayHide(delay=1200){
-  clearTimeout(overlayHideTimer);
-  overlayHideTimer=setTimeout(()=>hideSelectionOverlay(),delay);
-}
 function refreshOverlay(){
-  const o=$('overlay');if(!selected){hideSelectionOverlay();return}
+  const o=$('overlay');if(!selected){o.style.display='none';return}
   const r=selected.getBoundingClientRect(),fr=$('preview').getBoundingClientRect();
   o.style.display='block';o.style.left=(fr.left+r.left)+'px';o.style.top=(fr.top+r.top)+'px';o.style.width=r.width+'px';o.style.height=r.height+'px';$('overlayLabel').textContent=selected.tagName.toLowerCase();
-}
-function showSelectionOverlayForUse(){
-  refreshOverlay();
-  scheduleSelectionOverlayHide();
 }
 function refreshInspector(){
   if(!selected){$('info').textContent='Chưa chọn';$('tag').hidden=true;$('contentPanel').hidden=true;$('imagePanel').hidden=true;$('stylePanel').hidden=true;$('layerList').innerHTML='<div class="muted">Chưa chọn đối tượng.</div>';refreshOverlay();return}
@@ -292,7 +192,7 @@ function refreshInspector(){
   $('x').value=v.x??st.x;$('y').value=v.y??st.y;$('w').value=v.w??st.w;$('h').value=v.h??st.h;$('fontSize').value=v.fontSize??st.fontSize;$('radius').value=v.radius??st.radius;$('color').value=/^#[0-9a-f]{6}$/i.test(v.color??st.color)?(v.color??st.color):'#17233d';$('backgroundColor').value=/^#[0-9a-f]{6}$/i.test(v.background??st.background)?(v.background??st.background):'#ffffff';$('deviceLabel').textContent=device==='mobile'?'Mobile':'Desktop';
   refreshOverlay();renderLayers();
 }
-function choose(el){if(!editable(el))return;selected=el;selector=stableSelector(el);refreshInspector();showSelectionOverlayForUse()}
+function choose(el){if(!editable(el))return;selected=el;selector=stableSelector(el);refreshInspector()}
 function findBlockTarget(type){
   if(!doc)return null;
   const map={hero:['.hero','.as3-hero','header'],services:['#services','.services','.service-grid','.service-card'],why:['.why','.benefits','.features'],process:['.process','.repair-process'],cases:['.repair-case','.repair-cases','.articles','.posts'],booking:['#booking','.booking','.booking-section'],articles:['.articles','.posts','.blog'],map:['#map','.map','.contact-map','.contact']};
@@ -305,7 +205,7 @@ function applyPreset(kind){
   if(!selected){toast('Chọn đối tượng trước');return}
   checkpoint();const v=getItem().styles[deviceKey()];
   if(kind==='title'){v.fontSize=device==='mobile'?32:56;v.color='#17233d';v.radius=0}
-  if(kind==='button'){v.fontSize=15;v.radius=12;v.color='#ffffff';v.background='#1769ff'}
+  if(kind==='button'){v.fontSize=15;v.radius=12;v.color='#18130a';v.background='#d7aa4d'}
   if(kind==='card'){v.radius=16;v.background='#ffffff';v.w=Math.max(v.w||0,280)}
   if(kind==='clean'){v.radius=8;v.background='transparent';v.color='#17233d'}
   applyAll();saveDraft();toast('🎨 Đã áp dụng preset')
@@ -394,9 +294,8 @@ function applyAll(){
     controlled.forEach(k=>{el.style[k]=''});
     const st=(item.styles||{})[dk]||{};
     if(st.x!==undefined||st.y!==undefined)el.style.translate=(st.x||0)+'px '+(st.y||0)+'px';
-    const keepExplicitSize=sizeWasExplicitlyEdited(item,dk);
-    if(st.w!==undefined && (!isFlowTextElement(el)||keepExplicitSize))el.style.width=st.w+'px';
-    if(st.h!==undefined && (!isFlowTextElement(el)||keepExplicitSize))el.style.height=st.h+'px';
+    if(st.w!==undefined)el.style.width=st.w+'px';
+    if(st.h!==undefined)el.style.height=st.h+'px';
     if(st.fontSize!==undefined&&st.fontSize!=='')el.style.fontSize=st.fontSize+'px';
     if(st.radius!==undefined&&st.radius!=='')el.style.borderRadius=st.radius+'px';
     if(st.color)el.style.color=st.color;
@@ -407,7 +306,6 @@ function applyAll(){
 function loadDraft(){try{const raw=localStorage.getItem(DRAFT_KEY);if(raw){draft=JSON.parse(raw);if(!draft.items)draft.items={};if(!draft.page)draft.page={desktop:{},mobile:{}};draft.page.desktop=draft.page.desktop||{};draft.page.mobile=draft.page.mobile||{}}}catch{draft={items:{},page:{desktop:{},mobile:{}}}}}
 function saveDraft(){localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));toast('💾 Đã lưu nháp trên máy')}
 async function loadPublished(forcePublished=false){
-  builderReady=false;
   // SINGLE SOURCE OF TRUTH:
   // Supabase published config is the LIVE source. Local draft is used only
   // when explicitly retained for the same published version.
@@ -430,27 +328,11 @@ async function loadPublished(forcePublished=false){
     return;
   }
   if(r.data?.config){
-    /* If a bad/empty publish slipped through, recover the newest archived
-       non-empty Builder version instead of replacing the canvas with nothing. */
-    let source=r.data;
-    const sourceItemCount=Object.keys(source.config?.items||{}).length;
-    if(sourceItemCount===0){
-      const recovery=await window.supabaseClient.from('site_builder_versions')
-        .select('id,version_no,config,created_at')
-        .eq('site_key','default')
-        .eq('status','archived')
-        .order('version_no',{ascending:false})
-        .limit(20);
-      if(!recovery.error){
-        const recovered=recovery.data?.find(v=>Object.keys(v.config?.items||{}).length>0);
-        if(recovered)source=recovered;
-      }
-    }
-    publishedVersion=String(source.version_no||'');
+    publishedVersion=String(r.data.version_no||'');
     const localRaw=localStorage.getItem(DRAFT_KEY);
     const localBase=localStorage.getItem(PUBLISHED_VERSION_KEY);
     if(forcePublished || !localRaw || !localBase || localBase!==publishedVersion){
-      draft=JSON.parse(JSON.stringify(source.config));
+      draft=JSON.parse(JSON.stringify(r.data.config));
       draft.items=draft.items||{};
       draft.page=draft.page||{desktop:{},mobile:{}};
       draft.page.desktop=draft.page.desktop||{};
@@ -461,7 +343,6 @@ async function loadPublished(forcePublished=false){
   }
   refreshPageDesign();
   applyAll();
-  builderReady=true;
   setStatus('Đồng bộ LIVE · V'+publishedVersion);
   const h=await window.supabaseClient.from('site_builder_versions')
     .select('id,version_no,status,created_at')
@@ -539,7 +420,6 @@ $('preview').addEventListener('load',async()=>{
     if(phone)el=phone;
     if(!editable(el))return;
     choose(el);
-    clearTimeout(overlayHideTimer);
     const before=snapshot();
     const st=currentStyle(),base=styleObject(el);
     drag={type:'move',sx:e.clientX,sy:e.clientY,el,before,
@@ -561,31 +441,7 @@ $('preview').addEventListener('load',async()=>{
       }else{drag.el.style.translate=x+'px '+y+'px';const v=getItem().styles[deviceKey()];v.x=x;v.y=y}
       $('x').value=x;$('y').value=y;
     }
-    /*
-     * Keep the selection frame visually anchored while the user drags an
-     * object.  The old behavior called refreshOverlay() on every pointermove,
-     * so the blue frame chased the object vertically and made the drag feel
-     * unstable.  Freeze the frame during the gesture and snap it to the
-     * final object position only after release.
-     */
-    if(!drag.overlayFrozen){
-      const o=$('overlay');
-      const or=o.getBoundingClientRect();
-      drag.overlayFrozen={
-        left:or.left,top:or.top,width:or.width,height:or.height,
-        display:o.style.display
-      };
-    }
-    const of=drag.overlayFrozen;
-    if(of){
-      const pr=$('preview').getBoundingClientRect();
-      const o=$('overlay');
-      o.style.left=of.left+'px';
-      o.style.top=of.top+'px';
-      o.style.width=of.width+'px';
-      o.style.height=of.height+'px';
-      o.style.display=of.display||'block';
-    }
+    refreshOverlay();
     e.preventDefault();
   },true);
   function finishMove(e){
@@ -597,15 +453,11 @@ $('preview').addEventListener('load',async()=>{
       v.x=parseFloat($('x').value)||0;
       v.y=parseFloat($('y').value)||0;
       saveDraft();
-      /* Intentionally do NOT move the blue selection frame. It stays at the
-         original selection position until the user selects another object. */
+      refreshOverlay();
       toast('Đã di chuyển — bản nháp');
     }
     try{if(drag.el&&drag.pointerId!=null)drag.el.releasePointerCapture(drag.pointerId)}catch(_){}
     drag=null;
-    /* After the movement is finished and the Builder is no longer being used,
-       automatically hide the blue selection frame. */
-    scheduleSelectionOverlayHide();
   }
   doc.addEventListener('pointerup',finishMove,true);
   doc.addEventListener('pointercancel',finishMove,true);
@@ -678,46 +530,15 @@ document.querySelectorAll('[data-ai]').forEach(b=>b.onclick=()=>runAI({review:'P
 document.querySelectorAll('[data-block]').forEach(b=>b.onclick=()=>blockAction(b.dataset.block));document.querySelectorAll('[data-preset]').forEach(b=>b.onclick=()=>applyPreset(b.dataset.preset));
 $('simpleMode').onclick=()=>{simpleMode=!simpleMode;document.body.classList.toggle('simple-mode',simpleMode);$('simpleMode').classList.toggle('active',simpleMode);toast(simpleMode?'✨ Chế độ đơn giản':'🔧 Chế độ nâng cao')};
 $('groupPhones').onclick=()=>{groupPhones=!groupPhones;$('groupPhones').classList.toggle('active',groupPhones);toast(groupPhones?'📱 Đã bật kéo cả cụm iPhone':'📱 Đã tắt kéo cả cụm')};
-$('centerSelected').onclick=()=>{if(!selected){toast('Chọn đối tượng trước');return}checkpoint();const v=getItem().styles[deviceKey()];v.x=0;selected.style.translate='0px '+(v.y||0)+'px';$('x').value=0;saveDraft();toast('↔️ Đã căn giữa')};
+$('centerSelected').onclick=()=>{if(!selected){toast('Chọn đối tượng trước');return}checkpoint();const v=getItem().styles[deviceKey()];v.x=0;selected.style.translate='0px '+(v.y||0)+'px';$('x').value=0;saveDraft();refreshOverlay();toast('↔️ Đã căn giữa')};
 $('targetHero').onclick=()=>{$('pageDesignPanel').dataset.target='hero';refreshPageDesign();toast('🎯 Đang chỉnh nền Hero')};
 $('targetMain').onclick=()=>{$('pageDesignPanel').dataset.target='main';refreshPageDesign();toast('🎯 Đang chỉnh nền Main')};$('applyPalette').onclick=()=>savePalette(false);$('resetPalette').onclick=()=>savePalette(true);refreshPalette();
 $('applyPageDesign').onclick=async()=>{
   if(pagePendingFile){try{$('pageBgUrl').value=await upload(pagePendingFile);pagePendingFile=null;$('pageFile').value=''}catch(e){toast('Upload nền lỗi: '+e.message);return}}
   applyPageDesign();applyAll();refreshOverlay();
 };
-$('pagePick').onclick=e=>{e.preventDefault();$('pageFile').click()};
-$('clearPageBg').onclick=()=>{
-  if(!confirm('Xóa ảnh nền của '+(pageStyleTarget()==='main'?'Main':'Hero')+' và khôi phục nền gốc?'))return;
-  checkpoint();
-  const p=ensurePage();
-  p.bgImage='';
-  pagePendingFile=null;$('pageFile').value='';$('pageBgUrl').value='';
-  saveDraft();applyAll();refreshPageDesign();
-  toast('🗑️ Đã xóa ảnh nền — khôi phục nền gốc');
-};
-$('pageFile').onchange=e=>{
-  pagePendingFile=e.target.files[0]||null;
-  if(pagePendingFile){
-    $('pageBgUrl').value='';
-    const localUrl=URL.createObjectURL(pagePendingFile);
-    const preview=$('pageBgPreview');
-    if(preview){
-      preview.innerHTML='';
-      const img=document.createElement('img');
-      img.src=localUrl;
-      img.alt='Ảnh nền Hero đang chọn';
-      preview.appendChild(img);
-    }
-    const target=findPageTarget(pageStyleTarget());
-    if(target){
-      target.style.setProperty('background-image','url("'+localUrl+'")','important');
-      target.style.setProperty('background-size',$('pageBgSize').value||'cover','important');
-      target.style.setProperty('background-position',$('pageBgPosition').value||'center','important');
-      target.style.setProperty('background-repeat','no-repeat','important');
-    }
-    toast('🖼️ Đã chọn ảnh nền — đang xem trước. Bấm Áp dụng nền Hero / Trang để lưu');
-  }
-};
+$('pagePick').onclick=()=>$('pageFile').click();
+$('pageFile').onchange=e=>{pagePendingFile=e.target.files[0]||null;if(pagePendingFile){$('pageBgUrl').value='';toast('🖼️ Đã chọn ảnh nền — bấm Áp dụng nền Hero / Trang')};};
 $('reloadCanvas').onclick=()=>{
   const p=$('preview');p.dataset.builderRetry='1';
   p.src='index.html?appleSeedBuilderPreview=1&builderCanvas=1&v='+Date.now();
@@ -727,54 +548,9 @@ refreshPageDesign();
 $('applyText').onclick=()=>{if(!selected||!textEditable(selected))return;checkpoint();selected.textContent=$('text').value;getItem().text=selected.textContent;saveDraft();refreshInspector();toast('Đã đổi chữ')};
 $('applyLink').onclick=()=>{if(!selected)return;const url=$('linkUrl').value.trim();const target=$('linkTarget').value==='_blank'?'_blank':'_self';checkpoint();const item=getItem();if(url)item.link={url,target};else delete item.link;applyAll();saveDraft();refreshInspector();toast(url?'🔗 Đã áp dụng liên kết':'🔗 Đã xóa liên kết')};
 $('clearLink').onclick=()=>{if(!selected)return;checkpoint();delete getItem().link;applyAll();saveDraft();refreshInspector();toast('🔗 Đã xóa liên kết')};
-$('applyStyle').onclick=()=>{
-  if(!selected)return;
-  checkpoint();
-  const item=getItem(),dk=deviceKey(),v=item.styles[dk];
-  for(const k of ['x','y','w','h']){
-    const n=parseFloat($(k).value);
-    if(Number.isFinite(n))v[k]=n;
-  }
-  if(!item.meta)item.meta={};
-  if(!item.meta.resized)item.meta.resized={desktop:false,mobile:false};
-  if(Number.isFinite(parseFloat($('w').value))||Number.isFinite(parseFloat($('h').value)))item.meta.resized[dk]=true;
-  for(const k of ['fontSize','radius']){const n=parseFloat($(k).value);if(Number.isFinite(n))v[k]=n}
-  v.color=$('color').value;v.background=$('backgroundColor').value;
-  selected.style.translate=(v.x||0)+'px '+(v.y||0)+'px';
-  if(v.w && (!isFlowTextElement(selected)||item.meta.resized[dk]))selected.style.width=v.w+'px';
-  if(v.h && (!isFlowTextElement(selected)||item.meta.resized[dk]))selected.style.height=v.h+'px';
-  if(v.fontSize)selected.style.fontSize=v.fontSize+'px';
-  if(v.radius!==undefined)selected.style.borderRadius=v.radius+'px';
-  if(v.color)selected.style.color=v.color;
-  if(v.background)selected.style.backgroundColor=v.background;
-  saveDraft();
-  /* Position/size changes must not make the blue selection frame follow.
-     It is only refreshed when the user selects a different element. */
-  toast('Đã áp dụng giao diện')
-};
+$('applyStyle').onclick=()=>{if(!selected)return;checkpoint();const v=getItem().styles[deviceKey()];for(const k of ['x','y','w','h']){const n=parseFloat($(k).value);if(Number.isFinite(n))v[k]=n}for(const k of ['fontSize','radius']){const n=parseFloat($(k).value);if(Number.isFinite(n))v[k]=n}v.color=$('color').value;v.background=$('backgroundColor').value;selected.style.translate=(v.x||0)+'px '+(v.y||0)+'px';if(v.w)selected.style.width=v.w+'px';if(v.h)selected.style.height=v.h+'px';if(v.fontSize)selected.style.fontSize=v.fontSize+'px';if(v.radius!==undefined)selected.style.borderRadius=v.radius+'px';if(v.color)selected.style.color=v.color;if(v.background)selected.style.backgroundColor=v.background;saveDraft();refreshOverlay();toast('Đã áp dụng giao diện')};
 $('pick').onclick=()=>$('file').click();$('file').onchange=e=>{pendingFile=e.target.files[0]||null;if(pendingFile)$('imagePreview').src=URL.createObjectURL(pendingFile)};
-$('applyImage').onclick=async()=>{if(!selected)return;let url=$('imageUrl').value.trim();try{if(pendingFile){url=await upload(pendingFile);pendingFile=null}}catch(e){toast('Upload lỗi: '+e.message);return}if(!url)return;checkpoint();const item=getItem();if(selected.tagName==='IMG'){selected.src=url;item.src=url}else{const phone=selected.closest?.('.as3-phone');if(phone||selected.matches?.('.as3-screen')){applyHeroPhoneImage(selected,url);item.bgImage=url}else{selected.style.setProperty('background-image','url("'+url+'")','important');item.bgImage=url}}saveDraft();refreshInspector();toast('Đã thay hình')};
-$('clearImage').onclick=()=>{
-  if(!selected)return;
-  const item=getItem();
-  const hasOverride=selected.tagName==='IMG' ? item.src!==undefined : item.bgImage!==undefined;
-  if(!hasOverride && !pendingFile){toast('Đối tượng này chưa có ảnh tùy chỉnh để xóa');return}
-  if(!confirm('Xóa ảnh tùy chỉnh và khôi phục ảnh gốc của đối tượng này?'))return;
-  checkpoint();
-  if(selected.tagName==='IMG'){
-    delete item.src;
-  }else if(selected.matches?.('.as3-phone,.as3-screen')||selected.closest?.('.as3-phone')){
-    delete item.bgImage;
-  }else{
-    delete item.bgImage;
-  }
-  pendingFile=null;$('file').value='';$('imageUrl').value='';
-  saveDraft();
-  /* Recreate the iframe so the original HTML image/background is restored,
-     while every other Builder draft setting remains applied. */
-  const p=$('preview');p.dataset.builderRetry='1';p.src='index.html?appleSeedBuilderPreview=1&builderCanvas=1&v='+Date.now();
-  toast('🗑️ Đã xóa ảnh tùy chỉnh và khôi phục ảnh gốc');
-};
+$('applyImage').onclick=async()=>{if(!selected)return;let url=$('imageUrl').value.trim();try{if(pendingFile){url=await upload(pendingFile);pendingFile=null}}catch(e){toast('Upload lỗi: '+e.message);return}if(!url)return;checkpoint();const item=getItem();if(selected.tagName==='IMG'){selected.src=url;item.src=url}else{selected.style.backgroundImage='url("'+url+'")';item.bgImage=url}saveDraft();refreshInspector();toast('Đã thay hình')};
 $('desktopBtn').onclick=()=>{device='desktop';$('desktopBtn').classList.add('active');$('mobileBtn').classList.remove('active');$('frame').classList.remove('mobile');applyAll();refreshInspector();};
 $('mobileBtn').onclick=()=>{device='mobile';$('mobileBtn').classList.add('active');$('desktopBtn').classList.remove('active');$('frame').classList.add('mobile');applyAll();refreshInspector();};
 $('undo').onclick=()=>{if(!history.length)return;future.push(snapshot());draft=history.pop();saveDraft();applyAll();toast('↶ Undo')};
@@ -783,109 +559,22 @@ $('backAdmin').onclick=()=>{location.href='admin.html'};
 $('save').onclick=saveDraft;$('reload').onclick=()=>location.reload();$('clear').onclick=()=>{if(confirm('Xóa toàn bộ nháp Builder trên máy?')){localStorage.removeItem(DRAFT_KEY);location.reload()}};
 $('syncLive').onclick=async()=>{
   if(!allowed){toast('Tài khoản không có quyền');return}
-  if(!builderReady){toast('⏳ Builder chưa tải xong cấu hình — chưa đồng bộ để tránh làm mất thiết kế');return}
-  if(!confirm('Đồng bộ TOÀN BỘ thiết kế hiện tại lên website LIVE? Thao tác này sẽ dùng đúng cấu hình đang có trong khung Thiết kế.'))return;
-
+  if(!confirm('Đồng bộ Builder theo đúng bản LIVE hiện tại? Mọi thay đổi nháp chưa xuất bản trên máy sẽ bị thay thế.'))return;
+  setStatus('Đang đồng bộ LIVE…');
+  await loadPublished(true);
   try{
-    saveDraft();
-    setStatus('Đang kiểm tra cấu hình trước khi đồng bộ…');
-
-    /* Safety gate: never publish an empty Builder snapshot over a real LIVE
-       configuration. This protects against iframe/network race conditions. */
-    const localPayload=snapshot();
-    const localItemCount=Object.keys(localPayload.items||{}).length;
-    const currentIndexFp=cleanIndexFingerprint();
-    const savedIndexFp=localStorage.getItem(BASE_INDEX_FINGERPRINT_KEY)||'';
-    const indexWasRestoredOrReplaced=!!(currentIndexFp && savedIndexFp && currentIndexFp!==savedIndexFp);
-    const syncFromCurrentIndex=indexWasRestoredOrReplaced || (localItemCount===0 && !localStorage.getItem(PUBLISHED_VERSION_KEY));
-    const latest=await window.supabaseClient.from('site_builder_versions')
-      .select('version_no,config')
-      .eq('site_key','default')
-      .eq('status','published')
-      .order('version_no',{ascending:false})
-      .limit(1)
-      .maybeSingle();
-    if(latest.error)throw latest.error;
-    const liveItemCount=Object.keys(latest.data?.config?.items||{}).length;
-    if(localItemCount===0 && liveItemCount>0 && !syncFromCurrentIndex){
-      toast('❌ Chặn đồng bộ rỗng: cấu hình Thiết kế chưa sẵn sàng');
-      setStatus('Đã chặn — LIVE vẫn giữ nguyên');
-      return;
-    }
-
-    setStatus(syncFromCurrentIndex
-      ? 'Đang đồng bộ ĐÚNG BẢN INDEX HIỆN TẠI lên LIVE…'
-      : 'Đang đồng bộ TOÀN BỘ thiết kế hiện tại lên LIVE…');
-
-    /* IMPORTANT: if the physical index.html was restored/replaced, it is the
-       source of truth. Publish an EMPTY Builder override so the LIVE runtime
-       stops applying the stale Supabase design and the public page becomes
-       exactly the current index.html. In normal editing mode, publish the
-       current Builder draft as before. */
-    const payload=syncFromCurrentIndex
-      ? {items:{},page:{desktop:{},mobile:{}}}
-      : localPayload;
-    payload.builder_version='V3';
-    payload.builder_features=['blocks','responsive','group-drag','presets','ai-designer','full-sync'];
-
-    const r=await window.supabaseClient.rpc('apple_seed_builder_publish',{
-      p_config:payload,
-      p_site_key:'default'
-    });
-    if(r.error)throw r.error;
-
-    const versionNo=r.data?.version_no;
-    if(versionNo!=null)localStorage.setItem(PUBLISHED_VERSION_KEY,String(versionNo));
-
-    /* Verify the exact config that the public homepage will read. */
-    const verify=await window.supabaseClient
-      .from('site_builder_versions')
-      .select('version_no,config')
-      .eq('site_key','default')
-      .eq('status','published')
-      .order('version_no',{ascending:false})
-      .limit(1)
-      .maybeSingle();
-
-    if(verify.error)throw verify.error;
-    if(!verify.data?.config)throw new Error('Không xác nhận được cấu hình LIVE sau khi đồng bộ.');
-
-    if(String(verify.data.version_no||'') !== String(versionNo||verify.data.version_no||'')){
-      throw new Error('LIVE version xác nhận không khớp version vừa đồng bộ.');
-    }
-    /* IMPORTANT: keep the exact Builder draft on the canvas. Do not replace
-       it with a re-read LIVE snapshot here; that was the source of the
-       apparent reset after Sync. The published row has already been verified.
-       Reloading the iframe is also unnecessary and can re-run legacy Hero
-       loaders before the Builder runtime applies the published config. */
-    localStorage.setItem(PUBLISHED_VERSION_KEY,String(verify.data.version_no||versionNo||''));
-    if(currentIndexFp)localStorage.setItem(BASE_INDEX_FINGERPRINT_KEY,currentIndexFp);
-    refreshPageDesign();
-    applyAll();
-
-    if(syncFromCurrentIndex){
-      draft={items:{},page:{desktop:{},mobile:{}}};
-      localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));
-      setStatus('Đã đồng bộ ĐÚNG BẢN INDEX HIỆN TẠI · V'+(verify.data.version_no||versionNo||''));
-      toast('🔄 LIVE đã trở về đúng bản index.html hiện tại — không dùng thiết kế cũ');
-    }else{
-      setStatus('Đã đồng bộ TOÀN BỘ LIVE · V'+(verify.data.version_no||versionNo||''));
-      toast('🔄 Đã đồng bộ toàn bộ thông số từ Thiết kế lên website LIVE');
-    }
-  }catch(err){
-    console.error('Full LIVE sync:',err);
-    toast('❌ Đồng bộ lỗi: '+(err?.message||err));
-    setStatus('Đồng bộ lỗi — website LIVE chưa được xác nhận thay đổi');
-  }
+    const u=new URL($('preview').src,location.href);
+    u.searchParams.set('v','builder-live-'+Date.now());
+    $('preview').dataset.builderRetry='';
+    $('preview').src=u.toString();
+  }catch(_){}
+  toast('🔄 Builder đã đồng bộ đúng bản LIVE');
 };
 $('publish').onclick=async()=>{
   if(!allowed){toast('Tài khoản không có quyền');return}
-  if(!builderReady){toast('⏳ Builder chưa tải xong cấu hình — chưa xuất bản');return}
   saveDraft();
   setStatus('Đang xuất bản version mới…');
-  const payload=snapshot();
-  if(Object.keys(payload.items||{}).length===0){toast('❌ Không thể xuất bản cấu hình rỗng');return}
-  payload.builder_version='V3';payload.builder_features=['blocks','responsive','group-drag','presets','ai-designer'];
+  const payload=snapshot();payload.builder_version='V3';payload.builder_features=['blocks','responsive','group-drag','presets','ai-designer'];
   const r=await window.supabaseClient.rpc('apple_seed_builder_publish',{p_config:payload,p_site_key:'default'});
   if(r.error){toast('Publish lỗi: '+r.error.message);setStatus('Publish lỗi — website chưa đổi');return}
   const versionNo=r.data?.version_no;
@@ -943,12 +632,7 @@ async function checkRole(){
     w=Math.max(30,Math.round(w));h=Math.max(20,Math.round(h));drag.el.style.width=w+'px';drag.el.style.height=h+'px';$('w').value=w;$('h').value=h;drag.moved=true;refreshOverlay();
   });
   window.addEventListener('mouseup',function(){
-    if(drag&&/^(nw|ne|sw|se)$/.test(drag.type)&&drag.moved){
-  const item=getItem(),dk=deviceKey(),v=item.styles[dk];
-  v.w=parseFloat($('w').value)||drag.bw;v.h=parseFloat($('h').value)||drag.bh;
-  item.meta=item.meta||{};item.meta.resized=item.meta.resized||{desktop:false,mobile:false};item.meta.resized[dk]=true;
-  saveDraft();toast('Đã đổi kích thước — bản nháp')
-}
+    if(drag&&/^(nw|ne|sw|se)$/.test(drag.type)&&drag.moved){const v=getItem().styles[deviceKey()];v.w=parseFloat($('w').value)||drag.bw;v.h=parseFloat($('h').value)||drag.bh;saveDraft();toast('Đã đổi kích thước — bản nháp')}
     if(drag&&/^(nw|ne|sw|se)$/.test(drag.type))drag=null;
   });
 })();
