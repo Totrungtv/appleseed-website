@@ -26,6 +26,20 @@
     host.appendChild(status);
   }
 
+  function isPublicTikTokVideoUrl(raw) {
+    try {
+      var url = new URL(raw);
+      var host = url.hostname.toLowerCase();
+      if (host !== 'tiktok.com' && !host.endsWith('.tiktok.com')) return false;
+      var parts = url.pathname.split('/').filter(Boolean);
+      var videoIndex = parts.findIndex(function (part) { return part.toLowerCase() === 'video'; });
+      if (videoIndex < 0 || !parts[videoIndex + 1]) return false;
+      return /^\d{8,30}$/.test(parts[videoIndex + 1]);
+    } catch (_) {
+      return false;
+    }
+  }
+
   function hardenTikTokUrlParsing() {
     var input = document.getElementById('tiktokUrl');
     var button = document.getElementById('tiktokLoad');
@@ -33,8 +47,7 @@
     button.dataset.runtimeBound = '1';
     button.addEventListener('click', function () {
       var raw = input.value.trim();
-      var match = raw.match(/(?:tiktok\\.com\\/@[^/]+\\/video\\/|tiktok\\.com\\/.*?\\/video\\/|\\/video\\/)(\\d{8,30})/i);
-      if (!match) {
+      if (!isPublicTikTokVideoUrl(raw)) {
         input.setCustomValidity('URL TikTok chưa đúng dạng video công khai.');
         if (typeof input.reportValidity === 'function') input.reportValidity();
       } else {
@@ -76,7 +89,7 @@
 
   function protectExternalLinks() {
     document.querySelectorAll('a[target="_blank"]').forEach(function (a) {
-      var rel = (a.getAttribute('rel') || '').split(/\\s+/).filter(Boolean);
+      var rel = (a.getAttribute('rel') || '').split(/\s+/).filter(Boolean);
       if (!rel.includes('noopener')) rel.push('noopener');
       if (!rel.includes('noreferrer')) rel.push('noreferrer');
       a.setAttribute('rel', rel.join(' '));
