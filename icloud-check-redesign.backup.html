@@ -64,7 +64,6 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
 .result-card{border-radius:20px;padding:28px;border:1px solid #2b405e;background:#0b1728}
 .result-card.ok{border-color:#1e7659;background:linear-gradient(180deg,#0b211c,#091824)}
 .result-card.locked{border-color:#7d3440;background:linear-gradient(180deg,#261016,#0b1724)}
-.result-card.failed{border-color:#7d3440;background:linear-gradient(180deg,#261016,#0b1724)}
 .result-icon{font-size:44px}.result-title{font-size:25px;font-weight:950;margin:8px 0}
 .meta{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:20px}
 .meta div{background:#091524;border:1px solid #20324b;border-radius:12px;padding:13px}
@@ -183,7 +182,6 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
         <div class="result-icon" id="resultIcon">✓</div>
         <div class="result-title" id="resultTitle">Kết quả</div>
         <div class="muted" id="resultMessage"></div>
-        <div class="refund-note" id="refundNote" style="display:none">💸 <strong>Đơn thất bại — chờ hoàn tiền</strong><br><span>Chúng tôi đã ghi nhận giao dịch thất bại. Apple Seed sẽ xử lý chuyển tiền lại cho bạn.</span></div>
         <div class="meta">
           <div><span>ĐỊNH DANH</span><strong id="resultIdentifier">—</strong></div>
           <div><span>MÃ THANH TOÁN</span><strong id="resultRef">—</strong></div>
@@ -209,7 +207,7 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
   const paymentArea=$('paymentArea'), processingArea=$('processingArea'), resultArea=$('resultArea');
   const paymentRef=$('paymentRef'), transferContent=$('transferContent'), qr=$('qr');
 
-  let paymentId=null, paymentRefValue=null, pollTimer=null, checkStarted=false, currentIdentifier='';
+  let paymentId=null, paymentRefValue=null, pollTimer=null, checkStarted=false;
 
   function esc(v){
     const d=document.createElement('div'); d.textContent=String(v??''); return d.innerHTML;
@@ -231,7 +229,7 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
     alert(msg);
   }
   function reset(){
-    clearTimeout(pollTimer); pollTimer=null; paymentId=null; paymentRefValue=null; checkStarted=false; currentIdentifier='';
+    clearTimeout(pollTimer); pollTimer=null; paymentId=null; paymentRefValue=null; checkStarted=false;
     paymentArea.style.display='none'; processingArea.style.display='none'; resultArea.style.display='none';
     identifier.value=''; model.value=''; startBtn.disabled=false; setType(); identifier.focus();
   }
@@ -264,29 +262,8 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
     processingArea.style.display='block';
     resultArea.style.display='none';
   }
-  function showFailure(message, code='CHECK_FAILED', bankTxn='—'){
-    clearTimeout(pollTimer); pollTimer=null;
-    processingArea.style.display='none';
-    paymentArea.style.display='none';
-    resultArea.style.display='block';
-    const card=$('resultCard');
-    card.className='result-card failed';
-    $('resultIcon').textContent='×';
-    $('resultTitle').textContent='TRA CỨU THẤT BẠI';
-    $('resultMessage').textContent=message||'Hiện tại chúng tôi chưa thể kết nối được với server.';
-    $('refundNote').style.display='block';
-    $('resultIdentifier').textContent=currentIdentifier||normalize();
-    $('resultRef').textContent=paymentRefValue||'—';
-    $('resultTxn').textContent=bankTxn||'—';
-    $('resultTime').textContent=new Date().toLocaleString('vi-VN');
-    startBtn.disabled=false;
-    saveHistory({ref:paymentRefValue||'—',identifier:currentIdentifier||normalize(),time:new Date().toLocaleString('vi-VN'),status:'Thất bại',code});
-  }
-
   function showResult(data, status){
-    clearTimeout(pollTimer); pollTimer=null;
     processingArea.style.display='none';
-    paymentArea.style.display='none';
     resultArea.style.display='block';
     const card=$('resultCard');
     card.className='result-card '+(status==='UNLOCKED'?'ok':status==='LOCKED'?'locked':'');
@@ -294,16 +271,14 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
     $('resultTitle').textContent=status==='UNLOCKED'?'ACTIVATION LOCK: ĐÃ TẮT':
       status==='LOCKED'?'ACTIVATION LOCK: ĐANG KHÓA':'CHƯA XÁC MINH';
     $('resultMessage').textContent=data.message||'Nguồn kiểm tra chưa trả về kết quả chắc chắn.';
-    $('refundNote').style.display='none';
-    $('resultIdentifier').textContent=currentIdentifier||normalize();
+    $('resultIdentifier').textContent=normalize();
     $('resultRef').textContent=paymentRefValue||'—';
     $('resultTxn').textContent=data.provider_transaction_id||'—';
     $('resultTime').textContent=new Date().toLocaleString('vi-VN');
     startBtn.disabled=false;
-    saveHistory({ref:paymentRefValue||'—',identifier:currentIdentifier||normalize(),time:new Date().toLocaleString('vi-VN'),
+    saveHistory({ref:paymentRefValue||'—',identifier:normalize(),time:new Date().toLocaleString('vi-VN'),
       status:status==='UNLOCKED'?'Đã hoàn tất':status==='LOCKED'?'Đã khóa':'Chưa xác minh'});
   }
-
 
   async function rpc(name,args){
     if(!window.supabaseClient) throw new Error('Supabase client chưa sẵn sàng.');
@@ -320,8 +295,6 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
       return;
     }
 
-    clearTimeout(pollTimer); pollTimer=null;
-    paymentId=null; paymentRefValue=null; checkStarted=false; currentIdentifier=value;
     startBtn.disabled=true;
     paymentArea.style.display='none'; processingArea.style.display='none'; resultArea.style.display='none';
 
@@ -346,7 +319,7 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
   }
 
   async function pollPayment(){
-    if(!paymentId || checkStarted) return;
+    if(!paymentId) return;
     try{
       const s=await rpc('get_icloud_check_payment_status',{p_payment_id:paymentId});
       if(!s?.ok) throw new Error('Không đọc được trạng thái đơn.');
@@ -360,25 +333,12 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
         return;
       }
       if(status==='processing'){
-        if(!checkStarted){
-          checkStarted=true;
-          showProcessing();
-        }
-        await waitForCheckResult();
+        if(!checkStarted){checkStarted=true;showProcessing();}
         return;
       }
       if(status==='completed' && s.check_result){
         checkStarted=true;
         showResult(s.check_result,String(s.check_result.status||'UNKNOWN'));
-        return;
-      }
-      if(status==='failed' && s.check_result){
-        checkStarted=true;
-        showFailure(
-          'Hiện tại chúng tôi chưa thể kết nối được với server. Giao dịch thất bại, chúng tôi sẽ tạo đơn thất bại bên dưới và chuyển tiền lại cho bạn. Xin lỗi vì sự cố này.',
-          String(s.check_result.code||'CHECK_FAILED'),
-          s.provider_transaction_id||'—'
-        );
         return;
       }
     }catch(e){
@@ -387,48 +347,36 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
     pollTimer=setTimeout(pollPayment,2000);
   }
 
-  async function waitForCheckResult(){
-    const deadline=Date.now()+30000;
-    while(paymentId && Date.now()<deadline){
-      try{
-        const s=await rpc('get_icloud_check_payment_status',{p_payment_id:paymentId});
-        if(s?.ok){
-          const status=String(s.status||'').toLowerCase();
-          if(status==='completed' && s.check_result){
-            showResult(s.check_result,String(s.check_result.status||'UNKNOWN')); return;
-          }
-          if(status==='failed' && s.check_result){
-            showFailure('Hiện tại chúng tôi chưa thể kết nối được với server. Giao dịch thất bại, chúng tôi sẽ tạo đơn thất bại bên dưới và chuyển tiền lại cho bạn. Xin lỗi vì sự cố này.',String(s.check_result.code||'CHECK_FAILED'),s.provider_transaction_id||'—'); return;
-          }
-        }
-      }catch(e){ console.warn('check status:',e); }
-      await new Promise(r=>setTimeout(r,1500));
-    }
-    showFailure('Hiện tại chúng tôi chưa thể kết nối được với server. Giao dịch thất bại, chúng tôi sẽ tạo đơn thất bại bên dưới và chuyển tiền lại cho bạn. Xin lỗi vì sự cố này.','CHECK_TIMEOUT');
-  }
-
   async function runIcloudCheck(){
     try{
       if(!window.supabaseClient) throw new Error('Supabase client chưa sẵn sàng.');
-      const call=await Promise.race([
-        window.supabaseClient.functions.invoke('check-icloud-status',{body:{payment_id:paymentId}}),
-        new Promise((_,reject)=>setTimeout(()=>reject(new Error('Máy chủ kiểm tra không phản hồi trong thời gian cho phép.')),30000))
-      ]);
-      if(call.error){
-        const msg=call.error?.context?.body?.message||call.error.message||'Máy chủ kiểm tra chưa phản hồi.';
+      const r=await window.supabaseClient.functions.invoke('check-icloud-status',{
+        body:{payment_id:paymentId}
+      });
+      if(r.error){
+        const msg=r.error?.context?.body?.message||r.error.message||'Máy chủ kiểm tra chưa phản hồi.';
         throw new Error(msg);
       }
-      const data=call.data||{};
+      const data=r.data||{};
       if(data.status==='ERROR'){
-        showFailure('Hiện tại chúng tôi chưa thể kết nối được với server. Giao dịch thất bại, chúng tôi sẽ tạo đơn thất bại bên dưới và chuyển tiền lại cho bạn. Xin lỗi vì sự cố này.',String(data.code||'CHECK_FAILED'),data.provider_transaction_id||'—');
-        return;
+        throw new Error(data.message||'Kiểm tra iCloud thất bại.');
       }
       showResult(data,String(data.status||'UNKNOWN'));
     }catch(e){
-      showFailure('Hiện tại chúng tôi chưa thể kết nối được với server. Giao dịch thất bại, chúng tôi sẽ tạo đơn thất bại bên dưới và chuyển tiền lại cho bạn. Xin lỗi vì sự cố này.', 'CHECK_FAILED');
+      processingArea.style.display='none';
+      resultArea.style.display='block';
+      const card=$('resultCard'); card.className='result-card';
+      $('resultIcon').textContent='×';
+      $('resultTitle').textContent='GIAO DỊCH CHƯA HOÀN TẤT';
+      $('resultMessage').textContent=e?.message||'Nguồn kiểm tra không phản hồi. Khoản thanh toán đã được ghi nhận, vui lòng kiểm tra lại.';
+      $('resultIdentifier').textContent=normalize();
+      $('resultRef').textContent=paymentRefValue||'—';
+      $('resultTxn').textContent='—';
+      $('resultTime').textContent=new Date().toLocaleString('vi-VN');
+      startBtn.disabled=false;
+      saveHistory({ref:paymentRefValue||'—',identifier:normalize(),time:new Date().toLocaleString('vi-VN'),status:'Lỗi xử lý'});
     }
   }
-
 
   idType.addEventListener('change',setType);
   startBtn.addEventListener('click',begin);
