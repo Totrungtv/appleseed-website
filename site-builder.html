@@ -68,6 +68,8 @@
 <div class="login" id="login"><div class="login-card"><h2>Apple Seed Builder</h2><p class="muted">Khu vực chỉnh website. Chỉ Admin/Staff được phép.</p><div class="field"><label>Email</label><input id="email" type="email" autocomplete="username"></div><div class="field"><label>Mật khẩu</label><input id="password" type="password" autocomplete="current-password"></div><button class="btn primary" id="loginBtn" style="width:100%">Đăng nhập</button><div id="loginMsg" class="danger"></div></div></div>
 <div class="ai-modal" id="aiModal"><div class="ai-card"><div class="ai-head"><div style="font-size:25px">🤖</div><div><h2>Apple Seed AI Designer</h2><div class="muted">AI tư vấn bố cục, responsive, nội dung và phong cách Apple Seed.</div></div><button class="btn ai-close" id="aiClose">✕</button></div><div class="ai-actions"><button class="ai-chip" data-ai="review">🔎 Phân tích trang</button><button class="ai-chip" data-ai="mobile">📱 Tối ưu Mobile</button><button class="ai-chip" data-ai="premium">✨ Cao cấp</button><button class="ai-chip" data-ai="simple">🧹 Đơn giản</button><button class="ai-chip" data-ai="seo">🚀 SEO</button></div><div class="ai-log" id="aiLog"><div class="ai-msg ai-bot">Chào bro 👋 Tôi có thể phân tích trang đang thiết kế và đề xuất cách chỉnh. AI không tự ý sửa production.</div></div><div class="ai-row"><textarea id="aiInput" placeholder="Ví dụ: Làm Hero gọn hơn trên mobile nhưng giữ cụm iPhone nổi bật..."></textarea><button class="btn primary" id="aiSend">Gửi AI</button></div></div></div>
 <script>
+window.__APPLE_SEED_BUILDER_SAFE_SYNC__=true;
+let liveItemCount=0;
 const $=id=>document.getElementById(id);
 const DRAFT_KEY='appleSeedVisualBuilderV2';
 const PUBLISHED_VERSION_KEY='appleSeedVisualBuilderPublishedVersionV3';
@@ -325,7 +327,8 @@ async function loadPublished(forcePublished=false){
     .maybeSingle();
   if(r.error){
     $('history').innerHTML='<div class="muted">CMS chưa có Builder V2. Chạy migration trước khi Publish.</div>';
-    return;
+    console.error('loadPublished:',r.error);
+    return false;
   }
   if(r.data?.config){
     publishedVersion=String(r.data.version_no||'');
@@ -352,6 +355,7 @@ async function loadPublished(forcePublished=false){
   if(h.error){$('history').innerHTML='<div class="muted">Không đọc được lịch sử.</div>';return}
   $('history').innerHTML=h.data?.length?h.data.map(v=>'<div class="history-item"><div><b>V'+v.version_no+'</b> <small>'+v.status+' · '+new Date(v.created_at).toLocaleString('vi-VN')+'</small></div>'+(v.status!=='published'?'<button class="btn" data-version="'+v.id+'">Khôi phục</button>':'<small>LIVE</small>')+'</div>').join(''):'<div class="muted">Chưa có version.</div>';
   $('history').querySelectorAll('[data-version]').forEach(b=>b.onclick=()=>rollback(b.dataset.version));
+  return true;
 }
 async function rollback(id){
   if(!confirm('Khôi phục version này và xuất bản thành bản mới?'))return;
@@ -560,15 +564,18 @@ $('save').onclick=saveDraft;$('reload').onclick=()=>location.reload();$('clear')
 $('syncLive').onclick=async()=>{
   if(!allowed){toast('Tài khoản không có quyền');return}
   if(!confirm('Đồng bộ Builder theo đúng bản LIVE hiện tại? Mọi thay đổi nháp chưa xuất bản trên máy sẽ bị thay thế.'))return;
-  setStatus('Đang đồng bộ LIVE…');
-  await loadPublished(true);
+  const btn=$('syncLive');btn.disabled=true;setStatus('Đang đồng bộ LIVE…');
   try{
-    const u=new URL($('preview').src,location.href);
-    u.searchParams.set('v','builder-live-'+Date.now());
-    $('preview').dataset.builderRetry='';
-    $('preview').src=u.toString();
-  }catch(_){}
-  toast('🔄 Builder đã đồng bộ đúng bản LIVE');
+    const ok=await loadPublished(true);
+    if(ok===false){setStatus('Đồng bộ LIVE thất bại — dữ liệu Builder không bị thay đổi');toast('⚠️ Không đọc được bản LIVE — đã chặn đồng bộ');return}
+    try{
+      const u=new URL($('preview').src,location.href);
+      u.searchParams.set('appleSeedBuilderPreview','1');u.searchParams.set('builderCanvas','1');u.searchParams.set('v','builder-live-'+Date.now());
+      $('preview').dataset.builderRetry='';$('preview').src=u.toString();
+    }catch(e){console.warn('Builder preview reload:',e)}
+    setStatus('Đồng bộ LIVE thành công');toast('🔄 Đã đồng bộ đúng bản LIVE');
+  }catch(e){console.error('Safe LIVE sync:',e);setStatus('Đồng bộ LIVE thất bại — website không bị thay đổi');toast('⚠️ Đồng bộ lỗi: '+(e?.message||'Không xác định'))}
+  finally{btn.disabled=false}
 };
 $('publish').onclick=async()=>{
   if(!allowed){toast('Tài khoản không có quyền');return}
