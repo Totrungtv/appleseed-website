@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-src 'self' https://www.google.com https://www.google.com/maps/; form-action 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-src 'self' https://www.google.com https://www.google.com/maps/ https://www.youtube.com https://www.youtube-nocookie.com; form-action 'self'; upgrade-insecure-requests">
 
 
 <title>Sửa iPhone Trà Vinh – Apple Seed | Sửa iPhone Uy Tín</title>
@@ -31,10 +31,10 @@ a{text-decoration:none;color:inherit}button,input{font:inherit}
   top:0;
   left:0;
   right:0;
-  z-index:5000;
+  z-index:3000;
 }
 body{
-  padding-top:86px;
+  padding-top:var(--apple-seed-header-h,86px);
 }
 .product-actions{
   display:flex;
@@ -141,7 +141,7 @@ body{
 }
 
 @media(max-width:560px){
-  body{padding-top:142px}
+  body{padding-top:var(--apple-seed-header-h,220px)}
   .site-header{height:auto}
   .nav{padding:10px 16px 8px;gap:8px}
   .brand{gap:9px;width:100%;min-width:0}
@@ -164,7 +164,7 @@ body{
 .mi{width:18px;height:18px;display:inline-grid;place-items:center}
 .hero{background:var(--bg);padding:76px 24px 42px}
 .hero-inner{max-width:1240px;margin:auto;display:grid;grid-template-columns:minmax(0,1.18fr) minmax(360px,.82fr);align-items:center;gap:52px}
-.shop-photo{width:100%;aspect-ratio:1.58/1;object-fit:cover;object-position:center;border-radius:18px;box-shadow:0 18px 40px rgba(37,57,95,.12)}
+.shop-photo{width:100%;height:auto;aspect-ratio:auto;object-fit:contain;object-position:center;border-radius:18px;box-shadow:0 18px 40px rgba(37,57,95,.12);display:block}
 .eyebrow{color:var(--blue);font-size:15px;font-weight:850;letter-spacing:3px;margin-bottom:18px}
 h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
 .lead{margin:24px 0 28px;max-width:620px;color:#52627b;font-size:19px;line-height:1.65}
@@ -223,7 +223,7 @@ h1{margin:0;font-size:56px;line-height:1.04;letter-spacing:-2px;font-weight:900}
 @media(max-width:560px){.products-home-grid{grid-template-columns:1fr}.product-home-photo{width:74px;height:74px}.product-modal{padding:10px}.product-modal-main{height:45vh}.product-modal-thumbs{grid-template-columns:repeat(4,1fr)}}
 .booking-nav{display:inline-flex;align-items:center;justify-content:center;gap:7px;background:var(--blue);color:#fff!important;padding:10px 14px;border-radius:9px;font-weight:850;box-shadow:0 6px 16px rgba(23,105,255,.18);white-space:nowrap}
 .booking-nav:hover{filter:brightness(.96)}
-.chat-btn{position:fixed;right:24px;bottom:24px;width:58px;height:58px;border:0;border-radius:50%;background:#1769ff;color:#fff;display:grid;place-items:center;font-size:27px;box-shadow:0 12px 28px rgba(23,105,255,.3);z-index:1000;cursor:pointer}
+.chat-btn{position:fixed;right:24px;bottom:24px;width:72px;height:72px;padding:0;border:0;border-radius:50%;background:#1769ff;display:grid;place-items:center;box-shadow:0 12px 30px rgba(23,105,255,.34);z-index:1000;cursor:pointer;overflow:hidden;transition:transform .18s ease,box-shadow .18s ease}.chat-btn:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 16px 36px rgba(23,105,255,.42)}.chat-btn img{width:100%;height:100%;display:block;object-fit:cover;border-radius:50%}
 .chat-box{position:fixed;right:24px;bottom:94px;width:350px;max-width:calc(100vw - 32px);height:440px;background:#fff;border:1px solid #e2e7f0;border-radius:18px;box-shadow:0 20px 55px rgba(23,37,66,.2);display:none;flex-direction:column;overflow:hidden;z-index:1000}
 .chat-box.open{display:flex}
 .chat-head{background:var(--blue);color:#fff;padding:16px 18px;font-weight:850;display:flex;justify-content:space-between;align-items:center}
@@ -337,10 +337,1123 @@ html.apple-seed-lock-copy,html.apple-seed-lock-copy body{-webkit-user-select:non
 input,textarea,select,[contenteditable="true"]{-webkit-user-select:text!important;user-select:text!important}
 img{-webkit-user-drag:none}
 @media print{body:before{content:"APPLE SEED • NỘI DUNG BẢN QUYỀN • appleseedtravinh.com";position:fixed;top:45%;left:8%;right:8%;text-align:center;font-size:28px;font-weight:900;opacity:.18;z-index:2147483647;transform:rotate(-18deg);pointer-events:none}}
+
+/* ===== APPLE SEED COPYRIGHT / AUTHOR ===== */
+.apple-seed-copyright{
+  width:100%;
+  text-align:center;
+  padding:18px 16px 22px;
+  background:#fff;
+  border-top:1px solid #e7ebf4;
+  color:#61708a;
+  font-size:12px;
+  line-height:1.6;
+  user-select:none!important;
+  -webkit-user-select:none!important;
+}
+.apple-seed-copyright strong{color:#17233d}
+.apple-seed-copyright .copy-warning{display:block;margin-top:4px;color:#b42318;font-weight:850}
+
+/* ===== APPLE SEED VIDEO LIBRARY V1 ===== */
+.video-library{background:#f8faff;padding:54px 24px}.video-library-inner{max-width:1160px;margin:auto}.video-library-head{display:flex;align-items:end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}.video-search{display:flex;gap:8px;flex-wrap:wrap}.video-search input,.video-search select{border:1px solid #d9dfeb;border-radius:10px;padding:11px 12px;background:#fff;min-width:220px;outline:none}.video-search select{min-width:170px}.video-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.video-public-card{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 8px 24px rgba(35,54,91,.07);cursor:pointer}.video-public-thumb{aspect-ratio:16/9;background:#edf2f8;position:relative;overflow:hidden}.video-public-thumb img{width:100%;height:100%;object-fit:cover;display:block}.video-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:54px;height:54px;border-radius:50%;display:grid;place-items:center;background:rgba(23,105,255,.94);color:#fff;font-size:24px;box-shadow:0 8px 22px rgba(23,105,255,.25)}.video-public-info{padding:13px}.video-public-info h3{margin:0 0 7px;font-size:15px;line-height:1.4}.video-public-info p{margin:0;color:#718096;font-size:12px;line-height:1.5}.video-public-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}.video-chip{font-size:10px;font-weight:800;padding:4px 7px;border-radius:999px;background:#eff6ff;color:#175cd3}.video-empty{grid-column:1/-1;text-align:center;color:#718096;padding:30px}.video-add-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;background:var(--blue);color:#fff;border:0;border-radius:10px;padding:11px 15px;font-weight:850;cursor:pointer}.video-modal{position:fixed;inset:0;background:rgba(15,23,42,.78);display:none;align-items:center;justify-content:center;padding:16px;z-index:20000}.video-modal.open{display:flex}.video-modal-box{width:min(980px,100%);max-height:94vh;overflow:auto;background:#fff;border-radius:18px;padding:14px;box-shadow:0 25px 80px rgba(0,0,0,.3);position:relative}.video-modal-close{position:absolute;right:12px;top:12px;width:40px;height:40px;border:0;border-radius:50%;background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.18);font-size:24px;cursor:pointer;z-index:2}.video-player{aspect-ratio:16/9;background:#000;border-radius:12px;overflow:hidden}.video-player iframe{width:100%;height:100%;border:0} .video-modal-info{padding:14px 4px 4px}.video-modal-info h2{margin:0 45px 8px;font-size:23px}.video-modal-info p{color:var(--muted);line-height:1.6}
+.youtube-audio-card{margin:12px 4px 4px;padding:14px;border:1px solid #dbe7f5;border-radius:14px;background:linear-gradient(180deg,#f8fbff,#fff);box-shadow:0 8px 22px rgba(35,54,91,.07)}
+.youtube-audio-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}.youtube-audio-title{font-weight:900;color:var(--ink)}.youtube-audio-badge{font-size:10px;font-weight:900;color:#175cd3;background:#eff6ff;border-radius:999px;padding:5px 8px}
+.youtube-audio-row{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px}.youtube-audio-row input[type=range]{width:100%;accent-color:var(--blue);cursor:pointer}.youtube-volume-value{min-width:48px;text-align:right;font-size:12px;font-weight:850;color:var(--blue)}
+.youtube-audio-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.youtube-audio-actions button{border:1px solid #d7e0ef;background:#fff;color:var(--blue);border-radius:9px;padding:8px 10px;font-size:12px;font-weight:850;cursor:pointer}.youtube-audio-actions button.primary{background:var(--blue);border-color:var(--blue);color:#fff}.youtube-audio-note{margin-top:8px!important;font-size:11px!important;line-height:1.45!important;color:#718096!important}
+.youtube-audio-quality{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:10px;margin-top:10px}.youtube-audio-quality label{font-size:12px;font-weight:850;color:#334155}.youtube-audio-quality select{border:1px solid #d7e0ef;border-radius:9px;background:#fff;color:#1d4ed8;padding:8px 10px;font-weight:800;outline:none;min-width:210px}@media(max-width:560px){.youtube-audio-quality{grid-template-columns:1fr}.youtube-audio-quality select{width:100%;min-width:0}}
+@media(max-width:560px){.youtube-audio-card{margin-left:0;margin-right:0}.youtube-audio-row{grid-template-columns:1fr auto}.youtube-audio-row label{grid-column:1/-1;font-size:12px;font-weight:800}.youtube-audio-actions button{flex:1}}
+.video-submit-modal{position:fixed;inset:0;background:rgba(15,23,42,.72);display:none;align-items:center;justify-content:center;padding:16px;z-index:21000}.video-submit-modal.open{display:flex}.video-submit-box{width:min(620px,100%);max-height:94vh;overflow:auto;background:#fff;border-radius:18px;padding:22px;position:relative}.video-submit-box h2{margin:0 45px 7px 0}.video-submit-form{display:grid;gap:11px}.video-submit-form label{font-size:13px;font-weight:800}.video-submit-form input,.video-submit-form textarea,.video-submit-form select{width:100%;margin-top:6px;border:1px solid #d9dfeb;border-radius:10px;padding:11px 12px;background:#fff;outline:none}.video-submit-form textarea{min-height:100px;resize:vertical}.video-submit-status{display:none;padding:11px 12px;border-radius:10px;font-size:13px;line-height:1.5}.video-submit-status.show{display:block}.video-submit-status.ok{background:#ecfdf3;color:#16794a}.video-submit-status.err{background:#fff1f2;color:#b42318}.video-close{position:absolute;right:12px;top:12px;width:40px;height:40px;border:0;border-radius:50%;background:#f6f8fc;font-size:24px;cursor:pointer}
+@media(max-width:900px){.video-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.video-library{padding-left:16px;padding-right:16px}}
+@media(max-width:560px){.video-grid{grid-template-columns:1fr}.video-search{display:grid;grid-template-columns:1fr}.video-search input,.video-search select{min-width:0;width:100%}.video-library-head{align-items:stretch}.video-add-btn{width:100%}.video-modal-box{padding:10px}.video-modal-info h2{font-size:19px}}
+.apple-seed-youtube-search .video-public-card{cursor:pointer}
+.youtube-result-card .video-public-info h3{font-size:14px}
+.youtube-result-card .video-public-info p{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.youtube-result-card .youtube-channel{font-weight:800;color:#52627b;margin-top:6px}
+.youtube-search-error{padding:12px;border-radius:10px;background:#fff1f2;color:#b42318;font-size:13px}
+.youtube-search-loading{padding:18px;text-align:center;color:#718096}
+
+
+/* ===== AI ENGINEERING CENTER =====
+   Nằm trong luồng trang sau header: không che menu,
+   không fixed, không absolute theo viewport -> cuộn cùng trang.
+*/
+.apple-seed-ai-float{
+  position:relative;
+  z-index:20;
+  display:flex!important;
+  justify-content:flex-end;
+  width:100%;
+  box-sizing:border-box;
+  padding:12px 24px 10px;
+  pointer-events:none;
+}
+
+.apple-seed-ai-float a{
+  pointer-events:auto;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:11px 16px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#176fe5,#3da8ff);
+  color:#fff;
+  text-decoration:none;
+  font-weight:900;
+  font-size:12px;
+  letter-spacing:.02em;
+  box-shadow:0 10px 26px rgba(23,111,229,.25);
+  border:1px solid rgba(255,255,255,.65);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+
+.apple-seed-ai-float a:hover{
+  transform:translateY(-1px);
+  box-shadow:0 13px 30px rgba(23,111,229,.32);
+}
+
+@media(max-width:900px){
+  .apple-seed-ai-float{
+    padding:10px 18px 8px;
+  }
+}
+
+@media(max-width:560px){
+  .apple-seed-ai-float{
+    padding:8px 10px 8px;
+  }
+  .apple-seed-ai-float a{
+    padding:9px 12px;
+    font-size:10px;
+  }
+}
+
+/* ===== TOP YOUTUBE ENGINE ===== */
+.youtube-top-section{padding:22px 24px 10px;background:transparent;}
+.youtube-top-inner{max-width:1240px;margin:0 auto;}
+.youtube-top-section .apple-seed-youtube-search{margin-top:0!important;}
+@media(max-width:560px){
+  .youtube-top-section{padding:16px 12px 10px!important;}
+  .youtube-top-section .apple-seed-youtube-search{padding:16px!important;margin-top:0!important;overflow:visible!important;}
+  .youtube-top-section .apple-seed-youtube-search > div:first-child{display:block!important;}
+  .youtube-top-section .section-kicker{display:block!important;visibility:visible!important;position:relative!important;z-index:2!important;}
+  .youtube-top-section .apple-seed-youtube-search h3{font-size:21px!important;line-height:1.25!important;overflow:visible!important;}
+  .youtube-top-section .apple-seed-youtube-search p{line-height:1.5!important;}
+  .youtube-top-section .apple-seed-youtube-search input{min-width:0!important;width:100%;flex:1 1 100%;}
+  .youtube-top-section .apple-seed-youtube-search button{width:100%;}
+}
+
+
+/* ===== YOUTUBE MODAL MOBILE FIX V2 ===== */
+.video-modal{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.video-modal-box{position:relative;z-index:1}
+.video-modal-close{
+  position:absolute!important;right:10px!important;top:10px!important;
+  z-index:50!important;pointer-events:auto!important;
+  width:42px!important;height:42px!important;display:grid!important;place-items:center!important;
+  cursor:pointer!important;-webkit-appearance:none!important;appearance:none!important;
+}
+@media(max-width:560px){
+  .video-modal{padding:10px!important;align-items:center!important}
+  .video-modal-box{width:100%!important;max-height:92vh!important;border-radius:18px!important}
+  .video-modal-close{right:8px!important;top:8px!important;width:44px!important;height:44px!important;font-size:28px!important}
+  .video-player{border-radius:12px!important}
+  .video-modal-info{padding:12px!important;max-height:36vh!important;overflow:auto!important}
+  .video-modal-info h2{font-size:20px!important;line-height:1.3!important}
+}
+
+
+/* ===== APPLE SEED MEMBER PASSWORD UX — ISOLATED ===== */
+.as-password-field{display:block}
+.as-password-wrap{position:relative;display:block}
+.as-password-wrap input{width:100%;padding-right:48px!important;box-sizing:border-box}
+.as-password-toggle{
+  position:absolute!important;right:8px!important;top:50%!important;
+  transform:translateY(-50%)!important;width:36px!important;height:34px!important;
+  min-width:36px!important;padding:0!important;border:0!important;
+  background:transparent!important;color:#51617a!important;cursor:pointer!important;
+  box-shadow:none!important;font-size:17px!important;z-index:2!important;
+}
+.as-password-toggle:hover{color:#1769ff!important;transform:translateY(-50%) scale(1.05)!important}
+.as-password-match{display:block;min-height:18px;margin-top:5px;font-size:12px;font-weight:700}
+.as-password-match.ok{color:#159447}
+.as-password-match.bad{color:#d83a3a}
+
+/* ===== APPLE SEED ROBOT FRIEND — SOFT / PREMIUM ===== */
+#asRobotFriend{
+  position:fixed;left:50%;top:43%;width:68px;height:88px;
+  z-index:99999;pointer-events:none;opacity:0;
+  transform:translate(-50%,-50%);
+  filter:drop-shadow(0 9px 14px rgba(23,105,255,.18));
+}
+#asRobotFriend .asrf-body{position:relative;width:68px;height:88px}
+#asRobotFriend .asrf-head{
+  position:absolute;left:13px;top:5px;width:42px;height:32px;
+  border:2px solid #1769ff;border-radius:12px;
+  background:linear-gradient(#fff,#edf4fb);
+}
+#asRobotFriend .asrf-antenna{
+  position:absolute;left:50%;top:-11px;width:2px;height:10px;
+  background:#1769ff;transform:translateX(-50%);
+}
+#asRobotFriend .asrf-antenna:after{
+  content:"";position:absolute;left:50%;top:-5px;width:7px;height:7px;
+  border-radius:50%;background:#55b5ff;transform:translateX(-50%);
+}
+#asRobotFriend .asrf-eye{
+  position:absolute;top:10px;width:6px;height:6px;border-radius:50%;
+  background:#1769ff;
+}
+#asRobotFriend .asrf-eye.l{left:9px}
+#asRobotFriend .asrf-eye.r{right:9px}
+#asRobotFriend .asrf-mouth{
+  position:absolute;left:50%;bottom:6px;width:13px;height:3px;
+  border-radius:8px;background:#1769ff;transform:translateX(-50%);
+}
+#asRobotFriend .asrf-torso{
+  position:absolute;left:12px;top:41px;width:44px;height:33px;
+  border:2px solid #1769ff;border-radius:11px;
+  background:linear-gradient(#fff,#edf4fb);
+}
+#asRobotFriend .asrf-torso:after{
+  content:"•";position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-54%);font-size:17px;font-weight:900;color:#3da8ff;
+}
+#asRobotFriend .asrf-arm{
+  position:absolute;top:45px;width:8px;height:27px;
+  border:2px solid #1769ff;border-radius:7px;background:#e7f0f9;
+  transform-origin:50% 4px;
+}
+#asRobotFriend .asrf-arm.l{left:3px}
+#asRobotFriend .asrf-arm.r{right:3px}
+#asRobotFriend .asrf-leg{
+  position:absolute;top:73px;width:10px;height:18px;
+  border:2px solid #1769ff;border-radius:7px;background:#e7f0f9;
+  transform-origin:50% 3px;
+}
+#asRobotFriend .asrf-leg.l{left:21px}
+#asRobotFriend .asrf-leg.r{right:21px}
+#asRobotFriend .asrf-shadow{
+  position:absolute;left:50%;bottom:-6px;width:48px;height:7px;
+  border-radius:50%;background:rgba(20,50,100,.11);
+  transform:translateX(-50%);
+}
+#asRobotFriend .asrf-bubble{
+  position:absolute;left:58px;top:-6px;white-space:nowrap;
+  padding:6px 9px;border-radius:10px;background:#fff;color:#17315d;
+  border:1px solid #e5eaf2;box-shadow:0 6px 16px rgba(23,37,66,.12);
+  font-size:11px;font-weight:800;
+}
+#asRobotFriend.asrf-show{animation:asrfShow .42s ease forwards}
+#asRobotFriend.asrf-walk .asrf-leg.l{animation:asrfLegL .20s ease-in-out infinite alternate}
+#asRobotFriend.asrf-walk .asrf-leg.r{animation:asrfLegR .20s ease-in-out infinite alternate}
+#asRobotFriend.asrf-walk .asrf-arm.l{animation:asrfArmL .20s ease-in-out infinite alternate}
+#asRobotFriend.asrf-walk .asrf-arm.r{animation:asrfArmR .20s ease-in-out infinite alternate}
+#asRobotFriend.asrf-walk .asrf-body{animation:asrfBody .20s ease-in-out infinite alternate}
+#asRobotFriend.asrf-fly .asrf-body{animation:asrfFly .65s ease forwards}
+#asRobotFriend.asrf-fly{animation:asrfFade .65s ease forwards}
+@keyframes asrfShow{from{opacity:0;transform:translate(-50%,-50%) scale(.7)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes asrfLegL{from{transform:rotate(14deg)}to{transform:rotate(-14deg)}}
+@keyframes asrfLegR{from{transform:rotate(-14deg)}to{transform:rotate(14deg)}}
+@keyframes asrfArmL{from{transform:rotate(-16deg)}to{transform:rotate(16deg)}}
+@keyframes asrfArmR{from{transform:rotate(16deg)}to{transform:rotate(-16deg)}}
+@keyframes asrfBody{from{transform:translateY(0)}to{transform:translateY(-2px)}}
+@keyframes asrfFly{0%{transform:scale(1)}70%{transform:scale(.62)}100%{transform:scale(.28)}}
+@keyframes asrfFade{from{opacity:1}to{opacity:0}}
+@media(max-width:560px){
+  #asRobotFriend{width:56px;height:74px;top:40%}
+  #asRobotFriend .asrf-body{transform:scale(.82);transform-origin:50% 100%}
+  #asRobotFriend .asrf-bubble{left:50px;font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){#asRobotFriend{display:none!important}}
+
 </style>
+
+
+<style id="apple-seed-mobile-final-fix">
+/* =========================================================
+   APPLE SEED MOBILE FINAL FIX
+   - Compact fixed header
+   - 5 usable navigation icons only (no fake Video icon)
+   - Member buttons contained inside header
+   - AI Center starts below header, never overlaps it
+   ========================================================= */
+@media (max-width:560px){
+  :root{--apple-seed-mobile-header-h:196px}
+
+  body{
+    padding-top:var(--apple-seed-mobile-header-h)!important;
+    overflow-x:hidden!important;
+  }
+
+  .site-header{
+    position:fixed!important;
+    top:0!important;left:0!important;right:0!important;
+    height:var(--apple-seed-mobile-header-h)!important;
+    min-height:0!important;
+    overflow:visible!important;
+    background:rgba(255,255,255,.96)!important;
+    box-shadow:0 8px 26px rgba(16,40,80,.10)!important;
+    z-index:5000!important;
+  }
+
+  .site-header .nav{
+    width:100%!important;
+    max-width:none!important;
+    height:100%!important;
+    padding:10px 12px 12px!important;
+    margin:0!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    justify-content:flex-start!important;
+    gap:8px!important;
+    flex-wrap:nowrap!important;
+  }
+
+  .site-header .brand{
+    width:100%!important;
+    min-width:0!important;
+    height:72px!important;
+    flex:none!important;
+    display:flex!important;
+    justify-content:flex-start!important;
+    align-items:center!important;
+    gap:10px!important;
+    padding:0 8px!important;
+  }
+  .site-header .brand img{
+    width:52px!important;height:52px!important;
+    flex:none!important;
+  }
+  .site-header .brand-title{
+    font-size:23px!important;
+    line-height:1!important;
+    letter-spacing:-.7px!important;
+  }
+  .site-header .brand-sub{
+    margin-top:6px!important;
+    font-size:9px!important;
+    letter-spacing:1.25px!important;
+    white-space:nowrap!important;
+  }
+
+  .site-header .menu{
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    display:grid!important;
+    grid-template-columns:repeat(6,minmax(0,1fr))!important;
+    grid-template-rows:46px 50px!important;
+    align-items:center!important;
+    gap:7px!important;
+    padding:0!important;
+    margin:0!important;
+    flex:none!important;
+    flex-wrap:nowrap!important;
+    white-space:normal!important;
+  }
+
+  /* Six navigation actions share one compact row; Member actions use the second row. */
+  .site-header .menu > a{
+    width:100%!important;
+    min-width:0!important;
+    height:44px!important;
+    padding:4px!important;
+    margin:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border-radius:12px!important;
+    color:#1769ff!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    flex:none!important;
+  }
+  .site-header .menu > a .mi{
+    width:32px!important;height:32px!important;
+    font-size:22px!important;
+  }
+  .site-header .menu > a > span:last-child{
+    display:none!important;
+  }
+  .site-header .menu > a.booking-nav{
+    background:linear-gradient(135deg,#1769ff,#3d94ff)!important;
+    color:#fff!important;
+    box-shadow:0 8px 18px rgba(23,105,255,.20)!important;
+  }
+
+  /* Member actions occupy the second row, never overlap AI Center. */
+  .site-header .member-auth-buttons{
+    grid-column:1 / -1!important;
+    width:100%!important;
+    height:50px!important;
+    min-width:0!important;
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:8px!important;
+    align-items:stretch!important;
+    margin:0!important;
+  }
+  .site-header .member-auth-buttons .member-auth-btn{
+    width:100%!important;
+    min-width:0!important;
+    height:50px!important;
+    margin:0!important;
+    padding:0 8px!important;
+    border-radius:14px!important;
+    font-size:15px!important;
+    white-space:nowrap!important;
+  }
+  .site-header .member-user-pill{
+    grid-column:1 / -1!important;
+    width:100%!important;
+  }
+
+  /* AI Center is in document flow immediately BELOW fixed header. */
+  #apple-seed-ai-top.apple-seed-ai-float{
+    position:relative!important;
+    top:auto!important;right:auto!important;left:auto!important;
+    width:100%!important;
+    height:52px!important;
+    min-height:52px!important;
+    padding:6px 12px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-end!important;
+    box-sizing:border-box!important;
+    z-index:20!important;
+    pointer-events:none!important;
+    background:linear-gradient(180deg,#f8fbff,#f4f8ff)!important;
+  }
+  #apple-seed-ai-top.apple-seed-ai-float a{
+    pointer-events:auto!important;
+    max-width:78vw!important;
+    padding:9px 13px!important;
+    font-size:9px!important;
+    letter-spacing:.04em!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+
+  /* YouTube search starts cleanly after AI Center. */
+  .youtube-top-section{
+    padding:14px 12px 10px!important;
+    margin:0!important;
+  }
+  .youtube-top-section .apple-seed-youtube-search{
+    margin-top:0!important;
+    padding:18px!important;
+    border-radius:20px!important;
+  }
+  .youtube-top-section .apple-seed-youtube-search h3{
+    font-size:21px!important;
+    line-height:1.25!important;
+  }
+  .youtube-top-section .apple-seed-youtube-search p{
+    font-size:13px!important;
+    line-height:1.55!important;
+  }
+  .youtube-top-section .apple-seed-youtube-search input{
+    width:100%!important;
+    min-width:0!important;
+    height:54px!important;
+    font-size:16px!important;
+  }
+  .youtube-top-section .apple-seed-youtube-search button{
+    width:100%!important;
+    min-height:54px!important;
+  }
+
+  /* Premium hero remains readable instead of being compressed under browser chrome. */
+  .hero{
+    padding:42px 16px 54px!important;
+  }
+  .hero-inner{
+    display:flex!important;
+    flex-direction:column!important;
+    gap:28px!important;
+  }
+  .hero h1{
+    font-size:40px!important;
+    line-height:1.02!important;
+  }
+  .hero .lead{
+    font-size:16px!important;
+    line-height:1.65!important;
+  }
+  .hero .shop-photo{
+    width:100%!important;
+    height:auto!important;
+    aspect-ratio:auto!important;
+    object-fit:contain!important;
+    object-position:center!important;
+  }
+}
+</style>
+<style id="apple-seed-entertainment-nav">
+.entertainment-nav{color:#8a43e8!important}
+.entertainment-nav:hover{color:#6f27d4!important}
+.entertainment-nav:after{background:linear-gradient(90deg,#8a43e8,#c66bff)!important}
+@media(max-width:560px){.entertainment-nav{display:flex!important}}
+</style>
+<style id="entertainment-home-hero-style">
+.entertainment-home-hero{margin:24px auto 0;max-width:1180px;padding:0 18px}
+.entertainment-home-inner{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px 24px;border:1px solid #e4eaf3;border-radius:20px;background:linear-gradient(135deg,#fff,#f6f3ff);box-shadow:0 10px 30px rgba(35,54,91,.08)}
+.entertainment-home-inner h2{margin:4px 0 6px;font-size:24px}
+.entertainment-home-inner p{margin:0;color:#667085}
+.entertainment-home-btn{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;padding:13px 20px;border-radius:14px;text-decoration:none;font-weight:800;background:#7c3aed;color:#fff;box-shadow:0 8px 18px rgba(124,58,237,.22)}
+.entertainment-home-btn:hover{transform:translateY(-1px)}
+@media(max-width:700px){.entertainment-home-inner{flex-direction:column;align-items:stretch}.entertainment-home-btn{width:100%}}
+</style><style id="apple-seed-premium-iphone-style-v1">
+body{background:linear-gradient(180deg,#eef4fb 0,#f8fbff 24%,#fff 62%,#f3f7fd 100%)!important;color:#0a1224!important}
+.site-header{background:rgba(7,17,36,.95)!important;border-bottom:1px solid rgba(255,255,255,.10)!important;box-shadow:0 10px 32px rgba(4,12,28,.18)!important;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.site-header .brand-title{color:#fff!important}.site-header .brand-sub{color:#aabbd2!important}.site-header .menu,.site-header .menu a{color:#dceaff!important}.site-header .menu a:hover{color:#72c8ff!important}.site-header .booking-nav{background:linear-gradient(135deg,#2f7cff,#55aaff)!important}
+.apple-seed-premium-hero{position:relative;overflow:hidden;min-height:660px;padding:78px 24px 72px;color:#fff;background:radial-gradient(circle at 72% 38%,rgba(61,143,255,.26),transparent 26%),radial-gradient(circle at 88% 88%,rgba(95,201,255,.14),transparent 30%),linear-gradient(135deg,#061126,#0b1933 50%,#0a1429)}
+.apple-seed-premium-hero:before{content:"";position:absolute;width:720px;height:720px;right:-220px;top:-250px;border:1px solid rgba(122,190,255,.14);border-radius:50%;box-shadow:0 0 0 80px rgba(122,190,255,.025),0 0 0 160px rgba(122,190,255,.018);pointer-events:none}
+.apple-seed-premium-hero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px);background-size:52px 52px;mask-image:linear-gradient(to bottom,rgba(0,0,0,.5),transparent 74%);pointer-events:none}
+.asph-inner{position:relative;z-index:2;max-width:1280px;margin:auto;display:grid;grid-template-columns:minmax(320px,.82fr) minmax(520px,1.18fr);gap:42px;align-items:center}.asph-copy{padding:18px 0}
+.asph-kicker{display:inline-flex;align-items:center;gap:8px;color:#79c9ff;font-size:11px;font-weight:950;letter-spacing:3.5px;margin-bottom:20px}.asph-kicker:before{content:"";width:28px;height:1px;background:#4aa5ff;box-shadow:0 0 10px #4aa5ff}
+.asph-title{margin:0!important;max-width:620px;font-size:clamp(46px,5.6vw,78px)!important;line-height:.96!important;letter-spacing:-3.8px!important;color:#fff!important;font-weight:950!important}.asph-title span{display:block;background:linear-gradient(100deg,#fff,#c9d9ef 45%,#65b9ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.asph-text{max-width:540px;margin:24px 0 28px;color:#b7c6db;font-size:17px;line-height:1.7}.asph-actions{display:flex;gap:10px;flex-wrap:wrap}.asph-btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:13px 19px;border-radius:12px;font-weight:900;color:#fff!important;border:1px solid rgba(255,255,255,.14);background:linear-gradient(135deg,#2f7cff,#4da7ff);box-shadow:0 12px 30px rgba(47,124,255,.25)}.asph-btn.secondary{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.18);box-shadow:none}.asph-note{margin-top:18px;color:#8093af;font-size:11px;letter-spacing:.6px}
+.asph-stage{min-height:520px;position:relative;display:flex;align-items:center;justify-content:center;perspective:1300px}.asph-glow{position:absolute;width:370px;height:370px;border-radius:50%;background:radial-gradient(circle,rgba(78,165,255,.30),rgba(78,165,255,.06) 40%,transparent 72%);filter:blur(8px)}
+.asph-phone{position:absolute;width:150px;height:310px;border-radius:31px;padding:7px;background:linear-gradient(145deg,#f4f7fb,#8d9aae 42%,#313b4d 72%,#d8e0ea);box-shadow:0 28px 55px rgba(0,0,0,.42),inset 0 0 0 1px rgba(255,255,255,.65);transform-style:preserve-3d;transition:transform .45s ease,filter .45s ease}.asph-phone:before{content:"";position:absolute;inset:5px;border-radius:27px;background:linear-gradient(145deg,#182338,#02050b 62%,#111c2d);box-shadow:inset 0 0 0 1px rgba(255,255,255,.10)}.asph-phone:after{content:"";position:absolute;top:13px;left:50%;transform:translateX(-50%);width:52px;height:16px;border-radius:12px;background:#010207;z-index:3;box-shadow:0 1px 5px rgba(0,0,0,.7)}
+.asph-phone-screen{position:absolute;inset:12px;border-radius:24px;z-index:2;overflow:hidden;background:radial-gradient(circle at 65% 35%,rgba(93,177,255,.72),transparent 25%),linear-gradient(150deg,#17243b,#071021 68%,#0d2d52)}.asph-phone-screen:after{content:"";position:absolute;inset:-20%;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.16) 48%,transparent 60%);transform:translateX(-55%) rotate(7deg);animation:asphSweep 5.5s ease-in-out infinite}.asph-phone-screen img{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;border-radius:24px!important;z-index:1!important}
+@keyframes asphSweep{50%{transform:translateX(55%) rotate(7deg)}100%{transform:translateX(55%) rotate(7deg)}}
+.asph-phone-label{position:absolute;z-index:5;left:50%;bottom:-38px;transform:translateX(-50%);white-space:nowrap;font-size:11px;font-weight:900;letter-spacing:1.2px;color:#aebed4}
+.asph-phone-1{transform:translate3d(-235px,55px,-130px) rotateY(24deg) rotateZ(-8deg) scale(.82);filter:brightness(.72)}.asph-phone-2{transform:translate3d(-125px,-18px,-40px) rotateY(15deg) rotateZ(-4deg) scale(.94);filter:brightness(.88)}.asph-phone-3{transform:translate3d(0,-30px,70px) scale(1.14);z-index:6}.asph-phone-4{transform:translate3d(125px,-10px,-40px) rotateY(-15deg) rotateZ(4deg) scale(.94);filter:brightness(.88)}.asph-phone-5{transform:translate3d(235px,58px,-130px) rotateY(-24deg) rotateZ(8deg) scale(.82);filter:brightness(.72)}
+.asph-phone-1:hover{transform:translate3d(-235px,40px,-80px) rotateY(24deg) rotateZ(-8deg) scale(.88)}.asph-phone-2:hover{transform:translate3d(-125px,-28px,10px) rotateY(15deg) rotateZ(-4deg) scale(1)}.asph-phone-3:hover{transform:translate3d(0,-44px,90px) scale(1.17)}.asph-phone-4:hover{transform:translate3d(125px,-20px,10px) rotateY(-15deg) rotateZ(4deg) scale(1)}.asph-phone-5:hover{transform:translate3d(235px,42px,-80px) rotateY(-24deg) rotateZ(8deg) scale(.88)}
+.asph-caption{position:absolute;bottom:0;left:50%;transform:translateX(-50%);padding:9px 14px;border:1px solid rgba(255,255,255,.10);border-radius:999px;background:rgba(7,16,32,.62);backdrop-filter:blur(10px);color:#a9bdd6;font-size:10px;font-weight:800;letter-spacing:1.5px;white-space:nowrap}
+@media(max-width:900px){.asph-inner{grid-template-columns:1fr;gap:12px}.asph-copy{text-align:center}.asph-text{margin-left:auto;margin-right:auto}.asph-actions{justify-content:center}.asph-stage{min-height:470px;transform:scale(.9);transform-origin:center top;margin-bottom:-40px}}
+@media(max-width:560px){.apple-seed-premium-hero{padding:48px 16px 38px;min-height:680px}.asph-title{font-size:43px!important;letter-spacing:-2.4px!important}.asph-text{font-size:15px}.asph-stage{min-height:410px;transform:scale(.63);margin-left:-24%;margin-right:-24%;margin-bottom:-130px}.asph-caption{bottom:5px;font-size:9px}}
+</style>
+<style id="apple-seed-premium-black-gold-v3">
+:root{--as-gold:#d8aa58;--as-gold-light:#f2d08d}
+body{background:#fff!important;color:#17233d}
+.site-header{height:76px!important;background:rgba(4,4,4,.96)!important;border-bottom:1px solid rgba(216,170,88,.2)!important;box-shadow:0 8px 28px rgba(0,0,0,.35)!important;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.site-header .nav{height:76px!important;max-width:1450px!important;padding:0 28px!important}
+.site-header .brand{min-width:300px!important;gap:10px!important}.site-header .brand img{width:48px!important;height:48px!important;filter:grayscale(1) brightness(2)!important}
+.site-header .brand-title{font-size:21px!important;color:#f5f2eb!important;letter-spacing:1.5px!important;text-transform:uppercase!important}.site-header .brand-sub{font-size:8px!important;color:#858078!important;letter-spacing:2px!important}
+.site-header .menu{gap:23px!important;color:#f0ede7!important;font-size:11px!important;font-weight:850!important;text-transform:uppercase!important}.site-header .menu a{color:#eeeae2!important}.site-header .menu a:hover{color:var(--as-gold-light)!important}.site-header .booking-nav{background:linear-gradient(135deg,#b98435,#f1ce8a)!important;color:#080808!important;border:0!important;box-shadow:0 8px 22px rgba(216,170,88,.16)!important}
+.site-header .member-auth-btn{background:#090909!important;color:#eeeae2!important;border-color:#40392e!important}.site-header .member-auth-btn.primary{background:linear-gradient(135deg,#b98435,#f1ce8a)!important;color:#080808!important;border-color:transparent!important}
+
+.as3-hero{position:relative;overflow:hidden;isolation:isolate;min-height:790px;background:#030303;color:#fff}
+.as3-hero:before{content:"";position:absolute;inset:0;z-index:-2;background:radial-gradient(circle at 67% 45%,rgba(209,158,74,.15),transparent 22%),radial-gradient(circle at 83% 48%,rgba(55,74,112,.18),transparent 30%),linear-gradient(180deg,#020202 0%,#070707 70%,#030303 100%)}
+.as3-hero:after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px);background-size:72px 72px;mask-image:linear-gradient(to bottom,rgba(0,0,0,.45),transparent 78%)}
+.as3-wrap{max-width:1500px;margin:auto;padding:60px 52px 0;min-height:790px;position:relative}
+.as3-main{display:grid;grid-template-columns:39% 61%;align-items:center;min-height:640px}
+.as3-copy{padding:0 0 30px 14px;z-index:10}.as3-kicker{color:var(--as-gold-light);font-size:11px;font-weight:950;letter-spacing:3.8px;margin-bottom:20px}.as3-title{font-size:clamp(56px,5.4vw,82px)!important;line-height:.98!important;letter-spacing:-3.8px!important;font-weight:950!important;text-transform:uppercase!important;color:#f7f6f3!important;margin:0!important}.as3-title span{display:block;color:transparent;background:linear-gradient(105deg,#fff,#ddd7cc 55%,#a9a096);-webkit-background-clip:text;background-clip:text}.as3-sub{margin:20px 0 20px;color:#eee9e1;font-size:15px;letter-spacing:4.5px;font-weight:800}.as3-sub b{color:var(--as-gold-light)}.as3-desc{max-width:520px;color:#aaa59d;font-size:14px;line-height:1.75;margin:0 0 26px}.as3-actions{display:flex;gap:12px}.as3-btn{min-height:46px;padding:12px 22px;border-radius:9px;border:1px solid #403a32;background:#080808;color:#f4f0e9!important;font-size:12px;font-weight:900;text-transform:uppercase;display:inline-flex;align-items:center;justify-content:center}.as3-btn.gold{background:linear-gradient(135deg,#b98435,#f1ce8a);border-color:#d5a958;color:#090909!important;box-shadow:0 12px 26px rgba(216,170,88,.15)}.as3-note{margin-top:18px;color:#68645e;font-size:8px;letter-spacing:2px}
+
+.as3-stage{height:600px;position:relative;perspective:1400px}.as3-stage:before{content:"";position:absolute;width:620px;height:620px;left:48%;top:-12px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(circle,rgba(213,163,79,.14),rgba(45,57,80,.06) 36%,transparent 69%)}
+.as3-phone{position:absolute;width:188px;height:392px;padding:7px;border-radius:35px;background:linear-gradient(145deg,#eee8dd,#75624b 26%,#121212 52%,#d7b87d 84%,#5c4a34);box-shadow:0 38px 75px rgba(0,0,0,.72),inset 0 0 0 1px rgba(255,255,255,.58);transform-style:preserve-3d}.as3-phone:before{content:"";position:absolute;inset:6px;border-radius:30px;background:#080808;box-shadow:inset 0 0 0 1px rgba(255,255,255,.11)}.as3-screen{position:absolute;inset:12px;border-radius:25px;overflow:hidden;z-index:2;background:radial-gradient(circle at 50% 35%,#342d23,#090909 65%)}.as3-screen img{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:contain!important;padding:8px!important;background:#050505!important;border-radius:25px!important}.as3-island{position:absolute;z-index:4;left:50%;top:9px;transform:translateX(-50%);width:58px;height:18px;border-radius:13px;background:#000}.as3-label{position:absolute;left:50%;bottom:-28px;transform:translateX(-50%);white-space:nowrap;color:#969088;font-size:8px;letter-spacing:1.2px;font-weight:800}.as3-p1{left:0;top:182px;transform:rotateY(24deg) rotateZ(-10deg) scale(.75);filter:brightness(.58)}.as3-p2{left:15%;top:70px;transform:rotateY(17deg) rotateZ(-5deg) scale(.9);filter:brightness(.78)}.as3-p3{left:31%;top:0;transform:translateZ(100px) rotateZ(-1deg) scale(1.2);z-index:8}.as3-p4{left:49%;top:82px;transform:rotateY(-16deg) rotateZ(5deg) scale(.9);filter:brightness(.8)}.as3-p5{left:65%;top:166px;transform:rotateY(-23deg) rotateZ(9deg) scale(.76);filter:brightness(.6)}.as3-p6{left:78%;top:108px;transform:rotateY(-27deg) rotateZ(12deg) scale(.68);filter:brightness(.5)}
+
+.as3-benefits{position:absolute;right:0;top:65px;width:86px;border:1px solid rgba(255,255,255,.11);background:rgba(8,8,8,.72);border-radius:18px;padding:9px 7px;backdrop-filter:blur(10px);z-index:20}.as3-benefit{text-align:center;padding:12px 1px 14px;border-bottom:1px solid rgba(255,255,255,.08);color:#d9d3c8;font-size:8px;line-height:1.45}.as3-benefit:last-child{border:0}.as3-benefit i{display:block;font-style:normal;color:var(--as-gold-light);font-size:21px;margin-bottom:5px}.as3-discover{position:absolute;left:4%;bottom:33px;display:flex;align-items:center;gap:11px;text-transform:uppercase;letter-spacing:2px;color:#e7dfd2;font-size:8px}.as3-play{width:45px;height:45px;border-radius:50%;display:grid;place-items:center;border:1px solid #bb8e49;box-shadow:0 0 24px rgba(216,170,88,.15)}
+
+.as3-services{position:relative;z-index:30;display:grid;grid-template-columns:repeat(5,1fr) 1.08fr;gap:6px;margin-top:-6px}.as3-service{min-height:112px;border:1px solid rgba(255,255,255,.13);border-radius:13px;background:linear-gradient(145deg,#0e0e0e,#070707);display:flex;align-items:center;gap:11px;padding:12px 13px;box-shadow:0 18px 35px rgba(0,0,0,.3)}.as3-service .ico{width:49px;height:78px;border-radius:8px;border:1px solid #312b22;display:grid;place-items:center;color:#d9ad61;font-size:24px;flex:none}.as3-service h3{margin:0 0 6px;color:#f0ece5;font-size:11px;text-transform:uppercase}.as3-service p{margin:0;color:#8d8982;font-size:8px;line-height:1.5}.as3-more{justify-content:center;text-align:center}.as3-more .ico{display:none}
+.as3-bottom{display:grid;grid-template-columns:1.6fr .52fr;gap:10px;margin-top:28px;padding-bottom:30px}.as3-stats{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid rgba(255,255,255,.11);border-radius:13px;background:#0a0a0a;overflow:hidden}.as3-stat{padding:21px 18px;border-right:1px solid rgba(255,255,255,.08)}.as3-stat:last-child{border:0}.as3-stat b{display:block;color:#e2b76a;font-size:17px;margin-bottom:7px}.as3-stat span{color:#96918a;font-size:9px;line-height:1.45}.as3-store{position:relative;min-height:122px;border:1px solid rgba(255,255,255,.11);border-radius:13px;overflow:hidden;background:#090909}.as3-store img{width:100%;height:100%;min-height:122px;object-fit:cover;opacity:.76}.as3-store:after{content:"";position:absolute;inset:45% 0 0;background:linear-gradient(transparent,#050505)}.as3-store-label{position:absolute;z-index:3;left:15px;bottom:12px;color:#f3eee5;font-size:10px;font-weight:900}.as3-store-label small{display:block;color:#aaa39a;font-size:8px;margin-top:4px}
+
+body.as-premium-v2 .asv2-hero{display:none!important}
+body.as-premium-v2 #homeRenderer,body.as-premium-v2 #homeRenderer .hero{background:inherit!important;color:inherit!important}
+@media(max-width:1100px){.as3-main{grid-template-columns:42% 58%}.as3-p6{display:none}.as3-benefits{right:-4px}.as3-services{grid-template-columns:repeat(3,1fr)}.as3-bottom{grid-template-columns:1fr}.as3-store{min-height:180px}.as3-store img{min-height:180px}}
+@media(max-width:760px){.site-header{height:auto!important}.site-header .nav{height:auto!important}.as3-hero,.as3-wrap{min-height:0}.as3-wrap{padding:44px 18px 20px}.as3-main{display:block;min-height:0}.as3-copy{text-align:center;padding:0}.as3-title{font-size:49px!important}.as3-sub{font-size:11px;letter-spacing:2.5px}.as3-desc{font-size:13px;margin-left:auto;margin-right:auto}.as3-actions{justify-content:center}.as3-stage{height:455px;transform:scale(.72);transform-origin:center top;margin:0 -18% -100px}.as3-benefits{display:none}.as3-services{grid-template-columns:repeat(2,1fr);margin-top:0}.as3-bottom{margin-top:12px}.as3-stats{grid-template-columns:repeat(2,1fr)}.as3-stat:nth-child(even){border-right:0}.as3-store{min-height:190px}.as3-store img{min-height:190px}}
+@media(max-width:480px){.as3-title{font-size:40px!important}.as3-stage{transform:scale(.55);margin:0 -31% -160px}.as3-services{grid-template-columns:1fr}.as3-stats{grid-template-columns:1fr}.as3-stat{border-right:0!important;border-bottom:1px solid rgba(255,255,255,.08)}.as3-stat:last-child{border:0}}
+</style>
+<style id="apple-seed-light-premium-v4">
+/* APPLE SEED LIGHT PREMIUM V4
+   UI-only redesign of the existing premium homepage.
+   Keeps existing IDs, links, dynamic product data, Supabase/AI/CMS and lower-page sections intact.
+*/
+:root{
+  --as-light-bg:#f7f7f5;
+  --as-light-card:rgba(255,255,255,.92);
+  --as-light-ink:#17202b;
+  --as-light-muted:#68717d;
+  --as-light-gold:#c89b3c;
+  --as-light-gold-2:#f0d28a;
+  --as-light-line:rgba(30,38,48,.12);
+}
+html{background:var(--as-light-bg)!important}
+body{
+  background:var(--as-light-bg)!important;
+  color:var(--as-light-ink)!important;
+  padding-top:76px!important;
+}
+.site-header{
+  height:76px!important;
+  background:rgba(255,255,255,.94)!important;
+  border-bottom:1px solid rgba(22,30,40,.09)!important;
+  box-shadow:0 8px 28px rgba(25,32,40,.07)!important;
+  backdrop-filter:blur(18px)!important;
+  -webkit-backdrop-filter:blur(18px)!important;
+}
+.site-header .nav{
+  height:76px!important;
+  max-width:1450px!important;
+  padding:0 34px!important;
+}
+.site-header .brand{min-width:275px!important;gap:10px!important}
+.site-header .brand img{
+  width:54px!important;height:54px!important;
+  object-fit:contain!important;
+  filter:none!important;
+}
+.site-header .brand-title{
+  color:#161b22!important;
+  font-size:22px!important;
+  letter-spacing:1.2px!important;
+  text-transform:uppercase!important;
+}
+.site-header .brand-sub{
+  color:#7a8088!important;
+  font-size:8px!important;
+  letter-spacing:2px!important;
+}
+.site-header .menu{
+  color:#20252b!important;
+  font-size:12px!important;
+  font-weight:850!important;
+  gap:25px!important;
+}
+.site-header .menu a{color:#20252b!important}
+.site-header .menu a:hover{color:#b98221!important}
+.site-header .booking-nav{
+  background:linear-gradient(135deg,#d3a34a,#f2d38e)!important;
+  color:#17130b!important;
+  border:0!important;
+  box-shadow:0 8px 22px rgba(200,155,60,.20)!important;
+}
+.site-header .member-auth-btn{
+  background:#fff!important;
+  color:#3b4148!important;
+  border-color:#d9dce0!important;
+}
+.site-header .member-auth-btn.primary{
+  background:#1d232b!important;
+  color:#fff!important;
+  border-color:#1d232b!important;
+}
+
+/* Main visual area: light luxury iPhone presentation */
+.as3-hero{
+  min-height:0!important;
+  background:#f7f7f5!important;
+  color:var(--as-light-ink)!important;
+  overflow:hidden!important;
+  isolation:isolate!important;
+}
+.as3-hero:before{
+  content:""!important;
+  position:absolute!important;
+  inset:0!important;
+  z-index:-2!important;
+  background:
+    radial-gradient(circle at 67% 35%,rgba(232,195,112,.28),transparent 22%),
+    radial-gradient(circle at 82% 48%,rgba(205,218,234,.34),transparent 31%),
+    radial-gradient(circle at 50% 95%,rgba(255,255,255,.95),transparent 45%),
+    linear-gradient(180deg,#fbfbfa 0%,#f3f4f2 100%)!important;
+}
+.as3-hero:after{
+  content:""!important;
+  position:absolute!important;
+  inset:0!important;
+  z-index:-1!important;
+  pointer-events:none!important;
+  background:
+    linear-gradient(90deg,rgba(40,45,52,.035) 1px,transparent 1px),
+    linear-gradient(rgba(40,45,52,.025) 1px,transparent 1px)!important;
+  background-size:72px 72px!important;
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,.45),transparent 76%)!important;
+}
+.as3-wrap{
+  max-width:1500px!important;
+  min-height:0!important;
+  padding:54px 48px 30px!important;
+}
+.as3-main{
+  grid-template-columns:40% 60%!important;
+  min-height:600px!important;
+  align-items:center!important;
+}
+.as3-copy{
+  padding:0 0 26px 16px!important;
+  z-index:10!important;
+}
+.as3-kicker{
+  color:#b68124!important;
+  font-size:11px!important;
+  letter-spacing:3.6px!important;
+  margin-bottom:18px!important;
+}
+.as3-title{
+  color:#151a20!important;
+  font-size:clamp(56px,5.5vw,82px)!important;
+  line-height:.98!important;
+  letter-spacing:-4px!important;
+  font-weight:950!important;
+}
+.as3-title span{
+  color:transparent!important;
+  background:linear-gradient(105deg,#151a20,#5e6369 56%,#a07a30)!important;
+  -webkit-background-clip:text!important;
+  background-clip:text!important;}
+.as3-sub{
+  color:#3f454c!important;
+  font-size:15px!important;
+  letter-spacing:4.2px!important;
+  margin:20px 0!important;
+}
+.as3-sub b{color:#bd8a2c!important}
+.as3-desc{
+  max-width:530px!important;
+  color:#66707b!important;
+  font-size:14px!important;
+  line-height:1.8!important;
+  margin:0 0 26px!important;
+}
+.as3-actions{gap:12px!important}
+.as3-btn{
+  min-height:47px!important;
+  padding:12px 22px!important;
+  border-radius:12px!important;
+  border:1px solid #c9cdd2!important;
+  background:rgba(255,255,255,.72)!important;
+  color:#20252b!important;
+  box-shadow:0 7px 20px rgba(42,48,55,.06)!important;
+}
+.as3-btn.gold{
+  background:linear-gradient(135deg,#d19f3d,#f2d38d)!important;
+  border-color:#d5aa58!important;
+  color:#18130a!important;
+  box-shadow:0 12px 28px rgba(193,145,49,.20)!important;
+}
+.as3-note{color:#8a9096!important}
+
+/* Phones: keep the existing dynamic product images, only rebuild their presentation */
+.as3-stage{
+  height:610px!important;
+  perspective:1500px!important;
+}
+.as3-stage:before{
+  width:690px!important;height:690px!important;
+  left:50%!important;top:-30px!important;
+  background:
+    radial-gradient(circle,rgba(229,196,125,.34),rgba(212,220,231,.18) 38%,transparent 69%)!important;
+}
+.as3-phone{
+  width:198px!important;
+  height:424px!important;
+  padding:7px!important;
+  border-radius:38px!important;
+  background:linear-gradient(145deg,#f7f7f6,#c9cbd0 26%,#7f858d 52%,#e4e6e7 83%,#a5a8ad)!important;
+  box-shadow:0 34px 70px rgba(42,48,56,.23),inset 0 0 0 1px rgba(255,255,255,.95)!important;
+}
+.as3-phone:before{
+  background:#111318!important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)!important;
+}
+.as3-screen{
+  inset:11px!important;
+  border-radius:29px!important;
+  background:linear-gradient(160deg,#0e1827,#2b3543 48%,#080b10)!important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.10)!important;
+}
+.as3-screen img{
+  object-fit:contain!important;
+  padding:5px!important;
+  background:transparent!important;
+  border-radius:29px!important;
+  mix-blend-mode:normal!important;
+}
+.as3-island{
+  width:62px!important;height:19px!important;top:9px!important;
+}
+.as3-label{
+  color:#5f6770!important;
+  font-size:9px!important;
+  font-weight:850!important;
+}
+.as3-p1{left:0!important;top:190px!important;transform:rotateY(24deg) rotateZ(-9deg) scale(.78)!important;filter:brightness(.90)!important}
+.as3-p2{left:15%!important;top:66px!important;transform:rotateY(16deg) rotateZ(-5deg) scale(.92)!important;filter:brightness(.96)!important}
+.as3-p3{left:31%!important;top:-6px!important;transform:translateZ(110px) rotateZ(-1deg) scale(1.23)!important;z-index:8!important}
+.as3-p4{left:49%!important;top:78px!important;transform:rotateY(-16deg) rotateZ(5deg) scale(.92)!important;filter:brightness(.96)!important}
+.as3-p5{left:65%!important;top:172px!important;transform:rotateY(-23deg) rotateZ(9deg) scale(.79)!important;filter:brightness(.90)!important}
+.as3-p6{left:78%!important;top:112px!important;transform:rotateY(-27deg) rotateZ(12deg) scale(.70)!important;filter:brightness(.86)!important}
+.as3-benefits{
+  right:2px!important;top:48px!important;width:92px!important;
+  background:rgba(255,255,255,.76)!important;
+  border:1px solid rgba(28,35,42,.12)!important;
+  box-shadow:0 15px 35px rgba(50,55,60,.10)!important;
+}
+.as3-benefit{
+  color:#4f5760!important;
+  border-bottom-color:rgba(30,38,46,.09)!important;
+}
+.as3-benefit i{color:#bd8a2c!important}
+.as3-discover{bottom:18px!important;color:#555d65!important}
+.as3-play{
+  border-color:#c4953c!important;
+  color:#9c7021!important;
+  background:rgba(255,255,255,.78)!important;
+  box-shadow:0 0 25px rgba(200,155,60,.18)!important;
+}
+
+/* Service strip */
+.as3-services{
+  grid-template-columns:repeat(5,1fr) 1.08fr!important;
+  gap:8px!important;
+  margin-top:-4px!important;
+}
+.as3-service{
+  min-height:112px!important;
+  border:1px solid rgba(28,35,42,.13)!important;
+  border-radius:15px!important;
+  background:rgba(255,255,255,.86)!important;
+  box-shadow:0 15px 34px rgba(45,52,60,.08)!important;
+}
+.as3-service .ico{
+  border-color:rgba(191,146,57,.35)!important;
+  color:#b78324!important;
+  background:linear-gradient(180deg,#fff,#f6f2e9)!important;
+}
+.as3-service h3{color:#20252b!important}
+.as3-service p{color:#7b838b!important}
+.as3-more{background:#20252b!important;border-color:#20252b!important}
+.as3-more h3{color:#fff!important}.as3-more p{color:#c7cbd0!important}
+
+/* Stats/store stay in the same structure, but match the new light visual system */
+.as3-bottom{
+  margin-top:24px!important;
+  padding-bottom:18px!important;
+}
+.as3-stats{
+  border:1px solid rgba(28,35,42,.12)!important;
+  border-radius:15px!important;
+  background:rgba(255,255,255,.88)!important;
+  box-shadow:0 14px 30px rgba(45,52,60,.07)!important;
+}
+.as3-stat{border-right-color:rgba(28,35,42,.08)!important}
+.as3-stat b{color:#b78324!important}
+.as3-stat span{color:#747c84!important}
+.as3-store{
+  border-color:rgba(28,35,42,.12)!important;
+  box-shadow:0 14px 30px rgba(45,52,60,.07)!important;
+}
+.as3-store img{opacity:.92!important}
+.as3-store-label{color:#fff!important;text-shadow:0 2px 12px rgba(0,0,0,.45)!important}
+.as3-store-label small{color:#f1f2f3!important}
+
+/* Prevent the placeholder renderer from creating a second visual system */
+#homeRenderer .hero{background:var(--as-light-bg)!important;color:var(--as-light-ink)!important}
+
+/* Responsive */
+@media(max-width:1100px){
+  .site-header .nav{padding:0 22px!important}
+  .as3-wrap{padding-left:30px!important;padding-right:30px!important}
+  .as3-main{grid-template-columns:43% 57%!important}
+  .as3-p6{display:none!important}
+  .as3-benefits{right:-4px!important}
+  .as3-services{grid-template-columns:repeat(3,1fr)!important}
+  .as3-bottom{grid-template-columns:1fr!important}
+}
+@media(max-width:760px){
+  body{padding-top:0!important}
+  .site-header{height:auto!important}
+  .site-header .nav{height:auto!important}
+  .as3-wrap{padding:42px 18px 20px!important}
+  .as3-main{display:block!important;min-height:0!important}
+  .as3-copy{text-align:center!important;padding:0!important}
+  .as3-title{font-size:49px!important;letter-spacing:-2.6px!important}
+  .as3-desc{margin-left:auto!important;margin-right:auto!important}
+  .as3-actions{justify-content:center!important}
+  .as3-stage{height:470px!important;transform:scale(.72)!important;transform-origin:center top!important;margin:0 -18% -100px!important}
+  .as3-benefits{display:none!important}
+  .as3-services{grid-template-columns:repeat(2,1fr)!important;margin-top:0!important}
+}
+@media(max-width:480px){
+  .site-header .brand img{width:48px!important;height:48px!important}
+  .as3-title{font-size:40px!important}
+  .as3-stage{transform:scale(.55)!important;margin:0 -31% -160px!important}
+  .as3-services{grid-template-columns:1fr!important}
+  .as3-stats{grid-template-columns:1fr!important}
+  .as3-stat{border-right:0!important;border-bottom:1px solid rgba(28,35,42,.08)!important}
+}
+</style>
+
+<style id="apple-seed-phone-showcase-02">
+/* Legacy Hero artwork removed.
+   Hero images are now controlled only by the Visual Site Builder. */
+.as3-stage{
+  background-image:none!important;
+  background-color:transparent!important;
+}
+.as3-stage > .as3-phone{
+  display:none!important;
+}
+.as3-stage > .as3-benefits{
+  z-index:30!important;
+}
+</style>
+
+<style id="apple-seed-discover-position-fix">
+/* FIX V2: KHÁM PHÁ APPLE SEED nằm rõ ràng dưới cụm điện thoại. */
+.as3-stage{position:relative!important;overflow:visible!important;}
+.as3-discover{
+  position:absolute!important;
+  left:50%!important;
+  bottom:-8px!important;
+  transform:translateX(-50%)!important;
+  z-index:9999!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:12px!important;
+  width:max-content!important;
+  min-width:190px!important;
+  padding:7px 12px!important;
+  border-radius:999px!important;
+  background:rgba(255,255,255,.92)!important;
+  border:1px solid rgba(184,137,47,.28)!important;
+  box-shadow:0 8px 22px rgba(30,35,42,.10)!important;
+  color:#20252b!important;
+  font-size:10px!important;
+  font-weight:900!important;
+  letter-spacing:1.8px!important;
+  line-height:1.25!important;
+  white-space:nowrap!important;
+  pointer-events:auto!important;
+}
+.as3-discover > span:last-child{
+  position:relative!important;
+  z-index:10000!important;
+  display:block!important;
+  color:#4d535a!important;
+  line-height:1.35!important;
+  white-space:nowrap!important;
+  text-align:left!important;
+}
+.as3-play{
+  position:relative!important;
+  z-index:10000!important;
+  flex:0 0 auto!important;
+  width:38px!important;
+  height:38px!important;
+}
+@media(max-width:1100px){.as3-discover{bottom:-8px!important;}}
+@media(max-width:760px){.as3-discover{bottom:-8px!important;}}
+</style>
+<style id="apple-seed-discover-between-services-content">
+/* KHÁM PHÁ APPLE SEED: nằm giữa giao diện dịch vụ và nội dung phía dưới. */
+.as3-discover{
+  position:relative!important;
+  left:auto!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:auto!important;
+  transform:none!important;
+  z-index:20!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:12px!important;
+  width:max-content!important;
+  min-width:190px!important;
+  margin:0 auto 22px!important;
+  padding:7px 12px!important;
+  box-sizing:border-box!important;
+  border-radius:999px!important;
+  background:rgba(255,255,255,.94)!important;
+  border:1px solid rgba(184,137,47,.28)!important;
+  box-shadow:0 8px 22px rgba(30,35,42,.10)!important;
+  color:#20252b!important;
+  font-size:10px!important;
+  font-weight:900!important;
+  letter-spacing:1.8px!important;
+  line-height:1.25!important;
+  white-space:nowrap!important;
+  pointer-events:auto!important;
+}
+.as3-discover > span:last-child{
+  position:relative!important;
+  display:block!important;
+  color:#4d535a!important;
+  line-height:1.35!important;
+  white-space:nowrap!important;
+  text-align:left!important;
+}
+.as3-play{
+  position:relative!important;
+  flex:0 0 auto!important;
+  width:38px!important;
+  height:38px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+@media(max-width:760px){
+  .as3-discover{margin:16px auto 18px!important;}
+}
+</style>
+
+<style id="apple-seed-ai-board-button">
+/* APPLE SEED AI BOARD — quick access */
+#apple-seed-ai-board-float{
+  position:fixed;
+  right:24px;
+  bottom:94px;
+  z-index:1001;
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  min-width:148px;
+  padding:11px 16px;
+  border:1px solid rgba(255,255,255,.82);
+  border-radius:16px;
+  background:linear-gradient(135deg,#17233d,#2f4f80);
+  color:#fff;
+  text-decoration:none;
+  box-shadow:0 12px 30px rgba(23,35,61,.22);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  transition:transform .18s ease,box-shadow .18s ease;
+}
+#apple-seed-ai-board-float:hover{
+  transform:translateY(-2px);
+  box-shadow:0 16px 34px rgba(23,35,61,.28);
+}
+#apple-seed-ai-board-float .as-ai-board-icon{
+  width:34px;height:34px;
+  display:grid;place-items:center;
+  flex:none;
+  border-radius:11px;
+  background:rgba(255,255,255,.13);
+  border:1px solid rgba(255,255,255,.2);
+  font-size:18px;
+}
+#apple-seed-ai-board-float strong{
+  display:block;
+  font-size:13px;
+  line-height:1.1;
+  letter-spacing:.04em;
+}
+#apple-seed-ai-board-float small{
+  display:block;
+  margin-top:4px;
+  font-size:10px;
+  line-height:1.1;
+  opacity:.78;
+  letter-spacing:.02em;
+}
+@media(max-width:560px){
+  #apple-seed-ai-board-float{
+    right:12px;
+    bottom:82px;
+    min-width:0;
+    width:138px;
+    padding:9px 11px;
+    border-radius:14px;
+    gap:8px;
+  }
+  #apple-seed-ai-board-float .as-ai-board-icon{
+    width:31px;height:31px;
+    border-radius:9px;
+    font-size:16px;
+  }
+  #apple-seed-ai-board-float strong{font-size:11px}
+  #apple-seed-ai-board-float small{font-size:9px}
+}
+</style>
+
+<style id="apple-seed-builder-global-palette">
+/* APPLE SEED BUILDER GLOBAL PALETTE V2
+   This layer intentionally sits after the existing premium/light themes.
+   The Builder palette controls are the source of truth for these four colors. */
+:root{
+  --apple-seed-primary:#d7aa4d;
+  --apple-seed-ink:#17233d;
+  --apple-seed-page-bg:#ffffff;
+  --apple-seed-card-bg:#ffffff;
+  --blue:var(--apple-seed-primary)!important;
+  --ink:var(--apple-seed-ink)!important;
+  --as-gold:var(--apple-seed-primary)!important;
+  --as-gold-light:var(--apple-seed-primary)!important;
+  --as-light-gold:var(--apple-seed-primary)!important;
+  --as-light-gold-2:var(--apple-seed-primary)!important;
+  --as-light-bg:var(--apple-seed-page-bg)!important;
+  --as-light-ink:var(--apple-seed-ink)!important;
+}
+html,body{background:var(--apple-seed-page-bg)!important;color:var(--apple-seed-ink)!important}
+.as3-hero{background:var(--apple-seed-page-bg)!important;color:var(--apple-seed-ink)!important}
+.as3-hero:before{background:var(--apple-seed-page-bg)!important}
+.as3-kicker,.as3-sub b,.as3-benefit i,.as3-service .ico,.as3-stat b{color:var(--apple-seed-primary)!important}
+.as3-title{color:var(--apple-seed-ink)!important}
+.as3-title span{background:linear-gradient(105deg,var(--apple-seed-ink),color-mix(in srgb,var(--apple-seed-ink) 58%,transparent),var(--apple-seed-primary))!important;-webkit-background-clip:text!important;background-clip:text!important}
+.as3-sub{color:var(--apple-seed-ink)!important}
+.as3-desc{color:color-mix(in srgb,var(--apple-seed-ink) 68%,transparent)!important}
+.as3-btn.gold,.site-header .booking-nav{background:var(--apple-seed-primary)!important;border-color:var(--apple-seed-primary)!important}
+.as3-btn.gold{color:#fff!important}
+.as3-play{border-color:var(--apple-seed-primary)!important;color:var(--apple-seed-primary)!important}
+.as3-service,.as3-stats,.product-home-card,.contact-card,.map-card,.dynamic-pages-section .page-card,.product-modal-box{background:var(--apple-seed-card-bg)!important}
+.as3-service h3,.as3-stat span,.as3-service p{color:var(--apple-seed-ink)!important}
+.as3-more{background:var(--apple-seed-ink)!important;border-color:var(--apple-seed-ink)!important}
+.site-header .menu,.site-header .menu a{color:var(--apple-seed-ink)!important}
+.site-header .menu a:hover{color:var(--apple-seed-primary)!important}
+.site-header .brand-title{color:var(--apple-seed-ink)!important}
+.services,.contact,.dynamic-pages-section{background:var(--apple-seed-page-bg)!important}
+/* Lower-page components using the original --blue/--ink variables follow automatically. */
+</style>
+
+<style id="apple-seed-premium-footer-v1">
+/* ===== APPLE SEED PREMIUM FOOTER V1 ===== */
+.apple-seed-footer{
+  position:relative;
+  background:linear-gradient(180deg,#111b2e 0%,#0b1424 100%);
+  color:#dbe5f5;
+  border-top:1px solid rgba(255,255,255,.08);
+  overflow:hidden;
+}
+.apple-seed-footer:before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 15% 10%,rgba(215,170,77,.14),transparent 34%),radial-gradient(circle at 85% 0%,rgba(23,105,255,.12),transparent 30%);
+}
+.apple-seed-footer-inner{position:relative;max-width:1220px;margin:0 auto;padding:58px 28px 30px;display:grid;grid-template-columns:1.45fr 1fr 1fr 1.15fr;gap:38px}
+.apple-seed-footer-brand{padding-right:10px}
+.apple-seed-footer-logo{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.apple-seed-footer-logo-mark{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(145deg,#fff,#dfe5ee);color:#17233d;font-size:22px;font-weight:950;box-shadow:0 8px 22px rgba(0,0,0,.18)}
+.apple-seed-footer-logo strong{display:block;color:#fff;font-size:20px;letter-spacing:.5px;line-height:1.05}
+.apple-seed-footer-logo small{display:block;margin-top:4px;color:#94a3b8;font-size:9px;font-weight:800;letter-spacing:1.6px}
+.apple-seed-footer-desc{margin:0;color:#9eacc0;font-size:13px;line-height:1.75;max-width:360px}
+.apple-seed-footer-social{display:flex;gap:9px;margin-top:20px}
+.apple-seed-footer-social a{width:38px;height:38px;border:1px solid rgba(255,255,255,.12);border-radius:11px;display:grid;place-items:center;color:#fff;text-decoration:none;background:rgba(255,255,255,.045);font-size:15px;font-weight:900;transition:.2s ease}
+.apple-seed-footer-social a:hover{transform:translateY(-2px);border-color:var(--apple-seed-primary,#d7aa4d);color:var(--apple-seed-primary,#d7aa4d);background:rgba(255,255,255,.08)}
+.apple-seed-footer h3{margin:2px 0 16px;color:#fff;font-size:14px;letter-spacing:.3px}
+.apple-seed-footer h3:after{content:"";display:block;width:30px;height:2px;margin-top:8px;border-radius:99px;background:var(--apple-seed-primary,#d7aa4d)}
+.apple-seed-footer-links{display:grid;gap:10px}
+.apple-seed-footer-links a,.apple-seed-footer-contact a{color:#aebbd0;text-decoration:none;font-size:13px;line-height:1.45;transition:.18s ease}
+.apple-seed-footer-links a:hover,.apple-seed-footer-contact a:hover{color:#fff;transform:translateX(3px)}
+.apple-seed-footer-contact{display:grid;gap:11px}
+.apple-seed-footer-contact .item{display:flex;gap:9px;align-items:flex-start;color:#aebbd0;font-size:13px;line-height:1.5}
+.apple-seed-footer-contact .icon{width:20px;flex:0 0 20px;text-align:center;color:var(--apple-seed-primary,#d7aa4d)}
+.apple-seed-footer-hours{margin-top:15px;padding-top:14px;border-top:1px solid rgba(255,255,255,.09)}
+.apple-seed-footer-hours b{display:block;color:#fff;font-size:12px;margin-bottom:6px}
+.apple-seed-footer-hours span{display:block;color:#94a3b8;font-size:12px;line-height:1.7}
+.apple-seed-footer-cta{margin-top:17px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 15px;border-radius:10px;background:var(--apple-seed-primary,#d7aa4d);color:#101828!important;font-size:12px!important;font-weight:900;box-shadow:0 8px 22px rgba(0,0,0,.18);text-decoration:none!important}
+.apple-seed-footer-bottom{position:relative;border-top:1px solid rgba(255,255,255,.09);max-width:1220px;margin:0 auto;padding:17px 28px 21px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;color:#7f8da3;font-size:11px;line-height:1.6}
+.apple-seed-footer-bottom strong{color:#cbd5e1}
+.apple-seed-footer-bottom-links{display:flex;gap:16px;flex-wrap:wrap}
+.apple-seed-footer-bottom-links a{color:#8d9bb0;text-decoration:none}
+.apple-seed-footer-bottom-links a:hover{color:#fff}
+.apple-seed-footer-warning{width:100%;text-align:center;color:#9aa8bb;font-size:10px;letter-spacing:.15px;padding-top:2px}
+@media(max-width:900px){.apple-seed-footer-inner{grid-template-columns:1fr 1fr;gap:30px}.apple-seed-footer-brand{grid-column:1/-1}}
+@media(max-width:560px){.apple-seed-footer-inner{grid-template-columns:1fr;padding:42px 20px 24px;gap:27px}.apple-seed-footer-brand{grid-column:auto}.apple-seed-footer-bottom{padding:16px 20px 20px;display:grid}.apple-seed-footer-bottom-links{gap:11px 15px}.apple-seed-footer-cta{width:100%}}
+</style>
+
 </head>
 
 <body>
+
+
 <header class="site-header">
 <nav class="nav" aria-label="Điều hướng chính">
 <a class="brand" href="./index.html">
@@ -350,6 +1463,7 @@ img{-webkit-user-drag:none}
 <div class="menu">
 <a href="#dich-vu"><span class="mi">🔧</span><span>Dịch vụ</span></a>
 <a href="products.html"><span class="mi">🛍</span><span>Sản phẩm</span></a>
+<a class="entertainment-nav" href="./entertainment.html"><span class="mi">🎬</span><span>Giải trí</span></a>
 <a href="#gioi-thieu"><span class="mi">ⓘ</span><span>Giới thiệu</span></a>
 <a href="#lien-he"><span class="mi">☎</span><span>Liên hệ</span></a>
 <a class="booking-nav" href="booking.html"><span class="mi">📅</span><span>Đặt lịch</span></a>
@@ -365,8 +1479,71 @@ img{-webkit-user-drag:none}
 </div>
 </nav>
 </header>
-
+<section class="as3-hero" id="apple-seed-premium-home" aria-label="Apple Seed Premium iPhone">
+<div class="as3-wrap">
+<div class="as3-main">
+<div class="as3-copy">
+<div class="as3-kicker">PREMIUM IPHONE REPAIR</div>
+<h1 class="as3-title">ĐẲNG CẤP <span>XỨNG TẦM</span></h1>
+<div class="as3-sub">MỖI CHIẾC <b>iPHONE</b> — MỘT TUYỆT TÁC</div>
+<p class="as3-desc">Apple Seed chăm sóc và phục hồi iPhone bằng kỹ thuật chuyên sâu, kiểm tra minh bạch và quy trình được thiết kế để giữ trọn giá trị của thiết bị.</p>
+<div class="as3-actions"><a class="as3-btn gold" href="booking.html">ĐẶT LỊCH NGAY →</a><a class="as3-btn" href="#dich-vu">XEM DỊCH VỤ ▶</a></div>
+<div class="as3-note">IPHONE · FACE ID · MAINBOARD · DIAGNOSTICS · PREMIUM CARE</div>
+</div>
+<div class="as3-stage">
+<div class="as3-phone as3-p1"><div class="as3-screen" data-phone-slot="0"></div><div class="as3-island"></div><div class="as3-label">iPhone Pro</div></div><div class="as3-phone as3-p2"><div class="as3-screen" data-phone-slot="1"></div><div class="as3-island"></div><div class="as3-label">iPhone Pro Max</div></div><div class="as3-phone as3-p3"><div class="as3-screen" data-phone-slot="2"></div><div class="as3-island"></div><div class="as3-label">iPhone 16 Pro Max</div></div><div class="as3-phone as3-p4"><div class="as3-screen" data-phone-slot="3"></div><div class="as3-island"></div><div class="as3-label">iPhone 15 Pro Max</div></div><div class="as3-phone as3-p5"><div class="as3-screen" data-phone-slot="4"></div><div class="as3-island"></div><div class="as3-label">iPhone 14 Pro Max</div></div><div class="as3-phone as3-p6"><div class="as3-screen" data-phone-slot="5"></div><div class="as3-island"></div><div class="as3-label">iPhone</div></div>
+<div class="as3-benefits"><div class="as3-benefit"><i>◇</i>LINH KIỆN<br>CHÍNH HÃNG</div><div class="as3-benefit"><i>⚙</i>KỸ THUẬT<br>CHUYÊN SÂU</div><div class="as3-benefit"><i>✓</i>BẢO HÀNH<br>DÀI HẠN</div><div class="as3-benefit"><i>♙</i>BẢO MẬT<br>TUYỆT ĐỐI</div></div>
+</div></div>
+<div class="as3-services">
+<a class="as3-service" href="#dich-vu"><div class="ico">◐</div><div><h3>THAY MÀN HÌNH</h3><p>OLED · Zin chuẩn Apple<br>Hiển thị sắc nét</p></div></a>
+<a class="as3-service" href="#dich-vu"><div class="ico">▣</div><div><h3>THAY PIN</h3><p>Pin chất lượng cao<br>Hiệu suất tối ưu</p></div></a>
+<a class="as3-service" href="#dich-vu"><div class="ico">⌘</div><div><h3>SỬA CHỮA MAIN</h3><p>Vi xử lý chuyên sâu<br>Công nghệ hiện đại</p></div></a>
+<a class="as3-service" href="#dich-vu"><div class="ico">◉</div><div><h3>FACE ID</h3><p>Sửa chữa & hiệu chỉnh<br>Chuẩn xác 100%</p></div></a>
+<a class="as3-service" href="#dich-vu"><div class="ico">▤</div><div><h3>VỆ SINH BÊN TRONG</h3><p>Làm sạch chuyên sâu<br>Tản nhiệt tối ưu</p></div></a>
+<a class="as3-service as3-more" href="#dich-vu"><div><h3>XEM TẤT CẢ DỊCH VỤ</h3><p>Khám phá toàn bộ dịch vụ →</p></div></a>
+</div>
+<div class="as3-bottom">
+<div class="as3-stats"><div class="as3-stat"><b>iPhone</b><span>Chuyên sâu dòng máy Apple</span></div><div class="as3-stat"><b>Face ID</b><span>Kiểm tra & xử lý chính xác</span></div><div class="as3-stat"><b>Main</b><span>Chẩn đoán cấp bo mạch</span></div><div class="as3-stat"><b>Bảo hành</b><span>Chính sách rõ ràng</span></div><div class="as3-stat"><b>30–60'</b><span>Ưu tiên xử lý nhanh khi phù hợp</span></div></div>
+<a class="as3-store" href="#lien-he"><img src="shop.jpg" alt="Cửa hàng Apple Seed Trà Vinh" loading="lazy"><div class="as3-store-label">APPLE SEED<small>📍 292 Phạm Ngũ Lão, Trà Vinh</small></div></a>
+</div>
+</div>
+</section>
+<div class="as3-discover"><span class="as3-play">▶</span><span>KHÁM PHÁ<br>APPLE SEED</span></div>
 <main id="homeRenderer"><div class="hero" style="padding:70px 24px"><div style="max-width:1240px;margin:auto">Đang tải Apple Seed...</div></div></main>
+
+
+
+<div class="video-modal" id="videoViewModal" role="dialog" aria-modal="true" aria-labelledby="videoModalTitle">
+  <div class="video-modal-box">
+    <button class="video-modal-close" id="videoViewClose" type="button" aria-label="Đóng video">×</button>
+    <div class="video-player" id="videoPlayer"></div>
+    <div class="video-modal-info" id="videoModalInfo"></div>
+    <div class="youtube-audio-card" id="youtubeAudioCard" aria-label="Điều khiển âm thanh YouTube">
+      <div class="youtube-audio-head"><div class="youtube-audio-title">🎧 Card âm thanh Apple Seed</div><span class="youtube-audio-badge">YOUTUBE AUDIO</span></div>
+      <div class="youtube-audio-row">
+        <label for="youtubeVolume">🔊 Âm lượng</label>
+        <input id="youtubeVolume" type="range" min="0" max="100" value="100" step="1" aria-label="Âm lượng YouTube">
+        <span class="youtube-volume-value" id="youtubeVolumeValue">100%</span>
+      </div>
+      <div class="youtube-audio-actions">
+        <button type="button" id="youtubeVolumeNormal">🔈 70%</button>
+        <button type="button" id="youtubeVolumeMax" class="primary">🔊 MAX 100%</button>
+      </div>
+      <div class="youtube-audio-quality">
+        <label for="youtubeQuality">🎵 Chất lượng nguồn phát</label>
+        <select id="youtubeQuality" aria-label="Chất lượng nguồn phát YouTube">
+          <option value="auto">⚡ Auto — YouTube tự chọn</option>
+          <option value="hd720">🎧 HD 720p</option>
+          <option value="hd1080" selected>🔥 HD 1080p</option>
+          <option value="highres">💎 Cao nhất có thể</option>
+        </select>
+      </div>
+      <p class="youtube-audio-note">🎧 Player ưu tiên luồng YouTube chất lượng cao để có nguồn âm thanh tốt hơn khi YouTube hỗ trợ. Không thể chèn EQ/Bass/Treble trực tiếp vào âm thanh của iframe YouTube từ JavaScript do giới hạn bảo mật trình duyệt.</p>
+    </div>
+  </div>
+</div>
+
+
 <div class="product-modal" id="productModal" role="dialog" aria-modal="true">
   <div class="product-modal-box">
     <button class="product-modal-close" id="productModalClose" type="button">×</button>
@@ -432,7 +1609,19 @@ img{-webkit-user-drag:none}
         <label>Số điện thoại *<input id="memberHomeSignupPhone" required inputmode="tel" autocomplete="tel" placeholder="0898888269"></label>
       </div>
       <label>Email *<input id="memberHomeSignupEmail" type="email" required autocomplete="email" placeholder="email@gmail.com"></label>
-      <label>Mật khẩu *<input id="memberHomeSignupPassword" type="password" minlength="6" required autocomplete="new-password" placeholder="Tối thiểu 6 ký tự"></label>
+      <label class="as-password-field">Mật khẩu *
+        <span class="as-password-wrap">
+          <input id="memberHomeSignupPassword" type="password" minlength="6" required autocomplete="new-password" placeholder="Tối thiểu 6 ký tự">
+          <button type="button" class="as-password-toggle" data-password-target="memberHomeSignupPassword" aria-label="Hiện mật khẩu">👁</button>
+        </span>
+      </label>
+      <label class="as-password-field">Xác nhận mật khẩu *
+        <span class="as-password-wrap">
+          <input id="memberHomeSignupPasswordConfirm" type="password" minlength="6" required autocomplete="new-password" placeholder="Nhập lại mật khẩu">
+          <button type="button" class="as-password-toggle" data-password-target="memberHomeSignupPasswordConfirm" aria-label="Hiện xác nhận mật khẩu">👁</button>
+        </span>
+        <small id="asPasswordMatch" class="as-password-match" aria-live="polite"></small>
+      </label>
       <button class="member-auth-submit" type="submit">✨ Tạo tài khoản thành viên</button>
       <div class="member-auth-note">Sau khi đăng ký, hệ thống sẽ gửi email xác nhận. Hãy mở Gmail và bấm <b>link xác nhận</b> để kích hoạt tài khoản trước khi đăng nhập.</div>
     </form>
@@ -460,7 +1649,11 @@ img{-webkit-user-drag:none}
   </div>
 </div>
 
-<button class="chat-btn" id="chatBtn" aria-label="Mở trợ lý Apple Seed">🤖</button>
+<a id="apple-seed-ai-board-float" href="ai-board.html" aria-label="Mở AI Board - PANIC và chẩn đoán kỹ thuật">
+  <span class="as-ai-board-icon">🧠</span>
+  <span><strong>AI BOARD</strong><small>PANIC • SCHEMATIC • DIAGNOSTIC</small></span>
+</a>
+<button class="chat-btn" id="chatBtn" type="button" aria-label="Mở trợ lý Apple Seed"><img src="apple-seed-robot.png" alt="Trợ lý Apple Seed" aria-hidden="true"></button>
 <div class="chat-box" id="chatBox" aria-label="Trợ lý Apple Seed">
 <div class="chat-head"><span>🤖 Trợ lý Apple Seed</span><button class="chat-close" id="chatClose">×</button></div>
 <div class="chat-body" id="chatBody">
@@ -475,11 +1668,34 @@ img{-webkit-user-drag:none}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
-<script src="member-auth.js"></script>
+<script src="member-auth.js?v=20260825-auth-fix2"></script>
 <script>
 (function(){
   const sb=window.supabaseClient;
   const root=document.getElementById('homeRenderer');
+
+  // Public CMS reads intentionally avoid creating a second Supabase Auth client.
+  // This prevents GoTrueClient duplication warnings and avoids carrying the
+  // Member session/token into public CMS requests after logout.
+  const publicCmsFetch=async(path,query='')=>{
+    if(!sb?.supabaseUrl||!sb?.supabaseKey) throw new Error('Thiếu cấu hình Supabase.');
+    const url=String(sb.supabaseUrl).replace(/\/+$/,'')+'/rest/v1/'+path+query;
+    const res=await fetch(url,{
+      method:'GET',
+      headers:{
+        apikey:sb.supabaseKey,
+        Authorization:'Bearer '+sb.supabaseKey
+      },
+      cache:'no-store'
+    });
+    if(!res.ok){
+      const body=await res.text().catch(()=> '');
+      throw new Error(`CMS public request ${res.status}: ${body.slice(0,180)}`);
+    }
+    return res.json();
+  };
+  window.appleSeedPublicCmsFetch=publicCmsFetch;
+
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
   const safeHtml=h=>{const t=document.createElement('template');t.innerHTML=h||'';t.content.querySelectorAll('script,object,embed,form,style,link,meta').forEach(x=>x.remove());t.content.querySelectorAll('*').forEach(el=>[...el.attributes].forEach(a=>{const n=a.name.toLowerCase(),v=a.value||'';if(n.startsWith('on')||((n==='href'||n==='src')&&/^\s*javascript:/i.test(v)))el.removeAttribute(a.name)}));return t.innerHTML};
   const cssVars=t=>{const r=document.documentElement;r.style.setProperty('--blue',t.primary_color||'#1769ff');r.style.setProperty('--ink',t.text_color||'#17233d');r.style.setProperty('--muted',t.muted_color||'#61708a');r.style.setProperty('--bg',t.page_bg||'#f1f4ff');};
@@ -906,7 +2122,8 @@ img{-webkit-user-drag:none}
   async function loadDynamicPages(){
     const grid=document.getElementById('dynamicPagesGrid');
     if(!grid)return;
-    if(!window.supabaseClient){
+    const publicFetch=window.appleSeedPublicCmsFetch;
+    if(!publicFetch){
       grid.innerHTML='<p style="grid-column:1/-1;color:#b42318">Không kết nối được dữ liệu trang dịch vụ.</p>';
       return;
     }
@@ -914,17 +2131,8 @@ img{-webkit-user-drag:none}
     const escapePage=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 
     try{
-      const {data,error}=await window.supabaseClient
-        .from('pages')
-        .select('id,title,slug,description,is_active')
-        .eq('is_active',true)
-        .order('id',{ascending:false});
-
-      if(error){
-        console.warn('Apple Seed pages:',error);
-        grid.innerHTML='<p style="grid-column:1/-1;color:#b42318">Chưa tải được bài viết dịch vụ.</p>';
-        return;
-      }
+      const rows=await publicFetch('pages','?select=id,title,slug,description,is_active&is_active=eq.true&order=id.desc');
+      const data=Array.isArray(rows)?rows:[];
 
       if(!data?.length){
         grid.innerHTML='<p style="grid-column:1/-1;color:#718096">Hiện chưa có bài viết dịch vụ.</p>';
@@ -943,9 +2151,46 @@ img{-webkit-user-drag:none}
       grid.innerHTML='<p style="grid-column:1/-1;color:#b42318">Không thể tải bài viết dịch vụ.</p>';
     }
   }
+  function ensureVideoNav(){
+    const menu=document.querySelector('.menu'); if(!menu)return;
+    if([...menu.querySelectorAll(':scope > a')].some(a=>(a.dataset.appleSeedVideoNav==='1')||((a.textContent||'').toLowerCase().includes('video'))))return;
+    const memberAuth=document.getElementById('memberAuthButtons'); const a=document.createElement('a'); a.href='#video-sua-chua'; a.dataset.appleSeedVideoNav='1'; a.innerHTML='<span class="mi">🎬</span><span>Video</span>';
+    a.onclick=e=>{e.preventDefault();document.getElementById('video-sua-chua')?.scrollIntoView({behavior:'smooth',block:'start'});};
+    if(memberAuth)menu.insertBefore(a,memberAuth); else menu.appendChild(a);
+  }
+  function ensureBookingNav(){
+    const menu=document.querySelector('.menu');
+    if(!menu) return;
+
+    // Luôn giữ nút Đặt lịch, kể cả khi Admin/CMS không có mục này trong site_nav_items.
+    const hasBooking=[...menu.querySelectorAll(':scope > a')].some(a=>{
+      const href=(a.getAttribute('href')||'').toLowerCase();
+      const label=(a.textContent||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+      return href.includes('booking.html') || label.includes('dat lich');
+    });
+
+    if(hasBooking){
+      const existing=[...menu.querySelectorAll(':scope > a')].find(a=>{
+        const href=(a.getAttribute('href')||'').toLowerCase();
+        const label=(a.textContent||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+        return href.includes('booking.html') || label.includes('dat lich');
+      });
+      if(existing) existing.classList.add('booking-nav');
+      return;
+    }
+
+    const memberAuth=document.getElementById('memberAuthButtons');
+    const a=document.createElement('a');
+    a.className='booking-nav';
+    a.href='booking.html';
+    a.innerHTML='<span class="mi">📅</span><span>Đặt lịch</span>';
+    if(memberAuth) menu.insertBefore(a,memberAuth);
+    else menu.appendChild(a);
+  }
+
   function fixNavigation(){
-    document.querySelectorAll('.menu a').forEach(a=>{
-      const label=(a.textContent||'').normalize('NFD')
+    ensureBookingNav();
+    document.querySelectorAll('.menu a').forEach(a=>{      const label=(a.textContent||'').normalize('NFD')
         .replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
 
       let target='';
@@ -982,13 +2227,120 @@ img{-webkit-user-drag:none}
     });
   }
 
-  async function load(){if(!sb){staticFallback();bindProductCards();fixNavigation();return}try{const [t,n,s]=await Promise.all([sb.from('site_theme_settings').select('*').eq('id',1).maybeSingle(),sb.from('site_nav_items').select('label,icon,url,is_active,sort_order').eq('is_active',true).order('sort_order',{ascending:true}),sb.from('site_home_sections').select('*').eq('is_active',true).order('sort_order',{ascending:true}).order('id',{ascending:true})]);if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){const st=document.createElement('style');st.textContent=t.data.custom_css;document.head.appendChild(st)}if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){
+  function normalizeHeroCssOrder(css){
+    /* Legacy Hero image CSS is disabled completely.
+       The live Hero image must come only from site_builder_versions.config.page.
+       Strip every legacy Hero image block before injecting Theme CSS, so an old
+       image can never flash on first load or override the Builder selection. */
+    let out=String(css||'');
+    const imageStart='/* APPLESEED_HERO_IMAGES_START */';
+    const imageEnd='/* APPLESEED_HERO_IMAGES_END */';
+    let guard=0;
+    while(guard++<20){
+      const a=out.indexOf(imageStart);
+      if(a<0) break;
+      const b=out.indexOf(imageEnd,a);
+      if(b<0){
+        out=out.slice(0,a);
+        break;
+      }
+      out=out.slice(0,a)+out.slice(b+imageEnd.length);
+    }
+    /* Extra safety: never allow the legacy Hero background selector itself
+       to survive outside the marked block. */
+    out=out.replace(/\\.as3-stage\\s*\\{[^}]*background-image\\s*:\\s*url\\([^)]*\\)[^}]*\\}/gi,'');
+    return out;
+  }
+
+  function applyAppleSeedCmsHeroBackground(){
+    /* Hero background is owned by site_builder_versions.config.page.
+       Do not read legacy Hero image CSS from site_theme_settings. */
+    return false;
+  }
+
+  async function load(){
+    if(!sb){staticFallback();bindProductCards();fixNavigation();return}
+    try{
+      const [themeRows,navRows,sectionRows]=await Promise.all([
+        publicCmsFetch('site_theme_settings','?id=eq.1&select=*'),
+        publicCmsFetch('site_nav_items','?select=label,icon,url,is_active,sort_order&is_active=eq.true&order=sort_order.asc'),
+        publicCmsFetch('site_home_sections','?select=*&is_active=eq.true&order=sort_order.asc,id.asc')
+      ]);
+      const t={data:themeRows?.[0]||null};
+      const n={data:Array.isArray(navRows)?navRows:[],error:null};
+      const s={data:Array.isArray(sectionRows)?sectionRows:[],error:null};
+      if(t.data){cssVars(t.data);if(t.data.font_family&&t.data.font_family!=='system')document.body.style.fontFamily=t.data.font_family;if(t.data.meta_title)document.title=t.data.meta_title;const m=document.querySelector('meta[name="description"]');if(m&&t.data.meta_description)m.content=t.data.meta_description;if(t.data.custom_css){
+        const normalizedHeroCss=normalizeHeroCssOrder(t.data.custom_css);
+        const st=document.createElement('style');
+        st.textContent=normalizedHeroCss;
+        document.head.appendChild(st);
+      }
+      if(t.data.favicon_url)document.querySelector('link[rel="icon"]').href=t.data.favicon_url;if(t.data.logo_url)document.querySelector('.brand img').src=t.data.logo_url}if(n.data?.length){
       const menu=document.querySelector('.menu');
       const memberAuth=document.getElementById('memberAuthButtons');
-      menu.querySelectorAll(':scope > a').forEach(a=>a.remove());
-      menu.insertAdjacentHTML('afterbegin',n.data.map(x=>`<a href="${esc(x.url||'#')}"><span class="mi">${esc(x.icon||'')}</span><span>${esc(x.label)}</span></a>`).join(''));
-      if(memberAuth) menu.appendChild(memberAuth);
-    };fixNavigation();if(s.error||!s.data?.length){staticFallback();bindProductCards();fixNavigation();return}let html='';let contactRendered=false;for(const sec of s.data){if(sec.section_type==='products'){html+=await productsHtml();continue}if(sec.section_type==='map'||sec.section_type==='contact'){if(contactRendered)continue;contactRendered=true;html+=sec.section_type==='contact'?contactHtml():renderSection(sec);continue}html+=renderSection(sec)}root.innerHTML=html+(contactRendered?'':contactHtml());
+      /*
+       * MOBILE/DESKTOP HEADER STABILITY:
+       * CMS may contain old/custom emoji icons. Do NOT paint those over the
+       * stable header while the page is loading. Keep one canonical icon per
+       * navigation label; CMS still controls label/URL/active/order.
+       */
+      const canonicalIcons={
+        'dich vu':'🔧',
+        'san pham':'🛍',
+        'giai tri':'🎬',
+        'video':'🎬',
+        'gioi thieu':'ⓘ',
+        'lien he':'☎',
+        'dat lich':'📅'
+      };
+      const normalizeNavLabel=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+      /*
+       * IMPORTANT: Do not remove/rebuild the existing menu after first paint.
+       * Rebuilding it caused a visible icon swap on reload while Supabase was
+       * loading. Keep the original DOM nodes and only synchronize label/URL.
+       * Icons always come from the canonical map above.
+       */
+      const cmsItems=n.data.map(x=>({
+        label:String(x.label||'').trim(),
+        key:normalizeNavLabel(x.label),
+        url:String(x.url||'#')
+      })).filter(x=>x.label);
+
+      const existingLinks=[...menu.querySelectorAll(':scope > a')];
+      const used=new Set();
+      cmsItems.forEach(item=>{
+        let a=existingLinks.find((candidate,i)=>{
+          if(used.has(i))return false;
+          const candidateLabel=normalizeNavLabel(candidate.querySelector('span:last-child')?.textContent||candidate.textContent||'');
+          return candidateLabel===item.key ||
+            (item.key.includes('video') && candidateLabel.includes('video')) ||
+            (item.key.includes('giai tri') && candidateLabel.includes('giai tri'));
+        });
+        if(!a){
+          a=document.createElement('a');
+          menu.insertBefore(a,memberAuth||null);
+          existingLinks.push(a);
+        }
+        const idx=existingLinks.indexOf(a);
+        if(idx>=0)used.add(idx);
+        const icon=canonicalIcons[item.key] || (item.key.includes('video')?'🎬':'');
+        a.setAttribute('href',item.url);
+        a.innerHTML=`<span class="mi">${icon}</span><span>${esc(item.label)}</span>`;
+      });
+
+      // Remove only stale CMS nav links that are not part of the current menu.
+      // Never touch the member-auth container or its buttons.
+      existingLinks.forEach((a,i)=>{
+        if(!used.has(i) && !a.classList.contains('booking-nav') && !a.dataset.appleSeedVideoNav){
+          const label=normalizeNavLabel(a.querySelector('span:last-child')?.textContent||a.textContent||'');
+          if(label && !['dich vu','san pham','giai tri','video','gioi thieu','lien he','dat lich'].includes(label)) a.remove();
+        }
+      });
+      if(memberAuth && memberAuth.parentElement!==menu) menu.appendChild(memberAuth);
+    }
+      // CMS có thể trả về danh sách nav thiếu Đặt lịch -> tự bổ sung lại.
+      ensureBookingNav();
+      fixNavigation();if(s.error||!s.data?.length){staticFallback();bindProductCards();fixNavigation();return}let html='';let contactRendered=false;for(const sec of s.data){if(sec.section_type==='products'){html+=await productsHtml();continue}if(sec.section_type==='map'||sec.section_type==='contact'){if(contactRendered)continue;contactRendered=true;html+=sec.section_type==='contact'?contactHtml():renderSection(sec);continue}html+=renderSection(sec)}root.innerHTML=html+(contactRendered?'':contactHtml());
       fixNavigation();
       bindProductCards();
       await loadDynamicPages();
@@ -1012,6 +2364,197 @@ img{-webkit-user-drag:none}
   load();
 })();
 </script>
+
+<script>
+/* ===== APPLE SEED HEADER MOBILE HEIGHT FIX ===== */
+(function(){
+  const header=document.querySelector('.site-header');
+  if(!header)return;
+  function syncHeaderHeight(){
+    const h=Math.ceil(header.getBoundingClientRect().height||86);
+    document.documentElement.style.setProperty('--apple-seed-header-h',h+'px');
+  }
+  syncHeaderHeight();
+  window.addEventListener('load',syncHeaderHeight,{passive:true});
+  window.addEventListener('resize',syncHeaderHeight,{passive:true});
+  if('ResizeObserver' in window)new ResizeObserver(syncHeaderHeight).observe(header);
+  setTimeout(syncHeaderHeight,150);
+  setTimeout(syncHeaderHeight,500);
+})();
+</script>
+
+<script>
+/* ===== APPLE SEED YOUTUBE SEARCH TEST V1 ===== */
+(function(){
+  const sb=window.supabaseClient;
+  const input=document.getElementById('youtubeSearchInput');
+  const btn=document.getElementById('youtubeSearchBtn');
+  const grid=document.getElementById('youtubeSearchGrid');
+  const status=document.getElementById('youtubeSearchStatus');
+  if(!input||!btn||!grid||!status)return;
+
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  const ytThumb=id=>`https://i.ytimg.com/vi/${encodeURIComponent(id)}/hqdefault.jpg`;
+
+  function ytId(value){
+    const s=String(value||'').trim();
+    if(/^[A-Za-z0-9_-]{6,}$/.test(s))return s;
+    try{
+      const u=new URL(s);
+      if(u.hostname==='youtu.be')return u.pathname.slice(1).split('/')[0];
+      if(/youtube\.com$/i.test(u.hostname)||/youtube-nocookie\.com$/i.test(u.hostname)){
+        return u.searchParams.get('v')||u.pathname.match(/\/(?:embed|shorts|live)\/([^/?]+)/)?.[1]||'';
+      }
+    }catch(_){}
+    return '';
+  }
+
+  let youtubeIframe=null;
+  let youtubeVolume=100;
+  const volumeRange=document.getElementById('youtubeVolume');
+  const volumeValue=document.getElementById('youtubeVolumeValue');
+  const volumeNormal=document.getElementById('youtubeVolumeNormal');
+  const volumeMax=document.getElementById('youtubeVolumeMax');
+  const qualitySelect=document.getElementById('youtubeQuality');
+  let youtubeQuality='hd1080';
+
+  function applyYoutubeVolume(value){
+    youtubeVolume=Math.max(0,Math.min(100,Number(value)||0));
+    if(volumeRange)volumeRange.value=String(youtubeVolume);
+    if(volumeValue)volumeValue.textContent=youtubeVolume+'%';
+    try{localStorage.setItem('appleSeedYoutubeVolume',String(youtubeVolume));}catch(_){ }
+    if(youtubeIframe && youtubeIframe.contentWindow){
+      youtubeIframe.contentWindow.postMessage(JSON.stringify({event:'command',func:'setVolume',args:[youtubeVolume]}),'https://www.youtube.com');
+    }
+  }
+
+  function sendYoutubeCommand(func,args=[]){
+    if(youtubeIframe && youtubeIframe.contentWindow){
+      youtubeIframe.contentWindow.postMessage(JSON.stringify({event:'command',func,args}),'https://www.youtube.com');
+    }
+  }
+
+  function applyYoutubeQuality(value){
+    const allowed=['auto','hd720','hd1080','highres'];
+    youtubeQuality=allowed.includes(value)?value:'hd1080';
+    if(qualitySelect)qualitySelect.value=youtubeQuality;
+    try{localStorage.setItem('appleSeedYoutubeQuality',youtubeQuality);}catch(_){ }
+    if(youtubeQuality!=='auto')sendYoutubeCommand('setPlaybackQuality',[youtubeQuality]);
+  }
+
+  function sendYoutubeVolume(){
+    if(youtubeIframe && youtubeIframe.contentWindow){
+      youtubeIframe.contentWindow.postMessage(JSON.stringify({event:'listening',id:'apple-seed-player'}),'https://www.youtube.com');
+      youtubeIframe.contentWindow.postMessage(JSON.stringify({event:'command',func:'setVolume',args:[youtubeVolume]}),'https://www.youtube.com');
+    }
+  }
+
+  try{
+    const saved=Number(localStorage.getItem('appleSeedYoutubeVolume'));
+    if(Number.isFinite(saved))youtubeVolume=Math.max(0,Math.min(100,saved));
+  }catch(_){ }
+  try{
+    const savedQuality=localStorage.getItem('appleSeedYoutubeQuality');
+    if(['auto','hd720','hd1080','highres'].includes(savedQuality))youtubeQuality=savedQuality;
+  }catch(_){ }
+  if(qualitySelect){qualitySelect.value=youtubeQuality;qualitySelect.addEventListener('change',()=>applyYoutubeQuality(qualitySelect.value));}
+  if(volumeRange){volumeRange.value=String(youtubeVolume);volumeRange.addEventListener('input',()=>applyYoutubeVolume(volumeRange.value));}
+  volumeNormal?.addEventListener('click',()=>applyYoutubeVolume(70));
+  volumeMax?.addEventListener('click',()=>applyYoutubeVolume(100));
+
+  function openYoutubeResult(v){
+    const id=ytId(v.videoId);
+    if(!id)return;
+    const modal=document.getElementById('videoViewModal');
+    const player=document.getElementById('videoPlayer');
+    const info=document.getElementById('videoModalInfo');
+    if(!modal||!player||!info)return;
+    const origin=encodeURIComponent(location.origin);
+    player.innerHTML=`<iframe id="appleSeedYoutubePlayer" src="https://www.youtube.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0&playsinline=1&enablejsapi=1&origin=${origin}&vq=${encodeURIComponent(youtubeQuality==='auto'?'auto':youtubeQuality==='highres'?'highres':youtubeQuality)}" title="${esc(v.title)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+    youtubeIframe=document.getElementById('appleSeedYoutubePlayer');
+    if(youtubeIframe)youtubeIframe.addEventListener('load',()=>{setTimeout(sendYoutubeVolume,300);setTimeout(sendYoutubeVolume,1200);setTimeout(()=>{if(youtubeQuality!=='auto')sendYoutubeCommand('setPlaybackQuality',[youtubeQuality]);},700);},{once:true});
+    info.innerHTML=`<h2 id="videoModalTitle">${esc(v.title)}</h2><p>${esc(v.channelTitle||'YouTube')}</p><p>${esc(v.description||'')}</p>`;
+    modal.classList.add('open');
+    document.body.style.overflow='hidden';
+    setTimeout(sendYoutubeVolume,700);
+    setTimeout(()=>{if(youtubeQuality!=='auto')sendYoutubeCommand('setPlaybackQuality',[youtubeQuality]);},900);
+  }
+
+  function render(items){
+    if(!items.length){
+      grid.innerHTML='<div class="video-empty">Không tìm thấy video phù hợp.</div>';
+      return;
+    }
+    grid.innerHTML=items.map((v,i)=>`
+      <article class="video-public-card youtube-result-card" data-youtube-index="${i}">
+        <div class="video-public-thumb">
+          <img src="${esc(v.thumbnail||ytThumb(v.videoId))}" alt="${esc(v.title)}" loading="lazy">
+          <div class="video-play">▶</div>
+        </div>
+        <div class="video-public-info">
+          <h3>${esc(v.title)}</h3>
+          <p class="youtube-channel">📺 ${esc(v.channelTitle||'YouTube')}</p>
+          <p>${esc(v.description||'')}</p>
+        </div>
+      </article>`).join('');
+    grid.querySelectorAll('[data-youtube-index]').forEach(card=>{
+      card.addEventListener('click',()=>openYoutubeResult(items[Number(card.dataset.youtubeIndex)]));
+    });
+  }
+
+  async function searchYoutube(){
+    const q=input.value.trim();
+    if(!q){status.textContent='Nhập từ khóa cần tìm trước.';grid.innerHTML='';input.focus();return;}
+    if(!sb){status.textContent='Chưa kết nối Supabase.';return;}
+
+    btn.disabled=true;
+    btn.textContent='⏳ Đang tìm...';
+    status.textContent='Đang tìm video YouTube...';
+    grid.innerHTML='<div class="youtube-search-loading">Đang tải kết quả…</div>';
+
+    try{
+      const r=await sb.functions.invoke('youtube-search',{
+        body:{q,maxResults:12,regionCode:'VN',relevanceLanguage:'vi'}
+      });
+      if(r.error)throw r.error;
+      const items=Array.isArray(r.data?.items)?r.data.items:[];
+      render(items);
+      status.textContent=`Tìm thấy ${items.length} video. Bấm vào video để xem trực tiếp.`;
+    }catch(err){
+      console.error('YouTube search error:',err);
+      grid.innerHTML=`<div class="youtube-search-error">Không tìm được YouTube: ${esc(err?.message||'Lỗi kết nối')}</div>`;
+      status.textContent='';
+    }finally{
+      btn.disabled=false;
+      btn.textContent='🔎 Tìm YouTube';
+    }
+  }
+
+  btn.addEventListener('click',searchYoutube);
+  input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchYoutube();}});
+
+  // Đóng player YouTube: click + touch trên mobile, và ESC.
+  const videoModal=document.getElementById('videoViewModal');
+  const videoClose=document.getElementById('videoViewClose');
+  const videoPlayer=document.getElementById('videoPlayer');
+  function closeYoutubePlayer(){
+    if(!videoModal)return;
+    videoModal.classList.remove('open');
+    if(videoPlayer)videoPlayer.innerHTML='';
+    youtubeIframe=null;
+    document.body.style.overflow='';
+  }
+  if(videoClose){
+    videoClose.addEventListener('click',closeYoutubePlayer);
+    videoClose.addEventListener('touchend',e=>{e.preventDefault();closeYoutubePlayer();},{passive:false});
+  }
+  if(videoModal){
+    videoModal.addEventListener('click',e=>{if(e.target===videoModal)closeYoutubePlayer();});
+  }
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeYoutubePlayer();});
+})();
+</script>
+
 <script>
 (function(){
   const modal=document.getElementById('memberAuthModal');
@@ -1239,10 +2782,31 @@ img{-webkit-user-drag:none}
 const btn=document.getElementById("chatBtn"),box=document.getElementById("chatBox");
 const close=document.getElementById("chatClose"),body=document.getElementById("chatBody");
 const form=document.getElementById("chatForm"),input=document.getElementById("chatInput");
-btn.onclick=()=>{box.classList.toggle("open");if(box.classList.contains("open"))input.focus()};
-close.onclick=()=>box.classList.remove("open");
 
-function answer(q){
+function setAppleSeedChatOpen(open){
+  box.classList.toggle("open",!!open);
+  document.body.classList.toggle("apple-seed-chat-open",!!open);
+  /* AI BOARD is independent from the chatbot and must remain clickable. */
+  const aiBoard=document.getElementById("apple-seed-ai-board-float");
+  if(aiBoard){
+    aiBoard.style.setProperty("display","inline-flex","important");
+    aiBoard.style.setProperty("visibility","visible","important");
+    aiBoard.style.setProperty("opacity","1","important");
+    aiBoard.style.setProperty("pointer-events","auto","important");
+    aiBoard.removeAttribute("aria-hidden");
+    aiBoard.removeAttribute("tabindex");
+  }
+  if(open) input.focus();
+}
+btn.addEventListener("click",()=>setAppleSeedChatOpen(!box.classList.contains("open")));
+close.addEventListener("click",()=>setAppleSeedChatOpen(false));
+
+/*
+ * APPLE SEED AI — STREAMING FRONTEND
+ * Gọi Edge Function appleseed-ai trực tiếp để nhận chữ từng phần.
+ * Không thay đổi giao diện chatbot.
+ */
+function answerFallback(q){
   const raw=q.trim();
   const s=raw.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/đ/g,"d");
   if(!raw) return "Bạn nhập câu hỏi giúp tôi nhé.";
@@ -1287,43 +2851,999 @@ function answer(q){
 
   return "Tôi chưa hiểu rõ câu hỏi. Bạn thử ghi model + lỗi, ví dụ: “iPhone 13 Pro Max mất nguồn”, “iPhone 12 đơ cảm ứng” hoặc “Apple Seed ở đâu?”";
 }
-form.onsubmit=e=>{
- e.preventDefault();
- const q=input.value.trim();
- if(!q)return;
 
- body.insertAdjacentHTML("beforeend",'<div class="msg user"></div>');
- body.lastElementChild.textContent=q;
+async function askAppleSeedAI(message, onDelta){
+  const sb=window.supabaseClient;
+  if(!sb) throw new Error("Chưa khởi tạo Supabase.");
 
- const thinking=document.createElement("div");
- thinking.className="msg bot";
- thinking.textContent="Đang kiểm tra thông tin…";
- body.appendChild(thinking);
- body.scrollTop=body.scrollHeight;
+  const baseUrl=String(sb.supabaseUrl||"").replace(/\/+$/,"");
+  const anonKey=sb.supabaseKey;
 
- input.value="";
- input.disabled=true;
- const sendBtn=form.querySelector("button");
- sendBtn.disabled=true;
+  if(!baseUrl || !anonKey){
+    throw new Error("Thiếu cấu hình Supabase.");
+  }
 
- setTimeout(()=>{
-   thinking.textContent=answer(q);
-   input.disabled=false;
-   sendBtn.disabled=false;
-   input.focus();
-   body.scrollTop=body.scrollHeight;
- },220);
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),60000);
+
+  try{
+    const response=await fetch(baseUrl+"/functions/v1/appleseed-ai",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "apikey":anonKey,
+        "Authorization":"Bearer "+anonKey
+      },
+      body:JSON.stringify({message,source:"homepage-chat"}),
+      signal:controller.signal
+    });
+
+    if(!response.ok){
+      const raw=await response.text();
+      let msg="Apple Seed AI đang gặp lỗi.";
+      try{
+        const data=JSON.parse(raw);
+        msg=data?.error||msg;
+      }catch(_){}
+      throw new Error(msg);
+    }
+
+    if(!response.body){
+      throw new Error("AI không trả về dữ liệu stream.");
+    }
+
+    const reader=response.body.getReader();
+    const decoder=new TextDecoder("utf-8");
+    let received=false;
+
+    while(true){
+      const {value,done}=await reader.read();
+      if(done) break;
+
+      const chunk=decoder.decode(value,{stream:true});
+      if(chunk){
+        received=true;
+        onDelta(chunk);
+      }
+    }
+
+    const tail=decoder.decode();
+    if(tail){
+      received=true;
+      onDelta(tail);
+    }
+
+    if(!received) throw new Error("AI chưa trả về nội dung.");
+  }finally{
+    clearTimeout(timeout);
+  }
+}
+
+form.onsubmit=async e=>{
+  e.preventDefault();
+  const q=input.value.trim();
+  if(!q)return;
+
+  body.insertAdjacentHTML("beforeend",'<div class="msg user"></div>');
+  body.lastElementChild.textContent=q;
+
+  const thinking=document.createElement("div");
+  thinking.className="msg bot";
+  thinking.textContent="⚡ Đang kết nối Apple Seed AI…";
+  body.appendChild(thinking);
+  body.scrollTop=body.scrollHeight;
+
+  input.value="";
+  input.disabled=true;
+  const sendBtn=form.querySelector("button");
+  sendBtn.disabled=true;
+
+  let answerText="";
+
+  try{
+    await askAppleSeedAI(q,(delta)=>{
+      answerText+=delta;
+      thinking.textContent=answerText;
+      body.scrollTop=body.scrollHeight;
+    });
+  }catch(error){
+    console.error("AppleSeed AI:",error);
+
+    // Nếu AI thật lỗi, giữ chatbot không bị chết:
+    // dùng bộ trả lời cục bộ cũ làm phương án dự phòng.
+    answerText=answerFallback(q);
+    thinking.textContent=answerText;
+  }finally{
+    input.disabled=false;
+    sendBtn.disabled=false;
+    input.focus();
+    body.scrollTop=body.scrollHeight;
+  }
 };
 </script>
 <script>
-(function(){'use strict';
-const root=document.documentElement;root.classList.add('apple-seed-lock-copy');
-const editable=el=>{if(!el)return false;const t=String(el.tagName||'').toLowerCase();return t==='input'||t==='textarea'||t==='select'||!!el.isContentEditable};
-document.addEventListener('contextmenu',e=>{if(!editable(e.target))e.preventDefault()},{capture:true});
-['copy','cut','dragstart'].forEach(type=>document.addEventListener(type,e=>{if(!editable(e.target))e.preventDefault()},{capture:true}));
-document.addEventListener('keydown',e=>{if(editable(e.target))return;const k=String(e.key||'').toLowerCase(),m=e.ctrlKey||e.metaKey;if((m&&['c','x','u','s','p'].includes(k))||(m&&e.shiftKey&&['i','j','c'].includes(k))||k==='f12'){e.preventDefault();e.stopPropagation()}},{capture:true});
-try{if(window.top!==window.self)window.top.location=window.self.location}catch(_){document.documentElement.style.display='none'}
+(function () {
+  'use strict';
+  const root = document.documentElement;
+  root.classList.add('apple-seed-lock-copy');
+  function isEditable(el) {
+    if (!el) return false;
+    const tag = String(el.tagName || '').toLowerCase();
+    return tag === 'input' || tag === 'textarea' || tag === 'select' || tag === 'button' || !!el.isContentEditable;
+  }
+  function stop(e) {
+    if (isEditable(e.target)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+    return false;
+  }
+  document.addEventListener('contextmenu', stop, true);
+  ['selectstart', 'copy', 'cut', 'dragstart'].forEach(name => document.addEventListener(name, stop, true));
+  document.addEventListener('keydown', function(e) {
+    if (isEditable(e.target)) return;
+    const key = String(e.key || '').toLowerCase();
+    const ctrl = e.ctrlKey || e.metaKey;
+    const shift = e.shiftKey;
+    if (ctrl && ['c','x','a','u','s','p'].includes(key)) return stop(e);
+    if (ctrl && shift && ['i','j','c','k','s'].includes(key)) return stop(e);
+    if (key === 'f12') return stop(e);
+  }, true);
+  function lockImages() {
+    document.querySelectorAll('img').forEach(img => img.setAttribute('draggable', 'false'));
+  }
+  lockImages();
+  if (document.body) new MutationObserver(lockImages).observe(document.body, {childList:true, subtree:true});
+  try {
+    /*
+     * Visual Site Builder preview exception.
+     * The Builder intentionally renders index.html inside an iframe so it can
+     * select/edit real elements. The old anti-copy guard forced the iframe to
+     * navigate the top window back to itself, which created the Builder's
+     * blank/loading loop. Keep the guard for normal embeds, but explicitly
+     * allow the Builder preview.
+     */
+    const q = new URLSearchParams(window.location.search);
+    const isBuilderPreview =
+      q.get('appleSeedBuilderPreview') === '1' ||
+      q.get('appleSeedBuilderCanvas') === '1' ||
+      q.get('builderCanvas') === '1';
+
+    if (window.top !== window.self && !isBuilderPreview) {
+      window.top.location = window.self.location;
+    }
+  } catch (_) {
+    /*
+     * Do not blank the Builder if cross-window access is restricted. The
+     * preview must remain renderable even when browser isolation changes.
+     */
+    const q = new URLSearchParams(window.location.search);
+    const isBuilderPreview =
+      q.get('appleSeedBuilderPreview') === '1' ||
+      q.get('appleSeedBuilderCanvas') === '1' ||
+      q.get('builderCanvas') === '1';
+    if (!isBuilderPreview) document.documentElement.style.display = 'none';
+  }
+  console.log('Apple Seed Security V2 loaded.');
 })();
 </script>
+
+<style id="apple-seed-builder-page-bg-single-source">
+#apple-seed-premium-home.builder-has-page-bg .as3-stage,
+#apple-seed-premium-home.builder-has-page-bg .as3-stage:before{
+  background-image:none!important;
+  background-color:transparent!important;
+}
+</style>
+<script id="apple-seed-final-ux">
+(function(){
+  "use strict";
+
+  /* Password eye + match validation */
+  document.addEventListener("click",function(e){
+    const btn=e.target.closest(".as-password-toggle");
+    if(!btn)return;
+    const input=document.getElementById(btn.dataset.passwordTarget);
+    if(!input)return;
+    input.type=input.type==="password"?"text":"password";
+    btn.textContent=input.type==="password"?"👁":"🙈";
+    btn.setAttribute("aria-label",input.type==="password"?"Hiện mật khẩu":"Ẩn mật khẩu");
+  });
+
+  const signupForm=document.getElementById("memberHomeSignupForm");
+  const pass=document.getElementById("memberHomeSignupPassword");
+  const confirm=document.getElementById("memberHomeSignupPasswordConfirm");
+  const match=document.getElementById("asPasswordMatch");
+
+  function checkMatch(){
+    if(!pass||!confirm||!match)return true;
+    const a=pass.value,b=confirm.value;
+    if(!b){match.textContent="";match.className="as-password-match";return false}
+    if(a===b){
+      match.textContent="✓ Mật khẩu khớp";
+      match.className="as-password-match ok";
+      return true;
+    }
+    match.textContent="✕ Mật khẩu chưa khớp";
+    match.className="as-password-match bad";
+    return false;
+  }
+  pass?.addEventListener("input",checkMatch);
+  confirm?.addEventListener("input",checkMatch);
+
+  signupForm?.addEventListener("submit",function(e){
+    if(!checkMatch()){
+      e.preventDefault();
+      confirm?.focus();
+      if(match)match.scrollIntoView({block:"nearest"});
+      return false;
+    }
+  },true);
+
+  /* Soft robot friend: one appearance per browser session. */
+  function initRobot(){
+    try{if(sessionStorage.getItem("asrf_final_seen")==="1")return;sessionStorage.setItem("asrf_final_seen","1")}catch(_){}
+    const target=document.getElementById("chatBtn");
+    if(!target||document.getElementById("asRobotFriend"))return;
+
+    const el=document.createElement("div");
+    el.id="asRobotFriend";
+    el.innerHTML=
+      '<div class="asrf-body">'+
+        '<div class="asrf-antenna"></div>'+
+        '<div class="asrf-head"><span class="asrf-eye l"></span><span class="asrf-eye r"></span><span class="asrf-mouth"></span></div>'+
+        '<div class="asrf-arm l"></div><div class="asrf-arm r"></div>'+
+        '<div class="asrf-torso"></div>'+
+        '<div class="asrf-leg l"></div><div class="asrf-leg r"></div>'+
+        '<div class="asrf-shadow"></div>'+
+      '</div>'+
+      '<div class="asrf-bubble">Xin chào 👋</div>';
+    document.body.appendChild(el);
+
+    const vw=innerWidth,vh=innerHeight;
+    el.style.left=(vw*.50)+"px";
+    el.style.top=(vh*.42)+"px";
+    el.classList.add("asrf-show");
+
+    const move=(x,y,d)=>el.animate(
+      [{left:el.style.left,top:el.style.top},{left:x+"px",top:y+"px"}],
+      {duration:d,easing:"cubic-bezier(.2,.75,.25,1)",fill:"forwards"}
+    ).finished.then(()=>{el.style.left=x+"px";el.style.top=y+"px"});
+
+    const home=()=>{
+      const r=target.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
+      el.classList.remove("asrf-walk");el.classList.add("asrf-fly");
+      el.animate(
+        [{left:el.style.left,top:el.style.top},{left:(x-65)+"px",top:(y-95)+"px"},{left:x+"px",top:y+"px"}],
+        {duration:900,easing:"cubic-bezier(.22,.75,.18,1)",fill:"forwards"}
+      ).finished.then(()=>el.remove()).catch(()=>el.remove());
+    };
+
+    setTimeout(()=>{
+      el.classList.add("asrf-walk");
+      move(vw*.32,vh*.40,650)
+      .then(()=>move(vw*.58,vh*.32,700))
+      .then(()=>move(vw*.72,vh*.48,700))
+      .then(()=>move(vw*.64,vh*.60,650))
+      .then(()=>setTimeout(home,180))
+      .catch(()=>el.remove());
+    },500);
+  }
+
+  // Disabled: do not animate/spawn the temporary "Xin chào 👋" robot on page reload.
+  // The real fixed chat robot (#chatBtn) remains available normally.
+})();
+</script>
+
+
+<!-- APPLE SEED STABLE RELEASE GUARD v1
+     UI-only safety layer. Does not alter existing auth/CMS/AI logic.
+     It shows a customer-safe message during an update failure/rollback.
+-->
+<style id="apple-seed-stable-guard-style">
+  #appleSeedRollbackOverlay{
+    position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+    padding:22px;background:rgba(6,18,38,.88);backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);z-index:2147483646;color:#fff;
+  }
+  #appleSeedRollbackOverlay.show{display:flex}
+  #appleSeedRollbackCard{
+    width:min(560px,100%);padding:30px 26px;border-radius:22px;
+    background:linear-gradient(180deg,#10294b,#0b1c34);
+    border:1px solid rgba(255,255,255,.12);
+    box-shadow:0 30px 90px rgba(0,0,0,.38);text-align:center;
+  }
+  #appleSeedRollbackIcon{font-size:42px;margin-bottom:12px}
+  #appleSeedRollbackTitle{margin:0;font-size:24px;font-weight:900;letter-spacing:-.4px}
+  #appleSeedRollbackText{margin:12px auto 0;max-width:470px;color:rgba(235,243,255,.82);line-height:1.65;font-size:14px}
+  #appleSeedRollbackState{margin-top:18px;font-weight:850;color:#8bc8ff}
+  #appleSeedRollbackDone{display:none;margin-top:18px;padding:10px 12px;border-radius:12px;background:rgba(57,189,120,.12);border:1px solid rgba(57,189,120,.24);color:#b8ffd9;font-weight:850}
+  @media(max-width:560px){
+    #appleSeedRollbackCard{padding:25px 18px}
+    #appleSeedRollbackTitle{font-size:21px}
+  }
+</style>
+<div id="appleSeedRollbackOverlay" aria-live="polite" aria-modal="true" role="alertdialog">
+  <div id="appleSeedRollbackCard">
+    <div id="appleSeedRollbackIcon">⚠️</div>
+    <h2 id="appleSeedRollbackTitle">Apple Seed đang khôi phục hệ thống</h2>
+    <p id="appleSeedRollbackText">
+      Website vừa cập nhật nhưng kiểm tra hệ thống không đạt.
+      Website sẽ quay về bản ổn định gần nhất để đảm bảo hoạt động bình thường.
+    </p>
+    <div id="appleSeedRollbackState">🔄 Đang khôi phục bản ổn định…</div>
+    <div id="appleSeedRollbackDone">✅ Website đã được khôi phục về bản ổn định.</div>
+  </div>
+</div>
+<script>
+(function(){
+  const overlay=document.getElementById('appleSeedRollbackOverlay');
+  const icon=document.getElementById('appleSeedRollbackIcon');
+  const title=document.getElementById('appleSeedRollbackTitle');
+  const text=document.getElementById('appleSeedRollbackText');
+  const state=document.getElementById('appleSeedRollbackState');
+  const done=document.getElementById('appleSeedRollbackDone');
+  if(!overlay) return;
+
+  window.AppleSeedReleaseGuard={
+    showFailure(message){
+      icon.textContent='⚠️';
+      title.textContent='Apple Seed đang gặp sự cố cập nhật';
+      text.textContent=message || 'Website vừa cập nhật nhưng kiểm tra hệ thống không đạt. Website sẽ quay về bản ổn định gần nhất để đảm bảo hoạt động bình thường.';
+      state.textContent='🔄 Đang khôi phục bản ổn định…';
+      done.style.display='none';
+      overlay.classList.add('show');
+      document.documentElement.style.overflow='hidden';
+    },
+    showRollbackStarted(){
+      this.showFailure();
+    },
+    showRestored(versionLabel){
+      icon.textContent='✅';
+      title.textContent='Website đã được khôi phục';
+      text.textContent='Hệ thống đã quay về bản ổn định gần nhất. Các chức năng chính đang được kiểm tra lại.';
+      state.textContent=versionLabel ? ('Bản ổn định: '+versionLabel) : 'Bản ổn định gần nhất';
+      done.style.display='block';
+      setTimeout(()=>{
+        overlay.classList.remove('show');
+        document.documentElement.style.overflow='';
+      },2600);
+    },
+    hide(){
+      overlay.classList.remove('show');
+      document.documentElement.style.overflow='';
+    }
+  };
+})();
+</script>
+<script id="apple-seed-premium-phone-assets-v1">(function(){function apply(){const list=Array.isArray(window.appleSeedProducts)?window.appleSeedProducts:[];const candidates=list.filter(x=>/iphone/i.test(x?.product?.name||"")&&x?.images?.[0]?.url);const slots=[...document.querySelectorAll("#iphone-experience .asph-phone")];if(!candidates.length||!slots.length)return false;candidates.slice(0,slots.length).forEach((item,i)=>{const screen=slots[i]?.querySelector(".asph-phone-screen"),url=item.images[0].url;if(!screen||!url||screen.dataset.assetApplied)return;const img=document.createElement("img");img.src=url;img.alt=item.product?.name||"iPhone";img.loading="lazy";img.decoding="async";img.onerror=()=>img.remove();screen.appendChild(img);screen.dataset.assetApplied="1";const label=slots[i].querySelector(".asph-phone-label");if(label&&item.product?.name)label.textContent=item.product.name});return true}let tries=0;const timer=setInterval(()=>{tries++;if(apply()||tries>=30)clearInterval(timer)},500)})();</script>
+<script id="apple-seed-premium-black-gold-v3-loader">
+(function(){
+"use strict";
+function apply(){
+ const list=Array.isArray(window.appleSeedProducts)?window.appleSeedProducts:[];
+ const phones=list.filter(x=>/iphone/i.test(x?.product?.name||"")&&x?.images?.[0]?.url);
+ if(!phones.length)return false;
+ document.querySelectorAll(".as3-screen").forEach((screen,i)=>{
+   if(screen.dataset.bound)return;
+   const item=phones[i%phones.length], url=item.images[0].url;
+   const img=document.createElement("img"); img.src=url; img.alt=item.product?.name||"iPhone"; img.loading="lazy"; img.decoding="async";
+   img.onerror=()=>img.remove(); screen.appendChild(img); screen.dataset.bound="1";
+   const label=screen.parentElement.querySelector(".as3-label"); if(label&&item.product?.name)label.textContent=item.product.name;
+ });
+ return true;}
+let n=0;const t=setInterval(()=>{if(apply()||++n>50)clearInterval(t)},400);
+})();
+</script>
+<style id="apple-seed-hero-image-compat">
+/* HERO IMAGE CMS: background image belongs to the Hero container, not the phone stage. */
+#apple-seed-premium-home.has-cms-hero-bg{background-color:#f7f7f5!important;}
+#apple-seed-premium-home.has-cms-hero-bg:before{
+  background:
+    radial-gradient(circle at 67% 35%,rgba(232,195,112,.18),transparent 22%),
+    radial-gradient(circle at 82% 48%,rgba(205,218,234,.18),transparent 31%),
+    linear-gradient(180deg,rgba(251,251,250,.28) 0%,rgba(243,244,242,.34) 100%)!important;
+}
+</style>
+
+<style id="apple-seed-cms-hero-fullscreen">
+/* CMS HERO V3: uploaded Hero image fills the entire Hero section, not the phone stage. */
+#apple-seed-premium-home.has-cms-hero-bg{
+  background-repeat:no-repeat!important;
+  background-position:center center!important;
+  background-size:cover!important;
+  background-attachment:scroll!important;
+}
+#apple-seed-premium-home.has-cms-hero-bg:before{
+  background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.10))!important;
+}
+#apple-seed-premium-home.has-cms-hero-bg:after{
+  background:none!important;
+  mask-image:none!important;
+}
+#apple-seed-premium-home.has-cms-hero-bg .as3-stage{
+  background-image:none!important;
+  background-color:transparent!important;
+}
+</style>
+
+<style id="apple-seed-hero-final-layout">
+/* FINAL HERO: CMS uploaded image belongs to the whole Hero, never the phone stage. */
+#apple-seed-premium-home.has-cms-hero-bg{
+  background-image:var(--cms-hero-bg)!important;
+  background-repeat:no-repeat!important;
+  background-position:center center!important;
+  background-size:cover!important;
+}
+#apple-seed-premium-home.has-cms-hero-bg .as3-stage,
+#apple-seed-premium-home.has-cms-hero-bg .as3-stage:before{
+  background-image:none!important;
+}
+#apple-seed-premium-home.has-cms-hero-bg .as3-stage{
+  background:transparent!important;
+}
+</style>
+<script>
+(function(){
+  function finalCmsHeroFix(){
+    const hero=document.querySelector('#apple-seed-premium-home');
+    if(!hero) return;
+    const raw=getComputedStyle(hero).getPropertyValue('--cms-hero-bg').trim();
+    if(raw){
+      hero.classList.add('has-cms-hero-bg');
+      hero.style.setProperty('background-image',raw,'important');
+      hero.style.setProperty('background-size','cover','important');
+      hero.style.setProperty('background-position','center center','important');
+      hero.style.setProperty('background-repeat','no-repeat','important');
+    }
+    const stage=hero.querySelector('.as3-stage');
+    if(stage){
+      stage.style.setProperty('background-image','none','important');
+      stage.style.setProperty('background-color','transparent','important');
+    }
+  }
+  finalCmsHeroFix();
+  window.addEventListener('load',finalCmsHeroFix,{once:true});
+  setTimeout(finalCmsHeroFix,300);
+  setTimeout(finalCmsHeroFix,1000);
+})();
+</script>
+<script>
+/* Visual Builder guard: the preview canvas is allowed only inside the Builder iframe.
+   If the preview URL is opened at top-level, return to the Builder instead of trapping
+   the user on a plain homepage canvas. */
+(function(){
+  try{
+    var q=new URLSearchParams(location.search);
+    if(window.top===window.self && (q.get('appleSeedBuilderPreview')==='1' || q.get('appleSeedBuilderCanvas')==='1')){
+      location.replace('site-builder.html');
+    }
+  }catch(_){}
+})();
+</script>
+<style id="apple-seed-ai-board-preserve">
+/* AI BOARD + ROBOT: independent controls. Opening the assistant must NEVER hide AI BOARD. */
+#apple-seed-ai-board-float{
+  display:inline-flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+  z-index:1005!important;
+  right:24px!important;
+  bottom:102px!important;
+}
+body.apple-seed-chat-open #apple-seed-ai-board-float{
+  display:inline-flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+  z-index:1005!important;
+}
+</style>
+<script src="site-builder-runtime.js?v=20260830-v6"></script>
+
+<style id="apple-seed-ai-assistant-presence-v1">
+/* AI ASSISTANT PRESENCE — floating identity/status next to the robot launcher. */
+#apple-seed-ai-presence{
+  position:fixed;
+  right:100px;
+  bottom:20px;
+  z-index:1002;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:198px;
+  padding:10px 13px;
+  border-radius:16px;
+  background:rgba(18,43,78,.96);
+  color:#fff;
+  box-shadow:0 12px 30px rgba(15,35,65,.24);
+  border:1px solid rgba(255,255,255,.12);
+  cursor:pointer;
+  user-select:none;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+#apple-seed-ai-presence .asai-presence-icon{
+  width:38px;height:38px;flex:0 0 38px;border-radius:12px;overflow:hidden;
+  background:#fff;display:grid;place-items:center;
+}
+#apple-seed-ai-presence .asai-presence-icon img{
+  width:100%;height:100%;object-fit:cover;display:block;
+}
+#apple-seed-ai-presence .asai-presence-copy{min-width:0;line-height:1.15}
+#apple-seed-ai-presence .asai-presence-name{
+  display:block;font-size:15px;font-weight:900;letter-spacing:-.15px;white-space:nowrap;
+}
+#apple-seed-ai-presence .asai-presence-status{
+  display:flex;align-items:center;gap:6px;margin-top:5px;
+  color:#d8e5f7;font-size:11px;font-weight:700;white-space:nowrap;
+}
+#apple-seed-ai-presence .asai-online-dot{
+  width:8px;height:8px;border-radius:50%;background:#20d878;
+  box-shadow:0 0 0 3px rgba(32,216,120,.12),0 0 10px rgba(32,216,120,.55);
+  animation:asai-online-pulse 1.8s ease-in-out infinite;
+}
+@keyframes asai-online-pulse{
+  0%,100%{transform:scale(1);opacity:1}
+  50%{transform:scale(.78);opacity:.72}
+}
+#apple-seed-ai-presence.is-hidden{display:none!important}
+@media(max-width:560px){
+  #apple-seed-ai-presence{
+    right:90px;bottom:14px;min-width:188px;padding:9px 11px;border-radius:14px;
+  }
+  #apple-seed-ai-presence .asai-presence-name{font-size:14px}
+}
+</style>
+<script id="apple-seed-ai-assistant-presence-script">
+(function(){
+  "use strict";
+  function init(){
+    var robot=document.getElementById("chatBtn");
+    var box=document.getElementById("chatBox");
+    if(!robot||!box||document.getElementById("apple-seed-ai-presence")) return false;
+
+    var presence=document.createElement("button");
+    presence.type="button";
+    presence.id="apple-seed-ai-presence";
+    presence.setAttribute("aria-label","Mở Trợ lý AI Apple Seed");
+    presence.innerHTML=
+      '<span class="asai-presence-icon"><img src="apple-seed-robot.png" alt=""></span>'+
+      '<span class="asai-presence-copy">'+
+        '<span class="asai-presence-name">Trợ lý AI Apple Seed</span>'+
+        '<span class="asai-presence-status"><i class="asai-online-dot"></i>Online</span>'+
+      '</span>';
+
+    document.body.appendChild(presence);
+
+    function sync(){
+      var open=box.classList.contains("open");
+      presence.classList.toggle("is-hidden",open);
+      robot.setAttribute("aria-expanded",open?"true":"false");
+    }
+    function openAssistant(){
+      if(!box.classList.contains("open")) robot.click();
+      setTimeout(sync,0);
+      setTimeout(sync,40);
+    }
+    presence.addEventListener("click",openAssistant);
+    robot.addEventListener("click",function(){setTimeout(sync,0);setTimeout(sync,40)},true);
+    var close=document.getElementById("chatClose");
+    if(close) close.addEventListener("click",function(){setTimeout(sync,0);setTimeout(sync,40)},true);
+    sync();
+    setInterval(sync,250);
+    return true;
+  }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",function(){init()});
+  else init();
+})();
+</script>
+
+<script id="apple-seed-visual-builder-v2-runtime">
+/* Apple Seed Visual Builder V2 runtime.
+ * Reads the latest published Builder config and applies it to the real homepage.
+ * The Builder iframe is excluded so local draft edits are never overwritten.
+ */
+(function(){
+  "use strict";
+  if(/[?&](appleSeedBuilderPreview|builderCanvas)=1(?:&|$)/i.test(location.search)) return;
+  var sb=window.supabaseClient;
+  if(!sb) return;
+
+  var mobileQuery=window.matchMedia("(max-width:760px)");
+  var currentConfig=null;
+  var applying=false;
+
+  function textEditable(el){
+    return !!el && el!==document.body && el!==document.documentElement &&
+      el.tagName!=="IMG" && el.children.length===0 && el.textContent.trim().length>0;
+  }
+
+  function setStyle(el,name,value){
+    if(value===undefined || value===null || value===""){
+      el.style.removeProperty(name);
+    }else{
+      el.style.setProperty(name,String(value),"important");
+    }
+  }
+
+  function applyItem(selector,item,isMobile){
+    if(!selector || !item) return;
+    var el=null;
+    try{el=document.querySelector(selector)}catch(e){return}
+
+    /* Hero phone images are injected asynchronously by the product loader.
+       If Builder saved the image on that injected IMG, that IMG does not exist
+       yet during the first Builder-runtime pass. Re-target its phone screen
+       and recreate the saved image so reload keeps the user's choice. */
+    if(!el && item.src && selector.indexOf(".as3-screen")!==-1){
+      el=document.querySelector(".as3-screen");
+      if(el){
+        el.querySelectorAll(":scope > img").forEach(function(img){img.remove()});
+        var customImg=document.createElement("img");
+        customImg.src=String(item.src);
+        customImg.alt="iPhone";
+        customImg.loading="eager";
+        customImg.decoding="async";
+        customImg.onerror=function(){customImg.remove()};
+        el.appendChild(customImg);
+      }
+    }
+    if(!el) return;
+
+    if(item.text!==undefined && textEditable(el)) el.textContent=String(item.text);
+
+    /* Builder link — persisted with the item and applied on LIVE. */
+    if(item.link && typeof item.link.url==="string" && item.link.url.trim()){
+      var linkUrl=item.link.url.trim();
+      var linkTarget=item.link.target==="_blank"?"_blank":"_self";
+      if(el.tagName==="A"){
+        el.setAttribute("href",linkUrl);
+        if(linkTarget==="_blank"){
+          el.setAttribute("target","_blank");
+          el.setAttribute("rel","noopener noreferrer");
+        }else{
+          el.removeAttribute("target");
+          el.removeAttribute("rel");
+        }
+      }else{
+        el.setAttribute("data-apple-seed-link",linkUrl);
+        el.setAttribute("data-apple-seed-link-target",linkTarget);
+        el.style.setProperty("cursor","pointer","important");
+      }
+    }else if(el.tagName==="A"){
+      el.removeAttribute("href");
+      el.removeAttribute("target");
+      el.removeAttribute("rel");
+    }else{
+      el.removeAttribute("data-apple-seed-link");
+      el.removeAttribute("data-apple-seed-link-target");
+    }
+
+    if(item.src!==undefined && el.tagName==="IMG") el.src=String(item.src);
+
+    if(item.bgImage!==undefined && el.tagName!=="IMG"){
+      if(item.bgImage){
+        /* A custom Builder image owns this phone slot. Remove any legacy
+           product image injected by the old dynamic Hero loaders. */
+        if(el.matches && el.matches(".as3-screen")){
+          el.querySelectorAll(":scope > img").forEach(function(img){img.remove()});
+        }
+        var bg=String(item.bgImage).replace(/\\/g,"\\\\").replace(/"/g,'\\\"');
+        el.style.setProperty("background-image",'url("'+bg+'")',"important");
+        if(el.matches && el.matches(".as3-screen")){
+          el.style.setProperty("background-size","contain","important");
+          el.style.setProperty("background-position","center","important");
+          el.style.setProperty("background-repeat","no-repeat","important");
+        }
+      }else{
+        el.style.removeProperty("background-image");
+      }
+    }
+
+    var styles=item.styles||{};
+    var st=styles[isMobile?"mobile":"desktop"]||{};
+
+    if(st.x!==undefined || st.y!==undefined){
+      el.style.setProperty("translate",(Number(st.x)||0)+"px "+(Number(st.y)||0)+"px","important");
+    }else{
+      el.style.removeProperty("translate");
+    }
+    setStyle(el,"width",Number(st.w)>0?Number(st.w)+"px":undefined);
+    setStyle(el,"height",Number(st.h)>0?Number(st.h)+"px":undefined);
+    setStyle(el,"font-size",Number(st.fontSize)>0?Number(st.fontSize)+"px":undefined);
+    setStyle(el,"border-radius",Number(st.radius)>=0 && st.radius!==""?Number(st.radius)+"px":undefined);
+    setStyle(el,"color",st.color||undefined);
+    setStyle(el,"background-color",st.background||undefined);
+  }
+
+  document.addEventListener("click",function(e){
+    var linked=e.target && e.target.closest ? e.target.closest("[data-apple-seed-link]") : null;
+    if(!linked || linked.tagName==="A") return;
+    var url=linked.getAttribute("data-apple-seed-link");
+    if(!url) return;
+    var target=linked.getAttribute("data-apple-seed-link-target")||"_self";
+    if(target==="_blank") window.open(url,"_blank","noopener,noreferrer");
+    else window.location.href=url;
+  },true);
+
+  function applyConfig(){
+    if(applying || !currentConfig || !currentConfig.items) return;
+    applying=true;
+    try{
+      var isMobile=mobileQuery.matches;
+      var page=(currentConfig.page||{})[isMobile?"mobile":"desktop"]||{};
+      var pal=page.palette||{};
+      var primary=String(pal["--gold"]||"#d7aa4d");
+      var ink=String(pal["--ink"]||"#17233d");
+      var pageBg=String(pal["--apple-seed-page-bg"]||"#ffffff");
+      var cardBg=String(pal["--apple-seed-card-bg"]||"#ffffff");
+      document.documentElement.style.setProperty("--apple-seed-primary",primary,"important");
+      document.documentElement.style.setProperty("--apple-seed-ink",ink,"important");
+      document.documentElement.style.setProperty("--apple-seed-page-bg",pageBg,"important");
+      document.documentElement.style.setProperty("--apple-seed-card-bg",cardBg,"important");
+      document.documentElement.style.setProperty("--gold",primary,"important");
+      document.documentElement.style.setProperty("--blue",primary,"important");
+      document.documentElement.style.setProperty("--as-gold",primary,"important");
+      document.documentElement.style.setProperty("--as-gold-light",primary,"important");
+      document.documentElement.style.setProperty("--as-light-gold",primary,"important");
+      document.documentElement.style.setProperty("--as-light-gold-2",primary,"important");
+      document.documentElement.style.setProperty("--ink",ink,"important");
+      document.documentElement.style.setProperty("--as-light-ink",ink,"important");
+      Object.keys(pal).forEach(function(k){if(/^--[a-z0-9-]+$/.test(k)) document.documentElement.style.setProperty(k,String(pal[k]),"important")});
+      document.body.style.setProperty("background-color",pageBg,"important");
+      Object.keys(currentConfig.items).forEach(function(selector){applyItem(selector,currentConfig.items[selector],isMobile)});
+      var target=null;
+      if(page.target==="main") target=document.querySelector("main")||document.body;
+      else target=document.querySelector(".as3-hero,.hero,section:first-of-type")||document.querySelector("main")||document.body;
+      if(target){
+        var img=page.bgImage?String(page.bgImage).replace(/\\/g,"\\\\").replace(/"/g,'\\\"'):"";
+        var ov=page.overlay&&page.overlay!=="transparent"?String(page.overlay):"";
+        var isHero=(page.target!=="main" && (target.matches&&target.matches("#apple-seed-premium-home,.as3-hero,.hero,section:first-of-type")));
+        if(img&&ov) target.style.setProperty("background-image",'linear-gradient('+ov+','+ov+'),url("'+img+'")',"important");
+        else if(img) target.style.setProperty("background-image",'url("'+img+'")',"important");
+        else if(ov) target.style.setProperty("background-image",'linear-gradient('+ov+','+ov+')',"important");
+        else if(!img) target.style.removeProperty("background-image");
+        if(page.bgColor) target.style.setProperty("background-color",String(page.bgColor),"important");
+        if(page.bgSize) target.style.setProperty("background-size",String(page.bgSize),"important");
+        if(page.bgPosition) target.style.setProperty("background-position",String(page.bgPosition),"important");
+        target.style.setProperty("background-repeat","no-repeat","important");
+
+        /* Builder Hero background is the single source of truth. */
+        if(isHero){
+          var rootHero=document.querySelector("#apple-seed-premium-home")||target;
+          if(img){
+            rootHero.classList.add("builder-has-page-bg");
+            var legacyStage=rootHero.querySelector(".as3-stage");
+            if(legacyStage){
+              legacyStage.style.setProperty("background-image","none","important");
+              legacyStage.style.setProperty("background-color","transparent","important");
+            }
+          }else{
+            rootHero.classList.remove("builder-has-page-bg");
+          }
+        }
+      }
+    }finally{applying=false}
+  }
+
+  function scheduleApply(){
+    window.clearTimeout(scheduleApply.t);
+    scheduleApply.t=window.setTimeout(applyConfig,80);
+  }
+
+  async function load(){
+    try{
+      var r=await sb.from("site_builder_versions")
+        .select("version_no,config,created_at")
+        .eq("site_key","default")
+        .eq("status","published")
+        .order("version_no",{ascending:false})
+        .limit(1)
+        .maybeSingle();
+      if(r.error){
+        console.warn("[Apple Seed Builder] Published config:",r.error.message);
+        return;
+      }
+      if(!r.data || !r.data.config || !r.data.config.items) return;
+      currentConfig=r.data.config;
+      window.appleSeedBuilderPublishedConfig=currentConfig;
+      window.dispatchEvent(new CustomEvent("appleSeedBuilderConfigReady"));
+      applyConfig();
+      window.setTimeout(applyConfig,500);
+      window.setTimeout(applyConfig,1500);
+    }catch(e){
+      console.warn("[Apple Seed Builder] Runtime:",e);
+    }
+  }
+
+  function init(){
+    mobileQuery.addEventListener && mobileQuery.addEventListener("change",applyConfig);
+    var observer=new MutationObserver(function(){scheduleApply()});
+    observer.observe(document.body,{childList:true,subtree:true});
+    load();
+  }
+
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",init,{once:true});
+  else init();
+})();
+</script>
+
+<footer class="apple-seed-footer" aria-label="Chân trang Apple Seed">
+  <div class="apple-seed-footer-inner">
+    <div class="apple-seed-footer-brand">
+      <div class="apple-seed-footer-logo">
+        <div class="apple-seed-footer-logo-mark"></div>
+        <div><strong>APPLE SEED</strong><small>TRUNG TÂM SỬA CHỮA IPHONE</small></div>
+      </div>
+      <p class="apple-seed-footer-desc">Apple Seed chuyên sửa chữa iPhone chuyên sâu, minh bạch trong kiểm tra và đặt sự an tâm của khách hàng lên hàng đầu.</p>
+      <div class="apple-seed-footer-social" aria-label="Mạng xã hội">
+        <a href="https://www.facebook.com/appleseedvn" target="_blank" rel="noopener" aria-label="Facebook">f</a>
+        <a href="https://www.youtube.com/" target="_blank" rel="noopener" aria-label="YouTube">▶</a>
+        <a href="https://www.tiktok.com/" target="_blank" rel="noopener" aria-label="TikTok">♪</a>
+      </div>
+    </div>
+
+    <div>
+      <h3>Dịch vụ</h3>
+      <nav class="apple-seed-footer-links" aria-label="Dịch vụ">
+        <a href="#dich-vu">Sửa iPhone</a>
+        <a href="#dich-vu">Thay màn hình</a>
+        <a href="#dich-vu">Thay pin</a>
+        <a href="#dich-vu">Sửa Face ID</a>
+        <a href="#dich-vu">Sửa mainboard</a>
+        <a href="#dich-vu">Vệ sinh & kiểm tra</a>
+      </nav>
+    </div>
+
+    <div>
+      <h3>Hỗ trợ</h3>
+      <nav class="apple-seed-footer-links" aria-label="Hỗ trợ">
+        <a href="booking.html">Đặt lịch sửa chữa</a>
+        <a href="#lien-he">Liên hệ Apple Seed</a>
+        <a href="#gioi-thieu">Giới thiệu</a>
+        <a href="#dich-vu">Bảng dịch vụ</a>
+      </nav>
+      <a class="apple-seed-footer-cta" href="booking.html">📅 ĐẶT LỊCH NGAY →</a>
+    </div>
+
+    <div>
+      <h3>Liên hệ</h3>
+      <div class="apple-seed-footer-contact">
+        <div class="item"><span class="icon">☎</span><a href="tel:0898888269">0898 888 269</a></div>
+        <div class="item"><span class="icon">📍</span><span>292 Phạm Ngũ Lão, Trà Vinh, TP. Vĩnh Long</span></div>
+        <div class="item"><span class="icon">✉</span><a href="mailto:0898888269tv@gmail.com">0898888269tv@gmail.com</a></div>
+        <div class="item"><span class="icon">🗺</span><a href="https://maps.app.goo.gl/QEWg9owQidGW5ZyG7" target="_blank" rel="noopener">Mở Google Maps</a></div>
+      </div>
+      <div class="apple-seed-footer-hours"><b>Giờ làm việc</b><span>Thứ 2 – Thứ 7: 8:30 – 19:00</span><span>Chủ nhật: 8:30 – 17:00</span></div>
+    </div>
+  </div>
+  <div class="apple-seed-footer-bottom">
+    <div>© 2026 <strong>Apple Seed</strong>. All rights reserved.</div>
+    <div class="apple-seed-footer-bottom-links"><a href="#lien-he">Liên hệ</a><a href="#gioi-thieu">Giới thiệu</a><a href="booking.html">Đặt lịch</a></div>
+    <div class="apple-seed-footer-warning">Nội dung website thuộc Apple Seed · Vui lòng không sao chép, sử dụng lại hoặc phân phối khi chưa được phép.</div>
+  </div>
+</footer>
+
 </body>
 </html>
+
+
+
+<style id="apple-seed-mobile-header-final-override">
+/* FINAL MOBILE HEADER OVERRIDE — must be last so later responsive CSS cannot undo it. */
+@media (max-width:760px){
+  :root{--apple-seed-mobile-header-h:196px!important;}
+
+  body{
+    padding-top:196px!important;
+    overflow-x:hidden!important;
+  }
+
+  .site-header{
+    position:fixed!important;
+    top:0!important;
+    left:0!important;
+    right:0!important;
+    width:100%!important;
+    height:196px!important;
+    min-height:196px!important;
+    max-height:196px!important;
+    overflow:hidden!important;
+    z-index:5000!important;
+  }
+
+  .site-header .nav{
+    width:100%!important;
+    max-width:none!important;
+    height:196px!important;
+    min-height:196px!important;
+    padding:10px 12px 12px!important;
+    margin:0!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    justify-content:flex-start!important;
+    gap:8px!important;
+  }
+
+  .site-header .brand{
+    width:100%!important;
+    min-width:0!important;
+    height:72px!important;
+    flex:0 0 72px!important;
+    padding:0 8px!important;
+    display:flex!important;
+    align-items:center!important;
+  }
+
+  .site-header .menu{
+    width:100%!important;
+    height:98px!important;
+    min-height:98px!important;
+    flex:0 0 98px!important;
+    margin:0!important;
+    padding:0!important;
+    display:grid!important;
+    grid-template-columns:repeat(6,minmax(0,1fr))!important;
+    grid-template-rows:42px 50px!important;
+    column-gap:6px!important;
+    row-gap:6px!important;
+    align-items:center!important;
+  }
+
+  .site-header .menu > a{
+    width:100%!important;
+    min-width:0!important;
+    height:42px!important;
+    padding:0!important;
+    margin:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    flex:none!important;
+  }
+
+  .site-header .menu > a .mi{
+    width:30px!important;
+    height:30px!important;
+    font-size:21px!important;
+    line-height:1!important;
+  }
+
+  .site-header .menu > a > span:last-child{display:none!important;}
+
+  .site-header .menu > a.booking-nav{
+    background:linear-gradient(135deg,#1769ff,#3d94ff)!important;
+    color:#fff!important;
+    border-radius:12px!important;
+  }
+
+  .site-header .member-auth-buttons{
+    grid-column:1 / -1!important;
+    grid-row:2!important;
+    width:100%!important;
+    height:50px!important;
+    min-height:50px!important;
+    margin:0!important;
+    padding:0!important;
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:8px!important;
+  }
+
+  .site-header .member-auth-buttons .member-auth-btn{
+    width:100%!important;
+    height:50px!important;
+    min-height:50px!important;
+    margin:0!important;
+    padding:0 8px!important;
+    border-radius:14px!important;
+    font-size:15px!important;
+    white-space:nowrap!important;
+  }
+
+  .site-header .member-user-pill{grid-column:1 / -1!important;width:100%!important;}
+}
+</style>
