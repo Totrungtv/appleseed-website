@@ -406,6 +406,32 @@ function applyLinkToElement(el,item){
     el.style.removeProperty('cursor');
   }
 }
+function clampHeroTranslate(el,x,y){
+  if(!el||!el.closest?.('.as3-hero'))return{x,y};
+  const hero=el.closest('.as3-hero');
+  const hr=hero.getBoundingClientRect();
+  const er=el.getBoundingClientRect();
+  const currentX=Number.isFinite(x)?x:0,currentY=Number.isFinite(y)?y:0;
+  let nx=currentX,ny=currentY;
+  const minLeft=hr.left+8,maxRight=hr.right-8,minTop=hr.top+8,maxBottom=hr.bottom-8;
+  if(er.left<minLeft)nx+=minLeft-er.left;
+  if(er.right>maxRight)nx-=er.right-maxRight;
+  if(er.top<minTop)ny+=minTop-er.top;
+  if(er.bottom>maxBottom)ny-=er.bottom-maxBottom;
+  return{x:Math.round(nx),y:Math.round(ny)};
+}
+function normalizeHeroCopy(){
+  if(!doc)return;
+  doc.querySelectorAll('.as3-copy').forEach(el=>{
+    const st=styleObject(el); if(!Number.isFinite(st.x)&&!Number.isFinite(st.y))return;
+    const p=clampHeroTranslate(el,st.x||0,st.y||0);
+    if(p.x!==(st.x||0)||p.y!==(st.y||0)){
+      el.style.translate=p.x+'px '+p.y+'px';
+      const sel=stableSelector(el),item=draft.items?.[sel];
+      if(item){item.styles=item.styles||{desktop:{},mobile:{}};item.styles[deviceKey()]=item.styles[deviceKey()]||{};item.styles[deviceKey()].x=p.x;item.styles[deviceKey()].y=p.y;}
+    }
+  });
+}
 function applyAll(){
   if(!doc)return;
   const dk=deviceKey();
@@ -431,6 +457,7 @@ function applyAll(){
     if(st.color)el.style.color=st.color;
     if(st.background)el.style.backgroundColor=st.background;
   }
+  normalizeHeroCopy();
   refreshInspector();
 }
 function loadDraft(){try{const raw=localStorage.getItem(DRAFT_KEY);if(raw){draft=JSON.parse(raw);if(!draft.items)draft.items={};if(!draft.page)draft.page={desktop:{},mobile:{}};draft.page.desktop=draft.page.desktop||{};draft.page.mobile=draft.page.mobile||{}}}catch{draft={items:{},page:{desktop:{},mobile:{}}}}}
@@ -610,6 +637,7 @@ $('preview').addEventListener('load',async()=>{
     drag.moved=true;
     if(drag.type==='move'){
       const x=Math.round(drag.bx+dx),y=Math.round(drag.by+dy);
+      const bounded=clampHeroTranslate(drag.el,x,y); x=bounded.x; y=bounded.y;
       if(groupPhones&&drag.el.classList.contains('as3-phone')){
         Object.entries(drag.groupBases||{}).forEach(([sel,base])=>{
           if(!base?.el)return;
