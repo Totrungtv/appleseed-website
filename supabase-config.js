@@ -12,6 +12,15 @@ window.supabaseClient =
         window.SUPABASE_ANON_KEY
     );
 
+// Entertainment-only additive hardening. Other pages are untouched.
+if (location.pathname.endsWith('/entertainment.html')) {
+    var entertainmentFix = document.createElement('script');
+    entertainmentFix.src = './entertainment-runtime-hardening.js';
+    entertainmentFix.async = true;
+    entertainmentFix.setAttribute('data-apple-seed-runtime-fix', 'entertainment');
+    document.head.appendChild(entertainmentFix);
+}
+
 /* Apple Seed Admin compatibility bridge. */
 (function appleSeedAdminCompatibility(){
     if (location.pathname.split('/').pop().toLowerCase() !== 'admin.html') return;
