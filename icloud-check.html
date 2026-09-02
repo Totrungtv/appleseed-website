@@ -647,7 +647,7 @@ input:focus,select:focus{border-color:#4f8cff!important;box-shadow:0 0 0 2px #4f
     // Không để giá trị IMEI cũ nằm lại khi chuyển sang Serial (và ngược lại).
     const current=identifier.value.trim();
     if(current){
-      const looksImei=/^\\d+$/.test(current);
+      const looksImei=/^\d+$/.test(current);
       const looksSerial=/^[A-Z0-9]+$/.test(current.toUpperCase());
       if((isImei && !looksImei) || (!isImei && looksImei && current.length<8)){
         identifier.value='';
