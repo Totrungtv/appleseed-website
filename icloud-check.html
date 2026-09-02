@@ -1052,7 +1052,58 @@ input:focus,select:focus{border-color:#4f8cff!important;box-shadow:0 0 0 2px #4f
   async function runIcloudCheck(){
     try{
       if(!window.supabaseClient) throw new Error('Supabase client chưa sẵn sàng.');
+
+      // Edge Function kiểm tra iCloud yêu cầu JWT của Member.
+      // Chủ động lấy/refresh session và truyền Bearer token để tránh lỗi 401
+      // khi supabase-js chưa tự gắn session vào request sau bước thanh toán.
+      let session=null;
+      try{
+        const current=await window.supabaseClient.auth.getSession();
+        session=current?.data?.session||null;
+        if(!session?.access_token){
+          const refreshed=await window.supabaseClient.auth.refreshSession();
+          session=refreshed?.data?.session||null;
+        }
+      }catch(authErr){
+        console.warn('iCloud auth session:',authErr);
+      }
+
+      if(!session?.access_token){
+        // Không đánh dấu đơn đã thanh toán thành FAILED chỉ vì phiên đăng nhập
+        // ở trình duyệt bị mất. Giữ nguyên đơn để người dùng/Admin xử lý tiếp.
+        paymentArea.style.display='none';
+        processingArea.style.display='none';
+        resultArea.style.display='block';
+        const card=$('resultCard');
+        card.className='result-card failed';
+        $('resultBadge').className='badge failed';
+        $('resultBadge').textContent='● CHƯA XÁC THỰC PHIÊN ĐĂNG NHẬP';
+        $('resultModelName').textContent='Phiên đăng nhập đã hết hạn';
+        $('resultModelDetail').textContent='Đơn thanh toán vẫn được giữ trong hệ thống Apple Seed.';
+        $('resultStatusPill').className='status-pill locked';
+        $('resultStatusPill').textContent='CẦN ĐĂNG NHẬP LẠI';
+        $('resultMessage').textContent='Hãy đăng nhập lại Member rồi thực hiện kiểm tra. Đơn đã thanh toán không bị tự động đánh dấu thất bại.';
+        $('heroIdentifier').textContent=normalize()||'—';
+        $('heroFmi').textContent='—';
+        $('heroActivation').textContent='—';
+        $('heroSimlock').textContent='—';
+        $('deviceDetails').innerHTML='';
+        $('lockDetails').innerHTML='';
+        $('networkDetails').innerHTML='';
+        $('lockSection').style.display='none';
+        $('networkSection').style.display='none';
+        $('resultIdentifier').textContent=normalize()||'—';
+        $('resultRef').textContent=paymentRefValue||'—';
+        $('resultTxn').textContent='—';
+        $('resultTime').textContent=new Date().toLocaleString('vi-VN');
+        const note=document.getElementById('resultFootnote');
+        if(note) note.textContent='Mã lỗi: AUTH_REQUIRED • Phiên đăng nhập không còn hợp lệ nên hệ thống chưa gọi nguồn tra cứu.';
+        startBtn.disabled=false;
+        return;
+      }
+
       const r=await window.supabaseClient.functions.invoke('check-icloud-status',{
+        headers:{Authorization:'Bearer '+session.access_token},
         body:{payment_id:paymentId}
       });
 
@@ -1065,6 +1116,12 @@ input:focus,select:focus{border-color:#4f8cff!important;box-shadow:0 0 0 2px #4f
           msg=parsed?.message||msg;
           code=parsed?.code||code;
         }catch(_){}
+        // 401 thường là JWT hết hạn/mất session; không biến đơn đã thanh toán
+        // thành đơn thất bại chỉ vì lỗi xác thực ở phía trình duyệt.
+        if(r.error?.status===401){
+          code='AUTH_REQUIRED';
+          msg='Phiên đăng nhập Apple Seed đã hết hạn. Vui lòng đăng nhập lại rồi kiểm tra lại.';
+        }
         showFailure(msg,code);
         return;
       }
