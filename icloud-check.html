@@ -811,7 +811,8 @@ input:focus,select:focus{border-color:#4f8cff!important;box-shadow:0 0 0 2px #4f
     const extended=$('extendedDetails');
     const extSection=$('extendedSection');
     extended.innerHTML='';
-    const plan=String(data?.plan||'').toLowerCase();
+    // plan đã được khai báo ở đầu showResult(); dùng lại biến đó.
+
     const sourceDetails=(data?.details && typeof data.details==='object') ? data.details : {};
     const skipKeys=new Set(['status','code','message','payment_id','identifier_type','identifier_masked','verified_at','cached','plan','bank_transaction_id','provider','provider_raw','provider_response','provider_order_id','service_id','service_name','order_id']);
     const displayKey=(k)=>String(k).replace(/_/g,' ').replace(/\b\w/g,m=>m.toUpperCase());
