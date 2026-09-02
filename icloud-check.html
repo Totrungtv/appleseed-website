@@ -29,6 +29,7 @@ h2{margin:0;font-size:21px}.muted{color:var(--muted);line-height:1.55}
 .price{font-size:24px;font-weight:900;color:var(--green)}
 .body{padding:28px}
 .fields{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.package-choice{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}.package{position:relative;border:1px solid #29405f;background:#091524;border-radius:14px;padding:15px;cursor:pointer;transition:.18s}.package:hover{border-color:#4b8dff}.package.active{border-color:#5b8fff;box-shadow:0 0 0 2px #4b8dff20;background:linear-gradient(135deg,#0d1d34,#0b1728)}.package input{position:absolute;opacity:0;pointer-events:none}.package strong{display:block;font-size:15px}.package small{display:block;color:#8094af;margin-top:5px;line-height:1.4}.package-price{float:right;color:#54e5a5;font-weight:950}
 .field.full{grid-column:1/-1}
 label{display:block;font-size:12px;font-weight:800;color:#9eb2cd;margin-bottom:8px}
 input,select{width:100%;border:1px solid #2b405e;background:#091524;color:#edf5ff;border-radius:12px;padding:14px;font:inherit;outline:none}
@@ -64,7 +65,11 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
 .result-card{border-radius:20px;padding:28px;border:1px solid #2b405e;background:#0b1728}
 .result-card.ok{border-color:#1e7659;background:linear-gradient(180deg,#0b211c,#091824)}
 .result-card.locked{border-color:#7d3440;background:linear-gradient(180deg,#261016,#0b1724)}
-.result-icon{font-size:44px}.result-title{font-size:25px;font-weight:950;margin:8px 0}
+.result-card.unknown{border-color:#80672b;background:linear-gradient(180deg,#211b0d,#091524)}
+.result-icon{display:none}.result-title{display:none}.result-title{font-size:25px;font-weight:950;margin:8px 0}.result-subtitle{color:#91a5c0;line-height:1.55;margin-top:6px}
+.result-section{margin-top:22px}.result-section h4{margin:0 0 10px;font-size:13px;letter-spacing:.08em;color:#9eb2cd}
+.result-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.result-item{background:#091524;border:1px solid #20324b;border-radius:12px;padding:13px}.result-item span{display:block;color:#8094af;font-size:11px;margin-bottom:5px;text-transform:uppercase}.result-item strong{font-size:14px;word-break:break-word}
+.badge{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border-radius:999px;font-size:12px;font-weight:900;border:1px solid #29405f;background:#0b1728}.badge.ok{border-color:#1e7659}.badge.locked{border-color:#7d3440}.badge.unknown{border-color:#80672b}
 .meta{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:20px}
 .meta div{background:#091524;border:1px solid #20324b;border-radius:12px;padding:13px}
 .meta span{display:block;color:#8094af;font-size:11px;margin-bottom:4px}.meta strong{font-size:14px;word-break:break-word}
@@ -74,14 +79,26 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
 .history-row{display:grid;grid-template-columns:1fr 110px 100px;gap:12px;padding:13px 15px;border-bottom:1px solid #1b2c43;font-size:13px}
 .history-row:last-child{border-bottom:0}.history-status{font-weight:800}
 .empty{padding:20px;color:#7f93ad;text-align:center}
+
+.result-hero{display:grid;grid-template-columns:1fr auto;gap:22px;align-items:center;padding:22px;border:1px solid #243a57;border-radius:18px;background:linear-gradient(135deg,#0d1d32,#0a1423);margin-top:18px}
+.result-device{display:flex;align-items:center;gap:16px;min-width:0}
+.device-icon{width:62px;height:62px;border-radius:18px;display:grid;place-items:center;font-size:30px;background:linear-gradient(145deg,#182c49,#0d1b2e);border:1px solid #304967;box-shadow:inset 0 1px #ffffff12}
+.device-copy{min-width:0}.device-name{font-size:25px;font-weight:950;line-height:1.15;word-break:break-word}.device-model-detail{color:#91a5c0;font-size:12px;margin-top:5px;line-height:1.45;word-break:break-word}
+.status-pill{padding:10px 14px;border-radius:12px;font-size:12px;font-weight:950;text-align:center;white-space:nowrap}.status-pill.ok{background:#0d2b21;color:#65e8b1;border:1px solid #1e7659}.status-pill.locked{background:#32131b;color:#ff8b98;border:1px solid #7d3440}.status-pill.unknown{background:#2b230e;color:#f7d579;border:1px solid #80672b}
+.report-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}.report-stat{padding:13px 14px;border:1px solid #20324b;background:#091524;border-radius:12px}.report-stat span{display:block;color:#7f93ad;font-size:10px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}.report-stat strong{font-size:14px;word-break:break-word}
+.result-section{margin-top:24px}.result-section h4{display:flex;align-items:center;gap:8px;margin:0 0 11px;font-size:12px;letter-spacing:.1em;color:#b8cae4}.result-section h4:before{content:'';width:4px;height:14px;border-radius:4px;background:#4b8dff;display:block}.result-grid{grid-template-columns:repeat(3,1fr)}.result-item{min-height:70px}.result-item strong{line-height:1.4}
+.result-footnote{margin-top:18px;padding:12px 14px;border-radius:12px;background:#081321;border:1px solid #1c2e46;color:#7f93ad;font-size:11px;line-height:1.55}
+@media(max-width:900px){.report-bar{grid-template-columns:repeat(2,1fr)}.result-grid{grid-template-columns:repeat(2,1fr)}}
+
 @media(max-width:760px){
  .wrap{width:min(100% - 20px,1120px);padding-top:22px}
- h1{font-size:30px}.top{flex-direction:column}.fields,.qr-wrap,.meta{grid-template-columns:1fr}
+ h1{font-size:30px}.top{flex-direction:column}.fields,.qr-wrap,.result-grid,.meta{grid-template-columns:1fr}
  .field.full{grid-column:auto}.card-head,.body{padding:20px}.payment{padding:18px}
  .payment-top{flex-direction:column}.amount{font-size:24px}
 }
 
-  .check-plans{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:14px}.plan-card{border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:18px;background:rgba(255,255,255,.035)}.plan-card.basic{border-color:rgba(80,200,120,.35)}.plan-card.pro{border-color:rgba(80,150,255,.35)}.plan-title{font-weight:800;font-size:16px}.plan-price{font-size:22px;font-weight:900;margin:6px 0}.plan-desc{font-size:13px;opacity:.78;margin-bottom:8px}.plan-card ul{margin:8px 0 0;padding-left:19px}.plan-card li{margin:6px 0;font-size:13px}.plan-note{margin:0 0 18px;padding:12px 14px;border-radius:12px;background:rgba(255,193,7,.08);font-size:13px;line-height:1.5}@media(max-width:700px){.check-plans{grid-template-columns:1fr}}
+.admin-panel{display:none;margin-top:20px}.admin-panel.visible{display:block}.admin-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:22px 24px;border-bottom:1px solid var(--line)}.admin-head h3{margin:0;font-size:20px}.admin-head p{margin:6px 0 0;color:var(--muted);font-size:12px}.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:18px}.admin-column{border-radius:16px;overflow:hidden;border:1px solid #29405f;background:#091524;min-width:0}.admin-column.red{border-color:#71333e}.admin-column.green{border-color:#1e7659}.admin-column.pending{border-color:#80672b}.admin-col-head{padding:15px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;font-weight:900}.admin-column.red .admin-col-head{background:#2a1017;color:#ff9aa5}.admin-column.green .admin-col-head{background:#0b261e;color:#6ceab7}.admin-column.pending .admin-col-head{background:#2a230f;color:#f7d579}.admin-count{min-width:28px;height:28px;border-radius:999px;display:grid;place-items:center;background:#ffffff10}.admin-list{padding:10px}.admin-order{padding:14px;border:1px solid #20324b;border-radius:12px;background:#0b1728;margin-bottom:9px}.admin-order:last-child{margin-bottom:0}.admin-order-top{display:flex;justify-content:space-between;gap:10px}.admin-order-ref{font-weight:900}.admin-order-time{font-size:11px;color:#7186a2;white-space:nowrap}.admin-order-id{margin-top:7px;font-size:12px;color:#a9bad2;word-break:break-all}.admin-order-meta{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}.admin-order-meta div{padding:8px 9px;background:#081321;border:1px solid #1c2e46;border-radius:9px}.admin-order-meta span{display:block;font-size:9px;color:#7186a2;text-transform:uppercase;margin-bottom:3px}.admin-order-meta strong{font-size:12px;word-break:break-word}.admin-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}.admin-btn{border:1px solid #29405f;background:#14243a;color:#c8d8ef;border-radius:9px;padding:8px 10px;font-size:11px;font-weight:850;cursor:pointer}.admin-btn.refund{border-color:#9b3d4b;background:#32131b;color:#ffadb6}.admin-btn.done{border-color:#1e7659;background:#0d2b21;color:#72edbc}.admin-btn:disabled{opacity:.45;cursor:not-allowed}.admin-empty{padding:25px 14px;text-align:center;color:#7186a2;font-size:12px}.admin-refresh{white-space:nowrap}.admin-foot{padding:0 18px 18px;color:#7186a2;font-size:11px}.admin-note{margin-top:9px;width:100%;min-height:50px;padding:9px;border:1px solid #243a57;background:#081321;color:#eaf2ff;border-radius:9px;font:inherit;font-size:11px;resize:vertical}.admin-filter{display:flex;gap:8px;align-items:center;padding:0 18px 16px}.admin-filter input{max-width:340px;padding:10px 12px;font-size:12px}.admin-statbar{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:18px 18px 0}.admin-stat{border:1px solid #20324b;background:#091524;border-radius:12px;padding:12px}.admin-stat span{display:block;color:#7186a2;font-size:10px;text-transform:uppercase}.admin-stat strong{display:block;margin-top:4px;font-size:18px}@media(max-width:900px){.admin-grid{grid-template-columns:1fr}.admin-statbar{grid-template-columns:repeat(2,1fr)}}
+
 </style>
 </head>
 <body>
@@ -105,44 +122,16 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
   </div>
 
   <div class="body">
-    <div class="check-plans" aria-label="Bảng thông tin gói kiểm tra">
-      <div class="plan-card basic">
-        <div class="plan-title">🟢 CHECK CƠ BẢN</div>
-        <div class="plan-price">5.000đ / lượt</div>
-        <div class="plan-desc">Phù hợp khi cần kiểm tra nhanh trước khi mua/bán máy.</div>
-        <ul>
-          <li>🔒 Activation Lock / FMI: <strong>ON hoặc OFF</strong></li>
-          <li>☁️ iCloud / Find My Status</li>
-          <li>📱 Model thiết bị</li>
-          <li>🧾 Kết quả kiểm tra từ hệ thống</li>
-        </ul>
-      </div>
-      <div class="plan-card pro">
-        <div class="plan-title">🔵 CHECK PRO</div>
-        <div class="plan-price">15.000đ / lượt</div>
-        <div class="plan-desc">Báo cáo chi tiết dành cho thợ, người bán và người mua máy.</div>
-        <ul>
-          <li>📱 Model / Model Number</li>
-          <li>🎨 Màu máy + 💾 dung lượng</li>
-          <li>🔒 FMI / Activation Lock + ☁️ iCloud</li>
-          <li>📶 SIM Lock + Carrier</li>
-          <li>🛠️ Bảo hành + AppleCare</li>
-          <li>📅 Ngày mua / kích hoạt (nếu có)</li>
-          <li>🆔 IMEI / IMEI2 / Serial / EID</li>
-          <li>🚫 Blacklist / US Block (nếu nguồn có)</li>
-          <li>🌎 Quốc gia mua hàng và các dữ liệu Apple khác được API trả về</li>
-        </ul>
-      </div>
+    <label>GÓI KIỂM TRA</label>
+    <div class="package-choice">
+      <label class="package active" id="basicPackage"><input type="radio" name="plan" value="5000" checked><strong>CHECK CƠ BẢN <span class="package-price">5.000đ</span></strong><small>FMI / iCloud Activation Lock ON/OFF và model cơ bản.</small></label>
+      <label class="package" id="proPackage"><input type="radio" name="plan" value="15000"><strong>CHECK PRO <span class="package-price">15.000đ</span></strong><small>Báo cáo chi tiết model, màu, dung lượng, FMI/iCloud, SIM Lock, bảo hành, ngày mua/kích hoạt, AppleCare, EID, blacklist và dữ liệu nguồn trả về.</small></label>
     </div>
-
-    <div class="plan-note">💡 <strong>Chọn 5.000đ</strong> nếu chỉ cần biết máy có Activation Lock/iCloud hay không. <strong>Chọn 15.000đ</strong> nếu muốn xem báo cáo thiết bị chi tiết.</div>
-
     <div class="fields">
       <div class="field">
         <label for="idType">KIỂU ĐỊNH DANH</label>
         <select id="idType">
           <option value="imei">IMEI</option>
-          <option value="serial">Serial Number</option>
         </select>
       </div>
       <div class="field">
@@ -158,15 +147,8 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
         </select>
       </div>
       <div class="field full">
-        <label for="plan">GÓI KIỂM TRA</label>
-        <select id="plan">
-          <option value="basic">CHECK CƠ BẢN — 5.000đ • FMI/iCloud ON/OFF</option>
-          <option value="pro">CHECK PRO — 15.000đ • Báo cáo Apple chi tiết</option>
-        </select>
-      </div>
-      <div class="field full">
         <label id="idLabel" for="identifier">IMEI</label>
-        <input id="identifier" autocomplete="off" spellcheck="false" inputmode="numeric" placeholder="Nhập IMEI">
+        <input id="identifier" autocomplete="off" spellcheck="false" inputmode="numeric" maxlength="16" placeholder="Nhập IMEI">
       </div>
     </div>
 
@@ -176,8 +158,6 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
     </div>
 
     <div class="notice">
-      <strong>🟢 CHECK CƠ BẢN — 5.000đ:</strong> FMI / Activation Lock (iCloud) ON/OFF và model cơ bản.<br>
-      <strong>🔵 CHECK PRO — 15.000đ:</strong> báo cáo Apple chi tiết gồm model, màu, dung lượng, FMI/iCloud, SIM Lock, bảo hành, ngày mua/kích hoạt, AppleCare, EID, blacklist và các trường dữ liệu mà nguồn 3023 trả về.<br><br>
       🔐 <strong>An toàn:</strong> không nhập mật khẩu Apple Account. Hệ thống chỉ dùng IMEI/Serial để tạo đơn.
       Kết quả chỉ hiển thị khi nguồn kiểm tra trả về dữ liệu xác minh được.
     </div>
@@ -199,7 +179,7 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
             <div class="info-row"><span>Số tài khoản</span><strong>0898888269</strong></div>
             <div class="info-row"><span>Chủ tài khoản</span><strong>TÔ THANH TRUNG</strong></div>
             <div class="info-row"><span>Nội dung</span><strong id="transferContent">—</strong></div>
-            <div class="notice" style="margin-top:2px">Quét đúng QR và chuyển đúng <strong id="qrAmountText">5.000đ</strong>. Hệ thống tự nhận tiền qua webhook SePay.</div>
+            <div class="notice" style="margin-top:2px">Quét đúng QR và chuyển đúng <strong id="paymentAmountNotice">5.000đ</strong>. Hệ thống tự nhận tiền qua webhook SePay.</div>
           </div>
         </div>
 
@@ -209,6 +189,7 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
             <small>Không cần bấm xác nhận. Hệ thống sẽ tự kiểm tra giao dịch.</small>
           </div>
         </div>
+        <div class="result-footnote" id="resultFootnote">Báo cáo được tạo tự động từ dữ liệu xác minh của Apple Seed.</div>
       </div>
     </section>
 
@@ -222,17 +203,68 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
 
     <section class="result" id="resultArea">
       <div class="result-card" id="resultCard">
-        <div class="result-icon" id="resultIcon">✓</div>
-        <div class="result-title" id="resultTitle">Kết quả</div>
-        <div class="muted" id="resultMessage"></div>
-        <div class="meta">
-          <div><span>ĐỊNH DANH</span><strong id="resultIdentifier">—</strong></div>
-          <div><span>MÃ THANH TOÁN</span><strong id="resultRef">—</strong></div>
-          <div><span>GIAO DỊCH NGÂN HÀNG</span><strong id="resultTxn">—</strong></div>
-          <div><span>THỜI GIAN</span><strong id="resultTime">—</strong></div>
+        <div id="resultBadge" class="badge unknown">● ĐANG XÁC MINH</div>
+        <div class="result-hero">
+          <div class="result-device">
+            <div class="device-icon"></div>
+            <div class="device-copy">
+              <div class="device-name" id="resultModelName">iPhone</div>
+              <div class="device-model-detail" id="resultModelDetail">Đang xác minh model thiết bị…</div>
+            </div>
+          </div>
+          <div id="resultStatusPill" class="status-pill unknown">CHƯA XÁC MINH</div>
+        </div>
+        <div class="result-subtitle" id="resultMessage">—</div>
+        <div class="report-bar">
+          <div class="report-stat"><span>Định danh</span><strong id="heroIdentifier">—</strong></div>
+          <div class="report-stat"><span>FMI / iCloud</span><strong id="heroFmi">—</strong></div>
+          <div class="report-stat"><span>Activation</span><strong id="heroActivation">—</strong></div>
+          <div class="report-stat"><span>SIM Lock</span><strong id="heroSimlock">—</strong></div>
+        </div>
+
+        <div class="result-section">
+          <h4>THIẾT BỊ</h4>
+          <div class="result-grid" id="deviceDetails"></div>
+        </div>
+        <div class="result-section" id="lockSection">
+          <h4>TRẠNG THÁI KHÓA & KÍCH HOẠT</h4>
+          <div class="result-grid" id="lockDetails"></div>
+        </div>
+        <div class="result-section" id="networkSection">
+          <h4>MẠNG & DỊCH VỤ</h4>
+          <div class="result-grid" id="networkDetails"></div>
+        </div>
+        <div class="result-section">
+          <h4>GIAO DỊCH</h4>
+          <div class="result-grid">
+            <div class="result-item"><span>Mã thanh toán</span><strong id="resultRef">—</strong></div>
+            <div class="result-item"><span>Giao dịch ngân hàng</span><strong id="resultTxn">—</strong></div>
+            <div class="result-item"><span>Định danh kiểm tra</span><strong id="resultIdentifier">—</strong></div>
+            <div class="result-item"><span>Thời gian</span><strong id="resultTime">—</strong></div>
+          </div>
         </div>
       </div>
     </section>
+
+<section class="card admin-panel" id="adminPanel">
+  <div class="admin-head">
+    <div><div class="kicker">ADMIN • ICLOUD CHECK CONTROL</div><h3>Quản lý đơn kiểm tra iCloud</h3><p>Chỉ tài khoản Admin của Apple Seed mới nhìn thấy khu vực này. Các Member khác không có quyền đọc hoặc sửa toàn bộ đơn.</p></div>
+    <button class="admin-btn admin-refresh" id="adminRefresh">↻ Làm mới</button>
+  </div>
+  <div class="admin-statbar">
+    <div class="admin-stat"><span>Tổng đơn</span><strong id="adminTotal">0</strong></div>
+    <div class="admin-stat"><span>Thành công</span><strong id="adminSuccess">0</strong></div>
+    <div class="admin-stat"><span>Thất bại</span><strong id="adminFailed">0</strong></div>
+    <div class="admin-stat"><span>Chờ hoàn tiền</span><strong id="adminRefund">0</strong></div>
+  </div>
+  <div class="admin-filter"><input id="adminSearch" placeholder="Tìm mã đơn / IMEI / Serial..."></div>
+  <div class="admin-grid">
+    <div class="admin-column red"><div class="admin-col-head"><span>🔴 GIAO DỊCH THẤT BẠI</span><span class="admin-count" id="adminFailedCount">0</span></div><div class="admin-list" id="adminFailedList"></div></div>
+    <div class="admin-column green"><div class="admin-col-head"><span>🟢 GIAO DỊCH THÀNH CÔNG</span><span class="admin-count" id="adminSuccessCount">0</span></div><div class="admin-list" id="adminSuccessList"></div></div>
+  </div>
+  <div class="admin-grid" style="padding-top:0"><div class="admin-column pending" style="grid-column:1/-1"><div class="admin-col-head"><span>🟡 ĐANG CHỜ / ĐANG XỬ LÝ</span><span class="admin-count" id="adminPendingCount">0</span></div><div class="admin-list" id="adminPendingList"></div></div></div>
+  <div class="admin-foot">Hoàn tiền tại đây chỉ <strong>ghi nhận trạng thái hoàn tiền</strong> sau khi pa chuyển khoản hoàn thực tế cho khách; hệ thống không tự chuyển tiền ngân hàng.</div>
+</section>
 
     <details class="history">
       <summary>Lịch sử giao dịch trên thiết bị này</summary>
@@ -245,12 +277,15 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
 <script>
 (function(){
   const $ = id => document.getElementById(id);
-  const idType=$('idType'), identifier=$('identifier'), idLabel=$('idLabel'), model=$('model'), plan=$('plan');
+  const idType=$('idType'), identifier=$('identifier'), idLabel=$('idLabel'), model=$('model');
   const startBtn=$('startBtn'), clearBtn=$('clearBtn');
+  const headerPrice=$('headerPrice'), paymentAmount=$('paymentAmount'), paymentAmountNotice=$('paymentAmountNotice');
+  const basicPackage=$('basicPackage'), proPackage=$('proPackage');
+  let selectedAmount=5000;
   const paymentArea=$('paymentArea'), processingArea=$('processingArea'), resultArea=$('resultArea');
   const paymentRef=$('paymentRef'), transferContent=$('transferContent'), qr=$('qr');
 
-  let paymentId=null, paymentRefValue=null, pollTimer=null, checkStarted=false, selectedAmount=5000;
+  let paymentId=null, paymentRefValue=null, pollTimer=null, checkStarted=false;
 
   function esc(v){
     const d=document.createElement('div'); d.textContent=String(v??''); return d.innerHTML;
@@ -268,17 +303,25 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
     identifier.placeholder=imei?'Nhập IMEI':'Nhập Serial Number';
     identifier.inputMode=imei?'numeric':'text';
   }
+  function updatePackageUI(){
+    const pro=selectedAmount===15000;
+    const price=pro?'15.000đ':'5.000đ';
+    headerPrice.textContent=price; paymentAmount.textContent=price; paymentAmountNotice.textContent=price;
+    startBtn.textContent='☁️ KIỂM TRA — '+price;
+    basicPackage.classList.toggle('active',!pro); proPackage.classList.toggle('active',pro);
+  }
   function showError(msg){
     alert(msg);
   }
   function reset(){
     clearTimeout(pollTimer); pollTimer=null; paymentId=null; paymentRefValue=null; checkStarted=false;
     paymentArea.style.display='none'; processingArea.style.display='none'; resultArea.style.display='none';
+    selectedAmount=5000; basicPackage.classList.add('active'); proPackage.classList.remove('active'); document.querySelector('input[name=plan][value=5000]').checked=true; updatePackageUI();
     identifier.value=''; model.value=''; startBtn.disabled=false; setType(); identifier.focus();
   }
   function setQr(ref){
     const url='https://img.vietqr.io/image/MB-0898888269-compact2.png'
-      +'?amount='+selectedAmount+'&addInfo='+encodeURIComponent(ref)
+      +'?amount='+encodeURIComponent(selectedAmount)+'&addInfo='+encodeURIComponent(ref)
       +'&accountName='+encodeURIComponent('TO THANH TRUNG');
     qr.src=url;
   }
@@ -296,7 +339,7 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
       const {data:{session}}=await window.supabaseClient.auth.getSession();
       if(!session?.user) return;
       const {data,error}=await window.supabaseClient.from('icloud_check_payments')
-        .select('payment_ref,identifier,status,amount_vnd,provider_transaction_id,created_at,completed_at')
+        .select('payment_ref,identifier,status,amount_vnd,created_at,completed_at')
         .eq('user_id',session.user.id).order('created_at',{ascending:false}).limit(20);
       if(error || !data?.length) return;
       box.innerHTML=data.map(x=>`
@@ -324,39 +367,200 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
     processingArea.style.display='block';
     resultArea.style.display='none';
   }
+  function resultValue(data, keys, fallback=''){
+    const roots=[data, data?.details, data?.response, data?.data];
+    const wanted=keys.map(k=>String(k).toLowerCase().replace(/[\s_-]+/g,''));
+    function walk(v, depth=0){
+      if(v===null||v===undefined||depth>5)return null;
+      if(typeof v!=='object')return null;
+      for(const [k,val] of Object.entries(v)){
+        const nk=String(k).toLowerCase().replace(/[\s_-]+/g,'');
+        if(wanted.includes(nk) && val!==null && val!==undefined && String(val).trim()!=='') return val;
+      }
+      for(const val of Object.values(v)){
+        const found=walk(val,depth+1);
+        if(found!==null && found!==undefined && String(found).trim()!=='') return found;
+      }
+      return null;
+    }
+    for(const root of roots){const v=walk(root);if(v!==null)return v;}
+    return fallback;
+  }
+
   function showResult(data, status){
     processingArea.style.display='none';
     resultArea.style.display='block';
     const card=$('resultCard');
-    card.className='result-card '+(status==='UNLOCKED'?'ok':status==='LOCKED'?'locked':'');
-    $('resultIcon').textContent=status==='UNLOCKED'?'✓':status==='LOCKED'?'!':'?';
-    $('resultTitle').textContent=status==='UNLOCKED'?'ACTIVATION LOCK: ĐÃ TẮT':
-      status==='LOCKED'?'ACTIVATION LOCK: ĐANG KHÓA':'CHƯA XÁC MINH';
-    $('resultMessage').textContent=data.message||'Nguồn kiểm tra chưa trả về kết quả chắc chắn.';
-    $('resultIdentifier').textContent=normalize();
+    const badge=$('resultBadge');
+    const cls=status==='UNLOCKED'?'ok':status==='LOCKED'?'locked':'unknown';
+    card.className='result-card '+cls;
+    badge.className='badge '+cls;
+    badge.textContent=status==='UNLOCKED'?'● ACTIVATION LOCK: ĐÃ TẮT':status==='LOCKED'?'● ACTIVATION LOCK: ĐANG KHÓA':'● CHƯA XÁC MINH';
+
+    const value=(v)=>{const x=String(v??'').trim();return x && x!=='null' && x!=='undefined'?x:'';};
+    const first=(keys,fallback='')=>value(resultValue(data,keys,fallback));
+    const prettyModel=(raw)=>{
+      let x=value(raw);
+      if(!x) return 'iPhone';
+      x=x.replace(/\s+/g,' ').trim();
+      const m=x.match(/\bIPHONE\s+([0-9A-Z]+(?:\s+PRO(?:\s+MAX)?|\s+PLUS|\s+MINI|\s+SE)?)/i);
+      if(m) return 'iPhone '+m[1].replace(/\s+/g,' ').trim().replace(/\bPRO\b/i,'Pro').replace(/\bMAX\b/i,'Max').replace(/\bPLUS\b/i,'Plus').replace(/\bMINI\b/i,'mini').replace(/\bSE\b/i,'SE');
+      return x.length>38 ? x.slice(0,38)+'…' : x;
+    };
+    const modelRaw=first(['model','deviceModel'],model.value||'');
+    const modelName=prettyModel(modelRaw);
+    const capacity=(modelRaw.match(/\b(?:[1-9]\d{0,2}|[1-9])(?:GB|TB)\b/i)||[])[0]||'';
+    const colors=['Desert Titanium','Natural Titanium','Blue Titanium','Black Titanium','Deep Purple','Space Black','Space Gray','Rose Gold','Starlight','Midnight','Sierra Blue','Pacific Blue','Alpine Green','Ultramarine','Cosmic Orange','Black','White','Silver','Gold','Purple','Blue','Green','Yellow','Red'];
+    const color=colors.find(c=>modelRaw.toLowerCase().includes(c.toLowerCase()))||'';
+    const productCode=(modelRaw.match(/\[([^\]]+)\]/g)||[]).map(x=>x.slice(1,-1)).join(' • ');
+    $('resultModelName').textContent=modelName;
+    $('resultModelDetail').textContent=modelRaw && modelRaw!==modelName ? modelRaw : 'Model được xác minh từ dữ liệu kiểm tra.';
+    $('resultStatusPill').className='status-pill '+cls;
+    $('resultStatusPill').textContent=status==='UNLOCKED'?'ACTIVATION LOCK: OFF':status==='LOCKED'?'ACTIVATION LOCK: ON':'CHƯA XÁC MINH';
+    $('resultMessage').textContent=status==='UNLOCKED'
+      ? 'Thiết bị đã được xác minh và không có Activation Lock / FMI đang hoạt động.'
+      : status==='LOCKED'
+        ? 'Thiết bị đã được xác minh và đang có Activation Lock / FMI hoạt động.'
+        : (data.message||'Hệ thống chưa nhận được dữ liệu xác minh đầy đủ.');
+
+    const add=(id,label,val)=>{const x=value(val);if(!x)return;$(id).insertAdjacentHTML('beforeend',`<div class="result-item"><span>${esc(label)}</span><strong>${esc(x)}</strong></div>`);};
+    $('deviceDetails').innerHTML=''; $('lockDetails').innerHTML=''; $('networkDetails').innerHTML='';
+
+    const imei=first(['imei'],data.identifier_type==='imei'?normalize():'');
+    const imei2=first(['imei2','imei_2']);
+    const serial=first(['serialnumber','serial','sn'],data.identifier_type==='serial'?normalize():'');
+    const fmi=first(['fmi','icloudstatus','icloudlock','activationlock','findmyiphone','findmystatus'],status==='LOCKED'?'ON':status==='UNLOCKED'?'OFF':'');
+    const activation=first(['activated','activationstatus','activation']);
+    const simlock=first(['simlock','simlockstatus']);
+
+    add('deviceDetails','Model',modelRaw||modelName);
+    add('deviceDetails','Dung lượng',capacity);
+    add('deviceDetails','Màu sắc',color);
+    add('deviceDetails','Model / Identifier',productCode);
+    add('deviceDetails','IMEI',imei);
+    add('deviceDetails','IMEI 2',imei2);
+    add('deviceDetails','Serial Number',serial);
+    add('deviceDetails','ECID',first(['ecid']));
+    add('deviceDetails','EID',first(['eid']));
+    add('lockDetails','FMI / Find My',fmi);
+    add('lockDetails','iCloud',first(['icloud']));
+    add('lockDetails','Activation',activation);
+    add('lockDetails','Lost Mode',first(['lostmode','lostmodestatus']));
+    add('lockDetails','MDM / DEP',first(['mdm','mdmlockstatus','mdmstatus']));
+    add('networkDetails','SIM Lock',simlock);
+    add('networkDetails','Carrier',first(['carrierlock','carrierlockstatus','carrier']));
+    add('networkDetails','Blacklist',first(['blacklist','blackliststatus','loststolenstatus']));
+    add('networkDetails','Warranty',first(['warrantystatus','warranty','repairsandservicecoverage']));
+    add('networkDetails','Purchase Date',first(['estimatedpurchasedate','purchasedate','validpurchasedate']));
+    add('networkDetails','AppleCare',first(['applecare','applecarestatus']));
+    add('networkDetails','Country',first(['country','countryname']));
+    add('networkDetails','Network',first(['network','networkname']));
+
+    $('lockSection').style.display=$('lockDetails').children.length?'block':'none';
+    $('networkSection').style.display=$('networkDetails').children.length?'block':'none';
+    $('heroIdentifier').textContent=imei||serial||data.identifier_masked||normalize()||'—';
+    $('heroFmi').textContent=fmi||'—';
+    $('heroActivation').textContent=activation||'—';
+    $('heroSimlock').textContent=simlock||'—';
+    $('resultIdentifier').textContent=data.identifier_masked||normalize();
     $('resultRef').textContent=paymentRefValue||'—';
-    $('resultTxn').textContent=data.provider_transaction_id||'—';
+    $('resultTxn').textContent=data.bank_transaction_id||'—';
     $('resultTime').textContent=new Date().toLocaleString('vi-VN');
+
+    const note=document.getElementById('resultFootnote');
+    if(note) note.textContent='Báo cáo được tạo tự động từ dữ liệu xác minh của Apple Seed. Chỉ hiển thị thông tin đã nhận và xác minh được từ nguồn kiểm tra.';
     startBtn.disabled=false;
-    saveHistory({ref:paymentRefValue||'—',identifier:normalize(),time:new Date().toLocaleString('vi-VN'),
-      status:status==='UNLOCKED'?'Đã hoàn tất':status==='LOCKED'?'Đã khóa':'Chưa xác minh'});
+    saveHistory({ref:paymentRefValue||'—',identifier:normalize(),time:new Date().toLocaleString('vi-VN'),status:status==='UNLOCKED'?'Đã hoàn tất':status==='LOCKED'?'Đã khóa':'Chưa xác minh'});
   }
 
+  let adminOrders=[];
+  function adminEsc(v){return esc(v);}
+  function adminMoney(v){return Number(v||0).toLocaleString('vi-VN')+'đ';}
+  function adminStatusLabel(s){return ({completed:'Hoàn tất',failed:'Thất bại',paid:'Đã thanh toán',processing:'Đang xử lý',pending:'Chờ thanh toán'})[s]||s||'—';}
+  function adminRefundLabel(s){return s==='refunded'?'Đã hoàn tiền':s==='pending_refund'?'Chờ hoàn tiền':'Chưa hoàn tiền';}
+  function adminMatches(x,q){if(!q)return true; const hay=[x.payment_ref,x.identifier,x.user_id,x.provider_transaction_id,x.device_model,x.status].join(' ').toLowerCase(); return hay.includes(q.toLowerCase());}
+  function adminOrderHtml(x){
+    const canRefund=x.status==='failed' && x.refund_status!=='refunded';
+    const canDone=x.refund_status==='pending_refund';
+    const result=x.check_result||{};
+    const modelName=result.model||x.device_model||'Chưa xác định';
+    const note=x.admin_note||'';
+    return `<div class="admin-order">
+      <div class="admin-order-top"><div class="admin-order-ref">${adminEsc(x.payment_ref||'—')}</div><div class="admin-order-time">${adminEsc(new Date(x.created_at).toLocaleString('vi-VN'))}</div></div>
+      <div class="admin-order-id">${adminEsc(x.identifier||'—')}</div>
+      <div class="admin-order-meta">
+        <div><span>Thiết bị</span><strong>${adminEsc(modelName)}</strong></div>
+        <div><span>Gói</span><strong>${adminMoney(x.amount_vnd)}</strong></div>
+        <div><span>Trạng thái</span><strong>${adminEsc(adminStatusLabel(x.status))}</strong></div>
+        <div><span>Hoàn tiền</span><strong>${adminEsc(adminRefundLabel(x.refund_status))}</strong></div>
+      </div>
+      <div class="admin-order-meta" style="margin-top:7px">
+        <div><span>User ID</span><strong>${adminEsc(x.user_id||'—')}</strong></div>
+        <div><span>Bank Txn</span><strong>${adminEsc(x.provider_transaction_id||result.bank_transaction_id||'—')}</strong></div>
+      </div>
+      <textarea class="admin-note" data-note="${adminEsc(x.id)}" placeholder="Ghi chú nội bộ...">${adminEsc(note)}</textarea>
+      <div class="admin-actions">
+        ${canRefund?`<button class="admin-btn refund" data-refund="${adminEsc(x.id)}">💸 Đưa vào chờ hoàn</button>`:''}
+        ${canDone?`<button class="admin-btn done" data-done="${adminEsc(x.id)}">✓ Đã chuyển hoàn</button>`:''}
+        ${x.refund_status==='refunded'?`<span class="badge ok">✓ ĐÃ HOÀN TIỀN</span>`:''}
+        <button class="admin-btn" data-save-note="${adminEsc(x.id)}">Lưu ghi chú</button>
+      </div>
+    </div>`;
+  }
+  function renderAdminOrders(){
+    const q=($('adminSearch')?.value||'').trim();
+    const rows=adminOrders.filter(x=>adminMatches(x,q));
+    const failed=rows.filter(x=>x.status==='failed');
+    const success=rows.filter(x=>x.status==='completed');
+    const pending=rows.filter(x=>!['failed','completed'].includes(x.status));
+    $('adminTotal').textContent=rows.length; $('adminSuccess').textContent=success.length; $('adminFailed').textContent=failed.length;
+    $('adminRefund').textContent=rows.filter(x=>x.refund_status==='pending_refund').length;
+    $('adminFailedCount').textContent=failed.length; $('adminSuccessCount').textContent=success.length; $('adminPendingCount').textContent=pending.length;
+    $('adminFailedList').innerHTML=failed.length?failed.map(adminOrderHtml).join(''):'<div class="admin-empty">Không có giao dịch thất bại.</div>';
+    $('adminSuccessList').innerHTML=success.length?success.map(adminOrderHtml).join(''):'<div class="admin-empty">Chưa có giao dịch thành công.</div>';
+    $('adminPendingList').innerHTML=pending.length?pending.map(adminOrderHtml).join(''):'<div class="admin-empty">Không có đơn đang chờ.</div>';
+    document.querySelectorAll('[data-refund]').forEach(b=>b.onclick=()=>adminRefundOrder(b.dataset.refund));
+    document.querySelectorAll('[data-done]').forEach(b=>b.onclick=()=>adminCompleteRefund(b.dataset.done));
+    document.querySelectorAll('[data-save-note]').forEach(b=>b.onclick=()=>adminSaveNote(b.dataset.saveNote));
+  }
+  async function isAdmin(){
+    try{
+      const {data:{session}}=await window.supabaseClient.auth.getSession();
+      if(!session?.user) return false;
+      const {data,error}=await window.supabaseClient.from('profiles').select('role').eq('id',session.user.id).maybeSingle();
+      if(error) throw error;
+      return data?.role==='admin';
+    }catch(e){console.warn('admin auth:',e);return false;}
+  }
+  async function loadAdminOrders(){
+    if(!await isAdmin()) return;
+    $('adminPanel').classList.add('visible');
+    const {data,error}=await window.supabaseClient.from('icloud_check_payments').select('id,user_id,amount_vnd,payment_ref,identifier_type,identifier,device_model,status,provider_transaction_id,check_result,refund_status,refunded_at,refunded_by,admin_note,created_at,paid_at,completed_at,updated_at').order('created_at',{ascending:false}).limit(500);
+    if(error){console.error(error);$('adminFailedList').innerHTML='<div class="admin-empty">Không tải được danh sách đơn.</div>';return;}
+    adminOrders=data||[]; renderAdminOrders();
+  }
+  async function adminUpdate(id, patch){
+    const {data:{session}}=await window.supabaseClient.auth.getSession(); if(!session?.user) throw new Error('Phiên Admin đã hết hạn.');
+    const {error}=await window.supabaseClient.from('icloud_check_payments').update(patch).eq('id',id); if(error) throw error;
+    await loadAdminOrders();
+  }
+  async function adminRefundOrder(id){
+    if(!confirm('Xác nhận đưa đơn này vào danh sách CHỜ HOÀN TIỀN? Chưa đánh dấu đã hoàn.')) return;
+    try{await adminUpdate(id,{refund_status:'pending_refund'});}catch(e){alert(e.message||'Không cập nhật được.');}
+  }
+  async function adminCompleteRefund(id){
+    if(!confirm('Pa đã CHUYỂN KHOẢN HOÀN THỰC TẾ cho khách rồi chứ? Bấm OK để ghi nhận ĐÃ HOÀN TIỀN.')) return;
+    try{const {data:{session}}=await window.supabaseClient.auth.getSession(); await adminUpdate(id,{refund_status:'refunded',refunded_at:new Date().toISOString(),refunded_by:session.user.id});}catch(e){alert(e.message||'Không cập nhật được.');}
+  }
+  async function adminSaveNote(id){
+    const el=document.querySelector(`textarea[data-note="${CSS.escape(id)}"]`); if(!el)return;
+    try{await adminUpdate(id,{admin_note:el.value.trim()});}catch(e){alert(e.message||'Không lưu được ghi chú.');}
+  }
   async function rpc(name,args){
     if(!window.supabaseClient) throw new Error('Supabase client chưa sẵn sàng.');
     const r=await window.supabaseClient.rpc(name,args);
     if(r.error) throw r.error;
     return r.data;
-  }
-
-  function updatePlan(){
-    const pro=plan.value==='pro';
-    selectedAmount=pro?15000:5000;
-    const label=pro?'15.000đ':'5.000đ';
-    $('headerPrice').textContent=label;
-    $('paymentAmount').textContent=label;
-    $('qrAmountText').textContent=label;
-    startBtn.textContent='☁️ KIỂM TRA — '+label;
   }
 
   async function begin(){
@@ -371,9 +575,8 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
     paymentArea.style.display='none'; processingArea.style.display='none'; resultArea.style.display='none';
 
     try{
-      const created=await rpc('create_icloud_check_payment_v2',{
-        p_identifier_type:type,p_identifier:value,p_device_model:model.value||null,
-        p_plan:plan.value
+      const created=await rpc('create_icloud_check_payment',{
+        p_identifier_type:type,p_identifier:value,p_device_model:model.value||null,p_amount_vnd:selectedAmount
       });
       paymentId=created.id;
       paymentRefValue=String(created.payment_ref||'');
@@ -441,7 +644,7 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
       const card=$('resultCard'); card.className='result-card';
       $('resultIcon').textContent='×';
       $('resultTitle').textContent='TRA CỨU THẤT BẠI';
-      $('resultMessage').textContent=e?.message||'Hiện tại chúng tôi chưa thể kết nối được với server giao dịch. Giao dịch thất bại, chúng tôi sẽ tạo đơn thất bại này bên dưới và chuyển tiền lại cho bạn. Xin lỗi vì sự cố này.';
+      $('resultMessage').textContent='Hiện tại chưa thể hoàn tất tra cứu. Vui lòng thử lại sau. Nếu đã thanh toán, hệ thống sẽ giữ nguyên giao dịch để xử lý lại.';
       $('resultIdentifier').textContent=normalize();
       $('resultRef').textContent=paymentRefValue||'—';
       $('resultTxn').textContent='—';
@@ -451,12 +654,16 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
     }
   }
 
+  document.querySelectorAll('input[name=plan]').forEach(r=>r.addEventListener('change',()=>{selectedAmount=Number(r.value);updatePackageUI();}));
+  basicPackage.addEventListener('click',()=>{selectedAmount=5000;document.querySelector('input[name=plan][value=5000]').checked=true;updatePackageUI();});
+  proPackage.addEventListener('click',()=>{selectedAmount=15000;document.querySelector('input[name=plan][value=15000]').checked=true;updatePackageUI();});
   idType.addEventListener('change',setType);
-  plan.addEventListener('change',updatePlan);
   startBtn.addEventListener('click',begin);
   clearBtn.addEventListener('click',reset);
   identifier.addEventListener('keydown',e=>{if(e.key==='Enter')begin();});
-  renderHistory(); renderServerHistory(); setType(); updatePlan();
+  $('adminRefresh')?.addEventListener('click',loadAdminOrders);
+  $('adminSearch')?.addEventListener('input',renderAdminOrders);
+  renderHistory(); renderServerHistory(); setType(); updatePackageUI(); loadAdminOrders();
 })();
 </script>
 </body>
