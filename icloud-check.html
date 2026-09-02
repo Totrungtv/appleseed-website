@@ -629,10 +629,17 @@ input:focus,select:focus{border-color:#4f8cff!important;box-shadow:0 0 0 2px #4f
     return /^[A-Z0-9]{8,20}$/.test(v);
   }
   function setType(){
-    const imei=idType.value==='imei';
-    idLabel.textContent=imei?'IMEI':'SERIAL NUMBER';
-    identifier.placeholder=imei?'Nhập IMEI':'Nhập Serial Number';
-    identifier.inputMode=imei?'numeric':'text';
+    const isImei=idType.value==='imei';
+    const labelText=isImei?'IMEI':'SERIAL NUMBER';
+    const placeholderText=isImei?'Nhập IMEI':'Nhập Serial Number';
+    idLabel.textContent=labelText;
+    idLabel.setAttribute('for','identifier');
+    identifier.setAttribute('placeholder',placeholderText);
+    identifier.placeholder=placeholderText;
+    identifier.setAttribute('inputmode',isImei?'numeric':'text');
+    identifier.inputMode=isImei?'numeric':'text';
+    identifier.setAttribute('aria-label',labelText);
+    identifier.type='text';
   }
   function updatePackageUI(){
     const pro=selectedAmount===15000;
