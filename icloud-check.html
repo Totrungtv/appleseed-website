@@ -239,6 +239,68 @@ input:focus,select:focus{border-color:#5a91ff!important;box-shadow:0 0 0 3px #5a
 .admin-stat{border-radius:13px!important}
 @media(max-width:760px){.wrap{width:calc(100% - 20px);padding-top:28px}.top{margin-bottom:20px}h1{font-size:31px}.card-head,.body{padding:21px!important}.package-choice{grid-template-columns:1fr!important}.package{min-height:125px!important}}
 
+
+/* APPLE SEED — VIP DEVICE INTELLIGENCE UI */
+:root{--bg:#050b13;--surface:#0a1421;--surface2:#0e1d2d;--line:#223b55;--line2:#345574;--text:#f6f9fd;--muted:#8ea5bf;--blue:#78a8ff;--green:#3ee7a4;--red:#ff6477;--gold:#ffd56a}
+body{background:linear-gradient(180deg,#07111f 0%,#03070d 100%)}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(700px 420px at 12% 0%,#254f9b22,transparent 70%),radial-gradient(600px 400px at 90% 18%,#167b7b14,transparent 70%)}
+.wrap{width:min(1260px,calc(100% - 40px));padding:48px 0 80px}
+.top{max-width:1160px;margin:0 auto 26px;align-items:flex-end}
+.kicker{font-size:9px;letter-spacing:.28em;font-weight:950;color:#7296bf}
+h1{font-size:40px;letter-spacing:-.045em;margin:7px 0}
+.top>.muted{font-size:13px;color:#91a8c1}
+.back{border:1px solid #28435f!important;background:#081522!important;border-radius:11px!important}
+.card{max-width:1160px;margin:auto!important;border:1px solid #203a55!important;border-radius:28px!important;background:#091421eF!important;box-shadow:0 40px 120px #000c,0 0 0 1px #ffffff04!important;overflow:hidden}
+.card-head{padding:28px 30px!important;background:linear-gradient(110deg,#102945,#0b1827 72%)!important;border-bottom:1px solid #29435f!important}
+.card-head h2{font-size:18px!important;letter-spacing:.01em}
+.card-head .muted{font-size:12px!important}
+.price{font-size:24px!important;font-weight:950!important;padding:9px 14px!important;border-radius:12px!important;background:#06261c!important;border:1px solid #258061!important;color:#5df0b4!important}
+.body{padding:28px 30px!important}
+.body>label{font-size:9px!important;letter-spacing:.18em!important;font-weight:950!important;color:#7894b2!important}
+.package-choice{gap:14px!important;margin-bottom:24px!important}
+.package{position:relative;min-height:142px!important;padding:20px!important;border-radius:17px!important;border:1px solid #29445f!important;background:linear-gradient(145deg,#0d1e31,#081420)!important;box-shadow:inset 0 1px #ffffff08,0 18px 40px #0004!important}
+.package.active{border-color:#6699ff!important;background:linear-gradient(145deg,#122b49,#0a1828)!important;box-shadow:0 0 0 1px #6699ff33,0 22px 50px #0006!important}
+.package.active:after{content:"SELECTED";position:absolute;right:14px;top:13px;font-size:8px;font-weight:950;letter-spacing:.14em;color:#68e9b0}
+.package strong{font-size:15px!important}
+.package-price{font-size:17px!important;color:#55eaae!important}
+.package small{font-size:11px!important;line-height:1.55!important;color:#9fb3c9!important}
+.package ul{margin-top:11px!important}
+.package li{margin:4px 0!important;color:#cfdaea!important}
+.fields{gap:15px!important}
+label{font-size:9px!important;letter-spacing:.12em!important;font-weight:950!important;color:#8199b4!important}
+input,select{min-height:50px!important;padding:13px 15px!important;border-radius:12px!important;background:#06111d!important;border:1px solid #294560!important;color:#f4f7fb!important}
+input:focus,select:focus{border-color:#709fff!important;box-shadow:0 0 0 3px #709fff18!important;outline:0!important}
+.btn{min-height:48px!important;border-radius:12px!important;font-weight:950!important}
+.btn.primary{box-shadow:0 14px 38px #5477ff35!important}
+.notice{border-radius:12px!important;background:#071321!important;border-color:#213b56!important}
+#paymentArea{margin-top:20px!important}
+.payment{border-radius:21px!important;background:linear-gradient(145deg,#0c1d30,#07131f)!important;border:1px solid #294b6c!important;box-shadow:0 24px 65px #0006!important}
+.qr-wrap{gap:28px!important}
+.result{margin-top:22px!important}
+.result-card{border-radius:24px!important;padding:30px!important;background:linear-gradient(145deg,#0d2034,#06111c)!important;border:1px solid #355878!important;box-shadow:0 35px 100px #0009!important}
+.result-card.pro-report{border-color:#5a86bd!important;box-shadow:0 35px 110px #000a,0 0 0 1px #6a9eff18!important}
+.result-hero{padding:25px!important;border-radius:20px!important;background:linear-gradient(135deg,#122e4c,#091725)!important;border:1px solid #355879!important}
+.device-icon{width:72px!important;height:72px!important;border-radius:20px!important}
+.device-name{font-size:30px!important;letter-spacing:-.025em!important}
+.device-model-detail{font-size:12px!important;color:#91a8c2!important}
+.status-pill{padding:10px 15px!important;border-radius:999px!important;font-weight:950!important}
+.report-bar{gap:10px!important}
+.report-stat{padding:15px!important;border-radius:13px!important;background:#081827!important;border:1px solid #294661!important}
+.report-stat strong{font-size:15px!important}
+.result-section{margin-top:24px!important}
+.result-section h4{font-size:10px!important;letter-spacing:.18em!important;color:#a9bdd5!important}
+.result-grid{gap:10px!important}
+.result-item,.extended-item{padding:15px!important;border-radius:12px!important;background:#081724!important;border:1px solid #27435d!important}
+.result-item span,.extended-item span{font-size:8px!important;letter-spacing:.11em!important;color:#718ca9!important}
+.result-item strong,.extended-item strong{font-size:13px!important;color:#edf4fc!important}
+.result-footnote{border-radius:12px!important;background:#06111c!important;border-color:#1d354d!important}
+.history{margin-top:20px!important}
+.history-box{border-radius:13px!important}
+.admin-panel{border-radius:22px!important;border:1px solid #345775!important}
+.admin-head{padding:23px 25px!important}
+.admin-stat{border-radius:12px!important}
+@media(max-width:760px){.wrap{width:calc(100% - 18px);padding-top:24px}h1{font-size:30px}.card-head,.body{padding:21px!important}.package-choice{grid-template-columns:1fr!important}.package{min-height:120px!important}.result-card{padding:20px!important}.device-name{font-size:25px!important}}
+
 </style>
 </head>
 <body>
