@@ -90,6 +90,10 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
 .report-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}.report-stat{padding:13px 14px;border:1px solid #20324b;background:#091524;border-radius:12px}.report-stat span{display:block;color:#7f93ad;font-size:10px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}.report-stat strong{font-size:14px;word-break:break-word}
 .result-section{margin-top:24px}.result-section h4{display:flex;align-items:center;gap:8px;margin:0 0 11px;font-size:12px;letter-spacing:.1em;color:#b8cae4}.result-section h4:before{content:'';width:4px;height:14px;border-radius:4px;background:#4b8dff;display:block}.result-grid{grid-template-columns:repeat(3,1fr)}.result-item{min-height:70px}.result-item strong{line-height:1.4}
 .result-footnote{margin-top:18px;padding:12px 14px;border-radius:12px;background:#081321;border:1px solid #1c2e46;color:#7f93ad;font-size:11px;line-height:1.55}
+.extended-item{background:linear-gradient(180deg,#0b1a2c,#081321);border:1px solid #29405f;border-radius:12px;padding:14px;min-height:72px}
+.extended-item span{display:block;color:#7890ae;font-size:10px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.extended-item strong{font-size:13px;line-height:1.45;word-break:break-word;color:#eaf2ff}
+.result-card.pro-report{border-color:#365d91;box-shadow:0 26px 80px #0008,0 0 0 1px #4b8dff12}
 @media(max-width:900px){.report-bar{grid-template-columns:repeat(2,1fr)}.result-grid{grid-template-columns:repeat(2,1fr)}}
 
 @media(max-width:760px){
@@ -127,7 +131,7 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
     <label>GÓI KIỂM TRA</label>
     <div class="package-choice">
       <label class="package active" id="basicPackage"><input type="radio" name="plan" value="5000" checked><strong>CHECK CƠ BẢN <span class="package-price">5.000đ</span></strong><small>FMI / iCloud Activation Lock ON/OFF và model cơ bản.</small></label>
-      <label class="package" id="proPackage"><input type="radio" name="plan" value="15000"><strong>CHECK PRO <span class="package-price">15.000đ</span></strong><small>Báo cáo chi tiết model, màu, dung lượng, FMI/iCloud, SIM Lock, bảo hành, ngày mua/kích hoạt, AppleCare, EID, blacklist và dữ liệu nguồn trả về.</small></label>
+      <label class="package" id="proPackage"><input type="radio" name="plan" value="15000"><strong>CHECK PRO <span class="package-price">15.000đ</span></strong><small>Báo cáo chi tiết thiết bị: model, màu, dung lượng, FMI/iCloud, SIM Lock, bảo hành, ngày mua/kích hoạt, AppleCare, EID, blacklist và toàn bộ trường dữ liệu hợp lệ mà nguồn trả về.</small></label>
     </div>
     <div class="fields">
       <div class="field">
@@ -235,6 +239,10 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
         <div class="result-section" id="networkSection">
           <h4>MẠNG & DỊCH VỤ</h4>
           <div class="result-grid" id="networkDetails"></div>
+        </div>
+        <div class="result-section" id="extendedSection" style="display:none">
+          <h4>CHECK PRO • BÁO CÁO CHI TIẾT</h4>
+          <div class="result-grid" id="extendedDetails"></div>
         </div>
         <div class="result-section">
           <h4>GIAO DỊCH</h4>
@@ -395,15 +403,16 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
     const card=$('resultCard');
     const badge=$('resultBadge');
     const cls=status==='UNLOCKED'?'ok':status==='LOCKED'?'locked':'unknown';
-    card.className='result-card '+cls;
+    const plan=String(data?.plan||'').toLowerCase();
+    card.className='result-card '+cls+(plan==='pro'?' pro-report':'');
     badge.className='badge '+cls;
-    badge.textContent=status==='UNLOCKED'?'● ACTIVATION LOCK: ĐÃ TẮT':status==='LOCKED'?'● ACTIVATION LOCK: ĐANG KHÓA':'● CHƯA XÁC MINH';
+    badge.textContent=(plan==='pro'?'◆ CHECK PRO • ':'')+(status==='UNLOCKED'?'ACTIVATION LOCK: ĐÃ TẮT':status==='LOCKED'?'ACTIVATION LOCK: ĐANG KHÓA':'CHƯA XÁC MINH');
 
     const value=(v)=>{const x=String(v??'').trim();return x && x!=='null' && x!=='undefined'?x:'';};
     const first=(keys,fallback='')=>value(resultValue(data,keys,fallback));
     const prettyModel=(raw)=>{
       let x=value(raw);
-      if(!x) return 'iPhone';
+      if(!x) return model.value || 'Thiết bị Apple';
       x=x.replace(/\s+/g,' ').trim();
       const m=x.match(/\bIPHONE\s+([0-9A-Z]+(?:\s+PRO(?:\s+MAX)?|\s+PLUS|\s+MINI|\s+SE)?)/i);
       if(m) return 'iPhone '+m[1].replace(/\s+/g,' ').trim().replace(/\bPRO\b/i,'Pro').replace(/\bMAX\b/i,'Max').replace(/\bPLUS\b/i,'Plus').replace(/\bMINI\b/i,'mini').replace(/\bSE\b/i,'SE');
@@ -457,6 +466,33 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
     add('networkDetails','AppleCare',first(['applecare','applecarestatus']));
     add('networkDetails','Country',first(['country','countryname']));
     add('networkDetails','Network',first(['network','networkname']));
+
+    const extended=$('extendedDetails');
+    const extSection=$('extendedSection');
+    extended.innerHTML='';
+    const plan=String(data?.plan||'').toLowerCase();
+    const sourceDetails=(data?.details && typeof data.details==='object') ? data.details : {};
+    const skipKeys=new Set(['status','code','message','payment_id','identifier_type','identifier_masked','verified_at','cached','plan','bank_transaction_id','provider','provider_raw','provider_response','provider_order_id','service_id','service_name','order_id']);
+    const displayKey=(k)=>String(k).replace(/_/g,' ').replace(/\b\w/g,m=>m.toUpperCase());
+    const displayValue=(v)=>{
+      if(v===null||v===undefined||v==='') return '';
+      if(typeof v==='object') return JSON.stringify(v);
+      return String(v);
+    };
+    const used=new Set();
+    if(plan==='pro'){
+      for(const [k,v] of Object.entries(sourceDetails)){
+        const keyNorm=String(k).toLowerCase().replace(/[\s_-]+/g,'');
+        if(skipKeys.has(String(k)) || skipKeys.has(keyNorm) || used.has(keyNorm)) continue;
+        const text=displayValue(v);
+        if(!text) continue;
+        used.add(keyNorm);
+        extended.insertAdjacentHTML('beforeend',`<div class="extended-item"><span>${esc(displayKey(k))}</span><strong>${esc(text)}</strong></div>`);
+      }
+      extSection.style.display=extended.children.length?'block':'none';
+    }else{
+      extSection.style.display='none';
+    }
 
     $('lockSection').style.display=$('lockDetails').children.length?'block':'none';
     $('networkSection').style.display=$('networkDetails').children.length?'block':'none';
