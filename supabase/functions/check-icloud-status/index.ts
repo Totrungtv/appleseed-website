@@ -96,8 +96,10 @@ Deno.serve(async (req) => {
   if (type === "imei" && !/^\d{14,16}$/.test(identifier)) return json({ status: "ERROR", message: "IMEI không hợp lệ." }, 400);
   if (type === "serial" && !/^[A-Z0-9]{8,20}$/.test(identifier)) return json({ status: "ERROR", message: "Serial Number không hợp lệ." }, 400);
 
-  const provider = (Deno.env.get("ICLOUD_CHECK_PROVIDER") || "ifreecheck").toLowerCase();
-  const apiKey = Deno.env.get("ICLOUD_CHECK_API_KEY") || "";
+  const provider = (Deno.env.get("ICLOUD_CHECK_PROVIDER") || "imeigsx").toLowerCase();
+  const apiKey = provider === "imeigsx"
+    ? (Deno.env.get("IMEIGSX_API_KEY") || Deno.env.get("ICLOUD_CHECK_API_KEY") || "")
+    : (Deno.env.get("ICLOUD_CHECK_API_KEY") || "");
 
   if (!apiKey) return json({
     status: "ERROR",
@@ -105,62 +107,89 @@ Deno.serve(async (req) => {
     message: "Server iCloud chưa có API key. Chưa thực hiện kiểm tra.",
   }, 503);
 
-  if (provider !== "ifreecheck") return json({
+  if (provider !== "imeigsx") return json({
     status: "ERROR",
     code: "UNSUPPORTED_PROVIDER",
-    message: "Provider iCloud chưa được hỗ trợ.",
+    message: "Provider iCloud chưa được hỗ trợ trong bản staging này.",
   }, 501);
 
-  if (type !== "imei") return json({
-    status: "ERROR",
-    code: "IMEI_REQUIRED",
-    message: "Nguồn iCloud hiện tại yêu cầu IMEI. Chưa thực hiện tra cứu Serial để tránh trả kết quả sai.",
-  }, 400);
-
-  const service = Deno.env.get("IFREECHECK_SERVICE_ID") || "7";
-  const url = new URL("https://ifreecheck.net/api_procesor.php");
-  url.searchParams.set("api", apiKey);
-  url.searchParams.set("imei", identifier);
-  url.searchParams.set("service", service);
+  const command = Deno.env.get("IMEIGSX_FMI_COMMAND") || "4";
+  const apiUrl = "https://api.imeigsx.com/api/v1/check";
 
   await admin.from("icloud_check_payments")
     .update({ status: "processing", updated_at: new Date().toISOString() })
     .eq("id", payment.id);
 
   try {
-    const upstream = await fetch(url, { method: "GET", signal: AbortSignal.timeout(30000) });
-    const raw = await upstream.text();
+    const upstream = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "X-API-Key": apiKey,
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
+      body: JSON.stringify({
+        command,
+        identifier,
+        custom_request_id: payment.payment_ref,
+      }),
+      signal: AbortSignal.timeout(30000),
+    });
 
+    const raw = await upstream.text();
     let data: any;
     try { data = JSON.parse(raw); }
     catch {
       await admin.from("icloud_check_payments")
         .update({ status: "paid", updated_at: new Date().toISOString() })
         .eq("id", payment.id);
-      return json({ status: "ERROR", code: "PROVIDER_INVALID_RESPONSE", message: "Máy chủ iCloud trả dữ liệu không hợp lệ." }, 502);
+      return json({
+        status: "ERROR",
+        code: "PROVIDER_INVALID_RESPONSE",
+        message: "Máy chủ iCloud trả dữ liệu không hợp lệ.",
+        provider,
+      }, 502);
     }
 
-    if (String(data?.status ?? "").toLowerCase() !== "ok") {
+    if (!upstream.ok || data?.success !== true) {
       await admin.from("icloud_check_payments")
         .update({ status: "paid", updated_at: new Date().toISOString() })
         .eq("id", payment.id);
       return json({
         status: "ERROR",
         code: "PROVIDER_ERROR",
-        message: typeof data?.message === "string" ? data.message : "Nguồn kiểm tra không trả kết quả thành công.",
+        message: typeof data?.error === "string"
+          ? data.error
+          : typeof data?.message === "string"
+            ? data.message
+            : "Nguồn kiểm tra không trả kết quả thành công.",
         provider,
+        provider_response: data,
       }, 502);
     }
 
-    const lockValue = findLockValue(data?.message ?? data);
-    const status = mapLockStatus(lockValue);
+    const object = data?.object && typeof data.object === "object" ? data.object : {};
+    let status: "LOCKED" | "UNLOCKED" | "UNKNOWN" = "UNKNOWN";
+
+    const fmi = object.fmiOn ?? object.fmiON ?? data.fmiOn ?? data.fmiON;
+    if (typeof fmi === "boolean") {
+      status = fmi ? "LOCKED" : "UNLOCKED";
+    } else {
+      const text = JSON.stringify(data).toLowerCase();
+      if (/(find my|activation lock|icloud).{0,100}(off|unlocked|disabled|clean)/i.test(text)) {
+        status = "UNLOCKED";
+      } else if (/(find my|activation lock|icloud).{0,100}(on|locked|enabled|lost)/i.test(text)) {
+        status = "LOCKED";
+      }
+    }
 
     if (status === "UNKNOWN") {
       const result = {
         status: "UNKNOWN",
         code: "UNCONFIRMED_PROVIDER_RESPONSE",
-        message: "Nguồn kiểm tra đã trả lời nhưng chưa xác minh được Activation Lock ON/OFF.",
+        message: "Nguồn kiểm tra đã trả lời nhưng chưa xác minh được Activation Lock ON/OFF. Không ghi nhận kết quả sai.",
         provider,
+        command,
         model,
         identifier_type: type,
         identifier_masked: identifier.slice(0, 4) + "••••••" + identifier.slice(-4),
@@ -173,24 +202,29 @@ Deno.serve(async (req) => {
         updated_at: new Date().toISOString(),
       }).eq("id", payment.id);
 
-      return json({ ...result, payment_id: payment.id });
+      return json({ ...result, payment_id: payment.id }, 502);
     }
 
     const result = {
       status,
       code: "VERIFIED",
       message: status === "LOCKED"
-        ? "Nguồn kiểm tra xác nhận Activation Lock / iCloud đang ON."
-        : "Nguồn kiểm tra xác nhận Activation Lock / iCloud đang OFF.",
+        ? "IMEIGSX xác nhận Activation Lock / iCloud đang ON."
+        : "IMEIGSX xác nhận Activation Lock / iCloud đang OFF.",
       provider,
-      model,
+      command,
+      model: object.model || data.model || model,
       identifier_type: type,
       identifier_masked: identifier.slice(0, 4) + "••••••" + identifier.slice(-4),
+      provider_request_id: data.request_id || null,
+      credits: typeof data.credits === "number" ? data.credits : null,
       provider_response: data,
     };
 
     await admin.from("icloud_check_payments").update({
       status: "completed",
+      provider: provider,
+      provider_transaction_id: data.request_id || null,
       check_result: result,
       completed_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -206,6 +240,8 @@ Deno.serve(async (req) => {
       status: "ERROR",
       code: "CHECK_FAILED",
       message: err instanceof Error ? err.message : "Kiểm tra iCloud thất bại.",
+      provider,
     }, 502);
   }
+
 });
