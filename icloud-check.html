@@ -179,6 +179,66 @@ input,select{min-height:48px;padding:13px 15px;border-radius:13px;background:#08
   .qr-box{max-width:300px}
 }
 
+
+/* ===== APPLE SEED — FINAL SERVICE UI ===== */
+:root{--bg:#06101d;--panel:#0b1a2b;--panel2:#0e2035;--line:#294665;--text:#f4f8ff;--muted:#91a8c3;--green:#35e6a1;--blue:#5b8cff;--gold:#ffd166}
+body{background:radial-gradient(900px 500px at 10% 0%,#142d62 0%,transparent 65%),radial-gradient(800px 500px at 100% 20%,#0d3049 0%,transparent 65%),linear-gradient(180deg,#071326,#030b15 100%);color:var(--text)}
+.wrap{width:min(1280px,calc(100% - 40px));padding:58px 0 90px}
+.top{max-width:1180px;margin:0 auto 30px}
+.kicker{font-size:10px;font-weight:900;letter-spacing:.24em;color:#78a6dd}
+h1{font-size:43px;line-height:1.08;letter-spacing:-.04em;margin:9px 0}
+.top>.muted{font-size:14px;color:#9cb2ca}
+.back{border:1px solid #294562!important;background:#09182a!important;border-radius:12px!important;padding:11px 15px!important}
+.card{border:1px solid #223c58!important;border-radius:24px!important;background:rgba(8,22,38,.94)!important;box-shadow:0 35px 100px #000b,0 0 0 1px #ffffff04!important;overflow:hidden}
+.card-head{padding:29px 32px!important;background:linear-gradient(135deg,#112a47,#0b1b2d 65%)!important;border-bottom:1px solid #213a55}
+.card-head h2{font-size:19px!important;margin:0}
+.card-head .muted{font-size:13px!important}
+.price{font-size:25px!important;font-weight:950!important;color:#40efaa!important;background:#06251b!important;border:1px solid #1c7558!important;border-radius:12px!important;padding:9px 14px!important}
+.body{padding:30px 32px!important}
+.body>label{font-size:10px!important;font-weight:900!important;letter-spacing:.14em!important;color:#89a5c4!important}
+.package-choice{gap:18px!important;margin:0 0 22px!important}
+.package{position:relative;min-height:150px!important;padding:21px 22px!important;border:1px solid #2a4664!important;border-radius:18px!important;background:linear-gradient(145deg,#102238,#091727)!important;box-shadow:inset 0 1px #ffffff08,0 14px 35px #0003!important;transition:.18s ease!important}
+.package:hover{transform:translateY(-2px)!important;border-color:#568cff!important}
+.package.active{border-color:#5793ff!important;background:linear-gradient(145deg,#122c4a,#0a192a)!important;box-shadow:0 0 0 2px #5793ff22,0 18px 45px #0005!important}
+.package.active:after{content:"✓ ĐANG CHỌN";position:absolute;right:15px;bottom:13px;color:#58e8ac;font-size:9px;font-weight:900;letter-spacing:.1em}
+.package strong{font-size:16px!important}
+.package-price{font-size:17px!important;color:#45eaae!important}
+.package small{font-size:12px!important;line-height:1.55!important;color:#a9bad0!important}
+.package ul{margin-top:12px!important}
+.package li{margin:5px 0!important;color:#d1dceb!important}
+.fields{gap:17px!important}
+label{font-size:10px!important;font-weight:900!important;color:#91a8c3!important;letter-spacing:.1em!important}
+input,select{min-height:50px!important;padding:13px 15px!important;border-radius:13px!important;background:#071524!important;border:1px solid #294665!important;color:#f2f6fc!important}
+input:focus,select:focus{border-color:#5a91ff!important;box-shadow:0 0 0 3px #5a91ff18!important;outline:none!important}
+.actions{margin-top:20px!important}
+.btn{min-height:48px!important;border-radius:13px!important;font-weight:900!important}
+.btn.primary{box-shadow:0 12px 35px #506dff35!important}
+.notice{margin-top:18px!important;padding:14px 16px!important;border-radius:13px!important;background:#081727!important;border:1px solid #29425e!important;color:#a9bdd4!important}
+.history{margin-top:22px!important}
+.history-box{border-radius:14px!important;border-color:#29425e!important}
+#paymentArea{margin-top:22px!important}
+.payment{border-radius:21px!important;border:1px solid #294b6b!important;background:linear-gradient(145deg,#0d2035,#081625)!important;padding:28px!important}
+.result{margin-top:22px!important}
+.result-card{border-radius:22px!important;border:1px solid #315170!important;padding:30px!important;background:linear-gradient(145deg,#0d2035,#071421)!important;box-shadow:0 28px 80px #0007!important}
+.result-card.pro-report{border-color:#4a7fc1!important;box-shadow:0 30px 90px #0008,0 0 0 1px #5793ff1c!important}
+.result-hero{border-radius:19px!important;padding:24px!important;background:linear-gradient(135deg,#122b48,#091727)!important;border:1px solid #315170!important}
+.device-icon{width:70px!important;height:70px!important;border-radius:20px!important}
+.device-name{font-size:29px!important;font-weight:950!important}
+.status-pill{padding:10px 15px!important;border-radius:999px!important}
+.report-bar{gap:12px!important}
+.report-stat{padding:15px!important;border-radius:13px!important;background:#09192a!important;border:1px solid #294663!important}
+.report-stat strong{font-size:15px!important}
+.result-grid{gap:12px!important}
+.result-item,.extended-item{padding:15px!important;border-radius:13px!important;background:linear-gradient(180deg,#0a1b2d,#071522)!important;border:1px solid #294663!important}
+.result-item span,.extended-item span{font-size:9px!important;font-weight:900!important;letter-spacing:.09em!important;color:#7f9ab9!important}
+.result-item strong,.extended-item strong{font-size:13px!important;color:#eef5ff!important}
+.result-section h4{font-size:11px!important;letter-spacing:.15em!important;color:#c8d7e9!important}
+.result-footnote{border-radius:13px!important;background:#061321!important;border:1px solid #1d344c!important}
+.admin-panel{border-radius:22px!important;border:1px solid #315170!important}
+.admin-head{padding:24px 26px!important}
+.admin-stat{border-radius:13px!important}
+@media(max-width:760px){.wrap{width:calc(100% - 20px);padding-top:28px}.top{margin-bottom:20px}h1{font-size:31px}.card-head,.body{padding:21px!important}.package-choice{grid-template-columns:1fr!important}.package{min-height:125px!important}}
+
 </style>
 </head>
 <body>
