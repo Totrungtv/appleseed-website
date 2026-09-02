@@ -475,7 +475,7 @@ input:focus,select:focus{border-color:#4f8cff!important;box-shadow:0 0 0 2px #4f
       </div>
       <div class="field full">
         <label id="idLabel" for="identifier">IMEI</label>
-        <input id="identifier" autocomplete="off" spellcheck="false" inputmode="numeric" maxlength="20" placeholder="Nhập IMEI">
+        <input id="identifier" autocomplete="off" spellcheck="false" inputmode="numeric" maxlength="20" placeholder="Nhập IMEI" data-imei-label="IMEI" data-imei-placeholder="Nhập IMEI" data-serial-label="SERIAL NUMBER" data-serial-placeholder="Nhập Serial Number">
       </div>
     </div>
 
@@ -629,17 +629,30 @@ input:focus,select:focus{border-color:#4f8cff!important;box-shadow:0 0 0 2px #4f
     return /^[A-Z0-9]{8,20}$/.test(v);
   }
   function setType(){
-    const isImei=idType.value==='imei';
-    const labelText=isImei?'IMEI':'SERIAL NUMBER';
-    const placeholderText=isImei?'Nhập IMEI':'Nhập Serial Number';
+    const isImei=String(idType.value||'imei').toLowerCase()==='imei';
+    const labelText=isImei?(identifier.dataset.imeiLabel||'IMEI'):(identifier.dataset.serialLabel||'SERIAL NUMBER');
+    const placeholderText=isImei?(identifier.dataset.imeiPlaceholder||'Nhập IMEI'):(identifier.dataset.serialPlaceholder||'Nhập Serial Number');
+
     idLabel.textContent=labelText;
     idLabel.setAttribute('for','identifier');
-    identifier.setAttribute('placeholder',placeholderText);
+
     identifier.placeholder=placeholderText;
+    identifier.setAttribute('placeholder',placeholderText);
     identifier.setAttribute('inputmode',isImei?'numeric':'text');
     identifier.inputMode=isImei?'numeric':'text';
     identifier.setAttribute('aria-label',labelText);
+    identifier.setAttribute('data-current-type',isImei?'imei':'serial');
     identifier.type='text';
+
+    // Không để giá trị IMEI cũ nằm lại khi chuyển sang Serial (và ngược lại).
+    const current=identifier.value.trim();
+    if(current){
+      const looksImei=/^\\d+$/.test(current);
+      const looksSerial=/^[A-Z0-9]+$/.test(current.toUpperCase());
+      if((isImei && !looksImei) || (!isImei && looksImei && current.length<8)){
+        identifier.value='';
+      }
+    }
   }
   function updatePackageUI(){
     const pro=selectedAmount===15000;
@@ -1083,6 +1096,39 @@ input:focus,select:focus{border-color:#4f8cff!important;box-shadow:0 0 0 2px #4f
   $('adminRefresh')?.addEventListener('click',loadAdminOrders);
   $('adminSearch')?.addEventListener('input',renderAdminOrders);
   renderHistory(); renderServerHistory(); setType(); updatePackageUI(); loadAdminOrders();
+})();
+</script>
+<script>
+/* Apple Seed — identifier selector hardening.
+   Keeps IMEI/Serial UI correct even if an earlier script block changes/fails. */
+(function(){
+  function syncIdentifierUI(){
+    const type=document.getElementById('idType');
+    const label=document.getElementById('idLabel');
+    const input=document.getElementById('identifier');
+    if(!type||!label||!input)return;
+    const serial=String(type.value||'').toLowerCase()==='serial';
+    const labelText=serial?(input.dataset.serialLabel||'SERIAL NUMBER'):(input.dataset.imeiLabel||'IMEI');
+    const placeholder=serial?(input.dataset.serialPlaceholder||'Nhập Serial Number'):(input.dataset.imeiPlaceholder||'Nhập IMEI');
+    label.textContent=labelText;
+    label.htmlFor='identifier';
+    input.placeholder=placeholder;
+    input.setAttribute('placeholder',placeholder);
+    input.inputMode=serial?'text':'numeric';
+    input.setAttribute('inputmode',serial?'text':'numeric');
+    input.setAttribute('aria-label',labelText);
+    input.setAttribute('data-current-type',serial?'serial':'imei');
+  }
+  const type=document.getElementById('idType');
+  if(type){
+    type.addEventListener('change',syncIdentifierUI,true);
+    type.addEventListener('input',syncIdentifierUI,true);
+  }
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',syncIdentifierUI,{once:true});
+  }else{
+    syncIdentifierUI();
+  }
 })();
 </script>
 </body>
