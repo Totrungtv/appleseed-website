@@ -392,6 +392,21 @@ input:focus,select:focus{border-color:#4f8cff!important;box-shadow:0 0 0 2px #4f
  .package ul{grid-template-columns:1fr!important}.result-grid{grid-template-columns:1fr!important}.nav-actions .admin-btn-top{display:none}
 }
 
+/* ===== FINAL ALIGNMENT FIX =====
+   Full-width top navigation; page content remains centered and unchanged. */
+.site-nav{
+  width:100vw!important;
+  margin-left:calc(50% - 50vw)!important;
+  margin-right:0!important;
+  box-sizing:border-box!important;
+}
+@media(max-width:820px){
+  .site-nav{
+    width:100vw!important;
+    margin-left:calc(50% - 50vw)!important;
+  }
+}
+
 </style>
 </head>
 <body>
