@@ -99,7 +99,7 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
       <h2>Tra cứu thiết bị</h2>
       <div class="muted">Nhập đúng định danh thiết bị. QR chỉ xuất hiện sau khi hệ thống tạo đơn thanh toán.</div>
     </div>
-    <div class="price">5.000đ</div>
+    <div class="price" id="headerPrice">5.000đ</div>
   </div>
 
   <div class="body">
@@ -124,6 +124,13 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
         </select>
       </div>
       <div class="field full">
+        <label for="plan">GÓI KIỂM TRA</label>
+        <select id="plan">
+          <option value="basic">CHECK CƠ BẢN — 5.000đ • FMI/iCloud ON/OFF</option>
+          <option value="pro">CHECK PRO — 15.000đ • Báo cáo Apple chi tiết</option>
+        </select>
+      </div>
+      <div class="field full">
         <label id="idLabel" for="identifier">IMEI</label>
         <input id="identifier" autocomplete="off" spellcheck="false" inputmode="numeric" placeholder="Nhập IMEI">
       </div>
@@ -135,6 +142,8 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
     </div>
 
     <div class="notice">
+      <strong>🟢 CHECK CƠ BẢN — 5.000đ:</strong> FMI / Activation Lock (iCloud) ON/OFF và model cơ bản.<br>
+      <strong>🔵 CHECK PRO — 15.000đ:</strong> báo cáo Apple chi tiết gồm model, màu, dung lượng, FMI/iCloud, SIM Lock, bảo hành, ngày mua/kích hoạt, AppleCare, EID, blacklist và các trường dữ liệu mà nguồn 3023 trả về.<br><br>
       🔐 <strong>An toàn:</strong> không nhập mật khẩu Apple Account. Hệ thống chỉ dùng IMEI/Serial để tạo đơn.
       Kết quả chỉ hiển thị khi nguồn kiểm tra trả về dữ liệu xác minh được.
     </div>
@@ -146,7 +155,7 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
             <div class="payment-title">Thanh toán để bắt đầu tra cứu</div>
             <div class="payment-ref" id="paymentRef">—</div>
           </div>
-          <div class="amount">5.000đ</div>
+          <div class="amount" id="paymentAmount">5.000đ</div>
         </div>
 
         <div class="qr-wrap">
@@ -156,7 +165,7 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
             <div class="info-row"><span>Số tài khoản</span><strong>0898888269</strong></div>
             <div class="info-row"><span>Chủ tài khoản</span><strong>TÔ THANH TRUNG</strong></div>
             <div class="info-row"><span>Nội dung</span><strong id="transferContent">—</strong></div>
-            <div class="notice" style="margin-top:2px">Quét đúng QR và chuyển đúng <strong>5.000đ</strong>. Hệ thống tự nhận tiền qua webhook SePay.</div>
+            <div class="notice" style="margin-top:2px">Quét đúng QR và chuyển đúng <strong id="qrAmountText">5.000đ</strong>. Hệ thống tự nhận tiền qua webhook SePay.</div>
           </div>
         </div>
 
@@ -202,12 +211,12 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
 <script>
 (function(){
   const $ = id => document.getElementById(id);
-  const idType=$('idType'), identifier=$('identifier'), idLabel=$('idLabel'), model=$('model');
+  const idType=$('idType'), identifier=$('identifier'), idLabel=$('idLabel'), model=$('model'), plan=$('plan');
   const startBtn=$('startBtn'), clearBtn=$('clearBtn');
   const paymentArea=$('paymentArea'), processingArea=$('processingArea'), resultArea=$('resultArea');
   const paymentRef=$('paymentRef'), transferContent=$('transferContent'), qr=$('qr');
 
-  let paymentId=null, paymentRefValue=null, pollTimer=null, checkStarted=false;
+  let paymentId=null, paymentRefValue=null, pollTimer=null, checkStarted=false, selectedAmount=5000;
 
   function esc(v){
     const d=document.createElement('div'); d.textContent=String(v??''); return d.innerHTML;
@@ -306,6 +315,16 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
     return r.data;
   }
 
+  function updatePlan(){
+    const pro=plan.value==='pro';
+    selectedAmount=pro?15000:5000;
+    const label=pro?'15.000đ':'5.000đ';
+    $('headerPrice').textContent=label;
+    $('paymentAmount').textContent=label;
+    $('qrAmountText').textContent=label;
+    startBtn.textContent='☁️ KIỂM TRA — '+label;
+  }
+
   async function begin(){
     if(startBtn.disabled) return;
     const type=idType.value, value=normalize();
@@ -398,10 +417,11 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
   }
 
   idType.addEventListener('change',setType);
+  plan.addEventListener('change',updatePlan);
   startBtn.addEventListener('click',begin);
   clearBtn.addEventListener('click',reset);
   identifier.addEventListener('keydown',e=>{if(e.key==='Enter')begin();});
-  renderHistory(); renderServerHistory(); setType();
+  renderHistory(); renderServerHistory(); setType(); updatePlan();
 })();
 </script>
 </body>
