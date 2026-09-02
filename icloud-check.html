@@ -80,6 +80,8 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
  .field.full{grid-column:auto}.card-head,.body{padding:20px}.payment{padding:18px}
  .payment-top{flex-direction:column}.amount{font-size:24px}
 }
+
+  .check-plans{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:14px}.plan-card{border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:18px;background:rgba(255,255,255,.035)}.plan-card.basic{border-color:rgba(80,200,120,.35)}.plan-card.pro{border-color:rgba(80,150,255,.35)}.plan-title{font-weight:800;font-size:16px}.plan-price{font-size:22px;font-weight:900;margin:6px 0}.plan-desc{font-size:13px;opacity:.78;margin-bottom:8px}.plan-card ul{margin:8px 0 0;padding-left:19px}.plan-card li{margin:6px 0;font-size:13px}.plan-note{margin:0 0 18px;padding:12px 14px;border-radius:12px;background:rgba(255,193,7,.08);font-size:13px;line-height:1.5}@media(max-width:700px){.check-plans{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -103,6 +105,38 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
   </div>
 
   <div class="body">
+    <div class="check-plans" aria-label="Bảng thông tin gói kiểm tra">
+      <div class="plan-card basic">
+        <div class="plan-title">🟢 CHECK CƠ BẢN</div>
+        <div class="plan-price">5.000đ / lượt</div>
+        <div class="plan-desc">Phù hợp khi cần kiểm tra nhanh trước khi mua/bán máy.</div>
+        <ul>
+          <li>🔒 Activation Lock / FMI: <strong>ON hoặc OFF</strong></li>
+          <li>☁️ iCloud / Find My Status</li>
+          <li>📱 Model thiết bị</li>
+          <li>🧾 Kết quả kiểm tra từ hệ thống</li>
+        </ul>
+      </div>
+      <div class="plan-card pro">
+        <div class="plan-title">🔵 CHECK PRO</div>
+        <div class="plan-price">15.000đ / lượt</div>
+        <div class="plan-desc">Báo cáo chi tiết dành cho thợ, người bán và người mua máy.</div>
+        <ul>
+          <li>📱 Model / Model Number</li>
+          <li>🎨 Màu máy + 💾 dung lượng</li>
+          <li>🔒 FMI / Activation Lock + ☁️ iCloud</li>
+          <li>📶 SIM Lock + Carrier</li>
+          <li>🛠️ Bảo hành + AppleCare</li>
+          <li>📅 Ngày mua / kích hoạt (nếu có)</li>
+          <li>🆔 IMEI / IMEI2 / Serial / EID</li>
+          <li>🚫 Blacklist / US Block (nếu nguồn có)</li>
+          <li>🌎 Quốc gia mua hàng và các dữ liệu Apple khác được API trả về</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="plan-note">💡 <strong>Chọn 5.000đ</strong> nếu chỉ cần biết máy có Activation Lock/iCloud hay không. <strong>Chọn 15.000đ</strong> nếu muốn xem báo cáo thiết bị chi tiết.</div>
+
     <div class="fields">
       <div class="field">
         <label for="idType">KIỂU ĐỊNH DANH</label>
