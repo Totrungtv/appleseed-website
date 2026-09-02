@@ -77,7 +77,8 @@ Deno.serve(async (req) => {
     return json({ status: "ERROR", code: "PAYMENT_NOT_FOUND", message: "Không tìm thấy đơn kiểm tra iCloud." }, 404);
   }
 
-  if (Number(payment.amount_vnd) !== 5000) {
+  const amountVnd = Number(payment.amount_vnd);
+  if (![5000, 15000].includes(amountVnd)) {
     return json({ status: "ERROR", code: "PAYMENT_AMOUNT_INVALID", message: "Đơn thanh toán không hợp lệ." }, 402);
   }
 
@@ -111,10 +112,10 @@ Deno.serve(async (req) => {
     message: "Provider iCloud chưa được hỗ trợ trong bản staging này.",
   }, 501);
 
-  // Gói hiện tại 5.000đ dùng Activation Lock/FMI của 3023.
-  // Gói 15.000đ sẽ dùng /apple/details sau khi payment RPC hỗ trợ amount 15000.
-  const endpoint = "https://api.3023data.com/apple/activationlock";
-  const url = endpoint + "?sn=" + encodeURIComponent(identifier);
+  const endpoint = amountVnd === 15000
+    ? "https://api.3023data.com/apple/details"
+    : "https://api.3023data.com/apple/activationlock";
+  const url = endpoint + "?export=json&lang=en&sn=" + encodeURIComponent(identifier);
 
   await admin.from("icloud_check_payments")
     .update({ status: "processing", updated_at: new Date().toISOString() })
@@ -160,7 +161,7 @@ Deno.serve(async (req) => {
     }
 
     const resultData = data?.data && typeof data.data === "object" ? data.data : {};
-    const fmi = String(resultData?.fmi ?? "").trim().toLowerCase();
+    const fmi = String(resultData?.fmi ?? resultData?.["find-my"] ?? "").trim().toLowerCase();
     let status: "LOCKED" | "UNLOCKED" | "UNKNOWN" = "UNKNOWN";
     if (["on","yes","true","locked"].includes(fmi)) status = "LOCKED";
     if (["off","no","false","unlocked"].includes(fmi)) status = "UNLOCKED";
@@ -187,15 +188,39 @@ Deno.serve(async (req) => {
     const result = {
       status,
       code: "VERIFIED",
+      plan: amountVnd === 15000 ? "pro" : "basic",
       message: status === "LOCKED"
         ? "3023 xác nhận Activation Lock / Find My đang ON."
         : "3023 xác nhận Activation Lock / Find My đang OFF.",
       provider,
       model: resultData?.model || model,
+      model_description: resultData?.["model-description"] || null,
+      capacity: resultData?.capacity || null,
+      color: resultData?.color || resultData?.["color-en"] || null,
+      imei: resultData?.imei || null,
+      imei2: resultData?.imei2 || null,
+      serial: resultData?.sn || null,
+      activated: resultData?.activated ?? null,
+      purchase_date: resultData?.purchase?.date || null,
+      activation_date: resultData?.activation?.date || null,
+      warranty_status: resultData?.coverage?.status || null,
+      warranty_end: resultData?.coverage?.date || null,
+      applecare: resultData?.applecare || null,
+      lost_mode: resultData?.lostmode || null,
+      icloud_status: resultData?.icloud || null,
+      simlock: resultData?.simlock || null,
+      carrier: resultData?.carrier || null,
+      purchase_country: resultData?.purchase?.country || null,
+      eid: resultData?.eid || null,
+      blacklist_status: resultData?.blacklist?.status || null,
+      us_blacklist: resultData?.blacklist?.us || null,
+      manufacturer: resultData?.manufacturer || null,
+      board: resultData?.board || null,
       identifier_type: type,
       identifier_masked: identifier.slice(0, 4) + "••••••" + identifier.slice(-4),
       provider_cost: data?.cost ?? null,
       provider_balance: data?.balance ?? null,
+      provider_raw: amountVnd === 15000 ? resultData : null,
       provider_transaction_id: null,
     };
 
