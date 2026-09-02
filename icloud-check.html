@@ -244,7 +244,7 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
   }
   function setQr(ref){
     const url='https://img.vietqr.io/image/MB-0898888269-compact2.png'
-      +'?amount=5000&addInfo='+encodeURIComponent(ref)
+      +'?amount='+selectedAmount+'&addInfo='+encodeURIComponent(ref)
       +'&accountName='+encodeURIComponent('TO THANH TRUNG');
     qr.src=url;
   }
@@ -337,8 +337,9 @@ input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4b8dff1c
     paymentArea.style.display='none'; processingArea.style.display='none'; resultArea.style.display='none';
 
     try{
-      const created=await rpc('create_icloud_check_payment',{
-        p_identifier_type:type,p_identifier:value,p_device_model:model.value||null
+      const created=await rpc('create_icloud_check_payment_v2',{
+        p_identifier_type:type,p_identifier:value,p_device_model:model.value||null,
+        p_plan:plan.value
       });
       paymentId=created.id;
       paymentRefValue=String(created.payment_ref||'');
