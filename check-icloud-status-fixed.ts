@@ -38,6 +38,35 @@ function sanitizeText(v: unknown) {
     .replace(/code4gsm/gi, "nguồn dữ liệu tra cứu");
 }
 
+function sanitizeDeep(value: unknown, depth = 0): unknown {
+  if (depth > 6) return undefined;
+  if (typeof value === "string") return sanitizeText(value);
+  if (Array.isArray(value)) return value.map((v) => sanitizeDeep(v, depth + 1)).filter((v) => v !== undefined);
+  if (value && typeof value === "object") {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+      const nk = clean(k);
+      if (!nk) continue;
+      out[nk] = sanitizeDeep(v, depth + 1);
+    }
+    return out;
+  }
+  return value;
+}
+
+function reportObject(data: any) {
+  const candidates = [
+    data?.response?.services?.[0],
+    Array.isArray(data?.response) ? data.response[0] : null,
+    data?.response,
+    data?.data,
+  ];
+  for (const candidate of candidates) {
+    if (candidate && typeof candidate === "object" && !Array.isArray(candidate)) return candidate;
+  }
+  return null;
+}
+
 function findValue(value: unknown, wanted: string[]): unknown {
   if (!value || typeof value !== "object") return null;
   const obj = value as Record<string, unknown>;
@@ -125,24 +154,21 @@ function pickService(services: any[], amount: number) {
       normalized.find((s) => s._name.includes("appleadvancedcheck"));
   }
 
-  // BASIC is intentionally the cheaper FMI ON/OFF service.
-  return normalized.find((s) => s._name === "applefindmystatuscheckonoff") ||
-    normalized.find((s) => s._name.includes("applefindmystatuscheck")) ||
-    normalized.find((s) => s._name === "applebasiccheck");
+  // BASIC is a paid device report, so prefer Apple Basic Check: it returns the core
+  // model/device fields in addition to FMI. Fall back to Find My only if Basic is
+  // unavailable in the account. Never downgrade CHECK PRO.
+  return normalized.find((s) => s._name === "applebasiccheck") ||
+    normalized.find((s) => s._name.includes("applebasiccheck")) ||
+    normalized.find((s) => s._name === "applefindmystatuscheckonoff") ||
+    normalized.find((s) => s._name.includes("applefindmystatuscheck"));
 }
 
 function normalizeReport(data: any) {
-  if (data?.response?.services?.[0]) return data.response.services[0];
-  if (Array.isArray(data?.response) && data.response[0] && typeof data.response[0] === "object") return data.response[0];
-  if (data?.response && typeof data.response === "object") {
-    const keys = Object.keys(data.response);
-    if (keys.some((k) => /model|imei|serial|fmi|icloud|activated|simlock|warranty/i.test(k))) return data.response;
-  }
-  if (data?.data && typeof data.data === "object") {
-    const keys = Object.keys(data.data);
-    if (keys.some((k) => /model|imei|serial|fmi|icloud|activated|simlock|warranty/i.test(k))) return data.data;
-  }
-  return null;
+  const report = reportObject(data);
+  if (!report) return null;
+  const keys = Object.keys(report);
+  if (keys.length === 0) return null;
+  return report;
 }
 
 Deno.serve(async (req) => {
@@ -312,7 +338,7 @@ Deno.serve(async (req) => {
     ]);
     const status = detectFmi(fmiRaw, report);
 
-    const details: Record<string, unknown> = {
+    const curatedDetails: Record<string, unknown> = {
       "Model": findValue(report, ["model", "devicemodel", "modelname", "productname"]),
       "IMEI": findValue(report, ["imei", "imeinumber"]) || identifier,
       "IMEI 2": findValue(report, ["imei2", "imei_2", "secondimei"]),
@@ -335,6 +361,11 @@ Deno.serve(async (req) => {
       "MDM / DEP": findValue(report, ["mdm", "mdmlockstatus", "mdmstatus"]),
       "Country": findValue(report, ["country", "countryname"]),
       "Network": findValue(report, ["network", "networkname"]),
+    };
+
+    const details: Record<string, unknown> = {
+      ...(sanitizeDeep(report) as Record<string, unknown> || {}),
+      ...curatedDetails,
     };
 
     if (status === "UNKNOWN") {
@@ -371,6 +402,7 @@ Deno.serve(async (req) => {
       identifier_type: type,
       identifier_masked: maskIdentifier(identifier),
       payment_id: payment.id,
+      bank_transaction_id: payment.provider_transaction_id,
       verified_at: new Date().toISOString(),
     };
 
