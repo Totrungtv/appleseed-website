@@ -58,15 +58,14 @@
   }
 
   function rssWatch(){
-    var selectors=['.section','section'];
-    var sections=[];
-    selectors.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){if(sections.indexOf(el)<0)sections.push(el);});});
-    sections.forEach(function(section){
+    document.querySelectorAll('.section, section').forEach(function(section){
       var text=(section.textContent||'').trim();
-      if(!/Đang tải(?: tin mới|\.\.\.)?/.test(text)) return;
-      if(section.dataset.asV4RssWatch) return;
+      if(!/Đang tải(?: tin mới|\.\.\.)?/.test(text) || section.dataset.asV4RssWatch) return;
       section.dataset.asV4RssWatch='1';
+
+      var stop=false;
       var timer=setTimeout(function(){
+        if(stop) return;
         var now=(section.textContent||'').trim();
         if(!/Đang tải(?: tin mới|\.\.\.)?/.test(now)) return;
         var loading=Array.from(section.querySelectorAll('*')).find(function(el){return /Đang tải(?: tin mới|\.\.\.)?/.test((el.textContent||'').trim());});
@@ -76,7 +75,17 @@
           if(refresh) refresh.setAttribute('aria-label','Thử tải lại nguồn tin');
         }
       },11000);
-      section.addEventListener('DOMNodeInserted',function(){clearTimeout(timer);},{once:true});
+
+      var observer=new MutationObserver(function(){
+        var now=(section.textContent||'').trim();
+        if(!/Đang tải(?: tin mới|\.\.\.)?/.test(now)){
+          stop=true;
+          clearTimeout(timer);
+          observer.disconnect();
+        }
+      });
+      observer.observe(section,{childList:true,subtree:true,characterData:true});
+      setTimeout(function(){observer.disconnect();},30000);
     });
   }
 
@@ -104,7 +113,7 @@
     imageFallbacks();
     rssWatch();
     modalA11y();
-    var observer=new MutationObserver(function(){guardExternalLinks();imageFallbacks();});
+    var observer=new MutationObserver(function(){guardExternalLinks();imageFallbacks();rssWatch();});
     observer.observe(document.body,{childList:true,subtree:true});
     setTimeout(function(){observer.disconnect();},30000);
   });
