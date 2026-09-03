@@ -955,10 +955,14 @@ input:focus,select:focus{border-color:#4f8cff!important;box-shadow:0 0 0 2px #4f
     paymentArea.style.display='none'; processingArea.style.display='none'; resultArea.style.display='none';
 
     try{
-      const created=await rpc('create_icloud_check_payment',{
-        p_identifier_type:type,p_identifier:value,p_device_model:model.value||null,p_amount_vnd:selectedAmount
+      // PUBLIC CHECK: trang này không yêu cầu Member/Admin đăng nhập.
+      const r=await window.supabaseClient.functions.invoke('check-icloud-status',{
+        body:{action:'create',identifier_type:type,identifier:value,device_model:model.value||null,amount_vnd:selectedAmount}
       });
-      paymentId=created.id;
+      if(r.error) throw new Error(r.error?.message||'Không thể tạo đơn thanh toán.');
+      const created=r.data||{};
+      if(created.status==='ERROR') throw new Error(created.message||'Không thể tạo đơn thanh toán.');
+      paymentId=created.id||created.payment_id;
       paymentRefValue=String(created.payment_ref||'');
       if(!paymentId||!paymentRefValue) throw new Error('Không tạo được đơn thanh toán.');
 
@@ -977,8 +981,13 @@ input:focus,select:focus{border-color:#4f8cff!important;box-shadow:0 0 0 2px #4f
   async function pollPayment(){
     if(!paymentId) return;
     try{
-      const s=await rpc('get_icloud_check_payment_status',{p_payment_id:paymentId});
-      if(!s?.ok) throw new Error('Không đọc được trạng thái đơn.');
+      // PUBLIC CHECK: đọc trạng thái đơn bằng Edge Function, không cần session.
+      const r=await window.supabaseClient.functions.invoke('check-icloud-status',{
+        body:{action:'status',payment_id:paymentId}
+      });
+      if(r.error) throw new Error(r.error?.message||'Không đọc được trạng thái đơn.');
+      const s=r.data||{};
+      if(s.status==='ERROR') throw new Error(s.message||'Không đọc được trạng thái đơn.');
       const status=String(s.status||'').toLowerCase();
 
       if(status==='paid'){
@@ -992,9 +1001,9 @@ input:focus,select:focus{border-color:#4f8cff!important;box-shadow:0 0 0 2px #4f
         if(!checkStarted){checkStarted=true;showProcessing();}
         return;
       }
-      if(status==='completed' && s.check_result){
+      if(status==='completed' && (s.check_result || s.status==='COMPLETED')){
         checkStarted=true;
-        showResult(s.check_result,String(s.check_result.status||'UNKNOWN'));
+        showResult(s.check_result||s,String(s.check_result?.status||s.status||'UNKNOWN'));
         return;
       }
     }catch(e){
@@ -1057,7 +1066,7 @@ input:focus,select:focus{border-color:#4f8cff!important;box-shadow:0 0 0 2px #4f
       // quyền xử lý ở Edge Function. Trang Check iCloud vì vậy không bắt buộc
       // Member/Admin đăng nhập mới được tra cứu.
       const r=await window.supabaseClient.functions.invoke('check-icloud-status',{
-        body:{payment_id:paymentId}
+        body:{action:'check',payment_id:paymentId}
       });
 
       if(r.error){
@@ -1072,8 +1081,8 @@ input:focus,select:focus{border-color:#4f8cff!important;box-shadow:0 0 0 2px #4f
         // 401 thường là JWT hết hạn/mất session; không biến đơn đã thanh toán
         // thành đơn thất bại chỉ vì lỗi xác thực ở phía trình duyệt.
         if(r.error?.status===401){
-          code='AUTH_REQUIRED';
-          msg='Phiên đăng nhập Apple Seed đã hết hạn. Vui lòng đăng nhập lại rồi kiểm tra lại.';
+          code='PUBLIC_CHECK_ERROR';
+          msg='Máy chủ kiểm tra công cộng chưa sẵn sàng. Vui lòng thử lại.';
         }
         showFailure(msg,code);
         return;
