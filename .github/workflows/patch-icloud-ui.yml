@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - fix/icloud-check-ui-crash
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
@@ -93,5 +96,6 @@ jobs:
           git add icloud-check.html
           git commit -m 'fix: prevent iCloud check error UI crash'
           git rm .github/workflows/patch-icloud-ui.yml
+          git rm .icloud-patch-trigger || true
           git commit -m 'chore: remove temporary patch workflow'
           git push
