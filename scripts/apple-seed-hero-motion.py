@@ -50,6 +50,11 @@ else:
     print("iCloud error UI hotfix already applied or block changed.")
 
 if "APPLE-SEED-HERO-MOTION-V1" in html:
+    marker = "<!-- APPLE-SEED-ICLOUD-UI-PATCH -->"
+    if marker not in html and "</body>" in html:
+        html = html.replace("</body>", marker + "\n</body>", 1)
+        path.write_text(html, encoding="utf-8")
+        print("Added deployment marker to index.html.")
     print("Hero motion patch already installed.")
     raise SystemExit(0)
 
