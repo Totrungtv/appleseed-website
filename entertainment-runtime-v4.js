@@ -1,0 +1,163 @@
+/* Apple Seed Entertainment runtime v4
+ * Scoped to entertainment.html by supabase-config.js.
+ * UI resilience only: no database writes, no media downloading, no platform bypass.
+ */
+(function(){
+  'use strict';
+  if ((location.pathname.split('/').pop() || '').toLowerCase() !== 'entertainment.html') return;
+  if (window.__appleSeedEntertainmentV4) return;
+  window.__appleSeedEntertainmentV4 = true;
+
+  function ready(fn){
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn, {once:true});
+    else fn();
+  }
+
+  function setStatus(el, message, kind){
+    if (!el) return;
+    el.setAttribute('data-as-status', kind || 'info');
+    el.innerHTML = '<span>' + String(message).replace(/[&<>\"']/g, function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'})[c];}) + '</span>';
+  }
+
+  function addStyles(){
+    if (document.getElementById('apple-seed-entertainment-v4-style')) return;
+    var s=document.createElement('style');
+    s.id='apple-seed-entertainment-v4-style';
+    s.textContent='\n      [data-as-status="error"]{color:#8b1e1e;background:#fff6f6;border:1px dashed #efb6b6;border-radius:12px;padding:14px!important;line-height:1.55}\n      [data-as-status="info"]{line-height:1.55}\n      .as-v4-img-failed{object-fit:contain!important;padding:18px!important;background:#f7f9fc!important}\n      .as-v4-action{display:inline-flex;align-items:center;justify-content:center;margin-top:8px;padding:8px 11px;border-radius:9px;background:#1769ff;color:#fff!important;font-weight:900;text-decoration:none}\n      @media(max-width:560px){.as-v4-action{width:100%}}\n    ';
+    document.head.appendChild(s);
+  }
+
+  function guardExternalLinks(){
+    document.querySelectorAll('a[target="_blank"]').forEach(function(a){
+      var rel=(a.getAttribute('rel')||'').split(/\s+/).filter(Boolean);
+      if(rel.indexOf('noopener')<0) rel.push('noopener');
+      if(rel.indexOf('noreferrer')<0) rel.push('noreferrer');
+      a.setAttribute('rel',rel.join(' '));
+    });
+  }
+
+  function imageFallbacks(){
+    document.querySelectorAll('img').forEach(function(img){
+      if(img.dataset.asV4Bound) return;
+      img.dataset.asV4Bound='1';
+      img.addEventListener('error',function(){
+        img.classList.add('as-v4-img-failed');
+        img.removeAttribute('srcset');
+        img.alt = img.alt || 'Không tải được hình ảnh';
+        var wrap=img.closest('.news-media');
+        if(wrap && !wrap.querySelector('.as-v4-img-note')){
+          var note=document.createElement('div');
+          note.className='as-v4-img-note';
+          note.style.cssText='position:absolute;inset:0;display:grid;place-items:center;color:#71809a;font-size:11px;background:#f7f9fc';
+          note.textContent='Hình ảnh nguồn hiện không khả dụng';
+          wrap.style.position='relative';
+          wrap.appendChild(note);
+        }
+      },{once:true});
+    });
+  }
+
+  function rssWatch(){
+    document.querySelectorAll('.section, section').forEach(function(section){
+      var text=(section.textContent||'').trim();
+      if(!/Đang tải(?: tin mới|\.\.\.)?/.test(text) || section.dataset.asV4RssWatch) return;
+      section.dataset.asV4RssWatch='1';
+
+      var stop=false;
+      var timer=setTimeout(function(){
+        if(stop) return;
+        var now=(section.textContent||'').trim();
+        if(!/Đang tải(?: tin mới|\.\.\.)?/.test(now)) return;
+        var loading=Array.from(section.querySelectorAll('*')).find(function(el){return /Đang tải(?: tin mới|\.\.\.)?/.test((el.textContent||'').trim());});
+        if(loading){
+          setStatus(loading,'Nguồn tin đang phản hồi chậm. Bạn có thể bấm “↻ Cập nhật” để thử lại.','error');
+          var refresh=section.querySelector('.refresh');
+          if(refresh) refresh.setAttribute('aria-label','Thử tải lại nguồn tin');
+        }
+      },11000);
+
+      var observer=new MutationObserver(function(){
+        var now=(section.textContent||'').trim();
+        if(!/Đang tải(?: tin mới|\.\.\.)?/.test(now)){
+          stop=true;
+          clearTimeout(timer);
+          observer.disconnect();
+        }
+      });
+      observer.observe(section,{childList:true,subtree:true,characterData:true});
+      setTimeout(function(){observer.disconnect();},30000);
+    });
+  }
+
+  function hardenTikTok(){
+    var frame=document.getElementById('tiktokFrame');
+    if(!frame || frame.dataset.asV4TikTok) return;
+
+    var panel=frame.closest('.panel');
+    var status=panel && panel.querySelector('#tiktokStatus');
+    if(!status){
+      status=document.createElement('div');
+      status.id='tiktokStatus';
+      status.className='tiktok-status';
+      status.setAttribute('role','status');
+      status.textContent='Sẵn sàng phát TikTok chính thức.';
+      var player=frame.closest('.social-player');
+      if(player) player.appendChild(status);
+    }
+
+    /* The page's original listener treats the initial about:blank navigation as a
+       successful TikTok load. Replace the iframe so that listener cannot fire again. */
+    var replacement=frame.cloneNode(false);
+    replacement.dataset.asV4TikTok='1';
+    frame.parentNode.replaceChild(replacement,frame);
+    frame=replacement;
+
+    function setLoading(){
+      status.classList.remove('ok');
+      setStatus(status,'⏳ Đang tải trình phát TikTok chính thức…','info');
+    }
+    function setReady(){
+      status.classList.add('ok');
+      status.textContent='';
+    }
+    frame.addEventListener('load',function(){
+      var src=String(frame.getAttribute('src')||'');
+      if(!/^https:\/\/www\.tiktok\.com\/player\/v1\/\d{8,30}(?:[?#]|$)/i.test(src)) return;
+      setReady();
+    });
+    frame.addEventListener('error',function(){
+      setStatus(status,'TikTok không thể tải trình phát lúc này. Hãy thử lại với một video công khai khác.','error');
+    });
+    setLoading();
+  }
+
+  function modalA11y(){
+    var reader=document.getElementById('reader');
+    if(reader && !reader.getAttribute('aria-hidden')) reader.setAttribute('aria-hidden','true');
+    document.addEventListener('keydown',function(e){
+      if(e.key!=='Escape') return;
+      var r=document.getElementById('reader');
+      if(r && r.classList.contains('open')){
+        var close=r.querySelector('.close');
+        if(close) close.click();
+      }
+      var p=document.getElementById('player');
+      if(p && getComputedStyle(p).display!=='none'){
+        var pc=p.querySelector('.close');
+        if(pc) pc.click();
+      }
+    });
+  }
+
+  ready(function(){
+    addStyles();
+    guardExternalLinks();
+    imageFallbacks();
+    rssWatch();
+    hardenTikTok();
+    modalA11y();
+    var observer=new MutationObserver(function(){guardExternalLinks();imageFallbacks();rssWatch();hardenTikTok();});
+    observer.observe(document.body,{childList:true,subtree:true});
+    setTimeout(function(){observer.disconnect();},30000);
+  });
+})();

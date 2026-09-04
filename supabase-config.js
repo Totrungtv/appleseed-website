@@ -275,3 +275,20 @@ window.supabaseClient =
 
     setTimeout(function(){ clearInterval(timer); }, 30000);
 })();
+
+/* Entertainment-only runtime loader. The runtime itself hard-checks the pathname. */
+(function appleSeedEntertainmentRuntimeLoader(){
+    if ((location.pathname.split('/').pop() || '').toLowerCase() !== 'entertainment.html') return;
+    if (document.getElementById('apple-seed-entertainment-runtime-v4')) return;
+    const load = function(){
+        if (document.getElementById('apple-seed-entertainment-runtime-v4')) return;
+        const script = document.createElement('script');
+        script.id = 'apple-seed-entertainment-runtime-v4';
+        script.src = 'entertainment-runtime-v4.js';
+        script.async = true;
+        script.onerror = function(){ console.warn('Apple Seed Entertainment runtime unavailable'); };
+        (document.head || document.documentElement).appendChild(script);
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', load, {once:true});
+    else load();
+})();
