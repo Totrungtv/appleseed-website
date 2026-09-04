@@ -32,10 +32,10 @@ jobs:
           git diff --check
           git config user.name "Apple Seed Hero Motion"
           git config user.email "0898888269tv@gmail.com"
-          if git diff --quiet -- index.html; then
-            echo "No Hero changes needed."
+          if git diff --quiet -- index.html icloud-check.html; then
+            echo "No Hero or iCloud changes needed."
             exit 0
           fi
-          git add index.html
-          git commit -m "Add living iPhone Hero screen effects [skip ci]"
+          git add index.html icloud-check.html
+          git commit -m "fix: prevent iCloud check error UI crash [skip ci]"
           git push origin HEAD:main
