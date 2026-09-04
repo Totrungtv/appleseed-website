@@ -3,6 +3,52 @@ from pathlib import Path
 path = Path("index.html")
 html = path.read_text(encoding="utf-8")
 
+# Apple Seed iCloud error-UI hotfix: remove obsolete DOM references without
+# changing the payment/backend flow. This is intentionally idempotent.
+icloud_path = Path("icloud-check.html")
+icloud = icloud_path.read_text(encoding="utf-8")
+old = """      const card=$('resultCard'); card.className='result-card';
+      $('resultIcon').textContent='×';
+      $('resultTitle').textContent='TRA CỨU THẤT BẠI';
+      $('resultMessage').textContent='Hiện tại chưa thể hoàn tất tra cứu. Vui lòng thử lại sau. Nếu đã thanh toán, hệ thống sẽ giữ nguyên giao dịch để xử lý lại.';
+      $('resultIdentifier').textContent=normalize();
+      $('resultRef').textContent=paymentRefValue||'—';
+      $('resultTxn').textContent='—';
+      $('resultTime').textContent=new Date().toLocaleString('vi-VN');"""
+new = """      const card=$('resultCard');
+      card.className='result-card unknown';
+      const badge=$('resultBadge');
+      if(badge){
+        badge.className='badge unknown';
+        badge.innerHTML='<span class=\\"status-dot unknown\\"></span> TRA CỨU CHƯA HOÀN TẤT';
+      }
+      const pill=$('resultStatusPill');
+      if(pill){
+        pill.className='status-pill unknown';
+        pill.innerHTML='<span class=\\"status-dot unknown\\"></span> CHƯA XÁC MINH';
+      }
+      $('resultModelName').textContent=model.value||'iPhone';
+      $('resultModelDetail').textContent='Nguồn kiểm tra chưa trả kết quả.';
+      $('resultMessage').textContent=e?.message||'Hiện tại chưa thể hoàn tất tra cứu. Nếu đã thanh toán, giao dịch vẫn được giữ để xử lý lại.';
+      $('heroIdentifier').textContent=normalize()||'—';
+      $('heroFmi').textContent='—';
+      $('heroActivation').textContent='—';
+      $('heroSimlock').textContent='—';
+      $('deviceDetails').innerHTML='';
+      $('lockDetails').innerHTML='';
+      $('networkDetails').innerHTML='';
+      $('lockSection').style.display='none';
+      $('networkSection').style.display='none';
+      $('resultIdentifier').textContent=normalize()||'—';
+      $('resultRef').textContent=paymentRefValue||'—';
+      $('resultTxn').textContent='—';
+      $('resultTime').textContent=new Date().toLocaleString('vi-VN');"""
+if old in icloud:
+    icloud_path.write_text(icloud.replace(old, new, 1), encoding="utf-8")
+    print("iCloud error UI hotfix applied.")
+else:
+    print("iCloud error UI hotfix already applied or block changed.")
+
 if "APPLE-SEED-HERO-MOTION-V1" in html:
     print("Hero motion patch already installed.")
     raise SystemExit(0)
