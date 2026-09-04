@@ -15,13 +15,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  patch-ui:
-    if: github.event_name == 'push' && github.event.head_commit.message == 'fix: trigger iCloud UI patch'
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Patch iCloud error UI
+      - name: Patch iCloud error UI for controlled test
+        if: github.event_name == 'push' && github.event.head_commit.message == 'fix: trigger iCloud UI patch'
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -76,7 +79,7 @@ jobs:
       saveHistory({ref:paymentRefValue||'—',identifier:normalize(),time:new Date().toLocaleString('vi-VN'),status:'Lỗi xử lý'});
     }"""
           if old not in s:
-              raise SystemExit('Expected iCloud catch block not found; refusing to patch.')
+              raise SystemExit('Expected iCloud catch block not found; no deployment patch made.')
           p.write_text(s.replace(old,new,1),encoding='utf-8')
           PY
           ! grep -q "resultIcon.*textContent" icloud-check.html
@@ -86,17 +89,6 @@ jobs:
           git add icloud-check.html
           git commit -m 'fix: prevent iCloud check error UI crash'
           git push
-
-  deploy:
-    needs: patch-ui
-    if: always() && (needs.patch-ui.result == 'success' || needs.patch-ui.result == 'skipped')
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload site
