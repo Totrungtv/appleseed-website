@@ -89,6 +89,48 @@
     });
   }
 
+  function hardenTikTok(){
+    var frame=document.getElementById('tiktokFrame');
+    if(!frame || frame.dataset.asV4TikTok) return;
+
+    var panel=frame.closest('.panel');
+    var status=panel && panel.querySelector('#tiktokStatus');
+    if(!status){
+      status=document.createElement('div');
+      status.id='tiktokStatus';
+      status.className='tiktok-status';
+      status.setAttribute('role','status');
+      status.textContent='Sẵn sàng phát TikTok chính thức.';
+      var player=frame.closest('.social-player');
+      if(player) player.appendChild(status);
+    }
+
+    /* The page's original listener treats the initial about:blank navigation as a
+       successful TikTok load. Replace the iframe so that listener cannot fire again. */
+    var replacement=frame.cloneNode(false);
+    replacement.dataset.asV4TikTok='1';
+    frame.parentNode.replaceChild(replacement,frame);
+    frame=replacement;
+
+    function setLoading(){
+      status.classList.remove('ok');
+      setStatus(status,'⏳ Đang tải trình phát TikTok chính thức…','info');
+    }
+    function setReady(){
+      status.classList.add('ok');
+      status.textContent='';
+    }
+    frame.addEventListener('load',function(){
+      var src=String(frame.getAttribute('src')||'');
+      if(!/^https:\/\/www\.tiktok\.com\/player\/v1\/\d{8,30}(?:[?#]|$)/i.test(src)) return;
+      setReady();
+    });
+    frame.addEventListener('error',function(){
+      setStatus(status,'TikTok không thể tải trình phát lúc này. Hãy thử lại với một video công khai khác.','error');
+    });
+    setLoading();
+  }
+
   function modalA11y(){
     var reader=document.getElementById('reader');
     if(reader && !reader.getAttribute('aria-hidden')) reader.setAttribute('aria-hidden','true');
@@ -112,8 +154,9 @@
     guardExternalLinks();
     imageFallbacks();
     rssWatch();
+    hardenTikTok();
     modalA11y();
-    var observer=new MutationObserver(function(){guardExternalLinks();imageFallbacks();rssWatch();});
+    var observer=new MutationObserver(function(){guardExternalLinks();imageFallbacks();rssWatch();hardenTikTok();});
     observer.observe(document.body,{childList:true,subtree:true});
     setTimeout(function(){observer.disconnect();},30000);
   });
