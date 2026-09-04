@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
@@ -23,72 +23,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Patch iCloud error UI for controlled test
-        if: github.event_name == 'push' && github.event.head_commit.message == 'fix: trigger iCloud UI patch'
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          p=Path('icloud-check.html')
-          s=p.read_text(encoding='utf-8')
-          old="""  }catch(e){
-      processingArea.style.display='none';
-      resultArea.style.display='block';
-      const card=$('resultCard'); card.className='result-card';
-      $('resultIcon').textContent='×';
-      $('resultTitle').textContent='TRA CỨU THẤT BẠI';
-      $('resultMessage').textContent='Hiện tại chưa thể hoàn tất tra cứu. Vui lòng thử lại sau. Nếu đã thanh toán, hệ thống sẽ giữ nguyên giao dịch để xử lý lại.';
-      $('resultIdentifier').textContent=normalize();
-      $('resultRef').textContent=paymentRefValue||'—';
-      $('resultTxn').textContent='—';
-      $('resultTime').textContent=new Date().toLocaleString('vi-VN');
-      startBtn.disabled=false;
-      saveHistory({ref:paymentRefValue||'—',identifier:normalize(),time:new Date().toLocaleString('vi-VN'),status:'Lỗi xử lý'});
-    }"""
-          new="""  }catch(e){
-      processingArea.style.display='none';
-      resultArea.style.display='block';
-      const card=$('resultCard');
-      card.className='result-card unknown';
-      const badge=$('resultBadge');
-      if(badge){
-        badge.className='badge unknown';
-        badge.innerHTML='<span class=\\"status-dot unknown\\"></span> TRA CỨU CHƯA HOÀN TẤT';
-      }
-      const pill=$('resultStatusPill');
-      if(pill){
-        pill.className='status-pill unknown';
-        pill.innerHTML='<span class=\\"status-dot unknown\\"></span> CHƯA XÁC MINH';
-      }
-      $('resultModelName').textContent=model.value||'iPhone';
-      $('resultModelDetail').textContent='Nguồn kiểm tra chưa trả kết quả.';
-      $('resultMessage').textContent=e?.message||'Hiện tại chưa thể hoàn tất tra cứu. Nếu đã thanh toán, giao dịch vẫn được giữ để xử lý lại.';
-      $('heroIdentifier').textContent=normalize()||'—';
-      $('heroFmi').textContent='—';
-      $('heroActivation').textContent='—';
-      $('heroSimlock').textContent='—';
-      $('deviceDetails').innerHTML='';
-      $('lockDetails').innerHTML='';
-      $('networkDetails').innerHTML='';
-      $('lockSection').style.display='none';
-      $('networkSection').style.display='none';
-      $('resultIdentifier').textContent=normalize()||'—';
-      $('resultRef').textContent=paymentRefValue||'—';
-      $('resultTxn').textContent='—';
-      $('resultTime').textContent=new Date().toLocaleString('vi-VN');
-      startBtn.disabled=false;
-      saveHistory({ref:paymentRefValue||'—',identifier:normalize(),time:new Date().toLocaleString('vi-VN'),status:'Lỗi xử lý'});
-    }"""
-          if old not in s:
-              raise SystemExit('Expected iCloud catch block not found; no deployment patch made.')
-          p.write_text(s.replace(old,new,1),encoding='utf-8')
-          PY
-          ! grep -q "resultIcon.*textContent" icloud-check.html
-          grep -q "resultStatusPill" icloud-check.html
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add icloud-check.html
-          git commit -m 'fix: prevent iCloud check error UI crash'
-          git push
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload site
