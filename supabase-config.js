@@ -275,3 +275,14 @@ window.supabaseClient =
 
     setTimeout(function(){ clearInterval(timer); }, 30000);
 })();
+
+/* Apple Seed Hero Slider scripts. Loaded here so both Builder and LIVE can share the feature without altering index.html/site-builder.html structure. */
+(function appleSeedSliderScripts(){
+    function load(src,id){
+        if(document.getElementById(id))return;
+        var s=document.createElement('script');s.id=id;s.src=src;s.defer=true;document.head.appendChild(s);
+    }
+    var file=location.pathname.split('/').pop().toLowerCase();
+    if(file==='site-builder.html')load('apple-seed-builder-slider-editor-v1.js','apple-seed-builder-slider-editor-v1');
+    if(file==='index.html'||file===''||location.pathname==='/')load('apple-seed-hero-slider-v2.js','apple-seed-hero-slider-v2');
+})();
