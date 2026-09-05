@@ -275,3 +275,17 @@ window.supabaseClient =
 
     setTimeout(function(){ clearInterval(timer); }, 30000);
 })();
+
+/* Entertainment-only resilience loader. */
+(function appleSeedEntertainmentRuntimeLoader(){
+    if (location.pathname.split('/').pop().toLowerCase() !== 'entertainment.html') return;
+    if (window.__appleSeedEntertainmentRuntimeV5) return;
+    window.__appleSeedEntertainmentRuntimeV5 = true;
+    var script = document.createElement('script');
+    script.src = 'entertainment-runtime-v5.js';
+    script.defer = true;
+    script.onerror = function(){
+        console.warn('Apple Seed Entertainment runtime could not be loaded.');
+    };
+    document.head.appendChild(script);
+})();
