@@ -52,4 +52,5 @@ window.supabaseClient =
     if(file==='index.html'||file===''||location.pathname==='/')load('apple-seed-hero-slider-v2.js?v=20260906-hero9','apple-seed-hero-slider-v2');
     if(file==='index.html'||file===''||location.pathname==='/')load('apple-seed-mobile-hero-final-v1.js?v=20260906-mobile6','apple-seed-mobile-hero-final-v1');
     if(file==='index.html'||file===''||location.pathname==='/')load('apple-seed-hero-branding-v1.js?v=20260906-brand3','apple-seed-hero-branding-v1');
+    if(file==='entertainment.html')load('entertainment-runtime-v10.js?v=20260907-v10','apple-seed-entertainment-runtime-v10');
 })();
