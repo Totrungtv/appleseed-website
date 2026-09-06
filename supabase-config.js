@@ -49,7 +49,7 @@ window.supabaseClient =
     function load(src,id){if(document.getElementById(id))return;var s=document.createElement('script');s.id=id;s.src=src;s.defer=true;document.head.appendChild(s);}
     var file=location.pathname.split('/').pop().toLowerCase();
     if(file==='site-builder.html')load('apple-seed-builder-slider-editor-v1.js','apple-seed-builder-slider-editor-v1');
-    if(file==='index.html'||file===''||location.pathname==='/')load('apple-seed-hero-slider-v2.js?v=20260906-hero8','apple-seed-hero-slider-v2');
-    if(file==='index.html'||file===''||location.pathname==='/')load('apple-seed-mobile-hero-final-v1.js?v=20260906-mobile5','apple-seed-mobile-hero-final-v1');
-    if(file==='index.html'||file===''||location.pathname==='/')load('apple-seed-hero-branding-v1.js?v=20260906-brand2','apple-seed-hero-branding-v1');
+    if(file==='index.html'||file===''||location.pathname==='/')load('apple-seed-hero-slider-v2.js?v=20260906-hero9','apple-seed-hero-slider-v2');
+    if(file==='index.html'||file===''||location.pathname==='/')load('apple-seed-mobile-hero-final-v1.js?v=20260906-mobile6','apple-seed-mobile-hero-final-v1');
+    if(file==='index.html'||file===''||location.pathname==='/')load('apple-seed-hero-branding-v1.js?v=20260906-brand3','apple-seed-hero-branding-v1');
 })();
