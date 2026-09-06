@@ -21,14 +21,8 @@ window.supabaseClient =
         const style = document.createElement('style');
         style.id = 'apple-seed-admin-hero-preview-sync';
         style.textContent = `
-          .hero-image-manager .hero-image-card[data-hero-slot="background"] .hero-image-preview{
-            aspect-ratio:16/6!important;height:auto!important;min-height:150px!important;max-height:190px!important;background:#f8fafc!important;
-          }
-          .hero-image-manager .hero-image-card[data-hero-slot^="phone"] .hero-image-preview{
-            aspect-ratio:1/2!important;height:auto!important;min-height:300px!important;max-height:360px!important;
-            background:linear-gradient(90deg,transparent 49.5%,rgba(37,99,235,.07) 50%,transparent 50.5%),linear-gradient(transparent 49.5%,rgba(37,99,235,.07) 50%,transparent 50.5%),#f8fafc!important;
-            background-size:100% 100%,100% 100%!important;
-          }
+          .hero-image-manager .hero-image-card[data-hero-slot="background"] .hero-image-preview{aspect-ratio:16/6!important;height:auto!important;min-height:150px!important;max-height:190px!important;background:#f8fafc!important;}
+          .hero-image-manager .hero-image-card[data-hero-slot^="phone"] .hero-image-preview{aspect-ratio:1/2!important;height:auto!important;min-height:300px!important;max-height:360px!important;background:linear-gradient(90deg,transparent 49.5%,rgba(37,99,235,.07) 50%,transparent 50.5%),linear-gradient(transparent 49.5%,rgba(37,99,235,.07) 50%,transparent 50.5%),#f8fafc!important;background-size:100% 100%,100% 100%!important;}
           .hero-image-manager .hero-image-card[data-hero-slot^="phone"] .hero-image-preview img{width:100%!important;height:100%!important;object-fit:contain!important;object-position:center!important;padding:10px!important;}
           .hero-image-manager .hero-image-card[data-hero-slot="background"] small::after{content:"  •  Kích thước chuẩn: 1920×720 px (16:6, phù hợp khung Hero hiện tại).";font-weight:700;color:#2563eb;}
           .hero-image-manager .hero-image-card[data-hero-slot^="phone"] small::after{content:"  •  Chuẩn khuyến nghị: 1000×2000 px (tỷ lệ 1:2), PNG/WebP trong suốt.";font-weight:700;color:#2563eb;}
@@ -111,6 +105,6 @@ window.supabaseClient =
     function load(src,id){if(document.getElementById(id))return;var s=document.createElement('script');s.id=id;s.src=src;s.defer=true;document.head.appendChild(s);}
     var file=location.pathname.split('/').pop().toLowerCase();
     if(file==='site-builder.html')load('apple-seed-builder-slider-editor-v1.js','apple-seed-builder-slider-editor-v1');
-    if(file==='index.html'||file===''||location.pathname==='/')load('apple-seed-hero-slider-v2.js','apple-seed-hero-slider-v2');
-    if(file==='index.html'||file===''||location.pathname==='/')load('apple-seed-mobile-hero-final-v1.js','apple-seed-mobile-hero-final-v1');
+    if(file==='index.html'||file===''||location.pathname==='/')load('apple-seed-hero-slider-v2.js?v=20260906-hero1','apple-seed-hero-slider-v2');
+    if(file==='index.html'||file===''||location.pathname==='/')load('apple-seed-mobile-hero-final-v1.js?v=20260906-mobile2','apple-seed-mobile-hero-final-v1');
 })();
