@@ -15,11 +15,9 @@ window.supabaseClient =
 /* Apple Seed Admin compatibility bridge. */
 (function appleSeedAdminCompatibility(){
     if (location.pathname.split('/').pop().toLowerCase() !== 'admin.html') return;
-
     function injectHeroPreviewSync(){
         if (document.getElementById('apple-seed-admin-hero-preview-sync')) return;
-        const style = document.createElement('style');
-        style.id = 'apple-seed-admin-hero-preview-sync';
+        const style = document.createElement('style'); style.id = 'apple-seed-admin-hero-preview-sync';
         style.textContent = `
           .hero-image-manager .hero-image-card[data-hero-slot="background"] .hero-image-preview{aspect-ratio:16/6!important;height:auto!important;min-height:150px!important;max-height:190px!important;background:#f8fafc!important;}
           .hero-image-manager .hero-image-card[data-hero-slot^="phone"] .hero-image-preview{aspect-ratio:1/2!important;height:auto!important;min-height:300px!important;max-height:360px!important;background:linear-gradient(90deg,transparent 49.5%,rgba(37,99,235,.07) 50%,transparent 50.5%),linear-gradient(transparent 49.5%,rgba(37,99,235,.07) 50%,transparent 50.5%),#f8fafc!important;background-size:100% 100%,100% 100%!important;}
@@ -32,72 +30,18 @@ window.supabaseClient =
           .hero-image-manager .hero-image-card[data-hero-slot="background"] .hero-image-preview img{max-height:260px!important;max-width:100%!important;}
           .hero-image-manager .hero-image-card[data-hero-slot^="phone"] .hero-image-preview.empty,.hero-image-manager .hero-image-card[data-hero-slot="background"] .hero-image-preview.empty{min-height:150px!important;display:flex!important;align-items:center!important;justify-content:center!important;}
           @media(max-width:750px){.hero-image-manager .hero-image-card[data-hero-slot^="phone"] .hero-image-preview img{max-height:360px!important;}}
-        `;
-        document.head.appendChild(style);
+        `; document.head.appendChild(style);
     }
-
-    let done = false;
-    const timer = setInterval(function(){
-        if (done) return;
-        try {
-            injectHeroPreviewSync();
-            if (typeof window.heroImagesFromCss !== 'function') return;
-            const field = document.getElementById('themeCustomCss');
-            const css = String(field?.value || '');
-            if (!field || !css || !css.includes('APPLESEED_HERO_IMAGES_START')) return;
-            window.heroImagesFromCss = function(cssValue){
-                const out = {};
-                const s = String(cssValue || '');
-                const start = '/* APPLESEED_HERO_IMAGES_START */';
-                const end = '/* APPLESEED_HERO_IMAGES_END */';
-                const a = s.indexOf(start); const b = s.indexOf(end);
-                if (a < 0 || b < a) return out;
-                const block = s.slice(a, b + end.length);
-                const readUrl = function(selector){
-                    const escaped = selector.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&');
-                    const re = new RegExp(escaped + '\\s*\\{[^}]*background-image\\s*:\\s*url\\(\\s*["\\\']?([^"\\\'\\)]+)["\\\']?\\s*\\)', 'i');
-                    const m = block.match(re);
-                    return m ? String(m[1]).replace(/\\\\(["\\\'])/g, '$1').trim() : '';
-                };
-                const bg = readUrl('#apple-seed-premium-home'); if (bg) out.background = bg;
-                for (let i = 1; i <= 6; i++) { const u = readUrl('#apple-seed-premium-home .as3-p' + i); if (u) out['phone' + (i - 1)] = u; }
-                return out;
-            };
-            if (typeof window.renderHeroImageFields === 'function') window.renderHeroImageFields(css);
-            const actions = document.querySelector('.admin-top .admin-actions');
-            if (actions && !actions.querySelector('a[href="ai-admin.html"]')) {
-                const link = document.createElement('a'); link.className='btn2 admin-ai-link'; link.href='ai-admin.html'; link.textContent='🤖 Quản lý AI';
-                actions.insertBefore(link, actions.firstElementChild?.nextElementSibling || null);
-            }
-            done = true; clearInterval(timer);
-        } catch (err) { console.warn('Apple Seed Admin compatibility bridge:', err); }
-    }, 100);
-    setTimeout(function(){ clearInterval(timer); }, 20000);
+    let done=false; const timer=setInterval(function(){if(done)return;try{injectHeroPreviewSync();if(typeof window.heroImagesFromCss!=='function')return;const field=document.getElementById('themeCustomCss');const css=String(field?.value||'');if(!field||!css||!css.includes('APPLESEED_HERO_IMAGES_START'))return;window.heroImagesFromCss=function(cssValue){const out={},s=String(cssValue||''),start='/* APPLESEED_HERO_IMAGES_START */',end='/* APPLESEED_HERO_IMAGES_END */',a=s.indexOf(start),b=s.indexOf(end);if(a<0||b<a)return out;const block=s.slice(a,b+end.length);const readUrl=function(selector){const escaped=selector.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\\\$&');const re=new RegExp(escaped+'\\s*\\{[^}]*background-image\\s*:\\s*url\\(\\s*["\\\']?([^"\\\'\\)]+)["\\\']?\\s*\\)','i');const m=block.match(re);return m?String(m[1]).replace(/\\\\(["\\\'])/g,'$1').trim():'';};const bg=readUrl('#apple-seed-premium-home');if(bg)out.background=bg;for(let i=1;i<=6;i++){const u=readUrl('#apple-seed-premium-home .as3-p'+i);if(u)out['phone'+(i-1)]=u;}return out;};if(typeof window.renderHeroImageFields==='function')window.renderHeroImageFields(css);const actions=document.querySelector('.admin-top .admin-actions');if(actions&&!actions.querySelector('a[href="ai-admin.html"]')){const link=document.createElement('a');link.className='btn2 admin-ai-link';link.href='ai-admin.html';link.textContent='🤖 Quản lý AI';actions.insertBefore(link,actions.firstElementChild?.nextElementSibling||null);}done=true;clearInterval(timer);}catch(err){console.warn('Apple Seed Admin compatibility bridge:',err);}},100);setTimeout(function(){clearInterval(timer);},20000);
 })();
 
 /* Hero Save Guard */
 (function appleSeedHeroSaveGuard(){
     if (location.pathname.split('/').pop().toLowerCase() !== 'admin.html') return;
-    let wrappedSave = null; let originalSave = null;
-    function stripAllHeroImageBlocks(css){
-        const start='/* APPLESEED_HERO_IMAGES_START */', end='/* APPLESEED_HERO_IMAGES_END */'; let s=String(css||''); let guard=0;
-        while(guard++<20){const a=s.indexOf(start);if(a<0)break;const b=s.indexOf(end,a);if(b<0)break;s=(s.slice(0,a)+s.slice(b+end.length)).trim();} return s;
-    }
-    async function mergeLatestThemeBeforeSave(){
-        const field=document.getElementById('themeCustomCss'), client=window.supabaseClient; if(!field||!client)return;
-        const localCss=String(field.value||''); const images=typeof window.heroImagesFromCss==='function'?window.heroImagesFromCss(localCss):{};
-        const phoneFit=document.getElementById('heroPhoneFit')?.value||'contain'; const backgroundFit=document.getElementById('heroBackgroundFit')?.value||'cover';
-        const remote=await client.from('site_theme_settings').select('custom_css').eq('id',1).maybeSingle(); if(remote.error||!remote.data)return;
-        let css=stripAllHeroImageBlocks(String(remote.data.custom_css||'')), block='';
-        if(typeof window.heroImageBlock==='function') block=Object.keys(images).length?window.heroImageBlock(images,phoneFit,backgroundFit):'';
-        field.value=(css?css+'\n\n':'')+block;
-    }
-    const timer=setInterval(function(){
-        try{const fn=window.saveHeroImages,btn=document.getElementById('saveHeroImagesBtn');if(typeof fn!=='function'||!btn)return;if(fn.__appleSeedHeroSaveGuard){if(wrappedSave&&btn.onclick!==wrappedSave)btn.onclick=wrappedSave;return;}
-            originalSave=fn; wrappedSave=async function(){try{await mergeLatestThemeBeforeSave();}catch(err){console.warn('Apple Seed Hero Save Guard merge:',err);}return originalSave.apply(this,arguments);};
-            wrappedSave.__appleSeedHeroSaveGuard=true;wrappedSave.__appleSeedOriginal=originalSave;window.saveHeroImages=wrappedSave;btn.onclick=wrappedSave;
-        }catch(err){console.warn('Apple Seed Hero Save Guard:',err);}
-    },100); setTimeout(function(){clearInterval(timer);},30000);
+    let wrappedSave=null,originalSave=null;
+    function stripAllHeroImageBlocks(css){const start='/* APPLESEED_HERO_IMAGES_START */',end='/* APPLESEED_HERO_IMAGES_END */';let s=String(css||''),guard=0;while(guard++<20){const a=s.indexOf(start);if(a<0)break;const b=s.indexOf(end,a);if(b<0)break;s=(s.slice(0,a)+s.slice(b+end.length)).trim();}return s;}
+    async function mergeLatestThemeBeforeSave(){const field=document.getElementById('themeCustomCss'),client=window.supabaseClient;if(!field||!client)return;const localCss=String(field.value||''),images=typeof window.heroImagesFromCss==='function'?window.heroImagesFromCss(localCss):{},phoneFit=document.getElementById('heroPhoneFit')?.value||'contain',backgroundFit=document.getElementById('heroBackgroundFit')?.value||'cover',remote=await client.from('site_theme_settings').select('custom_css').eq('id',1).maybeSingle();if(remote.error||!remote.data)return;let css=stripAllHeroImageBlocks(String(remote.data.custom_css||'')),block='';if(typeof window.heroImageBlock==='function')block=Object.keys(images).length?window.heroImageBlock(images,phoneFit,backgroundFit):'';field.value=(css?css+'\n\n':'')+block;}
+    const timer=setInterval(function(){try{const fn=window.saveHeroImages,btn=document.getElementById('saveHeroImagesBtn');if(typeof fn!=='function'||!btn)return;if(fn.__appleSeedHeroSaveGuard){if(wrappedSave&&btn.onclick!==wrappedSave)btn.onclick=wrappedSave;return;}originalSave=fn;wrappedSave=async function(){try{await mergeLatestThemeBeforeSave();}catch(err){console.warn('Apple Seed Hero Save Guard merge:',err);}return originalSave.apply(this,arguments);};wrappedSave.__appleSeedHeroSaveGuard=true;wrappedSave.__appleSeedOriginal=originalSave;window.saveHeroImages=wrappedSave;btn.onclick=wrappedSave;}catch(err){console.warn('Apple Seed Hero Save Guard:',err);}},100);setTimeout(function(){clearInterval(timer);},30000);
 })();
 
 /* Apple Seed Hero Slider scripts. */
@@ -106,5 +50,5 @@ window.supabaseClient =
     var file=location.pathname.split('/').pop().toLowerCase();
     if(file==='site-builder.html')load('apple-seed-builder-slider-editor-v1.js','apple-seed-builder-slider-editor-v1');
     if(file==='index.html'||file===''||location.pathname==='/')load('apple-seed-hero-slider-v2.js?v=20260906-hero1','apple-seed-hero-slider-v2');
-    if(file==='index.html'||file===''||location.pathname==='/')load('apple-seed-mobile-hero-final-v1.js?v=20260906-mobile2','apple-seed-mobile-hero-final-v1');
+    if(file==='index.html'||file===''||location.pathname==='/')load('apple-seed-mobile-hero-final-v1.js?v=20260906-mobile3','apple-seed-mobile-hero-final-v1');
 })();
