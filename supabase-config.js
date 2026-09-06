@@ -50,6 +50,6 @@ window.supabaseClient =
     var file=location.pathname.split('/').pop().toLowerCase();
     if(file==='site-builder.html')load('apple-seed-builder-slider-editor-v1.js','apple-seed-builder-slider-editor-v1');
     if(file==='index.html'||file===''||location.pathname==='/')load('apple-seed-hero-slider-v2.js?v=20260906-hero8','apple-seed-hero-slider-v2');
-    if(file==='index.html'||file===''||location.pathname==='/')load('apple-seed-mobile-hero-final-v1.js?v=20260906-mobile4','apple-seed-mobile-hero-final-v1');
+    if(file==='index.html'||file===''||location.pathname==='/')load('apple-seed-mobile-hero-final-v1.js?v=20260906-mobile5','apple-seed-mobile-hero-final-v1');
     if(file==='index.html'||file===''||location.pathname==='/')load('apple-seed-hero-branding-v1.js?v=20260906-brand2','apple-seed-hero-branding-v1');
 })();
