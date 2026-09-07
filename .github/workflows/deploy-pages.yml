@@ -30,17 +30,31 @@ jobs:
           node --check homepage-ui01-runtime.js
           node --check homepage-ui01-cleanup.js
       - name: Inject UI01 runtime into homepage artifact
+        env:
+          UI01_VERSION: ${{ github.sha }}
         run: |
           python3 - <<'PY'
+          import os
           from pathlib import Path
           p = Path('index.html')
           text = p.read_text(encoding='utf-8')
+          version = os.environ['UI01_VERSION']
           for src in ('homepage-ui01-runtime.js', 'homepage-ui01-cleanup.js'):
-              marker = f'<script src="./{src}"></script>'
+              marker = f'<script src="./{src}?v={version}"></script>'
+              legacy = f'<script src="./{src}"></script>'
               if marker not in text:
+                  text = text.replace(legacy, '', 1)
                   text = text.replace('</body>', marker + '\n</body>', 1)
           p.write_text(text, encoding='utf-8')
           PY
+      - name: Verify UI01 artifact wiring
+        env:
+          UI01_VERSION: ${{ github.sha }}
+        run: |
+          grep -F "homepage-ui01-runtime.js?v=${UI01_VERSION}" index.html
+          grep -F "homepage-ui01-cleanup.js?v=${UI01_VERSION}" index.html
+          test -s homepage-ui01-runtime.js
+          test -s homepage-ui01-cleanup.js
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
