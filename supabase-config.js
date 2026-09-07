@@ -53,3 +53,47 @@ window.supabaseClient =
     if(file==='index.html'||file===''||location.pathname==='/')load('apple-seed-mobile-hero-final-v1.js?v=20260906-mobile6','apple-seed-mobile-hero-final-v1');
     if(file==='index.html'||file===''||location.pathname==='/')load('apple-seed-hero-branding-v1.js?v=20260906-brand3','apple-seed-hero-branding-v1');
 })();
+
+/* Emergency boot guard: never let a failed optional CMS check lock the live site. */
+(function appleSeedEmergencyBoot(){
+    const file=location.pathname.split('/').pop().toLowerCase();
+    if(file==='admin.html'){
+        const boot=async()=>{
+            try{
+                const client=window.supabaseClient;if(!client)return;
+                const sessionResult=await Promise.race([
+                    client.auth.getSession(),
+                    new Promise((_,reject)=>setTimeout(()=>reject(new Error('session timeout')),5000))
+                ]);
+                const session=sessionResult?.data?.session;if(!session)return;
+                const profileResult=await Promise.race([
+                    client.from('profiles').select('role').eq('id',session.user.id).maybeSingle(),
+                    new Promise((_,reject)=>setTimeout(()=>reject(new Error('profile timeout')),5000))
+                ]);
+                const role=profileResult?.data?.role;
+                if(!['admin','staff'].includes(role))return;
+                const login=document.getElementById('loginView'),app=document.getElementById('app'),email=document.getElementById('userEmail');
+                if(email)email.textContent=(session.user.email||'')+' · '+role.toUpperCase();
+                if(login)login.classList.add('hidden');
+                if(app)app.classList.remove('hidden');
+                const ls=document.getElementById('loginStatus');if(ls)ls.textContent='';
+            }catch(err){console.warn('Apple Seed emergency admin boot:',err)}
+        };
+        setTimeout(boot,2500);
+    }
+    if(file==='index.html'||file===''||location.pathname==='/'){
+        const unlock=()=>{
+            const guard=document.getElementById('apple-seed-stable-release-guard');
+            if(!guard)return;
+            const main=document.querySelector('main, .hero, #apple-seed-premium-home');
+            if(!main)return;
+            guard.classList.remove('show');
+            guard.style.display='none';
+            guard.setAttribute('aria-hidden','true');
+            document.documentElement.style.overflow='';
+            if(document.body)document.body.style.overflow='';
+        };
+        setTimeout(unlock,2200);
+        setTimeout(unlock,5000);
+    }
+})();
