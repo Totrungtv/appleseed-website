@@ -26,16 +26,19 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Validate UI01 runtime
-        run: node --check homepage-ui01-runtime.js
+        run: |
+          node --check homepage-ui01-runtime.js
+          node --check homepage-ui01-cleanup.js
       - name: Inject UI01 runtime into homepage artifact
         run: |
           python3 - <<'PY'
           from pathlib import Path
           p = Path('index.html')
           text = p.read_text(encoding='utf-8')
-          marker = '<script src="./homepage-ui01-runtime.js"></script>'
-          if marker not in text:
-              text = text.replace('</body>', marker + '\n</body>', 1)
+          for src in ('homepage-ui01-runtime.js', 'homepage-ui01-cleanup.js'):
+              marker = f'<script src="./{src}"></script>'
+              if marker not in text:
+                  text = text.replace('</body>', marker + '\n</body>', 1)
           p.write_text(text, encoding='utf-8')
           PY
       - name: Upload site
