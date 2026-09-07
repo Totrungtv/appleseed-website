@@ -84,15 +84,24 @@ window.supabaseClient =
     if(file==='index.html'||file===''||location.pathname==='/'){
         const unlock=()=>{
             const guard=document.getElementById('apple-seed-stable-release-guard');
-            if(!guard)return;
-            const main=document.querySelector('main, .hero, #apple-seed-premium-home');
-            if(!main)return;
-            guard.classList.remove('show');
-            guard.style.display='none';
-            guard.setAttribute('aria-hidden','true');
-            document.documentElement.style.overflow='';
-            if(document.body)document.body.style.overflow='';
+            if(guard){
+                const main=document.querySelector('main, .hero, #apple-seed-premium-home');
+                if(main){
+                    guard.classList.remove('show');
+                    guard.style.display='none';
+                    guard.setAttribute('aria-hidden','true');
+                    document.documentElement.style.overflow='';
+                    if(document.body)document.body.style.overflow='';
+                }
+            }
+            /* Never allow the legacy security catch in index.html to leave the entire document hidden. */
+            if(document.documentElement.style.display==='none'){
+                document.documentElement.style.display='';
+                document.documentElement.removeAttribute('aria-hidden');
+            }
         };
+        setTimeout(unlock,250);
+        setTimeout(unlock,1200);
         setTimeout(unlock,2200);
         setTimeout(unlock,5000);
     }
