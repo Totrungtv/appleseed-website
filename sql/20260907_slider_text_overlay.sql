@@ -1,0 +1,11 @@
+-- Apple Seed: Hero slider default English text overlay
+-- Applied to site_theme_settings.id = 1 on 2026-09-07.
+-- Rollback: remove the block between the two marker comments.
+
+UPDATE site_theme_settings
+SET custom_css = coalesce(custom_css, '') || E'\n\n/* APPLESEED_SLIDER_TEXT_OVERLAY_START */\n/* Default English copy shown on every Hero slider image. */\n#apple-seed-premium-home .apple-seed-hero-slide{position:relative!important;}\n#apple-seed-premium-home .apple-seed-hero-slide::after{position:absolute!important;left:24px!important;right:24px!important;bottom:24px!important;z-index:25!important;display:block!important;padding:14px 18px!important;border-radius:12px!important;background:linear-gradient(90deg,rgba(15,23,42,.82),rgba(15,23,42,.38),transparent)!important;color:#fff!important;font:800 16px/1.35 Arial,sans-serif!important;letter-spacing:.08em!important;text-transform:uppercase!important;text-shadow:0 1px 3px rgba(0,0,0,.35)!important;pointer-events:none!important;white-space:pre-line!important;}\n#apple-seed-premium-home .apple-seed-hero-slide:nth-child(1)::after{content:"PRECISION IPHONE REPAIR\\A Advanced care. Genuine results.";}\n#apple-seed-premium-home .apple-seed-hero-slide:nth-child(2)::after{content:"BOARD-LEVEL DIAGNOSTICS\\A Deep diagnostics for complex faults.";}\n#apple-seed-premium-home .apple-seed-hero-slide:nth-child(3)::after{content:"FACE ID & TRUE TONE\\A Accurate repair with careful calibration.";}\n#apple-seed-premium-home .apple-seed-hero-slide:nth-child(4)::after{content:"BATTERY & DISPLAY SERVICE\\A Quality parts. Clean installation.";}\n#apple-seed-premium-home .apple-seed-hero-slide:nth-child(5)::after{content:"PROFESSIONAL IPHONE CARE\\A Transparent service. Long-term support.";}\n#apple-seed-premium-home .apple-seed-hero-slide:nth-child(6)::after{content:"APPLE SEED TRÀ VINH\\A Premium iPhone repair & diagnostics.";}\n@media(max-width:760px){#apple-seed-premium-home .apple-seed-hero-slide::after{left:12px!important;right:12px!important;bottom:12px!important;padding:10px 12px!important;border-radius:10px!important;font-size:11px!important;line-height:1.35!important;letter-spacing:.055em!important;}}\n/* APPLESEED_SLIDER_TEXT_OVERLAY_END */'
+WHERE id = 1;
+
+-- Verification:
+-- SELECT position('APPLESEED_SLIDER_TEXT_OVERLAY_START' in custom_css)
+-- FROM site_theme_settings WHERE id = 1;
