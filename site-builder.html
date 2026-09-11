@@ -40,7 +40,9 @@
   <div class="panel"><h3>🖱 Đối tượng</h3><div id="info" class="selected-name">Chưa chọn</div><span id="tag" class="tag" hidden></span></div>
   <div class="panel" id="contentPanel" hidden><h3>✏️ Nội dung</h3><div class="field"><label>Chữ</label><textarea id="text"></textarea></div><button class="btn primary" id="applyText" style="width:100%">Áp dụng chữ</button></div>
   <div class="panel" id="imagePanel" hidden><h3>🖼 Hình ảnh</h3><img id="imagePreview" class="image-preview" alt=""><div class="drop" id="pick">Chọn ảnh từ máy</div><input id="file" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden><div class="field" style="margin-top:8px"><label>URL ảnh</label><input id="imageUrl" placeholder="https://…"></div><div class="grid2" style="margin-top:8px"><button type="button" class="btn primary" id="applyImage" style="width:100%">Áp dụng hình</button><button type="button" class="btn danger-btn" id="clearImage" style="width:100%;display:block!important;visibility:visible!important;opacity:1!important">🗑️ Xóa ảnh</button></div></div>
-  <div class="panel" id="sliderPanel" hidden><h3>🎞️ Thiết kế Slider Hero</h3>
+  <div class="panel" id="sliderPanel"><h3>🎞️ Thiết kế Slider Hero</h3>
+    <div class="muted" style="margin-bottom:8px">Quản lý nhiều ảnh Hero độc lập với đối tượng đang chọn.</div>
+    <button type="button" class="btn primary" id="selectHeroSlider" style="width:100%;margin-bottom:8px">🎯 Chọn ảnh Hero / mở Slider</button>
     <div class="muted" style="margin-bottom:8px">Thêm nhiều ảnh vào cùng một đối tượng Hero. Ảnh hiện tại không còn bị giới hạn chỉ 1 tấm.</div>
     <div id="sliderList" class="section-list" style="max-height:230px"></div>
     <div class="grid2" style="margin-top:8px">
@@ -238,8 +240,8 @@ function applyPageToTarget(target,p){
   if(p.bgImage){
     const safe=String(p.bgImage).replace(/\\/g,'\\\\').replace(/"/g,'\\\"');
     target.style.setProperty('background-image','url("'+safe+'")','important');
-  }else{
-    target.style.removeProperty('background-image');
+  }else if(!target.style.backgroundImage){
+    /* No Builder image selected: preserve the homepage's existing background. */
   }
   if(p.bgColor)target.style.setProperty('background-color',String(p.bgColor),'important');
   if(p.bgSize)target.style.setProperty('background-size',String(p.bgSize),'important');
@@ -304,53 +306,109 @@ function sliderItem(){
 function stopSliderPreview(){if(sliderTimer){clearInterval(sliderTimer);sliderTimer=null}}
 function applySliderActive(){if(!selected||selected.tagName!=='IMG')return;const sl=sliderItem();if(!sl||!sl.slides.length)return;const src=sl.slides[sl.active]?.url;if(!src)return;selected.src=src;const item=getItem();item.src=src;saveDraft(false);refreshOverlay()}
 function startSliderPreview(){stopSliderPreview();const sl=sliderItem();if(!selected||!sl||!sl.autoplay||sl.slides.length<2)return;sliderTimer=setInterval(()=>{if(!selected||document.hidden)return;const x=sliderItem();if(!x||x.slides.length<2){stopSliderPreview();return}x.active=(x.active+1)%x.slides.length;applySliderActive();refreshSliderPanel()},x.interval*1000)}
+function getHeroSliderImage(){
+  if(!doc)return null;
+  const roots=['#apple-seed-premium-home','.as3-hero','.hero','.as3-stage','main'];
+  for(const root of roots){
+    try{
+      const r=doc.querySelector(root);
+      const img=r?.querySelector('img');
+      if(img && editable(img)) return img;
+    }catch(_){ }
+  }
+  return [...doc.querySelectorAll('img')].find(editable)||null;
+}
+function selectHeroSlider(){
+  const img=getHeroSliderImage();
+  if(!img){toast('❌ Không tìm thấy ảnh Hero trong trang');return false;}
+  selected=img;selector=stableSelector(img);
+  refreshInspector();
+  $('sliderPanel').hidden=false;
+  $('sliderPanel').scrollIntoView({block:'nearest'});
+  showSelectionOverlayForUse();
+  return true;
+}
 function refreshSliderPanel(){
-  if(!selected || selected.tagName!=='IMG'){ if($('sliderPanel'))$('sliderPanel').hidden=true; return; }
-  const stage=selected.closest?.('.as3-stage,.as3-hero,.hero,section,main');
-  const looksHero=/as3-stage|as3-hero|hero.*img|img.*hero/i.test(String(selector||''));
-  if(!stage && !looksHero){$('sliderPanel').hidden=true;return;}
-  $('sliderPanel').hidden=false;const sl=sliderItem();$('sliderInterval').value=sl.interval;$('sliderAutoplay').textContent=sl.autoplay?'▶ Tự động: BẬT':'⏸ Tự động: TẮT';const list=$('sliderList');if(!sl.slides.length){list.innerHTML='<div class="muted">Chưa có ảnh. Bấm ＋ Thêm ảnh hoặc thêm URL.</div>';stopSliderPreview();return}list.innerHTML=sl.slides.map((x,i)=>`<div class="history-item" data-slide="${i}" style="grid-template-columns:42px 1fr auto;gap:7px"><img src="${String(x.url).replace(/"/g,'&quot;')}" style="width:42px;height:34px;object-fit:cover;border-radius:6px;border:2px solid ${i===sl.active?'#1769ff':'#e5e9ef'}"><div style="min-width:0"><b style="font-size:10px">Slide ${i+1}</b><small style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${String(x.url).replace(/[<>&"]/g,m=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m]))}</small></div><button type="button" class="btn" data-remove-slide="${i}">✕</button></div>`).join('');list.querySelectorAll('[data-slide]').forEach(row=>row.onclick=e=>{if(e.target.closest('[data-remove-slide]'))return;const i=Number(row.dataset.slide);sl.active=i;checkpoint();applySliderActive();saveDraft();refreshSliderPanel();toast('🖼️ Đã chọn Slide '+(i+1))});list.querySelectorAll('[data-remove-slide]').forEach(btn=>btn.onclick=e=>{e.stopPropagation();const i=Number(btn.dataset.removeSlide);checkpoint();sl.slides.splice(i,1);sl.active=Math.max(0,Math.min(sl.active,sl.slides.length-1));if(sl.slides.length){applySliderActive()}else{delete getItem().slider}saveDraft();refreshSliderPanel();toast('🗑️ Đã xóa Slide '+(i+1))});startSliderPreview()}
+  const panel=$('sliderPanel');
+  if(!panel)return;
+  /* Slider is a first-class Hero editor. It must NOT disappear just because
+     selection is temporarily cleared by iframe reload/fingerprint changes. */
+  panel.hidden=false;
+  if(!selected || selected.tagName!=='IMG'){
+    $('sliderList').innerHTML='<div class="muted">Chưa chọn ảnh Hero. Bấm <b>🎯 Chọn ảnh Hero / mở Slider</b> để quản lý nhiều ảnh.</div>';
+    $('sliderInterval').value=5;
+    $('sliderAutoplay').textContent='▶ Tự động: BẬT';
+    stopSliderPreview();
+    return;
+  }
+  const sl=sliderItem();
+  $('sliderInterval').value=sl.interval;
+  $('sliderAutoplay').textContent=sl.autoplay?'▶ Tự động: BẬT':'⏸ Tự động: TẮT';
+  const list=$('sliderList');
+  if(!sl.slides.length){
+    list.innerHTML='<div class="muted">Chưa có ảnh. Bấm ＋ Thêm ảnh hoặc thêm URL.</div>';
+    stopSliderPreview();return;
+  }
+  list.innerHTML=sl.slides.map((x,i)=>`<div class="history-item" data-slide="${i}" style="grid-template-columns:42px 1fr auto;gap:7px"><img src="${String(x.url).replace(/"/g,'&quot;')}" style="width:42px;height:34px;object-fit:cover;border-radius:6px;border:2px solid ${i===sl.active?'#1769ff':'#e5e9ef'}"><div style="min-width:0"><b style="font-size:10px">Slide ${i+1}</b><small style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${String(x.url).replace(/[<>&"]/g,m=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m]))}</small></div><button type="button" class="btn" data-remove-slide="${i}">✕</button></div>`).join('');
+  list.querySelectorAll('[data-slide]').forEach(row=>row.onclick=e=>{
+    if(e.target.closest('[data-remove-slide]'))return;
+    const i=Number(row.dataset.slide);checkpoint();sl.active=i;applySliderActive();saveDraft();refreshSliderPanel();toast('🖼️ Đã chọn Slide '+(i+1));
+  });
+  list.querySelectorAll('[data-remove-slide]').forEach(btn=>btn.onclick=e=>{
+    e.stopPropagation();const i=Number(btn.dataset.removeSlide);checkpoint();sl.slides.splice(i,1);sl.active=Math.max(0,Math.min(sl.active,sl.slides.length-1));
+    if(sl.slides.length)applySliderActive();else delete getItem().slider;
+    saveDraft();refreshSliderPanel();toast('🗑️ Đã xóa Slide '+(i+1));
+  });
+  startSliderPreview();
+}
 async function addSliderUrls(urls){if(!selected||selected.tagName!=='IMG')return;const clean=urls.map(x=>String(x||'').trim()).filter(Boolean);if(!clean.length)return;checkpoint();const sl=sliderItem();clean.forEach(url=>sl.slides.push({url}));sl.active=sl.slides.length-clean.length;applySliderActive();saveDraft();refreshSliderPanel();toast('🎞️ Đã thêm '+clean.length+' ảnh vào Slider')}
 
 function refreshInspector(){
-  if(!selected){$('info').textContent='Chưa chọn';$('tag').hidden=true;$('contentPanel').hidden=true;$('imagePanel').hidden=true;$('sliderPanel').hidden=true;$('stylePanel').hidden=true;$('layerList').innerHTML='<div class="muted">Chưa chọn đối tượng.</div>';refreshOverlay();return}
+  if(!selected){
+    $('info').textContent='Chưa chọn';$('tag').hidden=true;$('contentPanel').hidden=true;$('imagePanel').hidden=true;$('stylePanel').hidden=true;
+    $('layerList').innerHTML='<div class="muted">Chưa chọn đối tượng.</div>';
+    refreshOverlay();
+    /* Keep Hero Slider manager visible even when selection is cleared. */
+    refreshSliderPanel();
+    refreshPageDesign();
+    return;
+  }
   $('info').textContent=selector;$('tag').hidden=false;$('tag').textContent=selected.tagName.toLowerCase();
   $('contentPanel').hidden=!textEditable(selected);
   const item=draft.items?.[selector]||{};
-  // Hiển thị cả liên kết đã có sẵn trong HTML (ví dụ Facebook footer), không chỉ link đã lưu trong Builder.
   const existingHref=selected.tagName==='A'?(selected.getAttribute('href')||''):'';
   $('linkUrl').value=item.link?.url||existingHref;
   $('linkTarget').value=item.link?.target||((selected.tagName==='A'&&selected.getAttribute('target')==='_blank')?'_blank':'_self');
   const phone=selected.closest?.('.as3-phone');
-  const phoneImage=item.bgImage ||
-    (selected.tagName==='IMG'?(selected.currentSrc||selected.src):'') ||
-    (phone?.querySelector('.as3-screen > img')?.currentSrc||phone?.querySelector('.as3-screen > img')?.src||'');
+  const phoneImage=item.bgImage||(selected.tagName==='IMG'?(selected.currentSrc||selected.src):'')||(phone?.querySelector('.as3-screen > img')?.currentSrc||phone?.querySelector('.as3-screen > img')?.src||'');
   const isHeroPhone=!!phone || selected.matches?.('.as3-screen');
   const computedBg=getComputedStyle(selected).backgroundImage;
-  /* Hero slider is available for ANY IMG inside the Hero section. Do not
-     require the image to sit at one exact nesting level: the live Hero has
-     changed wrappers between Builder versions. */
-  const heroRoot=selected.tagName==='IMG' ? selected.closest?.('section.as3-hero,.as3-hero,.as3-stage,.hero,[class*="as3-hero"]') : null;
+  const heroRoot=selected.tagName==='IMG' ? selected.closest?.('#apple-seed-premium-home,.as3-hero,.as3-stage,.hero,main,section') : null;
   const selectorLooksLikeHeroImage=/as3-stage|as3-hero|hero.*img|img.*hero/i.test(String(selector||''));
-  const canSlider=selected.tagName==='IMG' && (!!heroRoot || selectorLooksLikeHeroImage || !!selected.closest?.('section,main'));
+  const canSlider=selected.tagName==='IMG' && (!!heroRoot || selectorLooksLikeHeroImage);
   $('imagePanel').hidden=!(selected.tagName==='IMG'||isHeroPhone||computedBg!=='none');
-  // Slider must remain available for Hero images even when the live HTML uses a
-  // different wrapper structure. Never let the generic Page/Hero inspector hide it.
-  $('sliderPanel').hidden=!canSlider;
+  $('sliderPanel').hidden=false;
   if(canSlider)refreshSliderPanel();
+  else if(selected.tagName!=='IMG'){
+    const heroImg=getHeroSliderImage();
+    if(heroImg){ /* manager remains available; don't change current selection */ }
+    refreshSliderPanel();
+  }
   $('stylePanel').hidden=false;
   if(textEditable(selected))$('text').value=selected.textContent;
   if(selected.tagName==='IMG'){$('imagePreview').src=selected.currentSrc||selected.src;$('imageUrl').value=selected.src}
   else if(isHeroPhone){$('imagePreview').src=phoneImage||'';$('imageUrl').value=phoneImage||''}
-  else if(computedBg!=='none'){
-    const m=computedBg.match(/url\(["']?(.+?)["']?\)/i);
-    $('imagePreview').src=m?.[1]||'';$('imageUrl').value=m?.[1]||'';
-  }
+  else if(computedBg!=='none'){const m=computedBg.match(/url\(["']?(.+?)["']?\)/i);$('imagePreview').src=m?.[1]||'';$('imageUrl').value=m?.[1]||''}
   const st=styleObject(selected),v=currentStyle();
   $('x').value=v.x??st.x;$('y').value=v.y??st.y;$('w').value=v.w??st.w;$('h').value=v.h??st.h;$('fontSize').value=v.fontSize??st.fontSize;$('radius').value=v.radius??st.radius;$('color').value=/^#[0-9a-f]{6}$/i.test(v.color??st.color)?(v.color??st.color):'#17233d';$('backgroundColor').value=/^#[0-9a-f]{6}$/i.test(v.background??st.background)?(v.background??st.background):'#ffffff';$('deviceLabel').textContent=device==='mobile'?'Mobile':'Desktop';
   refreshOverlay();renderLayers();
 }
-function choose(el){if(!editable(el))return;selected=el;selector=stableSelector(el);refreshInspector();showSelectionOverlayForUse()}
+function choose(el){
+  if(!editable(el))return;
+  /* Never allow a transient iframe event to clear/replace a valid selection. */
+  selected=el;selector=stableSelector(el);
+  refreshInspector();showSelectionOverlayForUse();
+}
 function findBlockTarget(type){
   if(!doc)return null;
   const map={hero:['.hero','.as3-hero','header'],services:['#services','.services','.service-grid','.service-card'],why:['.why','.benefits','.features'],process:['.process','.repair-process'],cases:['.repair-case','.repair-cases','.articles','.posts'],booking:['#booking','.booking','.booking-section'],articles:['.articles','.posts','.blog'],map:['#map','.map','.contact-map','.contact']};
@@ -641,10 +699,11 @@ setInterval(async()=>{
   if(fp && fp!==lastCanvasFingerprint){
     lastCanvasFingerprint=fp;
     renderLayers();
-    if(selected && !doc.contains(selected)){selected=null;selector='';refreshInspector()}
+    if(selected && !doc.contains(selected)){selected=null;selector='';refreshInspector()}else if(selected){refreshSliderPanel()}
     refreshOverlay();
   }
 },1200);
+$('selectHeroSlider').onclick=()=>selectHeroSlider();
 $('preview').addEventListener('load',async()=>{
   doc=$('preview').contentDocument;
   // Canvas hardening: reset the embedded homepage to the top and clear any
