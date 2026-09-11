@@ -1,0 +1,42 @@
+name: Wire Apple Seed Builder Premium
+on:
+  push:
+    branches: [sidebar-premium-live]
+    paths:
+      - 'assets/builder-premium.css'
+      - 'assets/builder-premium.js'
+      - '.github/workflows/inject-builder-premium.yml'
+      - '.builder-premium-trigger'
+permissions:
+  contents: write
+jobs:
+  inject:
+    if: ${{ !contains(github.event.head_commit.message, '[builder-premium-injected]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inject assets without replacing builder
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('site-builder.html')
+          s=p.read_text(encoding='utf-8')
+          css='<link rel="stylesheet" href="assets/builder-premium.css?v=20260911">'
+          js='<script src="assets/builder-premium.js?v=20260911"></script>'
+          if css not in s:
+              s=s.replace('</head>', css+'\n</head>', 1)
+          if js not in s:
+              s=s.replace('</body>', js+'\n</body>', 1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          git diff --check
+          if git diff --quiet -- site-builder.html; then
+            echo 'Builder already wired.'
+            exit 0
+          fi
+          git config user.name 'Apple Seed Builder Bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add site-builder.html
+          git commit -m 'feat(builder): enable premium sidebar [builder-premium-injected]'
+          git push
