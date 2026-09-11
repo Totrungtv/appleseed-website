@@ -46,10 +46,10 @@
     <div class="muted" style="margin-bottom:8px">Thêm nhiều ảnh vào cùng một đối tượng Hero. Ảnh hiện tại không còn bị giới hạn chỉ 1 tấm.</div>
     <div id="sliderList" class="section-list" style="max-height:230px"></div>
     <div class="grid2" style="margin-top:8px">
-      <button type="button" class="btn primary" id="sliderPick">＋ Thêm ảnh</button>
+      <label class="btn primary" id="sliderPick" for="sliderFile" style="display:flex;align-items:center;justify-content:center;cursor:pointer">＋ Thêm ảnh</label>
       <button type="button" class="btn" id="sliderClear">🗑️ Xóa Slider</button>
     </div>
-    <input id="sliderFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden>
+    <input id="sliderFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
     <div class="field" style="margin-top:8px"><label>URL ảnh mới</label><input id="sliderUrl" placeholder="https://…"></div>
     <button type="button" class="btn" id="sliderAddUrl" style="width:100%">＋ Thêm URL vào Slider</button>
     <div class="grid2" style="margin-top:8px">
@@ -310,15 +310,18 @@ function applySliderActive(){if(!selected||selected.tagName!=='IMG')return;const
 function startSliderPreview(){stopSliderPreview();const sl=sliderItem();if(!selected||!sl||!sl.autoplay||sl.slides.length<2)return;sliderTimer=setInterval(()=>{if(!selected||document.hidden)return;const x=sliderItem();if(!x||x.slides.length<2){stopSliderPreview();return}x.active=(x.active+1)%x.slides.length;applySliderActive();refreshSliderPanel()},x.interval*1000)}
 function getHeroSliderImage(){
   if(!doc)return null;
-  const roots=['#apple-seed-premium-home','.as3-hero','.hero','.as3-stage','main'];
+  /* Prefer the actual Hero stage image. Do not accidentally select the logo,
+     header icon, or another unrelated image inside the Hero section. */
+  const roots=['.as3-stage','#apple-seed-premium-home .as3-stage','.as3-hero .as3-stage','#apple-seed-premium-home .as3-wrap','.as3-hero'];
   for(const root of roots){
     try{
       const r=doc.querySelector(root);
-      const img=r?.querySelector('img');
-      if(img && editable(img)) return img;
+      if(!r)continue;
+      const imgs=[...r.querySelectorAll('img')].filter(editable);
+      if(imgs.length)return imgs[0];
     }catch(_){ }
   }
-  return [...doc.querySelectorAll('img')].find(editable)||null;
+  return [...doc.querySelectorAll('img')].find(img=>editable(img)&&img.closest?.('main,section'))||null;
 }
 function selectHeroSlider(){
   const img=getHeroSliderImage();
@@ -968,66 +971,73 @@ $('applyStyle').onclick=()=>{
 $('pick').onclick=()=>$('file').click();$('file').onchange=e=>{pendingFile=e.target.files[0]||null;if(pendingFile)$('imagePreview').src=URL.createObjectURL(pendingFile)};
 $('applyImage').onclick=async()=>{if(!selected)return;let url=$('imageUrl').value.trim();try{if(pendingFile){url=await upload(pendingFile);pendingFile=null}}catch(e){toast('Upload lỗi: '+e.message);return}if(!url)return;checkpoint();const item=getItem();if(selected.tagName==='IMG'){selected.src=url;item.src=url;const sl=sliderItem();if(sl&&sl.slides.length){sl.slides[sl.active]={url};}}else{const phone=selected.closest?.('.as3-phone');if(phone||selected.matches?.('.as3-screen')){applyHeroPhoneImage(selected,url);item.bgImage=url}else{selected.style.setProperty('background-image','url("'+url+'")','important');item.bgImage=url}}saveDraft();refreshInspector();toast('Đã thay hình')};
 function ensureHeroSliderSelection(){
-  if(selected&&selected.tagName==='IMG'&&doc&&doc.contains(selected))return true;
-  return selectHeroSlider();
+  if(selected && selected.tagName==='IMG' && doc && doc.contains(selected))return true;
+  const img=getHeroSliderImage();
+  if(!img){toast('❌ Không tìm thấy IMG của Hero. Hãy bấm vào ảnh Hero trước.');return false;}
+  selected=img;selector=stableSelector(img);
+  refreshInspector();
+  $('sliderPanel').hidden=false;
+  refreshSliderPanel();
+  showSelectionOverlayForUse();
+  return true;
 }
-$('sliderPick').onclick=()=>{
-  /* The add button itself is a complete action: never require the user to
-     first understand the layer tree or select the IMG manually. */
-  if(!ensureHeroSliderSelection())return;
-  $('sliderFile').click();
+/* Native file chooser path. The label[for] is the primary trigger so the
+   browser opens the file dialog directly from the user's click; JS click is
+   only a fallback for keyboard/programmatic activation. */
+$('sliderPick').onclick=e=>{
+  if(!ensureHeroSliderSelection()){
+    e.preventDefault();
+    return;
+  }
+  $('sliderPanel').hidden=false;
 };
 $('sliderFile').onchange=async e=>{
   const files=[...e.target.files||[]];
-  try{
-    if(!files.length)return;
-    if(!ensureHeroSliderSelection()){toast('❌ Không tìm thấy ảnh Hero');return}
+  e.target.value='';
+  if(!files.length)return;
+  if(!ensureHeroSliderSelection())return;
+  const valid=files.filter(f=>/^image\/(png|jpe?g|webp|gif)$/i.test(f.type));
+  if(!valid.length){toast('⚠️ Không có file ảnh hợp lệ');return}
 
-    /* IMPORTANT: show the selected files immediately in the Slider UI.
-       Do not wait for Supabase upload to finish before the user can see them.
-       The temporary object URL is replaced by the permanent Storage URL below. */
-    const valid=files.filter(f=>/^image\/(png|jpe?g|webp|gif)$/i.test(f.type));
-    if(!valid.length){toast('⚠️ Không có file ảnh hợp lệ');return}
-    checkpoint();
-    const sl=sliderItem();
-    const pending=valid.map(f=>({url:URL.createObjectURL(f),name:f.name,pending:true,file:f}));
-    pending.forEach(x=>sl.slides.push({url:x.url,name:x.name,pending:true}));
-    sl.active=Math.max(0,sl.slides.length-pending.length);
-    applySliderActive();
-    saveDraft();
-    refreshSliderPanel();
-    toast('🖼️ Đã thêm '+pending.length+' ảnh — đang tải lên…');
+  checkpoint();
+  const sl=sliderItem();
+  if(!sl){toast('❌ Không tạo được Slider Hero');return}
 
-    /* Upload one by one, then replace each temporary preview URL. */
-    const startIndex=sl.slides.length-pending.length;
-    for(let i=0;i<pending.length;i++){
-      const item=pending[i];
-      try{
-        const permanent=await upload(item.file);
-        const idx=startIndex+i;
-        const current=sliderItem();
-        if(current?.slides?.[idx]){
-          current.slides[idx]={url:permanent,name:item.name};
-          if(current.active===idx)applySliderActive();
-          saveDraft();
-          refreshSliderPanel();
-        }
-        try{URL.revokeObjectURL(item.url)}catch(_){}
-      }catch(err){
-        /* Keep the visible preview if one upload fails; mark it clearly. */
-        const idx=startIndex+i;
-        const current=sliderItem();
-        if(current?.slides?.[idx])current.slides[idx].uploadError=true;
-        refreshSliderPanel();
-        toast('⚠️ Upload lỗi '+item.name+': '+(err?.message||err));
+  /* Add local previews FIRST. The user must see the selected images without
+     waiting for Storage/network/auth. */
+  const startIndex=sl.slides.length;
+  const pending=valid.map(f=>({file:f,url:URL.createObjectURL(f),name:f.name,pending:true}));
+  pending.forEach(x=>sl.slides.push({url:x.url,name:x.name,pending:true}));
+  sl.active=startIndex;
+  applySliderActive();
+  saveDraft();
+  refreshSliderPanel();
+  toast('🖼️ Đã thêm '+pending.length+' ảnh vào Slider — đang lưu…');
+
+  for(let i=0;i<pending.length;i++){
+    const p=pending[i], idx=startIndex+i;
+    try{
+      const permanent=await upload(p.file);
+      const current=sliderItem();
+      if(!current?.slides?.[idx])continue;
+      current.slides[idx]={url:permanent,name:p.name};
+      if(current.active===idx)applySliderActive();
+      saveDraft();
+      refreshSliderPanel();
+      try{URL.revokeObjectURL(p.url)}catch(_){ }
+    }catch(err){
+      const current=sliderItem();
+      if(current?.slides?.[idx]){
+        current.slides[idx].pending=false;
+        current.slides[idx].uploadError=true;
       }
+      refreshSliderPanel();
+      toast('⚠️ '+p.name+' chưa tải lên Storage nhưng vẫn giữ preview');
+      console.warn('Slider upload:',err);
     }
-    startSliderPreview();
-    toast('🎞️ Đã thêm '+pending.length+' ảnh vào Slider');
-  }catch(err){
-    console.error('Upload Slider:',err);
-    toast('❌ Thêm ảnh Slider lỗi: '+(err?.message||err));
-  }finally{e.target.value=''}
+  }
+  startSliderPreview();
+  refreshSliderPanel();
 };
 $('sliderAddUrl').onclick=async()=>{
   const url=$('sliderUrl').value.trim();
