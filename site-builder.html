@@ -49,7 +49,7 @@
       <label class="btn primary" id="sliderPick" for="sliderFile" style="display:flex;align-items:center;justify-content:center;cursor:pointer">＋ Thêm ảnh</label>
       <button type="button" class="btn" id="sliderClear">🗑️ Xóa Slider</button>
     </div>
-    <input id="sliderFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+    <input id="sliderFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none">
     <div class="field" style="margin-top:8px"><label>URL ảnh mới</label><input id="sliderUrl" placeholder="https://…"></div>
     <button type="button" class="btn" id="sliderAddUrl" style="width:100%">＋ Thêm URL vào Slider</button>
     <div class="grid2" style="margin-top:8px">
@@ -985,6 +985,10 @@ function ensureHeroSliderSelection(){
    browser opens the file dialog directly from the user's click; JS click is
    only a fallback for keyboard/programmatic activation. */
 $('sliderPick').onclick=e=>{
+  /* IMPORTANT: sliderPick is a <label for=sliderFile>. Do NOT preventDefault,
+     otherwise the browser's native file chooser will never open. We only
+     prepare the Hero selection, then allow the label's default activation to
+     open the real file input. */
   if(!ensureHeroSliderSelection()){
     e.preventDefault();
     return;
