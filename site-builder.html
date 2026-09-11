@@ -351,7 +351,7 @@ function refreshSliderPanel(){
     list.innerHTML='<div class="muted">Chưa có ảnh. Bấm ＋ Thêm ảnh hoặc thêm URL.</div>';
     stopSliderPreview();return;
   }
-  list.innerHTML=sl.slides.map((x,i)=>`<div class="history-item" data-slide="${i}" style="grid-template-columns:42px 1fr auto;gap:7px"><img src="${String(x.url).replace(/"/g,'&quot;')}" style="width:42px;height:34px;object-fit:cover;border-radius:6px;border:2px solid ${i===sl.active?'#1769ff':'#e5e9ef'}"><div style="min-width:0"><b style="font-size:10px">Slide ${i+1}</b><small style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${String(x.url).replace(/[<>&"]/g,m=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m]))}</small></div><button type="button" class="btn" data-remove-slide="${i}">✕</button></div>`).join('');
+  list.innerHTML=sl.slides.map((x,i)=>`<div class="history-item" data-slide="${i}" style="grid-template-columns:42px 1fr auto;gap:7px"><img src="${String(x.url).replace(/"/g,'&quot;')}" style="width:42px;height:34px;object-fit:cover;border-radius:6px;border:2px solid ${i===sl.active?'#1769ff':'#e5e9ef'}"><div style="min-width:0"><b style="font-size:10px">Slide ${i+1}${x.pending?' · ⏳':x.uploadError?' · ⚠️':''}</b><small style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${String(x.name||x.url).replace(/[<>&"]/g,m=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m]))}</small></div><button type="button" class="btn" data-remove-slide="${i}">✕</button></div>`).join('');
   list.querySelectorAll('[data-slide]').forEach(row=>row.onclick=e=>{
     if(e.target.closest('[data-remove-slide]'))return;
     const i=Number(row.dataset.slide);checkpoint();sl.active=i;applySliderActive();saveDraft();refreshSliderPanel();toast('🖼️ Đã chọn Slide '+(i+1));
@@ -982,14 +982,52 @@ $('sliderFile').onchange=async e=>{
   try{
     if(!files.length)return;
     if(!ensureHeroSliderSelection()){toast('❌ Không tìm thấy ảnh Hero');return}
-    const urls=[];
-    for(const f of files){
-      if(!/^image\/(png|jpe?g|webp|gif)$/i.test(f.type)){toast('⚠️ Bỏ qua file không phải ảnh: '+f.name);continue}
-      urls.push(await upload(f));
+
+    /* IMPORTANT: show the selected files immediately in the Slider UI.
+       Do not wait for Supabase upload to finish before the user can see them.
+       The temporary object URL is replaced by the permanent Storage URL below. */
+    const valid=files.filter(f=>/^image\/(png|jpe?g|webp|gif)$/i.test(f.type));
+    if(!valid.length){toast('⚠️ Không có file ảnh hợp lệ');return}
+    checkpoint();
+    const sl=sliderItem();
+    const pending=valid.map(f=>({url:URL.createObjectURL(f),name:f.name,pending:true,file:f}));
+    pending.forEach(x=>sl.slides.push({url:x.url,name:x.name,pending:true}));
+    sl.active=Math.max(0,sl.slides.length-pending.length);
+    applySliderActive();
+    saveDraft();
+    refreshSliderPanel();
+    toast('🖼️ Đã thêm '+pending.length+' ảnh — đang tải lên…');
+
+    /* Upload one by one, then replace each temporary preview URL. */
+    const startIndex=sl.slides.length-pending.length;
+    for(let i=0;i<pending.length;i++){
+      const item=pending[i];
+      try{
+        const permanent=await upload(item.file);
+        const idx=startIndex+i;
+        const current=sliderItem();
+        if(current?.slides?.[idx]){
+          current.slides[idx]={url:permanent,name:item.name};
+          if(current.active===idx)applySliderActive();
+          saveDraft();
+          refreshSliderPanel();
+        }
+        try{URL.revokeObjectURL(item.url)}catch(_){}
+      }catch(err){
+        /* Keep the visible preview if one upload fails; mark it clearly. */
+        const idx=startIndex+i;
+        const current=sliderItem();
+        if(current?.slides?.[idx])current.slides[idx].uploadError=true;
+        refreshSliderPanel();
+        toast('⚠️ Upload lỗi '+item.name+': '+(err?.message||err));
+      }
     }
-    if(urls.length)await addSliderUrls(urls);
-  }catch(err){console.error('Upload Slider:',err);toast('❌ Upload Slider lỗi: '+(err?.message||err))}
-  finally{e.target.value=''}
+    startSliderPreview();
+    toast('🎞️ Đã thêm '+pending.length+' ảnh vào Slider');
+  }catch(err){
+    console.error('Upload Slider:',err);
+    toast('❌ Thêm ảnh Slider lỗi: '+(err?.message||err));
+  }finally{e.target.value=''}
 };
 $('sliderAddUrl').onclick=async()=>{
   const url=$('sliderUrl').value.trim();
