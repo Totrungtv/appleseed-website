@@ -282,7 +282,25 @@ function showSelectionOverlayForUse(){
   scheduleSelectionOverlayHide();
 }
 let sliderTimer=null;
-function sliderItem(){if(!selected)return null;const item=getItem();item.slider=item.slider||{enabled:true,autoplay:true,interval:5,active:0,slides:[]};item.slider.slides=Array.isArray(item.slider.slides)?item.slider.slides:[];item.slider.active=Math.max(0,Math.min(Number(item.slider.active)||0,Math.max(0,item.slider.slides.length-1)));item.slider.interval=Math.max(1,Math.min(60,Number(item.slider.interval)||5));item.slider.autoplay=item.slider.autoplay!==false;return item.slider}
+function sliderItem(){
+  if(!selected||selected.tagName!=='IMG')return null;
+  const item=getItem();
+  item.slider=item.slider||{enabled:true,autoplay:true,interval:5,active:0,slides:[]};
+  item.slider.slides=Array.isArray(item.slider.slides)?item.slider.slides:[];
+  /* A Hero image is already the first slide even when the old config had no
+     slider object. This prevents the Builder from showing only the generic
+     one-image inspector and makes + Thêm ảnh usable immediately. */
+  const current=String(selected.currentSrc||selected.src||item.src||'').trim();
+  if(item.slider.slides.length===0 && current){
+    item.slider.slides=[{url:current}];
+    item.slider.active=0;
+  }
+  item.slider.active=Math.max(0,Math.min(Number(item.slider.active)||0,Math.max(0,item.slider.slides.length-1)));
+  item.slider.interval=Math.max(1,Math.min(60,Number(item.slider.interval)||5));
+  item.slider.autoplay=item.slider.autoplay!==false;
+  item.slider.enabled=true;
+  return item.slider;
+}
 function stopSliderPreview(){if(sliderTimer){clearInterval(sliderTimer);sliderTimer=null}}
 function applySliderActive(){if(!selected||selected.tagName!=='IMG')return;const sl=sliderItem();if(!sl||!sl.slides.length)return;const src=sl.slides[sl.active]?.url;if(!src)return;selected.src=src;const item=getItem();item.src=src;saveDraft(false);refreshOverlay()}
 function startSliderPreview(){stopSliderPreview();const sl=sliderItem();if(!selected||!sl||!sl.autoplay||sl.slides.length<2)return;sliderTimer=setInterval(()=>{if(!selected||document.hidden)return;const x=sliderItem();if(!x||x.slides.length<2){stopSliderPreview();return}x.active=(x.active+1)%x.slides.length;applySliderActive();refreshSliderPanel()},x.interval*1000)}
@@ -304,7 +322,11 @@ function refreshInspector(){
     (phone?.querySelector('.as3-screen > img')?.currentSrc||phone?.querySelector('.as3-screen > img')?.src||'');
   const isHeroPhone=!!phone || selected.matches?.('.as3-screen');
   const computedBg=getComputedStyle(selected).backgroundImage;
-  const canSlider=selected.tagName==='IMG' && !!selected.closest?.('.as3-stage,.as3-hero,.hero');
+  /* Hero slider is available for ANY IMG inside the Hero section. Do not
+     require the image to sit at one exact nesting level: the live Hero has
+     changed wrappers between Builder versions. */
+  const heroRoot=selected.tagName==='IMG' ? selected.closest?.('section.as3-hero,.as3-hero,.as3-stage,.hero,[class*="as3-hero"]') : null;
+  const canSlider=selected.tagName==='IMG' && !!heroRoot;
   $('imagePanel').hidden=!(selected.tagName==='IMG'||isHeroPhone||computedBg!=='none');
   $('sliderPanel').hidden=!canSlider;
   if(canSlider)refreshSliderPanel();
