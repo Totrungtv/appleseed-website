@@ -1,0 +1,1 @@
+Builder Sidebar Premium V1 is prepared in apple-seed-builder-sidebar-v1.js. Load it from site-builder.html or supabase-config.js after validation.
