@@ -40,6 +40,22 @@
   <div class="panel"><h3>🖱 Đối tượng</h3><div id="info" class="selected-name">Chưa chọn</div><span id="tag" class="tag" hidden></span></div>
   <div class="panel" id="contentPanel" hidden><h3>✏️ Nội dung</h3><div class="field"><label>Chữ</label><textarea id="text"></textarea></div><button class="btn primary" id="applyText" style="width:100%">Áp dụng chữ</button></div>
   <div class="panel" id="imagePanel" hidden><h3>🖼 Hình ảnh</h3><img id="imagePreview" class="image-preview" alt=""><div class="drop" id="pick">Chọn ảnh từ máy</div><input id="file" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden><div class="field" style="margin-top:8px"><label>URL ảnh</label><input id="imageUrl" placeholder="https://…"></div><div class="grid2" style="margin-top:8px"><button type="button" class="btn primary" id="applyImage" style="width:100%">Áp dụng hình</button><button type="button" class="btn danger-btn" id="clearImage" style="width:100%;display:block!important;visibility:visible!important;opacity:1!important">🗑️ Xóa ảnh</button></div></div>
+  <div class="panel" id="sliderPanel" hidden><h3>🎞️ Thiết kế Slider Hero</h3>
+    <div class="muted" style="margin-bottom:8px">Thêm nhiều ảnh vào cùng một đối tượng Hero. Ảnh hiện tại không còn bị giới hạn chỉ 1 tấm.</div>
+    <div id="sliderList" class="section-list" style="max-height:230px"></div>
+    <div class="grid2" style="margin-top:8px">
+      <button type="button" class="btn primary" id="sliderPick">＋ Thêm ảnh</button>
+      <button type="button" class="btn" id="sliderClear">🗑️ Xóa Slider</button>
+    </div>
+    <input id="sliderFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden>
+    <div class="field" style="margin-top:8px"><label>URL ảnh mới</label><input id="sliderUrl" placeholder="https://…"></div>
+    <button type="button" class="btn" id="sliderAddUrl" style="width:100%">＋ Thêm URL vào Slider</button>
+    <div class="grid2" style="margin-top:8px">
+      <div class="field"><label>Thời gian chuyển (giây)</label><input id="sliderInterval" type="number" min="1" max="60" step="1" value="5"></div>
+      <div class="field" style="display:flex;align-items:flex-end"><button type="button" class="btn" id="sliderAutoplay" style="width:100%">▶ Tự động: BẬT</button></div>
+    </div>
+    <button type="button" class="btn primary" id="sliderSave" style="width:100%">💾 Lưu thay đổi Slider</button>
+  </div>
   <div class="panel" id="pageDesignPanel"><h3>🖼️ Thiết kế Trang / Hero</h3>
     <div class="muted" style="margin-bottom:8px">Chỉnh nền Hero/trang mà không cần chọn đúng ảnh. Mỗi Desktop/Mobile có nền riêng.</div>
     <div id="pageBgPreview" class="bg-preview"><span>Chưa chọn ảnh nền</span></div>
@@ -265,8 +281,16 @@ function showSelectionOverlayForUse(){
   refreshOverlay();
   scheduleSelectionOverlayHide();
 }
+let sliderTimer=null;
+function sliderItem(){if(!selected)return null;const item=getItem();item.slider=item.slider||{enabled:true,autoplay:true,interval:5,active:0,slides:[]};item.slider.slides=Array.isArray(item.slider.slides)?item.slider.slides:[];item.slider.active=Math.max(0,Math.min(Number(item.slider.active)||0,Math.max(0,item.slider.slides.length-1)));item.slider.interval=Math.max(1,Math.min(60,Number(item.slider.interval)||5));item.slider.autoplay=item.slider.autoplay!==false;return item.slider}
+function stopSliderPreview(){if(sliderTimer){clearInterval(sliderTimer);sliderTimer=null}}
+function applySliderActive(){if(!selected||selected.tagName!=='IMG')return;const sl=sliderItem();if(!sl||!sl.slides.length)return;const src=sl.slides[sl.active]?.url;if(!src)return;selected.src=src;const item=getItem();item.src=src;saveDraft(false);refreshOverlay()}
+function startSliderPreview(){stopSliderPreview();const sl=sliderItem();if(!selected||!sl||!sl.autoplay||sl.slides.length<2)return;sliderTimer=setInterval(()=>{if(!selected||document.hidden)return;const x=sliderItem();if(!x||x.slides.length<2){stopSliderPreview();return}x.active=(x.active+1)%x.slides.length;applySliderActive();refreshSliderPanel()},x.interval*1000)}
+function refreshSliderPanel(){if(!selected||selected.tagName!=='IMG'){if($('sliderPanel'))$('sliderPanel').hidden=true;return}const stage=selected.closest?.('.as3-stage,.as3-hero,.hero');if(!stage){$('sliderPanel').hidden=true;return}const sl=sliderItem();$('sliderInterval').value=sl.interval;$('sliderAutoplay').textContent=sl.autoplay?'▶ Tự động: BẬT':'⏸ Tự động: TẮT';const list=$('sliderList');if(!sl.slides.length){list.innerHTML='<div class="muted">Chưa có ảnh. Bấm ＋ Thêm ảnh hoặc thêm URL.</div>';stopSliderPreview();return}list.innerHTML=sl.slides.map((x,i)=>`<div class="history-item" data-slide="${i}" style="grid-template-columns:42px 1fr auto;gap:7px"><img src="${String(x.url).replace(/"/g,'&quot;')}" style="width:42px;height:34px;object-fit:cover;border-radius:6px;border:2px solid ${i===sl.active?'#1769ff':'#e5e9ef'}"><div style="min-width:0"><b style="font-size:10px">Slide ${i+1}</b><small style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${String(x.url).replace(/[<>&"]/g,m=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m]))}</small></div><button type="button" class="btn" data-remove-slide="${i}">✕</button></div>`).join('');list.querySelectorAll('[data-slide]').forEach(row=>row.onclick=e=>{if(e.target.closest('[data-remove-slide]'))return;const i=Number(row.dataset.slide);sl.active=i;checkpoint();applySliderActive();saveDraft();refreshSliderPanel();toast('🖼️ Đã chọn Slide '+(i+1))});list.querySelectorAll('[data-remove-slide]').forEach(btn=>btn.onclick=e=>{e.stopPropagation();const i=Number(btn.dataset.removeSlide);checkpoint();sl.slides.splice(i,1);sl.active=Math.max(0,Math.min(sl.active,sl.slides.length-1));if(sl.slides.length){applySliderActive()}else{delete getItem().slider}saveDraft();refreshSliderPanel();toast('🗑️ Đã xóa Slide '+(i+1))});startSliderPreview()}
+async function addSliderUrls(urls){if(!selected||selected.tagName!=='IMG')return;const clean=urls.map(x=>String(x||'').trim()).filter(Boolean);if(!clean.length)return;checkpoint();const sl=sliderItem();clean.forEach(url=>sl.slides.push({url}));sl.active=sl.slides.length-clean.length;applySliderActive();saveDraft();refreshSliderPanel();toast('🎞️ Đã thêm '+clean.length+' ảnh vào Slider')}
+
 function refreshInspector(){
-  if(!selected){$('info').textContent='Chưa chọn';$('tag').hidden=true;$('contentPanel').hidden=true;$('imagePanel').hidden=true;$('stylePanel').hidden=true;$('layerList').innerHTML='<div class="muted">Chưa chọn đối tượng.</div>';refreshOverlay();return}
+  if(!selected){$('info').textContent='Chưa chọn';$('tag').hidden=true;$('contentPanel').hidden=true;$('imagePanel').hidden=true;$('sliderPanel').hidden=true;$('stylePanel').hidden=true;$('layerList').innerHTML='<div class="muted">Chưa chọn đối tượng.</div>';refreshOverlay();return}
   $('info').textContent=selector;$('tag').hidden=false;$('tag').textContent=selected.tagName.toLowerCase();
   $('contentPanel').hidden=!textEditable(selected);
   const item=draft.items?.[selector]||{};
@@ -280,7 +304,10 @@ function refreshInspector(){
     (phone?.querySelector('.as3-screen > img')?.currentSrc||phone?.querySelector('.as3-screen > img')?.src||'');
   const isHeroPhone=!!phone || selected.matches?.('.as3-screen');
   const computedBg=getComputedStyle(selected).backgroundImage;
+  const canSlider=selected.tagName==='IMG' && !!selected.closest?.('.as3-stage,.as3-hero,.hero');
   $('imagePanel').hidden=!(selected.tagName==='IMG'||isHeroPhone||computedBg!=='none');
+  $('sliderPanel').hidden=!canSlider;
+  if(canSlider)refreshSliderPanel();
   $('stylePanel').hidden=false;
   if(textEditable(selected))$('text').value=selected.textContent;
   if(selected.tagName==='IMG'){$('imagePreview').src=selected.currentSrc||selected.src;$('imageUrl').value=selected.src}
@@ -423,7 +450,7 @@ function applyAll(){
     let el;try{el=doc.querySelector(s)}catch{continue}if(!el)continue;
     if(item.text!==undefined&&textEditable(el))el.textContent=item.text;
     applyLinkToElement(el,item);
-    if(item.src!==undefined&&el.tagName==='IMG')el.src=item.src;
+    if(item.slider?.slides?.length&&el.tagName==='IMG'){const si=Math.max(0,Math.min(Number(item.slider.active)||0,item.slider.slides.length-1));const su=item.slider.slides[si]?.url;if(su)el.src=su;}else if(item.src!==undefined&&el.tagName==='IMG')el.src=item.src;
     if(item.bgImage!==undefined&&el.tagName!=='IMG'){
       if(el.matches?.('.as3-phone,.as3-screen')) applyHeroPhoneImage(el,item.bgImage);
       else el.style.backgroundImage=item.bgImage?'url("'+item.bgImage+'")':'';
@@ -836,7 +863,14 @@ $('applyStyle').onclick=()=>{
   toast('Đã áp dụng giao diện')
 };
 $('pick').onclick=()=>$('file').click();$('file').onchange=e=>{pendingFile=e.target.files[0]||null;if(pendingFile)$('imagePreview').src=URL.createObjectURL(pendingFile)};
-$('applyImage').onclick=async()=>{if(!selected)return;let url=$('imageUrl').value.trim();try{if(pendingFile){url=await upload(pendingFile);pendingFile=null}}catch(e){toast('Upload lỗi: '+e.message);return}if(!url)return;checkpoint();const item=getItem();if(selected.tagName==='IMG'){selected.src=url;item.src=url}else{const phone=selected.closest?.('.as3-phone');if(phone||selected.matches?.('.as3-screen')){applyHeroPhoneImage(selected,url);item.bgImage=url}else{selected.style.setProperty('background-image','url("'+url+'")','important');item.bgImage=url}}saveDraft();refreshInspector();toast('Đã thay hình')};
+$('applyImage').onclick=async()=>{if(!selected)return;let url=$('imageUrl').value.trim();try{if(pendingFile){url=await upload(pendingFile);pendingFile=null}}catch(e){toast('Upload lỗi: '+e.message);return}if(!url)return;checkpoint();const item=getItem();if(selected.tagName==='IMG'){selected.src=url;item.src=url;const sl=sliderItem();if(sl&&sl.slides.length){sl.slides[sl.active]={url};}}else{const phone=selected.closest?.('.as3-phone');if(phone||selected.matches?.('.as3-screen')){applyHeroPhoneImage(selected,url);item.bgImage=url}else{selected.style.setProperty('background-image','url("'+url+'")','important');item.bgImage=url}}saveDraft();refreshInspector();toast('Đã thay hình')};
+$('sliderPick').onclick=()=>$('sliderFile').click();
+$('sliderFile').onchange=async e=>{const files=[...e.target.files||[]];if(!files.length||!selected)return;try{const urls=[];for(const f of files)urls.push(await upload(f));await addSliderUrls(urls)}catch(err){toast('Upload Slider lỗi: '+err.message)}finally{e.target.value=''}};
+$('sliderAddUrl').onclick=async()=>{const url=$('sliderUrl').value.trim();if(!url)return;await addSliderUrls([url]);$('sliderUrl').value=''};
+$('sliderInterval').onchange=()=>{const sl=sliderItem();sl.interval=Math.max(1,Math.min(60,Number($('sliderInterval').value)||5));saveDraft();startSliderPreview()};
+$('sliderAutoplay').onclick=()=>{const sl=sliderItem();sl.autoplay=!sl.autoplay;saveDraft();refreshSliderPanel();toast(sl.autoplay?'▶ Slider tự động BẬT':'⏸ Slider tự động TẮT')};
+$('sliderSave').onclick=()=>{const sl=sliderItem();sl.interval=Math.max(1,Math.min(60,Number($('sliderInterval').value)||5));saveDraft();startSliderPreview();toast('💾 Đã lưu thay đổi Slider')};
+$('sliderClear').onclick=()=>{if(!selected)return;if(!confirm('Xóa toàn bộ ảnh Slider của đối tượng này?'))return;checkpoint();const item=getItem();delete item.slider;saveDraft();refreshInspector();toast('🗑️ Đã xóa toàn bộ Slider')};
 $('clearImage').onclick=()=>{
   if(!selected)return;
   const item=getItem();
