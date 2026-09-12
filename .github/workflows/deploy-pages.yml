@@ -93,8 +93,8 @@ jobs:
           </style>'''
           if marker not in s:
               s = s.replace('</head>', css + '\n<!-- ' + marker + ' -->\n</head>', 1)
-          for old in ['20260830-v6','20260912-v8','20260912-v9','20260912-v10','20260912-v11']:
-              s=s.replace('site-builder-runtime.js?v='+old,'site-builder-runtime.js?v=20260912-v12')
+          for old in ['20260830-v6','20260912-v8','20260912-v9','20260912-v10','20260912-v11','20260912-v12']:
+              s=s.replace('site-builder-runtime.js?v='+old,'site-builder-runtime.js?v=20260912-v13')
           p.write_text(s, encoding='utf-8')
           PY
       - name: Upload site
