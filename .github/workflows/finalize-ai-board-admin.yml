@@ -1,0 +1,39 @@
+name: Finalize AI Board Admin
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply safe admin bridge
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          # Admin navigation link
+          p=Path('admin.html'); s=p.read_text(encoding='utf-8')
+          anchor='<a class="btn2" href="site-builder.html" style="background:#fff8e7;border-color:#e8c66a;color:#8a5a00">🎨 Thiết kế website</a>'
+          link='<a class="btn2" href="ai-board-admin.html" style="background:#eef2ff;border-color:#c7d2fe;color:#4338ca">🧠 AI Board Control</a>'
+          if 'href="ai-board-admin.html"' not in s:
+              if anchor not in s: raise SystemExit('admin anchor not found')
+              p.write_text(s.replace(anchor,anchor+'\n      '+link,1),encoding='utf-8')
+          # AI Board config bridge
+          p=Path('ai-board.html'); s=p.read_text(encoding='utf-8')
+          marker='AI_BOARD_ADMIN_CONFIG_BRIDGE_V2'
+          if marker not in s:
+              bridge=r'''<script>/* AI_BOARD_ADMIN_CONFIG_BRIDGE_V2 */(()=>{const go=()=>{const sb=window.supabaseClient;if(!sb){setTimeout(go,350);return}sb.from('ai_board_page_sections').select('slug,icon,title,subtitle,enabled,settings').order('sort_order',{ascending:true}).then(({data,error})=>{if(error||!data)return;const m=Object.fromEntries(data.map(x=>[x.slug,x]));const cards=[...document.querySelectorAll('section.grid>.card')];const set=(el,x)=>{if(!el||!x)return;if(!x.enabled){el.style.display='none';return}const h=el.querySelector(':scope > h2');if(h)h.textContent=(x.icon||'')+' '+(x.title||'');const sub=el.querySelector(':scope > .muted');if(sub&&x.subtitle)sub.textContent=x.subtitle};set(cards[0],m.diagnostic_workspace);set(cards[1],m.ai_diagnosis);const si=cards[1]?.querySelector('h2[style*="margin-top"]');if(si&&m.schematic_intelligence)si.textContent=(m.schematic_intelligence.icon||'📐')+' '+(m.schematic_intelligence.title||'Schematic Intelligence');const lib=document.querySelector('#schematic-library');set(lib,m.schematic_library);const all=[...document.querySelectorAll('section.card')];set(all.find(x=>x.querySelector('.kicker')?.textContent.trim()==='COMMUNITY'),m.panic_center);set(all.find(x=>x.querySelector('.kicker')?.textContent.trim()==='ENGINEERING CENTER'),m.engineering_center)})};go()})();</script>'''
+              s=s.replace('</body>',bridge+'\n</body>',1)
+              p.write_text(s,encoding='utf-8')
+          PY
+          git config user.name 'Apple Seed Bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add admin.html ai-board.html
+          git commit -m 'feat: enable AI Board admin controls' || true
+          git push
+          git rm .github/workflows/finalize-ai-board-admin.yml || true
+          git commit -m 'chore: remove one-time AI Board admin finalizer' || true
+          git push || true
