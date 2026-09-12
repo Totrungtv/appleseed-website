@@ -47,15 +47,13 @@ jobs:
           import re
           p=Path('site-builder.html')
           s=p.read_text(encoding='utf-8')
-          marker='APPLE_SEED_30_FULL_THEMES_MARKUP_REPAIR_V1'
-          # Repair only the accidental nested <style> created by the first installer.
+          marker='APPLE_SEED_30_FULL_THEMES_MARKUP_REPAIR_V2'
           m=re.search(r'<style id="apple-seed-full-theme-ui">(.*?)</style>',s,re.S)
-          if m and '<style id="apple-seed-full-theme-ui">' in s[:m.start()]:
+          if m:
               css=m.group(1)
               s=s[:m.start()]+s[m.end():]
               s=s.replace('</head>','<style id="apple-seed-full-theme-ui">'+css+'</style>\n<!-- '+marker+' -->\n</head>',1)
-          elif marker not in s and '<style id="apple-seed-full-theme-ui">' in s:
-              # Fallback: if the style is already a valid head child, only add the repair marker.
+          elif marker not in s:
               s=s.replace('</head>','<!-- '+marker+' -->\n</head>',1)
           p.write_text(s,encoding='utf-8')
           PY
@@ -66,7 +64,7 @@ jobs:
             echo "30 full website themes already installed."
           else
             git add site-builder.html site-builder-full-themes.css site-builder-runtime.js scripts/install-30-full-themes.py
-            git commit -m "feat: add 30 full website themes"
+            git commit -m "fix: repair 30 full theme Builder markup"
             git push origin HEAD:main
           fi
       - name: Setup Pages
@@ -94,10 +92,11 @@ jobs:
           </style>'''
           if marker not in s:
               s = s.replace('</head>', css + '\n<!-- ' + marker + ' -->\n</head>', 1)
-          s = s.replace('site-builder-runtime.js?v=20260830-v6', 'site-builder-runtime.js?v=20260912-v11')
-          s = s.replace('site-builder-runtime.js?v=20260912-v8', 'site-builder-runtime.js?v=20260912-v11')
-          s = s.replace('site-builder-runtime.js?v=20260912-v9', 'site-builder-runtime.js?v=20260912-v11')
-          s = s.replace('site-builder-runtime.js?v=20260912-v10', 'site-builder-runtime.js?v=20260912-v11')
+          s = s.replace('site-builder-runtime.js?v=20260830-v6', 'site-builder-runtime.js?v=20260912-v12')
+          s = s.replace('site-builder-runtime.js?v=20260912-v8', 'site-builder-runtime.js?v=20260912-v12')
+          s = s.replace('site-builder-runtime.js?v=20260912-v9', 'site-builder-runtime.js?v=20260912-v12')
+          s = s.replace('site-builder-runtime.js?v=20260912-v10', 'site-builder-runtime.js?v=20260912-v12')
+          s = s.replace('site-builder-runtime.js?v=20260912-v11', 'site-builder-runtime.js?v=20260912-v12')
           p.write_text(s, encoding='utf-8')
           PY
       - name: Upload site
