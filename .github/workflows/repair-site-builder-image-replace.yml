@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   verify:
@@ -14,15 +14,49 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Validate Builder image replacement
         run: |
           set -euo pipefail
           grep -q 'APPLE_SEED_IMAGE_REPLACE_SELECTED_V2' site-builder.html
           grep -q 'site-builder-image-controls.js' site-builder.html
-          grep -q 'APPLE_SEED_IMAGE_CONTROLS_V1' site-builder.html
-          grep -q 'appleSeedVisualBuilderImageOverridesV3' site-builder-image-controls.js
-          grep -q 'function beforePublish' site-builder-image-controls.js
-          grep -q 'function getDoc' site-builder-image-controls.js
+          grep -q 'APPLE_SEED_IMAGE_CONTROLS_V6' site-builder-image-controls.js
+          grep -q 'appleSeedVisualBuilderImageOverridesV4' site-builder-image-controls.js
+          grep -q 'appleSeedVisualBuilderPendingImageOverridesV4' site-builder-image-controls.js
+          grep -q "fn==='apple_seed_builder_publish'" site-builder-image-controls.js
+          grep -q 'function freshPayload' site-builder-image-controls.js
           node --check site-builder-image-controls.js
           git diff --check
-          echo 'Builder image replacement/publish persistence controls validated.'
+
+      - name: Bust Builder helper cache when needed
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('site-builder.html')
+          s = p.read_text(encoding='utf-8')
+          old = 'site-builder-image-controls.js?v=20260913-image1'
+          new = 'site-builder-image-controls.js?v=20260913-image6'
+          if old in s:
+              s = s.replace(old, new)
+          s = s.replace('<!-- APPLE_SEED_IMAGE_CONTROLS_V2 -->', '<!-- APPLE_SEED_IMAGE_CONTROLS_V6 -->')
+          p.write_text(s, encoding='utf-8')
+          PY
+          if git diff --quiet -- site-builder.html; then
+            echo 'Builder helper cache already current.'
+          else
+            git config user.name 'Apple Seed Repair'
+            git config user.email '0898888269tv@gmail.com'
+            git add site-builder.html
+            git commit -m 'chore: bust Builder image helper cache'
+            git push origin main
+          fi
+
+      - name: Final validation
+        run: |
+          set -euo pipefail
+          grep -q 'site-builder-image-controls.js?v=20260913-image6' site-builder.html
+          grep -q 'APPLE_SEED_IMAGE_CONTROLS_V6' site-builder.html
+          node --check site-builder-image-controls.js
+          git diff --check
+          echo 'Builder image replacement and publish persistence controls validated.'
