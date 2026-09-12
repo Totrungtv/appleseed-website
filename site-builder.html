@@ -569,6 +569,7 @@ async function loadPublished(forcePublished=false){
     }
     localStorage.setItem(PUBLISHED_VERSION_KEY,publishedVersion);
   }
+  await preservePublishedSliderBeforePublish(draft);
   refreshPageDesign();
   applyAll();
   setStatus('Đồng bộ LIVE · V'+publishedVersion);
