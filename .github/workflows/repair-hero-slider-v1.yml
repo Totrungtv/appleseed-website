@@ -16,21 +16,32 @@ jobs:
         uses: actions/checkout@v4
       - name: Apply Hero Slider patch
         run: python .github/repair-hero-slider-v1.py
-      - name: Normalize generated script newlines
+      - name: Normalize generated Hero Slider block
         run: |
           python - <<'PY'
           from pathlib import Path
-          for name, marker in [('site-builder.html','/* APPLE_SEED_HERO_SLIDER_V1 */'),('index.html','/* APPLE_SEED_HERO_SLIDER_LIVE_V1 */')]:
-              p=Path(name)
-              s=p.read_text(encoding='utf-8')
-              if marker in s:
-                  a=s.index(marker)
-                  b=s.find('</script>',a)
-                  if b<0: raise SystemExit(f'Missing script end for {name}')
-                  block=s[a:b]
-                  block=block.replace('\\n','\n')
-                  s=s[:a]+block+s[b:]
-                  p.write_text(s,encoding='utf-8')
+          # The patch script stores its generated JS block with literal \\n          # sequences because it is embedded in a Python raw string. Normalize
+          # only that newly generated block; never touch the rest of Builder JS.
+          p=Path('site-builder.html')
+          s=p.read_text(encoding='utf-8')
+          marker='/* APPLE_SEED_HERO_SLIDER_V1 */'
+          if marker in s:
+              a=s.index(marker)
+              b=s.find("$('deleteImage').onclick=()=>{",a)
+              if b<0: raise SystemExit('Cannot locate Hero Slider block end')
+              block=s[a:b].replace('\\\\n','\\n')
+              s=s[:a]+block+s[b:]
+              p.write_text(s,encoding='utf-8')
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          marker='/* APPLE_SEED_HERO_SLIDER_LIVE_V1 */'
+          if marker in s:
+              a=s.index(marker)
+              b=s.find('</script>',a)
+              if b<0: raise SystemExit('Cannot locate live Hero Slider script end')
+              block=s[a:b].replace('\\\\n','\\n')
+              s=s[:a]+block+s[b:]
+              p.write_text(s,encoding='utf-8')
           PY
       - name: Validate JavaScript
         run: |
