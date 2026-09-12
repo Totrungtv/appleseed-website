@@ -28,14 +28,15 @@ jobs:
           set -euo pipefail
           python3 scripts/install-30-themes.py
           python3 scripts/fix-30-theme-markup.py
+          python3 scripts/fix-30-theme-selection.py
           git diff --check
           git config user.name "Apple Seed Theme Installer"
           git config user.email "0898888269tv@gmail.com"
           if git diff --quiet; then
             echo "30 themes already installed."
           else
-            git add site-builder.html site-builder-themes.css site-builder-runtime.js
-            git commit -m "feat: add 30 selectable Site Builder themes"
+            git add site-builder.html site-builder-themes.css site-builder-runtime.js scripts/fix-30-theme-selection.py
+            git commit -m "fix: make all 30 Site Builder themes selectable"
             git push origin HEAD:main
           fi
       - name: Install 30 full website themes
@@ -92,11 +93,8 @@ jobs:
           </style>'''
           if marker not in s:
               s = s.replace('</head>', css + '\n<!-- ' + marker + ' -->\n</head>', 1)
-          s = s.replace('site-builder-runtime.js?v=20260830-v6', 'site-builder-runtime.js?v=20260912-v12')
-          s = s.replace('site-builder-runtime.js?v=20260912-v8', 'site-builder-runtime.js?v=20260912-v12')
-          s = s.replace('site-builder-runtime.js?v=20260912-v9', 'site-builder-runtime.js?v=20260912-v12')
-          s = s.replace('site-builder-runtime.js?v=20260912-v10', 'site-builder-runtime.js?v=20260912-v12')
-          s = s.replace('site-builder-runtime.js?v=20260912-v11', 'site-builder-runtime.js?v=20260912-v12')
+          for old in ['20260830-v6','20260912-v8','20260912-v9','20260912-v10','20260912-v11']:
+              s=s.replace('site-builder-runtime.js?v='+old,'site-builder-runtime.js?v=20260912-v12')
           p.write_text(s, encoding='utf-8')
           PY
       - name: Upload site
