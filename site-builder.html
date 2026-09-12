@@ -24,7 +24,10 @@
 #imagePanel #applyImage{font-weight:900}
 
 /* SITE_BUILDER_LOGIN_FIX_V2 */
+<style id="apple-seed-30-theme-ui">.as-theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.as-theme-choice{position:relative;border:1px solid #dfe5ed;background:#fff;border-radius:9px;padding:7px;text-align:left;cursor:pointer;font-size:10px;font-weight:850;min-height:54px}.as-theme-choice:hover{border-color:#1769ff;transform:translateY(-1px)}.as-theme-choice.active{border-color:#1769ff;box-shadow:inset 0 0 0 2px #1769ff;background:#f5f8ff}.as-theme-dot{width:22px;height:22px;border-radius:50%;display:block;margin-bottom:4px;box-shadow:0 0 0 1px #d5dce5}.as-theme-no{position:absolute;right:6px;top:6px;color:#98a2b3;font-size:9px}</style>
 </style>
+<link rel="stylesheet" href="site-builder-themes.css?v=20260912-theme1">
+<!-- APPLE_SEED_30_THEMES_V1 -->
 </head>
 <body>
 <div class="app">
@@ -74,6 +77,7 @@
     <button class="btn primary" id="applyStyle" style="width:100%">Áp dụng giao diện</button>
   </div>
   <div class="panel" id="palettePanel"><h3>🎨 Bảng màu toàn trang</h3><div class="muted" style="margin-bottom:8px">Bấm vào ô màu để chọn trực tiếp — không cần nhập mã.</div><div class="grid2"><div class="field"><label>Màu chủ đạo</label><input id="palPrimary" type="color" value="#1769ff"></div><div class="field"><label>Màu chữ</label><input id="palInk" type="color" value="#18212b"></div><div class="field"><label>Nền trang</label><input id="palPage" type="color" value="#ffffff"></div><div class="field"><label>Nền thẻ</label><input id="palCard" type="color" value="#ffffff"></div></div><button class="btn primary" id="applyPalette" style="width:100%">🎨 Áp dụng màu toàn trang</button><button class="btn" id="resetPalette" style="width:100%;margin-top:6px">↺ Về màu Apple Seed</button></div><div class="panel advanced-only"><h3>🎨 Preset nhanh</h3><div class="preset-grid"><button class="preset" data-preset="title">Tiêu đề Premium</button><button class="preset" data-preset="button">Nút Apple Seed</button><button class="preset" data-preset="card">Card dịch vụ</button><button class="preset" data-preset="clean">Tối giản</button></div></div>
+  <div class="panel" id="appleSeedThemePanel"><h3>🎨 30 Theme Website</h3><div class="muted" style="margin-bottom:8px">Chọn Theme để xem ngay trên Preview. Theme được lưu cùng bản nháp và Publish.</div><div id="appleSeedThemeGrid" class="as-theme-grid"></div><div id="appleSeedThemeStatus" style="margin-top:8px;font-size:10px;font-weight:850;color:#1769ff"></div><button class="btn" id="appleSeedThemeReset" type="button" style="width:100%;margin-top:7px">↺ Theme Apple Seed mặc định</button></div>
   <div class="panel"><h3>🕘 Lịch sử xuất bản</h3><div id="history" class="history"><div class="muted">Chưa tải.</div></div></div>
 </aside>
 </div></div>
@@ -1298,6 +1302,23 @@ window.supabaseClient.auth.onAuthStateChange((event,session)=>{
 })();
 </script>
 
+<script id="APPLE_SEED_30_THEMES_V1">
+(function(){
+'use strict';
+const KEY='APPLE_SEED_SITE_THEME_V1';
+const THEMES=[['01','Apple Clean'],['02','Ocean Blue'],['03','Royal Purple'],['04','Emerald'],['05','Ruby'],['06','Sunset'],['07','Cyan Tech'],['08','Rose'],['09','Indigo'],['10','Teal'],['11','Golden Light'],['12','Slate'],['13','Cherry'],['14','Forest'],['15','Sky'],['16','Violet'],['17','Copper'],['18','Deep Indigo'],['19','Mint'],['20','Ice Blue'],['21','Midnight'],['22','Night Blue'],['23','Night Purple'],['24','Night Emerald'],['25','Night Rose'],['26','Night Gold'],['27','Night Cyan'],['28','Night Pink'],['29','Night Lime'],['30','Night Orange']];
+const COLORS=['#111827','#2563eb','#7c3aed','#059669','#dc2626','#ea580c','#0891b2','#db2777','#4f46e5','#0f766e','#ca8a04','#475569','#be123c','#15803d','#0369a1','#9333ea','#c2410c','#4338ca','#047857','#0369a1','#334155','#60a5fa','#a78bfa','#34d399','#fb7185','#fbbf24','#22d3ee','#f472b6','#84cc16','#f97316'];
+let grid,status;
+function valid(v){v=String(v||'01');return /^([0-9]|[12][0-9]|30)$/.test(v)?String(v).padStart(2,'0'):'01'}
+function get(){try{return valid(localStorage.getItem(KEY)||draft?.theme_id||'01')}catch(_){return valid(draft?.theme_id||'01')}}
+function apply(v){const f=$('preview'),d=f?.contentDocument;if(!d?.body)return;for(let i=1;i<=30;i++)d.body.classList.remove('as-theme-'+String(i).padStart(2,'0'));d.body.classList.add('as-theme-scope','as-theme-'+v);let l=d.getElementById('apple-seed-30-themes-link');if(!l){l=d.createElement('link');l.id='apple-seed-30-themes-link';l.rel='stylesheet';l.href='site-builder-themes.css?v=20260912-theme1';d.head?.appendChild(l)}}
+function render(v){grid?.querySelectorAll('[data-theme-id]').forEach(x=>x.classList.toggle('active',x.dataset.themeId===v));if(status)status.textContent='Đang chọn: Theme '+v+' — '+THEMES[parseInt(v,10)-1][1]}
+function set(v){v=valid(v);draft.theme_id=v;try{localStorage.setItem(KEY,v)}catch(_){}apply(v);render(v);saveDraft();toast('🎨 Đã chọn Theme '+v)}
+function init(){grid=$('appleSeedThemeGrid');status=$('appleSeedThemeStatus');if(!grid)return;grid.innerHTML=THEMES.map((x,i)=>'<button type="button" class="as-theme-choice" data-theme-id="'+x[0]+'"><span class="as-theme-dot" style="background:'+COLORS[i]+'"></span><span>Theme '+x[0]+'</span><br><span style="font-size:9px;color:#667085;font-weight:600">'+x[1]+'</span><span class="as-theme-no">#'+x[0]+'</span></button>').join('');grid.querySelectorAll('[data-theme-id]').forEach(x=>x.onclick=()=>set(x.dataset.themeId));$('appleSeedThemeReset')?.addEventListener('click',()=>set('01'));render(get());apply(get())}
+$('preview')?.addEventListener('load',()=>setTimeout(()=>{apply(get());render(get())},250));
+const t=setInterval(()=>{if($('appleSeedThemeGrid')){init();clearInterval(t)}},100);setTimeout(()=>clearInterval(t),30000);setInterval(()=>{apply(get());render(get())},1500);
+})();
+</script>
 <script id='APPLE_SEED_HERO_MODE_ADMIN_V1'>
 (function(){
   'use strict';

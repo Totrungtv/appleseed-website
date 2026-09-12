@@ -26,6 +26,17 @@
 
   var appliedVersion='';
 
+  function applyTheme(themeId){
+    var v=/^(?:[1-9]|[12][0-9]|30)$/.test(String(themeId||''))?String(themeId).padStart(2,'0'):'01';
+    try{
+      var st=document.getElementById('apple-seed-30-themes-runtime');
+      if(!st){st=document.createElement('link');st.id='apple-seed-30-themes-runtime';st.rel='stylesheet';st.href='site-builder-themes.css?v=20260912-theme1';(document.head||root).appendChild(st)}
+      for(var i=1;i<=30;i++)root.classList.remove('as-theme-'+String(i).padStart(2,'0'));
+      root.classList.add('as-theme-scope','as-theme-'+v);
+    }catch(_){ }
+  }
+
+  /* APPLE_SEED_30_THEMES_RUNTIME_V1 */
   function applyHeroMode(mode){
     var v=mode==='phones'?'phones':'slider';
     try{
@@ -61,6 +72,7 @@
     getPublished().then(function(data){
       var mode=data&&data.config&&data.config.hero_mode==='phones'?'phones':'slider';
       applyHeroMode(mode);
+      applyTheme(data&&data.config&&data.config.theme_id);
       if(!data||!data.config||!data.config.items)return;
       var viewKey=String(data.version_no)+'-'+deviceKey();
       if(viewKey===appliedVersion)return;
