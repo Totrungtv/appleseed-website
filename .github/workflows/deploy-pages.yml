@@ -38,6 +38,20 @@ jobs:
             git commit -m "feat: add 30 selectable Site Builder themes"
             git push origin HEAD:main
           fi
+      - name: Install 30 full website themes
+        run: |
+          set -euo pipefail
+          python3 scripts/install-30-full-themes.py
+          git diff --check
+          git config user.name "Apple Seed Full Theme Installer"
+          git config user.email "0898888269tv@gmail.com"
+          if git diff --quiet; then
+            echo "30 full website themes already installed."
+          else
+            git add site-builder.html site-builder-full-themes.css site-builder-runtime.js scripts/install-30-full-themes.py
+            git commit -m "feat: add 30 full website themes"
+            git push origin HEAD:main
+          fi
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Fix Hero initial render, mobile slider sizing and cache bust
@@ -63,8 +77,9 @@ jobs:
           </style>'''
           if marker not in s:
               s = s.replace('</head>', css + '\n<!-- ' + marker + ' -->\n</head>', 1)
-          s = s.replace('site-builder-runtime.js?v=20260830-v6', 'site-builder-runtime.js?v=20260912-v9')
-          s = s.replace('site-builder-runtime.js?v=20260912-v8', 'site-builder-runtime.js?v=20260912-v9')
+          s = s.replace('site-builder-runtime.js?v=20260830-v6', 'site-builder-runtime.js?v=20260912-v10')
+          s = s.replace('site-builder-runtime.js?v=20260912-v8', 'site-builder-runtime.js?v=20260912-v10')
+          s = s.replace('site-builder-runtime.js?v=20260912-v9', 'site-builder-runtime.js?v=20260912-v10')
           p.write_text(s, encoding='utf-8')
           PY
       - name: Upload site
