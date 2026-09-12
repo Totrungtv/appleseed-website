@@ -1,0 +1,44 @@
+name: Remove Hero Benefits Panel
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  patch:
+    if: ${{ !contains(github.event.head_commit.message, 'remove hero benefits panel') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Remove the obstructing Hero benefits panel
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          marker='APPLE_SEED_REMOVE_HERO_BENEFITS_PANEL_V1'
+          if marker in s:
+              print('already patched')
+              raise SystemExit(0)
+          pat=r'<div class="as3-benefits">.*?</div>\s*</div></div>'
+          m=re.search(pat,s,re.S)
+          if not m:
+              raise SystemExit('Hero benefits panel not found')
+          replacement='<!-- '+marker+': removed the vertical benefits panel so it cannot cover the Hero phone images. -->\n</div></div>'
+          s=s[:m.start()]+replacement+s[m.end():]
+          p.write_text(s,encoding='utf-8')
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'remove hero benefits panel'
+          git push
+      - name: Remove temporary workflow
+        if: success()
+        run: |
+          git rm .github/workflows/remove-hero-benefits.yml
+          git commit -m 'cleanup hero benefits panel workflow'
+          git push
