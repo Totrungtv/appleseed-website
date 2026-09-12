@@ -1,0 +1,41 @@
+name: Repair Builder Persistence V4
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Patch Builder
+        run: python .github/repair-builder-persistence-v4.py
+      - name: Validate HTML JavaScript
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path('site-builder.html').read_text(encoding='utf-8')
+          required=['AI_BOARD_INDEX_BUILDER_UNIFIED_V4','readLatestPublishedBuilderConfig','mergeBuilderPublishConfig','window.__APPLE_SEED_BUILDER_UNIFYING__=false;']
+          missing=[x for x in required if x not in s]
+          if missing: raise SystemExit('Missing markers: '+repr(missing))
+          scripts=re.findall(r'<script(?:\\s[^>]*)?>(.*?)</script>',s,re.S|re.I)
+          Path('/tmp/site-builder-scripts.js').write_text('\n'.join(scripts),encoding='utf-8')
+          print('validated markers; scripts:',len(scripts))
+          PY
+          node --check /tmp/site-builder-scripts.js
+      - name: Commit source and remove repair files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -f .github/repair-builder-persistence-v4.py .github/workflows/repair-builder-persistence-v4.yml
+          git add site-builder.html
+          if git diff --cached --quiet; then
+            echo "No source changes to commit"
+            exit 0
+          fi
+          git commit -m "fix: persist Builder publish and repair INDEX sync"
+          git push
