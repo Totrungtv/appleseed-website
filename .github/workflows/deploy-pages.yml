@@ -25,8 +25,19 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
-      - name: Cache bust runtime URL
-        run: sed -i 's/site-builder-runtime\.js?v=20260830-v6/site-builder-runtime.js?v=20260912-v7/g' index.html
+      - name: Fix Hero initial render and cache bust
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          marker = 'APPLE_SEED_HERO_MODE_INITIAL_V2'
+          css = '<style id="apple-seed-hero-mode-initial-v2">html:not([data-apple-seed-hero-mode="phones"]) .as3-phone{display:none!important;visibility:hidden!important}html[data-apple-seed-hero-mode="phones"] .as3-phone{display:block!important;visibility:visible!important}</style>'
+          if marker not in s:
+              s = s.replace('</head>', css + '\n<!-- ' + marker + ' -->\n</head>', 1)
+          s = s.replace('site-builder-runtime.js?v=20260830-v6', 'site-builder-runtime.js?v=20260912-v8')
+          p.write_text(s, encoding='utf-8')
+          PY
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
