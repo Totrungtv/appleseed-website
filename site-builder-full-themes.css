@@ -1,0 +1,73 @@
+/* APPLE SEED — 30 FULL WEBSITE THEMES V1
+   Full visual/layout presets. Kept separate from the existing 30 color presets.
+   These themes style the existing DOM; Hero Slider / six-phone DOM is never removed.
+*/
+html.as-full-theme-scope{--ft-radius:18px;--ft-gap:24px;--ft-max:1240px;--ft-shadow:0 18px 50px rgba(15,23,42,.10);--ft-border:1px solid rgba(15,23,42,.10);--ft-font:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+html.as-full-theme-scope body{font-family:var(--ft-font)!important}
+html.as-full-theme-scope .site-header{border-bottom:var(--ft-border)!important;box-shadow:var(--ft-shadow)!important}
+html.as-full-theme-scope .as3-hero{position:relative!important}
+html.as-full-theme-scope .as3-main{gap:var(--ft-gap)!important}
+html.as-full-theme-scope .as3-service,.as-full-theme-scope .as3-stats,.as-full-theme-scope .product-home-card,.as-full-theme-scope .contact-card,.as-full-theme-scope .map-card,.as-full-theme-scope .dynamic-pages-section .page-card{border-radius:var(--ft-radius)!important;border:var(--ft-border)!important;box-shadow:var(--ft-shadow)!important}
+html.as-full-theme-scope .as3-btn{border-radius:calc(var(--ft-radius) * .65)!important}
+html.as-full-theme-scope .as3-title{letter-spacing:var(--ft-title-spacing,0)!important;line-height:var(--ft-title-line,1.02)!important}
+html.as-full-theme-scope .as3-wrap{max-width:var(--ft-max)!important}
+html.as-full-theme-scope .site-header .header-inner{max-width:var(--ft-max)!important}
+html.as-full-theme-scope .as3-service:hover,.as-full-theme-scope .product-home-card:hover,.as-full-theme-scope .contact-card:hover{transform:translateY(-3px)!important;transition:.2s ease!important}
+
+/* 01–10 */
+html.as-full-theme-01{--ft-radius:18px;--ft-gap:24px;--ft-shadow:0 18px 50px rgba(15,23,42,.10);--ft-font:Inter,system-ui,sans-serif}
+html.as-full-theme-02{--ft-radius:2px;--ft-gap:34px;--ft-max:1180px;--ft-shadow:none;--ft-border:2px solid #111827;--ft-font:Arial,Helvetica,sans-serif;--ft-title-spacing:-.055em;--ft-title-line:.92}
+html.as-full-theme-03{--ft-radius:26px;--ft-gap:18px;--ft-max:1280px;--ft-shadow:0 22px 60px rgba(37,99,235,.12);--ft-border:1px solid rgba(37,99,235,.12)}
+html.as-full-theme-04{--ft-radius:28px;--ft-gap:22px;--ft-shadow:0 20px 70px rgba(30,41,59,.16);--ft-border:1px solid rgba(255,255,255,.55);--ft-font:Inter,system-ui,sans-serif}
+html.as-full-theme-04 .as3-service,html.as-full-theme-04 .product-home-card,html.as-full-theme-04 .contact-card{backdrop-filter:blur(14px)!important;background:rgba(255,255,255,.62)!important}
+html.as-full-theme-05{--ft-radius:0;--ft-gap:16px;--ft-max:1260px;--ft-shadow:8px 8px 0 #111827;--ft-border:3px solid #111827;--ft-font:Arial Black,Arial,sans-serif;--ft-title-spacing:-.045em}
+html.as-full-theme-05 .as3-service,html.as-full-theme-05 .product-home-card,html.as-full-theme-05 .contact-card{box-shadow:8px 8px 0 #111827!important}
+html.as-full-theme-06{--ft-radius:10px;--ft-gap:30px;--ft-max:1200px;--ft-shadow:0 16px 42px rgba(90,64,20,.16);--ft-border:1px solid rgba(155,115,45,.28);--ft-font:Georgia,"Times New Roman",serif;--ft-title-spacing:.01em;--ft-title-line:1.0}
+html.as-full-theme-07{--ft-radius:4px;--ft-gap:32px;--ft-max:1160px;--ft-shadow:none;--ft-border:1px solid #d6d3d1;--ft-font:Georgia,"Times New Roman",serif;--ft-title-spacing:-.03em}
+html.as-full-theme-07 .as3-title{font-weight:800!important}
+html.as-full-theme-08{--ft-radius:12px;--ft-gap:20px;--ft-max:1320px;--ft-shadow:0 0 0 1px rgba(34,211,238,.18),0 18px 55px rgba(8,47,73,.18);--ft-border:1px solid rgba(34,211,238,.25);--ft-font:ui-monospace,SFMono-Regular,Menlo,monospace}
+html.as-full-theme-08 .as3-service,html.as-full-theme-08 .product-home-card{border-radius:12px!important}
+html.as-full-theme-09{--ft-radius:30px;--ft-gap:20px;--ft-max:1180px;--ft-shadow:0 14px 45px rgba(244,114,182,.13);--ft-border:1px solid rgba(244,114,182,.18);--ft-font:Inter,system-ui,sans-serif}
+html.as-full-theme-10{--ft-radius:8px;--ft-gap:14px;--ft-max:1080px;--ft-shadow:0 8px 24px rgba(15,23,42,.08);--ft-border:1px solid #e2e8f0;--ft-font:Inter,system-ui,sans-serif}
+
+/* 11–20 */
+html.as-full-theme-11{--ft-radius:22px;--ft-gap:26px;--ft-max:1240px;--ft-shadow:0 18px 50px rgba(30,64,175,.12);--ft-border:1px solid rgba(59,130,246,.16)}
+html.as-full-theme-11 .as3-hero .as3-main{grid-template-columns:minmax(280px,.8fr) minmax(420px,1.2fr)!important}
+html.as-full-theme-12{--ft-radius:18px;--ft-gap:28px;--ft-max:1040px;--ft-shadow:0 12px 35px rgba(15,23,42,.08);--ft-border:1px solid #e5e7eb}
+html.as-full-theme-12 .as3-hero .as3-main{grid-template-columns:1fr!important;text-align:center!important}
+html.as-full-theme-12 .as3-hero .as3-stage{margin-inline:auto!important}
+html.as-full-theme-13{--ft-radius:24px;--ft-gap:24px;--ft-max:1240px;--ft-shadow:0 25px 70px rgba(0,0,0,.28);--ft-border:1px solid rgba(255,255,255,.12)}
+html.as-full-theme-13 .as3-service,html.as-full-theme-13 .product-home-card,html.as-full-theme-13 .contact-card{background:rgba(255,255,255,.06)!important;backdrop-filter:blur(12px)!important}
+html.as-full-theme-14{--ft-radius:6px;--ft-gap:18px;--ft-max:1280px;--ft-shadow:0 0 28px rgba(0,255,200,.14);--ft-border:1px solid rgba(0,255,200,.25);--ft-font:ui-monospace,monospace}
+html.as-full-theme-14 .as3-title{text-transform:uppercase!important;letter-spacing:.035em!important}
+html.as-full-theme-15{--ft-radius:20px;--ft-gap:24px;--ft-max:1220px;--ft-shadow:0 18px 46px rgba(22,101,52,.12);--ft-border:1px solid rgba(34,197,94,.18);--ft-font:Inter,system-ui,sans-serif}
+html.as-full-theme-16{--ft-radius:14px;--ft-gap:30px;--ft-max:1160px;--ft-shadow:0 18px 55px rgba(180,83,9,.15);--ft-border:1px solid rgba(180,83,9,.18);--ft-font:Georgia,serif}
+html.as-full-theme-17{--ft-radius:0;--ft-gap:28px;--ft-max:1120px;--ft-shadow:none;--ft-border:1px solid #111;--ft-font:Arial,Helvetica,sans-serif;--ft-title-spacing:-.06em}
+html.as-full-theme-18{--ft-radius:38px;--ft-gap:20px;--ft-max:1260px;--ft-shadow:0 18px 50px rgba(99,102,241,.12);--ft-border:1px solid rgba(99,102,241,.15)}
+html.as-full-theme-19{--ft-radius:3px;--ft-gap:26px;--ft-max:1240px;--ft-shadow:6px 6px 0 rgba(15,23,42,.12);--ft-border:2px solid #334155}
+html.as-full-theme-20{--ft-radius:1px;--ft-gap:36px;--ft-max:1180px;--ft-shadow:none;--ft-border:1px solid #cbd5e1;--ft-font:Georgia,serif;--ft-title-spacing:-.04em}
+html.as-full-theme-20 .as3-hero .as3-main{grid-template-columns:1fr 1fr!important}
+
+/* 21–30 */
+html.as-full-theme-21{--ft-radius:10px;--ft-gap:16px;--ft-max:1320px;--ft-shadow:0 10px 30px rgba(15,23,42,.10);--ft-border:1px solid #dbe2ea;--ft-font:Inter,system-ui,sans-serif}
+html.as-full-theme-21 .as3-service,html.as-full-theme-21 .product-home-card{border-radius:10px!important}
+html.as-full-theme-22{--ft-radius:24px;--ft-gap:24px;--ft-max:1260px;--ft-shadow:0 25px 70px rgba(79,70,229,.16);--ft-border:1px solid rgba(129,140,248,.25)}
+html.as-full-theme-23{--ft-radius:12px;--ft-gap:40px;--ft-max:1000px;--ft-shadow:none;--ft-border:0;--ft-font:Inter,system-ui,sans-serif}
+html.as-full-theme-23 .as3-service,html.as-full-theme-23 .product-home-card,html.as-full-theme-23 .contact-card{box-shadow:none!important;border:0!important;background:transparent!important}
+html.as-full-theme-24{--ft-radius:0;--ft-gap:24px;--ft-max:1240px;--ft-shadow:0 14px 45px rgba(15,23,42,.14);--ft-border:1px solid #94a3b8}
+html.as-full-theme-24 .as3-service,html.as-full-theme-24 .product-home-card{outline:6px solid rgba(148,163,184,.16)!important}
+html.as-full-theme-25{--ft-radius:26px;--ft-gap:22px;--ft-max:1280px;--ft-shadow:0 22px 60px rgba(124,58,237,.16);--ft-border:1px solid rgba(124,58,237,.18)}
+html.as-full-theme-25 .as3-hero{background-image:linear-gradient(135deg,rgba(99,102,241,.08),rgba(236,72,153,.08))!important}
+html.as-full-theme-26{--ft-radius:2px;--ft-gap:18px;--ft-max:1200px;--ft-shadow:5px 5px 0 #000;--ft-border:3px solid #000;--ft-font:Arial Black,Arial,sans-serif}
+html.as-full-theme-26 .as3-btn{border-width:3px!important;font-weight:900!important}
+html.as-full-theme-27{--ft-radius:20px;--ft-gap:42px;--ft-max:1160px;--ft-shadow:0 12px 35px rgba(15,23,42,.06);--ft-border:1px solid rgba(15,23,42,.06)}
+html.as-full-theme-27 .as3-title{font-size:clamp(42px,6vw,82px)!important}
+html.as-full-theme-28{--ft-radius:8px;--ft-gap:12px;--ft-max:1360px;--ft-shadow:0 6px 20px rgba(15,23,42,.08);--ft-border:1px solid #d7dee8;--ft-font:Inter,system-ui,sans-serif}
+html.as-full-theme-28 .as3-service,html.as-full-theme-28 .product-home-card{padding:14px!important}
+html.as-full-theme-29{--ft-radius:6px;--ft-gap:20px;--ft-max:1180px;--ft-shadow:7px 7px 0 #1f2937;--ft-border:2px solid #1f2937;--ft-font:Georgia,serif}
+html.as-full-theme-29 .as3-title{text-transform:none!important;font-style:italic!important}
+html.as-full-theme-30{--ft-radius:18px;--ft-gap:20px;--ft-max:1320px;--ft-shadow:0 0 45px rgba(59,130,246,.18);--ft-border:1px solid rgba(96,165,250,.25);--ft-font:Inter,system-ui,sans-serif;--ft-title-spacing:-.035em}
+html.as-full-theme-30 .as3-service,html.as-full-theme-30 .product-home-card{backdrop-filter:blur(10px)!important}
+
+@media(max-width:650px){html.as-full-theme-scope .as3-hero .as3-main{grid-template-columns:1fr!important}.as-full-theme-27 .as3-title{font-size:44px!important}html.as-full-theme-scope .as3-wrap{max-width:100%!important}}
+/* END APPLE SEED 30 FULL WEBSITE THEMES */
