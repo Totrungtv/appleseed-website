@@ -29,12 +29,12 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           p=Path('site-builder.html'); s=p.read_text(encoding='utf-8'); import re
-          s=re.sub(r'site-theme-selection-bridge\.js\?v=[^"\']+','site-theme-selection-bridge.js?v=20260912-theme-bridge17',s)
-          s=re.sub(r'site-theme-selection-lock\.js\?v=[^"\']+','site-theme-selection-lock.js?v=20260912-lock2',s)
+          s=re.sub(r'site-theme-selection-bridge\.js\?v=[^"\']+','site-theme-selection-bridge.js?v=20260912-theme-bridge19',s)
+          s=re.sub(r'site-theme-selection-lock\.js\?v=[^"\']+','site-theme-selection-lock.js?v=20260912-lock4',s)
           s=s.replace('site-builder-full-themes.css?v=20260912-full1','site-builder-full-themes.css?v=20260912-full3').replace('site-builder-full-themes.css?v=20260912-full2','site-builder-full-themes.css?v=20260912-full3').replace('site-builder-runtime.js?v=20260912-v14','site-builder-runtime.js?v=20260912-v15')
           marker='APPLE_SEED_LAYOUTS_LINK_V2'; link='<link rel="stylesheet" href="site-builder-layouts.css?v=20260912-layout2">'
           if marker not in s:s=s.replace('</head>',link+'\n<!-- '+marker+' -->\n</head>',1)
-          lock_marker='APPLE_SEED_THEME_SELECTION_LOCK_V2'; lock_script='<script src="site-theme-selection-lock.js?v=20260912-lock2"></script>'
+          lock_marker='APPLE_SEED_THEME_SELECTION_LOCK_V2'; lock_script='<script src="site-theme-selection-lock.js?v=20260912-lock4"></script>'
           if lock_marker not in s:s=s.replace('</body>',lock_script+'\n<!-- '+lock_marker+' -->\n</body>',1)
           p.write_text(s,encoding='utf-8')
           PY
