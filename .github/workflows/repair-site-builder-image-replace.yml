@@ -1,0 +1,61 @@
+name: Repair Site Builder image replace
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: builder-image-replace
+  cancel-in-progress: true
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Patch Builder image picker
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('site-builder.html')
+          s=p.read_text(encoding='utf-8')
+          marker='APPLE_SEED_IMAGE_REPLACE_SELECTED_V2'
+          if marker in s:
+              print('Image replace V2 already installed.')
+              raise SystemExit(0)
+
+          old="""$('file').onchange=e=>{\n  pendingFile=e.target.files[0]||null;\n  if(pendingFile)showLocalImagePreview(pendingFile,'file','imagePreview');\n};"""
+          new="""$('file').onchange=async e=>{\n  const file=e.target.files[0]||null;\n  pendingFile=file;\n  if(!file)return;\n  if(!selected){toast('Chưa chọn đối tượng ảnh / khối ảnh');return}\n  if(!showLocalImagePreview(file,'file','imagePreview')){pendingFile=null;return}\n  const before=snapshot();\n  try{\n    toast('☁️ Đang tải ảnh và thay ảnh đang chọn…');\n    const url=await upload(file);\n    checkpoint();\n    const item=getItem();\n    item.imageRemoved=false;\n    const phone=as4ImagePhone(selected);\n    const img=selected.tagName==='IMG'?selected:(phone?null:selected.querySelector?.('img'));\n    if(phone){applyHeroPhoneImage(phone,url);item.bgImage=url;delete item.src}\n    else if(img){img.src=url;item.src=url;delete item.bgImage}\n    else{selected.style.backgroundImage='url(\"'+url.replaceAll('\\\"','%22')+'\")';item.bgImage=url;delete item.src}\n    pendingFile=null;\n    e.target.value='';\n    $('imageUrl').value=url;\n    $('imagePreview').src=url;\n    applyAll();\n    saveDraft();\n    refreshInspector();\n    toast('🖼️ Đã thay ảnh đang chọn');\n  }catch(err){\n    pendingFile=null;\n    e.target.value='';\n    history.push(before);\n    toast('Upload lỗi: '+(err?.message||String(err)));\n  }\n};\n/* APPLE_SEED_IMAGE_REPLACE_SELECTED_V2 */"""
+          if old not in s:
+              raise SystemExit('main image file onchange handler not found')
+          s=s.replace(old,new,1)
+
+          # The Slider manager must not share the main image input. It gets its own hidden input.
+          s=s.replace("function pickFile(){const f=q('file');if(f){f.value='';f.click()}}","function pickFile(){const f=q('asSliderFile');if(f){f.value='';f.click()}}",1)
+          s=s.replace("function bindFile(){if(fileBound)return;const f=q('file');if(!f)return;fileBound=true;f.addEventListener('change',()=>{const file=f.files?.[0];if(file)handleFile(file)})}","function bindFile(){if(fileBound)return;const f=q('asSliderFile');if(!f)return;fileBound=true;f.addEventListener('change',()=>{const file=f.files?.[0];if(file)handleFile(file)})}",1)
+          slider_marker="panel.innerHTML='<h3>🎞 Slider — Tất cả ảnh</h3>"
+          slider_repl="panel.innerHTML='<h3>🎞 Slider — Tất cả ảnh</h3><input id=\"asSliderFile\" type=\"file\" accept=\"image/png,image/jpeg,image/webp,image/gif\" hidden>"
+          if slider_marker not in s:
+              raise SystemExit('slider panel markup anchor not found')
+          s=s.replace(slider_marker,slider_repl,1)
+
+          # Version-bust the external image-control helper so stale cached code cannot rebind the old input path.
+          s=re.sub(r'site-builder-image-controls\\.js\\?v=[^"\']+','site-builder-image-controls.js?v=20260913-image2',s)
+          s=s.replace('<!-- APPLE_SEED_IMAGE_CONTROLS_V1 -->','<!-- APPLE_SEED_IMAGE_CONTROLS_V2 -->')
+          p.write_text(s,encoding='utf-8')
+          print('Installed selected-image replacement V2.')
+          PY
+          git diff --check
+          # Validate the critical paths before committing.
+          grep -q "APPLE_SEED_IMAGE_REPLACE_SELECTED_V2" site-builder.html
+          grep -q "q('asSliderFile')" site-builder.html
+          grep -q 'id="asSliderFile"' site-builder.html
+          git config user.name "Apple Seed Repair"; git config user.email "0898888269tv@gmail.com"
+          if git diff --quiet; then echo "No image-replace changes."; else git add site-builder.html; git commit -m "fix: make Builder image picker replace selected image"; git push origin HEAD:main; fi
