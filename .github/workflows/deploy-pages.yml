@@ -24,6 +24,33 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install Web Theme Selection Bridge
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('site-builder.html')
+          s = p.read_text(encoding='utf-8')
+          marker = 'APPLE_SEED_THEME_SELECTION_BRIDGE_V2'
+          tag = '<script src="site-theme-selection-bridge.js?v=20260912-theme-bridge2"></script>'
+          if marker not in s:
+              s = s.replace('</body>', '<!-- '+marker+' -->\n'+tag+'\n</body>', 1)
+              p.write_text(s, encoding='utf-8')
+              print('Installed Web Theme Selection Bridge V2.')
+          else:
+              print('Web Theme Selection Bridge V2 already installed.')
+          PY
+          git diff --check
+          git config user.name "Apple Seed Theme Bridge"
+          git config user.email "0898888269tv@gmail.com"
+          if git diff --quiet; then
+            echo "Theme bridge already installed."
+          else
+            git add site-builder.html site-theme-selection-bridge.js
+            git commit -m "fix: bind 01-30 theme selection to web publish"
+            git push origin HEAD:main
+          fi
+
       - name: Remove legacy Hero phone mockups
         run: |
           set -euo pipefail
