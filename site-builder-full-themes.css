@@ -69,47 +69,32 @@ html.as-full-theme-29 .as3-title{text-transform:none!important;font-style:italic
 html.as-full-theme-30{--ft-radius:18px;--ft-gap:20px;--ft-max:1320px;--ft-shadow:0 0 45px rgba(59,130,246,.18);--ft-border:1px solid rgba(96,165,250,.25);--ft-font:Inter,system-ui,sans-serif;--ft-title-spacing:-.035em}
 html.as-full-theme-30 .as3-service,html.as-full-theme-30 .product-home-card{backdrop-filter:blur(10px)!important}
 
-/* HERO SLIDER SAFETY: every theme keeps a real 16:9 frame and never stretches the artwork. */
+/* HERO SLIDER SAFETY */
 html.as-full-theme-scope .as3-hero .as3-stage.apple-seed-slider-active,
 html.as-full-theme-scope .as3-hero .as3-stage:has(.apple-seed-hero-slider),
-html.as-full-theme-scope .as3-hero .as3-stage:has(#apple-seed-runtime-slider){
-  position:relative!important;
-  width:100%!important;
-  max-width:100%!important;
-  height:auto!important;
-  min-height:0!important;
-  aspect-ratio:16/9!important;
-  overflow:hidden!important;
-}
+html.as-full-theme-scope .as3-hero .as3-stage:has(#apple-seed-runtime-slider){position:relative!important;width:100%!important;max-width:100%!important;height:auto!important;min-height:0!important;aspect-ratio:16/9!important;overflow:hidden!important}
 html.as-full-theme-scope .as3-hero .apple-seed-hero-slider,
 html.as-full-theme-scope .as3-hero .apple-seed-runtime-slider-host,
-html.as-full-theme-scope .as3-hero #apple-seed-runtime-slider{
-  position:absolute!important;
-  inset:0!important;
-  width:100%!important;
-  height:100%!important;
-  min-height:0!important;
-  max-width:none!important;
-  overflow:hidden!important;
-}
+html.as-full-theme-scope .as3-hero #apple-seed-runtime-slider{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;min-height:0!important;max-width:none!important;overflow:hidden!important}
 html.as-full-theme-scope .as3-hero .apple-seed-hero-track,
 html.as-full-theme-scope .as3-hero .apple-seed-hero-slide,
-html.as-full-theme-scope .as3-hero .apple-seed-runtime-slider-host > *{
-  width:100%!important;
-  height:100%!important;
-  min-height:0!important;
-}
+html.as-full-theme-scope .as3-hero .apple-seed-runtime-slider-host > *{width:100%!important;height:100%!important;min-height:0!important}
 html.as-full-theme-scope .as3-hero .apple-seed-hero-slide img,
 html.as-full-theme-scope .as3-hero .apple-seed-runtime-slider-host img,
-html.as-full-theme-scope .as3-hero #apple-seed-runtime-slider img{
-  display:block!important;
-  width:100%!important;
-  height:100%!important;
-  max-width:none!important;
-  max-height:none!important;
-  object-fit:cover!important;
-  object-position:center!important;
-}
+html.as-full-theme-scope .as3-hero #apple-seed-runtime-slider img{display:block!important;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:cover!important;object-position:center!important}
 
-@media(max-width:650px){html.as-full-theme-scope .as3-hero .as3-main{grid-template-columns:1fr!important}.as-full-theme-27 .as3-title{font-size:44px!important}html.as-full-theme-scope .as3-wrap{max-width:100%!important}}
+/* HERO SLIDER SIZE LOCK V2 — theme changes must NOT reset the larger Slider. */
+html.as-full-theme-scope .as3-hero .as3-stage:has(.apple-seed-hero-slider),
+html.as-full-theme-scope .as3-hero .as3-stage:has(#apple-seed-runtime-slider),
+html.as-full-theme-scope .as3-hero .as3-stage.apple-seed-slider-active{width:112%!important;max-width:none!important;transform:translateX(-5.36%)!important;transform-origin:center center!important}
+html.as-full-theme-scope .as3-hero .as3-stage:has(.apple-seed-hero-slider) .apple-seed-hero-slider,
+html.as-full-theme-scope .as3-hero .as3-stage:has(#apple-seed-runtime-slider) .apple-seed-runtime-slider-host,
+html.as-full-theme-scope .as3-hero .as3-stage:has(#apple-seed-runtime-slider) #apple-seed-runtime-slider{width:100%!important;height:100%!important}
+
+@media(max-width:650px){
+  html.as-full-theme-scope .as3-hero .as3-main{grid-template-columns:1fr!important}
+  .as-full-theme-27 .as3-title{font-size:44px!important}
+  html.as-full-theme-scope .as3-wrap{max-width:100%!important}
+  html.as-full-theme-scope .as3-hero .as3-stage:has(.apple-seed-hero-slider),html.as-full-theme-scope .as3-hero .as3-stage:has(#apple-seed-runtime-slider),html.as-full-theme-scope .as3-hero .as3-stage.apple-seed-slider-active{width:100%!important;transform:none!important}
+}
 /* END APPLE SEED 30 FULL WEBSITE THEMES */
