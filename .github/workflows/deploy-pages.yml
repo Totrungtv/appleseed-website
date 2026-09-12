@@ -30,9 +30,10 @@ jobs:
           from pathlib import Path
           import re
           p=Path('site-builder.html'); s=p.read_text(encoding='utf-8')
-          s=re.sub(r'site-theme-selection-bridge\.js\?v=[^"\']+','site-theme-selection-bridge.js?v=20260912-theme-bridge21',s)
+          s=re.sub(r'site-theme-selection-bridge\.js\?v=[^"\']+','site-theme-selection-bridge.js?v=20260912-theme-bridge22',s)
           s=re.sub(r'site-theme-selection-lock\.js\?v=[^"\']+','site-theme-selection-lock.js?v=20260912-lock4',s)
-          s=s.replace('site-builder-full-themes.css?v=20260912-full1','site-builder-full-themes.css?v=20260912-full3').replace('site-builder-full-themes.css?v=20260912-full2','site-builder-full-themes.css?v=20260912-full3').replace('site-builder-runtime.js?v=20260912-v14','site-builder-runtime.js?v=20260912-v15')
+          s=re.sub(r'site-builder-full-themes\.css\?v=[^"\']+','site-builder-full-themes.css?v=20260912-full3',s)
+          s=re.sub(r'site-builder-runtime\.js\?v=[^"\']+','site-builder-runtime.js?v=20260912-v16',s)
           marker='APPLE_SEED_LAYOUTS_LINK_V2'; link='<link rel="stylesheet" href="site-builder-layouts.css?v=20260912-layout2">'
           if marker not in s:s=s.replace('</head>',link+'\n<!-- '+marker+' -->\n</head>',1)
           lock_marker='APPLE_SEED_THEME_SELECTION_LOCK_V2'; lock_script='<script src="site-theme-selection-lock.js?v=20260912-lock4"></script>'
@@ -52,15 +53,12 @@ jobs:
           PY
           git diff --check; git config user.name "Apple Seed Deploy"; git config user.email "0898888269tv@gmail.com"
           if git diff --quiet; then echo "Live layout link already current."; else git add index.html; git commit -m "feat: enable real website layouts"; git push origin HEAD:main; fi
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-      - name: Restore Hero phone slots and fix initial render
+      - name: Remove legacy Hero phone mockups and force Slider mode
         run: |
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
           p=Path('index.html'); s=p.read_text(encoding='utf-8')
-          marker='APPLE_SEED_HERO_PHONE_SLOTS_V1'
           phone_html='''<!-- APPLE_SEED_HERO_PHONE_SLOTS_V1 -->
           <div class="as3-phone as3-p1"><div class="as3-screen" data-phone-slot="0"></div><div class="as3-island"></div><div class="as3-label">iPhone Pro</div></div>
           <div class="as3-phone as3-p2"><div class="as3-screen" data-phone-slot="1"></div><div class="as3-island"></div><div class="as3-label">iPhone Pro Max</div></div>
@@ -68,24 +66,19 @@ jobs:
           <div class="as3-phone as3-p4"><div class="as3-screen" data-phone-slot="3"></div><div class="as3-island"></div><div class="as3-label">iPhone 15 Pro Max</div></div>
           <div class="as3-phone as3-p5"><div class="as3-screen" data-phone-slot="4"></div><div class="as3-island"></div><div class="as3-label">iPhone 14 Pro Max</div></div>
           <div class="as3-phone as3-p6"><div class="as3-screen" data-phone-slot="5"></div><div class="as3-island"></div><div class="as3-label">iPhone</div></div>'''
-          if marker not in s:
-              needle='<div class="as3-stage">'
-              if needle not in s: raise SystemExit('Hero stage not found; refusing to modify homepage.')
-              s=s.replace(needle,needle+'\n'+phone_html,1)
-              p.write_text(s,encoding='utf-8')
-          PY
-          git diff --check
-          git config user.name "Apple Seed Deploy"; git config user.email "0898888269tv@gmail.com"
-          if git diff --quiet; then echo "Hero phone slots already restored."; else git add index.html; git commit -m "fix: restore homepage Hero phone slots"; git push origin HEAD:main; fi
-          python3 - <<'PY'
-          from pathlib import Path
-          p=Path('index.html'); s=p.read_text(encoding='utf-8'); marker='APPLE_SEED_HERO_MODE_INITIAL_V3'
-          css='''<style id="apple-seed-hero-mode-initial-v3">html:not([data-apple-seed-hero-mode="phones"]) .as3-phone{display:none!important;visibility:hidden!important}html[data-apple-seed-hero-mode="phones"] .as3-phone{display:block!important;visibility:visible!important}@media(max-width:650px){.as3-stage.apple-seed-runtime-slider-host,.apple-seed-runtime-slider-host{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important;padding-left:0!important;padding-right:0!important}.as3-stage.apple-seed-runtime-slider-host>.apple-seed-runtime-slider,.apple-seed-runtime-slider-host>.apple-seed-runtime-slider,#apple-seed-runtime-slider{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important}.apple-seed-runtime-slider-host img,.apple-seed-hero-slider img,#apple-seed-runtime-slider img{display:block!important;width:100%!important;max-width:100%!important;height:auto!important;object-fit:contain!important}}</style>'''
+          if phone_html in s:s=s.replace(phone_html,'',1)
+          s=s.replace('<!-- APPLE_SEED_HERO_PHONE_SLOTS_V1 -->\n','')
+          marker='APPLE_SEED_HERO_MODE_INITIAL_V4'
+          css='''<style id="apple-seed-hero-mode-initial-v4">html .as3-phone,html .asph-phone{display:none!important;visibility:hidden!important}html[data-apple-seed-hero-mode="slider"] .apple-seed-runtime-slider-host,html[data-apple-seed-hero-mode="slider"] #apple-seed-runtime-slider{display:block!important;visibility:visible!important}</style>'''
           if marker not in s:s=s.replace('</head>',css+'\n<!-- '+marker+' -->\n</head>',1)
-          for old in ['20260830-v6','20260912-v8','20260912-v9','20260912-v10','20260912-v11','20260912-v12','20260912-v13','20260912-v14']:s=s.replace('site-builder-runtime.js?v='+old,'site-builder-runtime.js?v=20260912-v15')
+          for old in ['20260830-v6','20260912-v8','20260912-v9','20260912-v10','20260912-v11','20260912-v12','20260912-v13','20260912-v14','20260912-v15']:s=s.replace('site-builder-runtime.js?v='+old,'site-builder-runtime.js?v=20260912-v16')
           p.write_text(s,encoding='utf-8')
           PY
           git diff --check
+          git config user.name "Apple Seed Deploy"; git config user.email "0898888269tv@gmail.com"
+          if git diff --quiet; then echo "Legacy Hero phones already removed."; else git add index.html; git commit -m "fix: remove legacy Hero phone mockups"; git push origin HEAD:main; fi
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
