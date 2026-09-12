@@ -10,6 +10,15 @@
   if(location.pathname.split('/').pop().toLowerCase()==='site-builder.html') return;
   var appliedVersion='';
 
+  /* HERO PHONE MOCKUPS: disabled on the live homepage as requested.
+     The original Builder/editor DOM is untouched because this runtime is
+     explicitly skipped inside site-builder.html and Builder preview frames. */
+  function removeHeroPhones(){
+    try{
+      document.querySelectorAll('.as3-stage > .as3-phone').forEach(function(el){el.remove();});
+    }catch(_){ }
+  }
+
   function deviceKey(){
     return window.matchMedia && window.matchMedia('(max-width: 650px)').matches ? 'mobile' : 'desktop';
   }
@@ -17,11 +26,13 @@
   function apply(){
     try{
       if(!window.supabaseClient)return;
+      removeHeroPhones();
       window.supabaseClient.from('site_builder_versions')
         .select('version_no,config,created_at')
         .eq('site_key','default').eq('status','published').maybeSingle()
         .then(function(r){
           if(r.error||!r.data||!r.data.config||!r.data.config.items)return;
+          removeHeroPhones();
           var viewKey=String(r.data.version_no)+'-'+deviceKey();
           if(viewKey===appliedVersion)return;
           var mobile=deviceKey()==='mobile';
@@ -50,6 +61,7 @@
            * permanently wipe the Builder changes until a version/device change.
            */
           if(matched>0)appliedVersion=viewKey;
+          removeHeroPhones();
         });
     }catch(_){}
   }
@@ -78,15 +90,18 @@
   }
 
   function boot(){
+    removeHeroPhones();
     apply();
-    setTimeout(apply,600);setTimeout(apply,1600);setTimeout(apply,3200);
-    window.addEventListener('resize',function(){setTimeout(apply,80)});
-    setInterval(apply,1500);
+    setTimeout(function(){removeHeroPhones();apply()},600);
+    setTimeout(function(){removeHeroPhones();apply()},1600);
+    setTimeout(function(){removeHeroPhones();apply()},3200);
+    window.addEventListener('resize',function(){removeHeroPhones();setTimeout(apply,80)});
+    setInterval(function(){removeHeroPhones();apply()},1500);
     var homeRenderer=document.getElementById('homeRenderer');
     if(homeRenderer){
-      new MutationObserver(function(){apply()}).observe(homeRenderer,{childList:true,subtree:true});
+      new MutationObserver(function(){removeHeroPhones();apply()}).observe(homeRenderer,{childList:true,subtree:true});
     }
-    document.addEventListener('visibilitychange',function(){if(!document.hidden)apply()});
+    document.addEventListener('visibilitychange',function(){if(!document.hidden){removeHeroPhones();apply()}});
 
     var chatBtn=document.getElementById('chatBtn');
     if(chatBtn){
