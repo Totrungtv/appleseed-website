@@ -1,64 +1,98 @@
-/* APPLE SEED IMAGE CONTROLS V1
-   Adds an explicit delete action and keeps image replacement accessible.
-   It intentionally delegates to the Builder's existing image handlers so the
-   current draft/save/undo logic remains the source of truth.
+/* APPLE SEED IMAGE CONTROLS V2
+   Adds the explicit image delete control and keeps the selected-image replacement
+   after a hard reload. Only image overrides are journaled; other Builder draft data
+   keeps its existing source-of-truth rules.
 */
 (function(){
   'use strict';
-  var READY='__appleSeedImageControlsV1';
+  var READY='__appleSeedImageControlsV2';
+  var JOURNAL='appleSeedVisualBuilderImageOverridesV2';
 
   function findPanel(){return document.getElementById('imagePanel');}
-  function findFileInput(panel){
-    if(!panel)return null;
-    return panel.querySelector('input[type="file"]') || document.querySelector('#imageFile,input[type="file"][accept*="image"],input[type="file"]');
+  function findFileInput(panel){return panel&&panel.querySelector('input[type="file"]');}
+  function readJournal(){try{var x=JSON.parse(localStorage.getItem(JOURNAL)||'[]');return Array.isArray(x)?x:[]}catch(_){return[]}}
+  function writeJournal(x){try{localStorage.setItem(JOURNAL,JSON.stringify(x||[]))}catch(_){}
   }
-  function findReplaceButton(panel){
-    if(!panel)return null;
-    return panel.querySelector('#applyImage') || Array.prototype.find.call(panel.querySelectorAll('button'),function(b){
-      return /thêm\s*\/\s*thay ảnh|thay ảnh/i.test((b.textContent||'').trim());
+  function currentVersion(){try{return localStorage.getItem('appleSeedVisualBuilderPublishedVersionV3')||''}catch(_){return''}}
+  function imageTarget(el){
+    var phone=typeof as4ImagePhone==='function'?as4ImagePhone(el):null;
+    return phone||el;
+  }
+  function identity(el){
+    var target=imageTarget(el),img=target&&target.tagName==='IMG'?target:target&&target.querySelector&&target.querySelector('img');
+    return {selector:typeof selector==='string'?selector:'',id:target&&target.id||'',alt:img&&img.getAttribute('alt')||el&&el.getAttribute&&el.getAttribute('alt')||'',classes:Array.prototype.slice.call((target&&target.classList)||[]).slice(0,8),tag:target&&target.tagName||el&&el.tagName||'',baseVersion:currentVersion()};
+  }
+  function findTarget(rec){
+    if(!doc)return null;
+    try{if(rec.selector){var x=doc.querySelector(rec.selector);if(x)return x}}catch(_){}
+    var all=Array.prototype.slice.call(doc.querySelectorAll('img,.as3-phone,.as3-screen'));
+    if(rec.id){var byId=all.find(function(x){return x.id===rec.id});if(byId)return byId}
+    if(rec.alt){var byAlt=all.find(function(x){return (x.getAttribute&&x.getAttribute('alt')===rec.alt)||(x.querySelector&&x.querySelector('img')&&x.querySelector('img').getAttribute('alt')===rec.alt)});if(byAlt)return byAlt}
+    if(rec.classes&&rec.classes.length){var byClass=all.find(function(x){return rec.classes.every(function(c){return x.classList&&x.classList.contains(c)})});if(byClass)return byClass}
+    return null;
+  }
+  function applyJournal(){
+    var list=readJournal();if(!list.length)return;
+    var version=currentVersion();
+    var usable=list.filter(function(r){return !r.baseVersion||!version||r.baseVersion===version});
+    if(!usable.length){try{localStorage.removeItem(JOURNAL)}catch(_){}return}
+    usable.forEach(function(r){
+      var el=findTarget(r);if(!el)return;
+      var phone=typeof as4ImagePhone==='function'?as4ImagePhone(el):null;
+      var blank='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+      if(r.removed){
+        if(phone&&typeof applyHeroPhoneImage==='function')applyHeroPhoneImage(phone,blank);
+        else if(el.tagName==='IMG')el.src=blank;
+        else if(el.style)el.style.backgroundImage='url("'+blank+'")';
+      }else if(r.url){
+        if(phone&&typeof applyHeroPhoneImage==='function')applyHeroPhoneImage(phone,r.url);
+        else if(el.tagName==='IMG')el.src=r.url;
+        else if(el.style)el.style.backgroundImage='url("'+r.url.replace(/"/g,'%22')+'")';
+      }
     });
+    try{if(typeof refreshInspector==='function')refreshInspector()}catch(_){}
   }
+  function journalCurrent(){
+    if(!window.__APPLE_SEED_IMAGE_EDIT_ACTIVE__||!selected)return;
+    var rec=identity(selected),item=draft&&draft.items&&draft.items[selector];
+    rec.removed=!!(item&&item.imageRemoved);
+    if(rec.removed)rec.url='';
+    else if(typeof as4ImageUrl==='function')rec.url=as4ImageUrl(selected)||'';
+    else rec.url=selected.tagName==='IMG'?(selected.currentSrc||selected.src||''):'';
+    var list=readJournal(),i=list.findIndex(function(x){return x.selector===rec.selector});
+    if(i>=0)list[i]=rec;else list.push(rec);
+    writeJournal(list.slice(-100));
+    window.__APPLE_SEED_IMAGE_EDIT_ACTIVE__=false;
+  }
+  function markEdit(){window.__APPLE_SEED_IMAGE_EDIT_ACTIVE__=true}
   function ensure(){
-    var panel=findPanel();
-    if(!panel || panel[READY])return;
-    panel[READY]=true;
-
-    var oldDelete=document.getElementById('deleteImage');
-    if(oldDelete){
-      oldDelete.hidden=false;
-      oldDelete.style.display='block';
-      oldDelete.textContent='🗑️ Xóa ảnh đang chọn';
-      oldDelete.classList.add('btn','danger');
-    }else{
-      var replace=findReplaceButton(panel);
-      var del=document.createElement('button');
-      del.type='button';
-      del.id='appleSeedDeleteImageV1';
-      del.className='btn danger';
-      del.textContent='🗑️ Xóa ảnh đang chọn';
-      del.style.cssText='width:100%;margin-top:7px;font-weight:900;color:#b42318;border-color:#efb4b4;background:#fffafa;';
-      del.addEventListener('click',function(){
-        var nativeDelete=document.getElementById('deleteImage');
-        if(nativeDelete && nativeDelete!==del){nativeDelete.click();return;}
-        document.dispatchEvent(new CustomEvent('apple-seed:delete-image',{bubbles:true}));
-      });
-      (replace||panel.lastElementChild||panel).insertAdjacentElement('afterend',del);
+    if(window[READY])return;
+    window[READY]=true;
+    var p=findPanel();
+    if(p){
+      var oldDelete=document.getElementById('deleteImage');
+      if(oldDelete){oldDelete.hidden=false;oldDelete.style.display='block';oldDelete.textContent='🗑️ Xóa ảnh đang chọn';oldDelete.classList.add('btn','danger')}
+      var f=findFileInput(p);if(f)f.title='Chọn ảnh mới để thay ảnh đang chọn';
     }
-
-    var replace=findReplaceButton(panel);
-    var file=findFileInput(panel);
-    if(replace && file && !replace.__appleSeedReplaceBound){
-      replace.__appleSeedReplaceBound=true;
-      replace.title='Thay ảnh cho phần tử đang chọn';
+    if(typeof saveDraft==='function'&&!saveDraft.__appleSeedImageJournal){
+      var original=saveDraft;
+      var wrapped=function(){var r=original.apply(this,arguments);try{journalCurrent()}catch(_){}return r};
+      wrapped.__appleSeedImageJournal=true;
+      saveDraft=wrapped;
+      window.saveDraft=wrapped;
     }
-    if(file) file.title='Chọn ảnh mới để thay ảnh đang chọn';
+    var apply=document.getElementById('applyImage');
+    if(apply&&!apply.__appleSeedImageJournal){apply.addEventListener('click',markEdit,true);apply.__appleSeedImageJournal=true}
+    var pick=document.getElementById('pick');
+    if(pick&&!pick.__appleSeedImageJournal){pick.addEventListener('click',markEdit,true);pick.__appleSeedImageJournal=true}
+    var del=document.getElementById('deleteImage');
+    if(del&&!del.__appleSeedImageJournal){del.addEventListener('click',markEdit,true);del.__appleSeedImageJournal=true}
+    var preview=document.getElementById('preview');
+    if(preview&&!preview.__appleSeedImageJournal){preview.addEventListener('load',function(){setTimeout(applyJournal,180)},false);preview.__appleSeedImageJournal=true}
+    setTimeout(applyJournal,450);
   }
-
-  function boot(){
-    ensure();
-    var observer=new MutationObserver(ensure);
-    observer.observe(document.body,{childList:true,subtree:true});
-    window.addEventListener('load',ensure,{once:false});
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensure,{once:true});else ensure();
+  var observer=new MutationObserver(ensure);
+  observer.observe(document.documentElement,{childList:true,subtree:true});
+  setTimeout(function(){try{observer.disconnect()}catch(_){}},30000);
 })();
