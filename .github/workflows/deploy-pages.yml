@@ -46,18 +46,20 @@ jobs:
           lock_marker='APPLE_SEED_THEME_SELECTION_LOCK_V2'
           if lock_marker not in s:s=s.replace('</body>',lock+'\n<!-- '+lock_marker+' -->\n</body>',1)
           image_marker='APPLE_SEED_IMAGE_CONTROLS_V1'
-          image_script='<script src="site-builder-image-controls.js?v=20260913-image1"></script>'
+          image_script='<script src="site-builder-image-controls.js?v=20260913-image3"></script>'
           if image_marker not in s:s=s.replace('</body>',image_script+'\n<!-- '+image_marker+' -->\n</body>',1)
+          s=re.sub(r'site-builder-image-controls\.js\?v=[^"\']+','site-builder-image-controls.js?v=20260913-image3',s)
           bad=[]
           if 'localStorage.getItem(KEY)||draft?.theme_id' in s: bad.append('color theme getter still storage-first')
           if 'localStorage.getItem(KEY)||draft?.full_theme_id' in s: bad.append('full theme getter still storage-first')
           if re.search(r'setInterval\(\s*\(\)\s*=>[^;]{0,1500}(?:apply|render)[^;]{0,1500},\s*1500\s*\)',s,re.S): bad.append('possible legacy 1500ms theme renderer remains')
-          if bad: raise SystemExit('Theme authority validation failed: '+', '.join(bad))
+          if 'site-builder-image-controls.js?v=20260913-image3' not in s: bad.append('image controls cache bust missing')
+          if bad: raise SystemExit('Theme/image authority validation failed: '+', '.join(bad))
           p.write_text(s,encoding='utf-8')
           PY
           git diff --check
           git config user.name "Apple Seed Deploy"; git config user.email "0898888269tv@gmail.com"
-          if git diff --quiet; then echo "Builder theme authority already current."; else git add site-builder.html; git commit -m "fix: remove remaining Builder theme reset path"; git push origin HEAD:main; fi
+          if git diff --quiet; then echo "Builder authority already current."; else git add site-builder.html; git commit -m "fix: update Builder cache-busted controls"; git push origin HEAD:main; fi
       - name: Preserve Builder image edits across reload
         run: |
           set -euo pipefail
