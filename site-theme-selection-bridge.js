@@ -1,125 +1,80 @@
-/* APPLE_SEED_THEME_SELECTION_BRIDGE_V5
-   Single owner for Website Theme 01-30 clicks.
-   The legacy Builder theme handlers are intentionally blocked so they cannot
-   overwrite the user's selection after the click. */
+/* APPLE_SEED_THEME_SELECTION_BRIDGE_V6
+   Website Theme 01-30 and Website Layout 01-30 are independent.
+   Legacy handlers are allowed to run first; this bridge applies the final
+   selected value once after the click. No polling, no flashing, no fighting.
+*/
 (function(){
   'use strict';
   if(location.pathname.split('/').pop().toLowerCase()!=='site-builder.html')return;
 
   const COLOR_KEY='APPLE_SEED_SITE_THEME_V1';
   const FULL_KEY='APPLE_SEED_FULL_THEME_V1';
-  let syncing=false;
-  let last='';
+  let installed=false;
 
   function norm(v){
     const n=parseInt(String(v||''),10);
-    return n>=1&&n<=30?String(n).padStart(2,'0'):'01';
+    return n>=1&&n<=30?String(n).padStart(2,'0'):'';
   }
-
-  function setClasses(root,v){
+  function getColor(){
+    try{return norm((typeof draft!=='undefined'&&draft&&draft.theme_id)||localStorage.getItem(COLOR_KEY)||'01')||'01'}catch(_){return '01'}
+  }
+  function getFull(){
+    try{return norm((typeof draft!=='undefined'&&draft&&draft.full_theme_id)||localStorage.getItem(FULL_KEY)||'01')||'01'}catch(_){return '01'}
+  }
+  function setRootClass(root,prefix,value){
     if(!root)return;
-    for(let i=1;i<=30;i++){
-      const n=String(i).padStart(2,'0');
-      if(n!==v){
-        root.classList.remove('as-theme-'+n);
-        root.classList.remove('as-full-theme-'+n);
-      }
-    }
-    root.classList.add('as-theme-scope','as-theme-'+v,'as-full-theme-scope','as-full-theme-'+v);
+    for(let i=1;i<=30;i++)root.classList.remove(prefix+String(i).padStart(2,'0'));
+    root.classList.add(prefix+value);
   }
-
-  function applyPreview(v){
+  function sliderLock(d){
+    if(!d||!d.documentElement)return;
+    let s=d.getElementById('apple-seed-slider-size-lock-v6');
+    if(!s){s=d.createElement('style');s.id='apple-seed-slider-size-lock-v6';(d.head||d.documentElement).appendChild(s)}
+    s.textContent="@media(min-width:651px){.as3-hero .as3-stage:has(.apple-seed-hero-slider),.as3-hero .as3-stage:has(#apple-seed-runtime-slider){width:112%!important;max-width:none!important;transform:translateX(-5.36%)!important;transform-origin:center center!important}.as3-hero .as3-stage:has(.apple-seed-hero-slider) .apple-seed-hero-slider,.as3-hero .as3-stage:has(#apple-seed-runtime-slider) #apple-seed-runtime-slider,.as3-hero .as3-stage:has(#apple-seed-runtime-slider) .apple-seed-runtime-slider-host{width:100%!important;height:100%!important}}@media(max-width:650px){.as3-hero .as3-stage:has(.apple-seed-hero-slider),.as3-hero .as3-stage:has(#apple-seed-runtime-slider){width:100%!important;transform:none!important}}";
+  }
+  function applyPreview(){
     const frame=document.getElementById('preview');
     const d=frame&&frame.contentDocument;
     if(!d||!d.documentElement)return;
-    setClasses(d.documentElement,v);
-    setClasses(d.body,v);
-
-    let colorLink=d.getElementById('apple-seed-30-themes-link');
-    if(!colorLink){
-      colorLink=d.createElement('link');
-      colorLink.id='apple-seed-30-themes-link';
-      colorLink.rel='stylesheet';
-      colorLink.href='site-builder-themes.css?v=20260912-theme1';
-      (d.head||d.documentElement).appendChild(colorLink);
+    const color=getColor(),full=getFull();
+    setRootClass(d.documentElement,'as-theme-',color);setRootClass(d.body,'as-theme-',color);
+    setRootClass(d.documentElement,'as-full-theme-',full);setRootClass(d.body,'as-full-theme-',full);
+    function link(id,href){
+      let e=d.getElementById(id);
+      if(!e){e=d.createElement('link');e.id=id;e.rel='stylesheet';e.href=href;(d.head||d.documentElement).appendChild(e)}else if(e.getAttribute('href')!==href)e.href=href;
     }
-    let fullLink=d.getElementById('apple-seed-full-themes-link');
-    if(!fullLink){
-      fullLink=d.createElement('link');
-      fullLink.id='apple-seed-full-themes-link';
-      fullLink.rel='stylesheet';
-      fullLink.href='site-builder-full-themes.css?v=20260912-full3';
-      (d.head||d.documentElement).appendChild(fullLink);
-    }
-
-    /* Keep the already-correct enlarged Slider size after theme changes. */
-    let lock=d.getElementById('apple-seed-slider-size-lock-v3');
-    if(!lock){
-      lock=d.createElement('style');
-      lock.id='apple-seed-slider-size-lock-v3';
-      (d.head||d.documentElement).appendChild(lock);
-    }
-    lock.textContent="@media(min-width:651px){.as3-hero .as3-stage:has(.apple-seed-hero-slider),.as3-hero .as3-stage:has(#apple-seed-runtime-slider){width:112%!important;max-width:none!important;transform:translateX(-5.36%)!important;transform-origin:center center!important}.as3-hero .as3-stage:has(.apple-seed-hero-slider) .apple-seed-hero-slider,.as3-hero .as3-stage:has(#apple-seed-runtime-slider) #apple-seed-runtime-slider,.as3-hero .as3-stage:has(#apple-seed-runtime-slider) .apple-seed-runtime-slider-host{width:100%!important;height:100%!important}}@media(max-width:650px){.as3-hero .as3-stage:has(.apple-seed-hero-slider),.as3-hero .as3-stage:has(#apple-seed-runtime-slider){width:100%!important;transform:none!important}}";
+    link('apple-seed-30-themes-link','site-builder-themes.css?v=20260912-theme1');
+    link('apple-seed-full-themes-link','site-builder-full-themes.css?v=20260912-full3');
+    sliderLock(d);
   }
-
-  function markButtons(v){
-    document.querySelectorAll('.as-theme-choice').forEach(x=>{
-      x.classList.toggle('active',norm(x.dataset.themeId||'')===v);
-    });
-    document.querySelectorAll('.as-full-theme-choice').forEach(x=>{
-      x.classList.toggle('active',norm(x.dataset.fullTheme||'')===v);
-    });
-    const a=document.getElementById('appleSeedThemeStatus');
-    if(a)a.textContent='Đang chọn: Theme '+v+' · áp dụng cho toàn bộ WEB khi Xuất bản.';
-    const b=document.getElementById('appleSeedFullThemeStatus');
-    if(b)b.textContent='Đang chọn: Giao diện '+v+' · áp dụng cho toàn bộ WEB khi Xuất bản.';
+  function mark(){
+    const color=getColor(),full=getFull();
+    document.querySelectorAll('.as-theme-choice').forEach(x=>x.classList.toggle('active',norm(x.dataset.themeId||'')===color));
+    document.querySelectorAll('.as-full-theme-choice').forEach(x=>x.classList.toggle('active',norm(x.dataset.fullTheme||'')===full));
+    const a=document.getElementById('appleSeedThemeStatus');if(a)a.textContent='Đang chọn: Theme '+color+' · áp dụng cho toàn bộ WEB khi Xuất bản.';
+    const b=document.getElementById('appleSeedFullThemeStatus');if(b)b.textContent='Đang chọn: Giao diện '+full+' · áp dụng cho toàn bộ WEB khi Xuất bản.';
   }
-
-  function sync(v,save){
-    v=norm(v);
-    if(syncing)return;
-    syncing=true;
-    try{
-      localStorage.setItem(COLOR_KEY,v);
-      localStorage.setItem(FULL_KEY,v);
-      if(typeof draft!=='undefined'&&draft){
-        draft.theme_id=v;
-        draft.full_theme_id=v;
-        if(save&&typeof saveDraft==='function')saveDraft();
-      }
-      setClasses(document.documentElement,v);
-      applyPreview(v);
-      markButtons(v);
-      last=v;
-    }catch(e){console.warn('Theme selection:',e)}
-    finally{syncing=false}
+  function saveColor(v){
+    v=norm(v);if(!v)return;
+    try{localStorage.setItem(COLOR_KEY,v);if(typeof draft!=='undefined'&&draft)draft.theme_id=v;if(typeof saveDraft==='function')saveDraft()}catch(e){console.warn('Theme save',e)}
+    setTimeout(function(){applyPreview();mark()},40);
   }
-
-  function current(){
-    try{
-      if(typeof draft!=='undefined'&&draft&&(draft.theme_id||draft.full_theme_id))return norm(draft.theme_id||draft.full_theme_id);
-      return norm(localStorage.getItem(COLOR_KEY)||localStorage.getItem(FULL_KEY)||'01');
-    }catch(_){return '01'}
+  function saveFull(v){
+    v=norm(v);if(!v)return;
+    try{localStorage.setItem(FULL_KEY,v);if(typeof draft!=='undefined'&&draft)draft.full_theme_id=v;if(typeof saveDraft==='function')saveDraft()}catch(e){console.warn('Layout save',e)}
+    setTimeout(function(){applyPreview();mark()},40);
   }
-
   function install(){
-    sync(current(),false);
-
-    /* CAPTURE phase: take ownership before every legacy Builder click handler. */
+    if(installed)return;installed=true;
+    applyPreview();mark();
     document.addEventListener('click',function(e){
-      const c=e.target&&e.target.closest?e.target.closest('.as-theme-choice,.as-full-theme-choice'):null;
-      if(!c)return;
-      const v=norm(c.dataset.themeId||c.dataset.fullTheme||'');
-      if(!v)return;
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      sync(v,true);
-    },true);
-
+      const c=e.target&&e.target.closest?e.target.closest('.as-theme-choice'):null;
+      if(c){const v=norm(c.dataset.themeId||'');if(v)setTimeout(function(){saveColor(v)},0);return}
+      const f=e.target&&e.target.closest?e.target.closest('.as-full-theme-choice'):null;
+      if(f){const v=norm(f.dataset.fullTheme||'');if(v)setTimeout(function(){saveFull(v)},0);return}
+    },false);
     const frame=document.getElementById('preview');
-    if(frame)frame.addEventListener('load',function(){setTimeout(function(){sync(current(),false)},120)});
+    if(frame)frame.addEventListener('load',function(){setTimeout(function(){applyPreview();mark()},80)});
   }
-
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});
-  else install();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 })();
