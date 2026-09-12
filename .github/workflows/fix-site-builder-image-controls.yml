@@ -1,0 +1,91 @@
+name: Fix Site Builder image controls
+on:
+  push:
+    branches: [main]
+
+jobs:
+  fix:
+    if: contains(github.event.head_commit.message, 'trigger site builder image controls repair')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Repair image add/delete controls
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('site-builder.html')
+          s=p.read_text(encoding='utf-8')
+          marker='AI_BOARD_SITE_BUILDER_IMAGE_CONTROLS_FIX_V1'
+          if marker in s:
+              print('already patched')
+              raise SystemExit(0)
+
+          s=s.replace(
+              '<div class="drop" id="pick">Chọn ảnh từ máy</div>',
+              '<div class="drop" id="pick">🖼️ Chọn / thay ảnh từ máy</div>'
+          )
+          s=s.replace(
+              '🗑️ Xóa ảnh</button><div class="field" style="margin-top:8px"><label>URL ảnh</label>',
+              '↩️ Khôi phục ảnh gốc</button><div class="field" style="margin-top:8px"><label>URL ảnh</label>'
+          )
+          s=s.replace(
+              '<button class="btn primary" id="applyImage" style="width:100%">Áp dụng hình</button>',
+              '<button class="btn primary" id="applyImage" style="width:100%">☁️ Thêm / thay ảnh</button>'
+          )
+          s=s.replace(
+              '<button class="btn danger" id="deletePageImage" type="button" style="width:100%;margin-top:6px">🗑️ Xóa ảnh nền</button>',
+              '<button class="btn danger" id="deletePageImage" type="button" style="width:100%;margin-top:6px">↩️ Khôi phục nền gốc</button>'
+          )
+
+          anchor="let pagePreviewObjectUrl='';"
+          baseline=r'''\n// AI_BOARD_SITE_BUILDER_IMAGE_CONTROLS_FIX_V1\n// Keep the real index.html image/background as the immutable baseline.\n// Builder changes are overrides; deleting an override must never create a\n// broken empty image or destroy the original LIVE asset.\nconst builderImageBaseline=new WeakMap();\nconst builderPageBaseline=new WeakMap();\nfunction captureBuilderImageBaseline(){\n  if(!doc)return;\n  try{\n    doc.querySelectorAll('img').forEach(img=>{\n      if(!builderImageBaseline.has(img)){\n        builderImageBaseline.set(img,{\n          src:img.getAttribute('src')||'',\n          srcset:img.getAttribute('srcset')||'',\n          sizes:img.getAttribute('sizes')||''\n        });\n      }\n    });\n    doc.querySelectorAll('*').forEach(el=>{\n      if(el.matches?.('.as3-phone,.as3-screen')){\n        if(!builderImageBaseline.has(el))builderImageBaseline.set(el,{style:el.getAttribute('style')||'',html:el.innerHTML});\n      }\n      const inline=el.style?.getPropertyValue('background-image')||'';\n      if(inline && inline!=='none' && !builderImageBaseline.has(el))builderImageBaseline.set(el,{style:el.getAttribute('style')||''});\n    });\n    [doc.body,doc.querySelector('main'),doc.querySelector('.as3-hero')].filter(Boolean).forEach(el=>{\n      if(!builderPageBaseline.has(el))builderPageBaseline.set(el,{style:el.getAttribute('style')||''});\n    });\n  }catch(e){recordRuntimeError('Image baseline',e.message,e.stack)}\n}\nfunction restoreBuilderImage(el){\n  if(!el)return false;\n  const base=builderImageBaseline.get(el);\n  const phone=el.matches?.('.as3-phone')?el:el.closest?.('.as3-phone');\n  const target=phone||el;\n  const baseTarget=builderImageBaseline.get(target);\n  if(el.tagName==='IMG'){\n    const b=base||{};\n    if(b.src)el.setAttribute('src',b.src);else el.removeAttribute('src');\n    if(b.srcset)el.setAttribute('srcset',b.srcset);else el.removeAttribute('srcset');\n    if(b.sizes)el.setAttribute('sizes',b.sizes);else el.removeAttribute('sizes');\n    return true;\n  }\n  if(baseTarget?.html!==undefined){\n    target.innerHTML=baseTarget.html;\n    target.setAttribute('style',baseTarget.style||'');\n    return true;\n  }\n  if(base?.style!==undefined){el.setAttribute('style',base.style||'');return true}\n  el.style.removeProperty('background-image');\n  return true;\n}\nfunction restoreBuilderPageBackground(target){\n  if(!target)return;\n  const b=builderPageBaseline.get(target);\n  if(b?.style!==undefined)target.setAttribute('style',b.style||'');\n  else target.style.removeProperty('background-image');\n}\n'''
+          if anchor not in s:
+              raise SystemExit('baseline anchor not found')
+          s=s.replace(anchor,anchor+baseline,1)
+
+          old=r'''$('deleteImage').onclick=()=>{if(!selected){toast('Chưa chọn đối tượng ảnh');return}checkpoint();const item=getItem();if(selected.tagName==='IMG'){selected.removeAttribute('src');selected.removeAttribute('srcset');item.src=''}else{selected.style.removeProperty('background-image');delete item.bgImage;const nested=selected.querySelector?.('.as3-screen > img');if(nested){nested.removeAttribute('src');nested.removeAttribute('srcset')}}pendingFile=null;$('file').value='';$('imageUrl').value='';$('imagePreview').removeAttribute('src');saveDraft();refreshInspector();toast('🗑️ Đã xóa ảnh')};'''
+          new=r'''$('deleteImage').onclick=()=>{\n  if(!selected){toast('Chưa chọn đối tượng ảnh');return}\n  const isImg=selected.tagName==='IMG';\n  const isPhone=!!selected.closest?.('.as3-phone')||selected.matches?.('.as3-screen');\n  const computed=getComputedStyle(selected).backgroundImage;\n  if(!isImg&&!isPhone&&computed==='none'){toast('Đối tượng này không có ảnh để xóa');return}\n  checkpoint();\n  const item=getItem();\n  delete item.src;\n  delete item.bgImage;\n  restoreBuilderImage(selected);\n  const phone=selected.closest?.('.as3-phone');\n  if(phone)restoreBuilderImage(phone);\n  pendingFile=null;\n  $('file').value='';\n  $('imageUrl').value='';\n  $('imagePreview').removeAttribute('src');\n  applyAll();\n  saveDraft();\n  refreshInspector();\n  toast('↩️ Đã khôi phục ảnh gốc');\n};'''
+          if old not in s:
+              raise SystemExit('deleteImage handler not found')
+          s=s.replace(old,new,1)
+
+          old2=r'''$('deletePageImage').onclick=()=>{checkpoint();const p=ensurePage();p.bgImage='';$('pageBgUrl').value='';pagePendingFile=null;$('pageFile').value='';const target=findPageTarget(pageStyleTarget());if(target)target.style.removeProperty('background-image');saveDraft();refreshPageDesign();toast('🗑️ Đã xóa ảnh nền')};'''
+          new2=r'''$('deletePageImage').onclick=()=>{\n  checkpoint();\n  const p=ensurePage();\n  p.bgImage='';\n  $('pageBgUrl').value='';\n  pagePendingFile=null;\n  $('pageFile').value='';\n  const target=findPageTarget(pageStyleTarget());\n  restoreBuilderPageBackground(target);\n  applyAll();\n  saveDraft();\n  refreshPageDesign();\n  toast('↩️ Đã khôi phục nền gốc');\n};'''
+          if old2 not in s:
+              raise SystemExit('deletePageImage handler not found')
+          s=s.replace(old2,new2,1)
+
+          load_anchor="await loadPublished();applyAll();refreshPageDesign();rebindUploadControls();"
+          if load_anchor not in s:
+              raise SystemExit('load anchor not found')
+          s=s.replace(load_anchor,"captureBuilderImageBaseline();\n  await loadPublished();applyAll();refreshPageDesign();rebindUploadControls();",1)
+
+          css=r'''\n/* AI_BOARD_SITE_BUILDER_IMAGE_CONTROLS_FIX_V1 */\n#imagePanel .drop,#pageDesignPanel .drop{transition:.15s ease;border-color:#b9cce5;background:#f8fbff}\n#imagePanel .drop:hover,#pageDesignPanel .drop:hover{border-color:#1769ff;background:#eef6ff;transform:translateY(-1px)}\n#deleteImage,#deletePageImage{font-weight:850}\n'''
+          pos=s.rfind('</style>')
+          if pos<0: raise SystemExit('style close not found')
+          s=s[:pos]+css+s[pos:]
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Validate HTML and JavaScript
+        run: |
+          node --check <(python3 - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path('site-builder.html').read_text(encoding='utf-8')
+          scripts=re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>',s,re.S|re.I)
+          print('\n'.join(scripts))
+          PY
+          )
+      - name: Commit and clean up
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site-builder.html
+          git commit -m "fix: repair Site Builder image add and restore controls" || true
+          git push
+          rm -f .github/workflows/fix-site-builder-image-controls.yml .github/site-builder-image-fix-trigger
+          git add -A
+          git commit -m "chore: remove one-time Site Builder image fixer" || true
+          git push
