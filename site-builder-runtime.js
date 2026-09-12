@@ -13,11 +13,11 @@
   var root=document.documentElement;
   try{
     root.setAttribute('data-apple-seed-hero-mode','slider');
-    var early=document.getElementById('apple-seed-hero-mode-early-v4');
+    var early=document.getElementById('apple-seed-hero-mode-early-v5');
     if(!early){
       early=document.createElement('style');
-      early.id='apple-seed-hero-mode-early-v4';
-      early.textContent="html[data-apple-seed-hero-mode='slider'] .as3-phone,html[data-apple-seed-hero-mode='slider'] .asph-phone{display:none!important;visibility:hidden!important;}";
+      early.id='apple-seed-hero-mode-early-v5';
+      early.textContent="html[data-apple-seed-hero-mode='slider'] .as3-phone,html[data-apple-seed-hero-mode='slider'] .asph-phone{display:none!important;visibility:hidden!important;}html[data-apple-seed-hero-mode='slider'] .apple-seed-runtime-slider-host{width:112%!important;max-width:112%!important;margin-left:-6%!important;margin-right:-6%!important;}html[data-apple-seed-hero-mode='slider'] .apple-seed-runtime-slider-host > .apple-seed-runtime-slider,html[data-apple-seed-hero-mode='slider'] #apple-seed-runtime-slider{width:100%!important;max-width:100%!important;height:100%!important;}html[data-apple-seed-hero-mode='slider'] .apple-seed-runtime-slider-host img,html[data-apple-seed-hero-mode='slider'] .apple-seed-hero-slider img,html[data-apple-seed-hero-mode='slider'] #apple-seed-runtime-slider img{width:100%!important;max-width:100%!important;height:100%!important;object-fit:cover!important;}@media(max-width:650px){html[data-apple-seed-hero-mode='slider'] .apple-seed-runtime-slider-host{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important;}html[data-apple-seed-hero-mode='slider'] .apple-seed-runtime-slider-host > .apple-seed-runtime-slider,html[data-apple-seed-hero-mode='slider'] #apple-seed-runtime-slider{width:100%!important;max-width:100%!important;}html[data-apple-seed-hero-mode='slider'] .apple-seed-runtime-slider-host img,html[data-apple-seed-hero-mode='slider'] .apple-seed-hero-slider img,html[data-apple-seed-hero-mode='slider'] #apple-seed-runtime-slider img{height:auto!important;object-fit:contain!important;}}";
       (document.head||root).appendChild(early);
     }
   }catch(_){ }
@@ -56,13 +56,13 @@
     try{
       root.setAttribute('data-apple-seed-hero-mode','slider');
       root.classList.remove('apple-seed-hero-mode-pending');
-      var st=document.getElementById('apple-seed-hero-mode-runtime-v4');
+      var st=document.getElementById('apple-seed-hero-mode-runtime-v5');
       if(!st){
         st=document.createElement('style');
-        st.id='apple-seed-hero-mode-runtime-v4';
+        st.id='apple-seed-hero-mode-runtime-v5';
         (document.head||root).appendChild(st);
       }
-      st.textContent="html[data-apple-seed-hero-mode='slider'] .as3-phone,html[data-apple-seed-hero-mode='slider'] .asph-phone{display:none!important;visibility:hidden!important;}html[data-apple-seed-hero-mode='slider'] .apple-seed-runtime-slider-host,html[data-apple-seed-hero-mode='slider'] .apple-seed-hero-slider,html[data-apple-seed-hero-mode='slider'] #apple-seed-runtime-slider{display:block!important;}";
+      st.textContent="html[data-apple-seed-hero-mode='slider'] .as3-phone,html[data-apple-seed-hero-mode='slider'] .asph-phone{display:none!important;visibility:hidden!important;}html[data-apple-seed-hero-mode='slider'] .apple-seed-runtime-slider-host{width:112%!important;max-width:112%!important;margin-left:-6%!important;margin-right:-6%!important;}html[data-apple-seed-hero-mode='slider'] .apple-seed-runtime-slider-host > .apple-seed-runtime-slider,html[data-apple-seed-hero-mode='slider'] #apple-seed-runtime-slider{width:100%!important;max-width:100%!important;height:100%!important;}html[data-apple-seed-hero-mode='slider'] .apple-seed-runtime-slider-host img,html[data-apple-seed-hero-mode='slider'] .apple-seed-hero-slider img,html[data-apple-seed-hero-mode='slider'] #apple-seed-runtime-slider img{width:100%!important;max-width:100%!important;height:100%!important;object-fit:cover!important;}@media(max-width:650px){html[data-apple-seed-hero-mode='slider'] .apple-seed-runtime-slider-host{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important;}html[data-apple-seed-hero-mode='slider'] .apple-seed-runtime-slider-host > .apple-seed-runtime-slider,html[data-apple-seed-hero-mode='slider'] #apple-seed-runtime-slider{width:100%!important;max-width:100%!important;}html[data-apple-seed-hero-mode='slider'] .apple-seed-runtime-slider-host img,html[data-apple-seed-hero-mode='slider'] .apple-seed-hero-slider img,html[data-apple-seed-hero-mode='slider'] #apple-seed-runtime-slider img{height:auto!important;object-fit:contain!important;}}";
       removePhoneMockups();
     }catch(_){ }
   }
