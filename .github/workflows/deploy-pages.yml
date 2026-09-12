@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
@@ -23,19 +23,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Repair Site Builder image controls
-        run: |
-          python3 .github/repair-site-builder-image-controls.py
-          node --check /tmp/site-builder.js
-      - name: Commit repair and restore stable workflow
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add site-builder.html
-          git rm -f .github/repair-site-builder-image-controls.py .github/workflows/fix-site-builder-image-v3.yml .github/workflows/fix-site-builder-image-v4.yml .github/site-builder-image-v3-trigger .github/site-builder-image-v4-trigger || true
-          git checkout -- .github/workflows/deploy-pages.yml
-          git diff --cached --quiet || git commit -m 'fix: repair Site Builder image controls'
-          git push
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload site
