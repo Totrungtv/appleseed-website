@@ -45,7 +45,7 @@
     var v=/^(?:[1-9]|[12][0-9]|30)$/.test(String(themeId||''))?String(themeId).padStart(2,'0'):'01';
     try{
       var st=document.getElementById('apple-seed-full-themes-runtime');
-      if(!st){st=document.createElement('link');st.id='apple-seed-full-themes-runtime';st.rel='stylesheet';st.href='site-builder-full-themes.css?v=20260912-full1';(document.head||root).appendChild(st)}
+      if(!st){st=document.createElement('link');st.id='apple-seed-full-themes-runtime';st.rel='stylesheet';st.href='site-builder-full-themes.css?v=20260912-full2';(document.head||root).appendChild(st)}
       for(var i=1;i<=30;i++)root.classList.remove('as-full-theme-'+String(i).padStart(2,'0'));
       root.classList.add('as-full-theme-scope','as-full-theme-'+v);
     }catch(_){ }
