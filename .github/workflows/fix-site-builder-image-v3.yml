@@ -29,10 +29,8 @@ jobs:
           def replace_assignment(src, key, replacement):
               token=f"$(''{key}'').onclick=".replace("''", "'")
               start=src.find(token)
-              if start<0:
-                  raise SystemExit(f'handler not found: {key}')
+              if start<0: raise SystemExit(f'handler not found: {key}')
               eq=src.find('=', start)+1
-              # Find the terminating semicolon while respecting braces/strings/comments.
               i=eq; depth=0; quote=None; esc=False; line_comment=False; block_comment=False
               while i<len(src):
                   c=src[i]; n=src[i+1] if i+1<len(src) else ''
@@ -59,44 +57,104 @@ jobs:
                   i+=1
               raise SystemExit(f'unterminated handler: {key}')
 
-          helper=r'''\n/* AI_BOARD_SITE_BUILDER_IMAGE_CONTROLS_FIX_V3 */\nfunction as3ImageTarget(el){\n  if(!el)return null;\n  if(el.tagName==='IMG')return el;\n  return el.querySelector?.('img')||null;\n}\nfunction as3ImageCapable(el){\n  return !!(el && (el.tagName==='IMG' || el.querySelector?.('img') || el.style?.backgroundImage));\n}\nfunction as3CurrentImage(el){\n  const img=as3ImageTarget(el);\n  if(img)return img.currentSrc||img.src||'';\n  const bg=el?.style?.backgroundImage||'';\n  const m=bg.match(/url\\([\"']?(.*?)[\"']?\\)/);\n  return m?m[1]:'';\n}\nfunction as3ClearImageOverride(el,item){\n  if(item){item.src='';delete item.bgImage;}\n  const base=window.builderImageBaseline?.get?.(el);\n  const img=as3ImageTarget(el);\n  if(base?.target?.html!==undefined){\n    try{el.innerHTML=base.target.html;}catch(_){ }\n  }else if(base?.img){\n    if(img){\n      if(base.img.src)img.setAttribute('src',base.img.src);else img.removeAttribute('src');\n      if(base.img.srcset)img.setAttribute('srcset',base.imgset||base.img.srcset);else img.removeAttribute('srcset');\n      if(base.img.sizes)img.setAttribute('sizes',base.img.sizes);else img.removeAttribute('sizes');\n    }\n  }else if(img){\n    img.removeAttribute('src');img.removeAttribute('srcset');img.removeAttribute('sizes');\n  }\n  if(base?.style?.backgroundImage!==undefined)el.style.backgroundImage=base.style.backgroundImage;\n  else el.style.removeProperty('background-image');\n}\n'''
-          # Insert helper into the main application script, immediately before the first image handler.
+          helper='''
+/* AI_BOARD_SITE_BUILDER_IMAGE_CONTROLS_FIX_V3 */
+function as3ImageTarget(el){
+  if(!el)return null;
+  if(el.tagName==='IMG')return el;
+  return el.querySelector?.('img')||null;
+}
+function as3ImageCapable(el){
+  return !!(el && (el.tagName==='IMG' || el.querySelector?.('img') || el.style?.backgroundImage));
+}
+function as3CurrentImage(el){
+  const img=as3ImageTarget(el);
+  if(img)return img.currentSrc||img.src||'';
+  const bg=el?.style?.backgroundImage||'';
+  const m=bg.match(/url\\([\"']?(.*?)[\"']?\\)/);
+  return m?m[1]:'';
+}
+function as3ClearImageOverride(el,item){
+  if(item){item.src='';delete item.bgImage;}
+  if(typeof restoreBuilderImage==='function'){
+    try{restoreBuilderImage(el);return;}catch(_){ }
+  }
+  const img=as3ImageTarget(el);
+  if(img){img.removeAttribute('src');img.removeAttribute('srcset');img.removeAttribute('sizes');}
+  else if(el)el.style.removeProperty('background-image');
+}
+'''
           first=s.find("$('deleteImage').onclick=")
           if first<0: raise SystemExit('deleteImage anchor not found')
-          script_open=s.rfind('<script',0,first); script_close=s.find('</script>',first)
-          if script_open<0 or script_close<0: raise SystemExit('main script boundary not found')
           s=s[:first]+helper+s[first:]
 
-          delete_code=r'''$('deleteImage').onclick=()=>{\n  if(!selected){toast('Chưa chọn đối tượng ảnh / khối ảnh');return}\n  checkpoint();\n  const item=getItem();\n  as3ClearImageOverride(selected,item);\n  pendingFile=null;\n  $('file').value='';\n  $('imageUrl').value='';\n  $('imagePreview').removeAttribute('src');\n  applyAll();\n  saveDraft();\n  refreshInspector();\n  toast('↩️ Đã khôi phục ảnh gốc');\n};'''
+          delete_code='''$('deleteImage').onclick=()=>{
+  if(!selected){toast('Chưa chọn đối tượng ảnh / khối ảnh');return}
+  checkpoint();
+  const item=getItem();
+  as3ClearImageOverride(selected,item);
+  pendingFile=null;
+  $('file').value='';
+  $('imageUrl').value='';
+  $('imagePreview').removeAttribute('src');
+  applyAll();
+  saveDraft();
+  refreshInspector();
+  toast('↩️ Đã khôi phục ảnh gốc');
+};'''
           s=replace_assignment(s,'deleteImage',delete_code)
 
-          # Replace applyImage so both a real IMG and a selected image container/slider work.
-          apply_code=r'''$('applyImage').onclick=()=>{\n  if(!selected){toast('Chưa chọn đối tượng ảnh / khối ảnh');return}\n  const url=String($('imageUrl').value||'').trim();\n  const src=(pendingFile?.dataUrl||url||'').trim();\n  if(!src){toast('Hãy chọn ảnh từ máy hoặc nhập URL');return}\n  checkpoint();\n  const item=getItem();\n  const img=as3ImageTarget(selected);\n  if(img){img.src=src;item.src=src;delete item.bgImage}\n  else{selected.style.backgroundImage=`url("${src.replaceAll('"','%22')}")`;item.bgImage=src;delete item.src}\n  pendingFile=null;\n  $('file').value='';\n  $('imageUrl').value=src;\n  $('imagePreview').src=src;\n  applyAll();\n  saveDraft();\n  refreshInspector();\n  toast('☁️ Đã thêm / thay ảnh');\n};'''
+          apply_code='''$('applyImage').onclick=()=>{
+  if(!selected){toast('Chưa chọn đối tượng ảnh / khối ảnh');return}
+  const url=String($('imageUrl').value||'').trim();
+  const src=String(pendingFile?.dataUrl||url||'').trim();
+  if(!src){toast('Hãy chọn ảnh từ máy hoặc nhập URL');return}
+  checkpoint();
+  const item=getItem();
+  const img=as3ImageTarget(selected);
+  if(img){img.src=src;item.src=src;delete item.bgImage;}
+  else{selected.style.backgroundImage=`url("${src.replaceAll('"','%22')}")`;item.bgImage=src;delete item.src;}
+  pendingFile=null;
+  $('file').value='';
+  $('imageUrl').value=src;
+  $('imagePreview').src=src;
+  applyAll();
+  saveDraft();
+  refreshInspector();
+  toast('☁️ Đã thêm / thay ảnh');
+};'''
           s=replace_assignment(s,'applyImage',apply_code)
 
-          # Make the inspector expose image controls for containers that actually contain an image.
-          replacements=0
-          for pat in [r"\$\('imagePanel'\)\.hidden\s*=\s*[^;]+;", r"\$\('imagePanel'\)\.hidden\s*=\s*[^;]+"]:
-              new,n=re.subn(pat,"$('imagePanel').hidden=!as3ImageCapable(selected);",s,count=1)
-              if n:
-                  s=new; replacements+=n
-                  break
-          if replacements==0:
-              # Safe fallback: add a tiny sync routine that runs whenever selection/UI changes.
-              sync=r'''\nfunction syncImagePanelV3(){try{$('imagePanel').hidden=!as3ImageCapable(selected);if(selected){const cur=as3CurrentImage(selected);if(cur){$('imagePreview').src=cur;}}}catch(_){}}\nsetInterval(syncImagePanelV3,350);\n'''
-              s=s[:script_close]+sync+s[script_close:]
+          # Show the image panel for IMG, image-containing wrappers, and background-image blocks.
+          pat=r"\$\('imagePanel'\)\.hidden\s*=\s*[^;]+;?"
+          new,n=re.subn(pat,"$('imagePanel').hidden=!as3ImageCapable(selected);",s,count=1)
+          if n:
+              s=new
+          else:
+              print('warning: no imagePanel visibility statement found; adding fallback observer')
+              insert='''
+function syncImagePanelV3(){
+  try{
+    $('imagePanel').hidden=!as3ImageCapable(selected);
+    if(selected){const cur=as3CurrentImage(selected);if(cur)$('imagePreview').src=cur;}
+  }catch(_){ }
+}
+setInterval(syncImagePanelV3,350);
+'''
+              pos=s.rfind('</script>')
+              s=s[:pos]+insert+s[pos:]
 
-          # Make the pick/drop control work even when the selected target is a wrapper.
-          pick_anchor="$('pick').onclick="
-          if pick_anchor not in s: raise SystemExit('pick handler anchor not found')
-
-          # Stronger visual state and explicit copy explaining the control is for IMG or image blocks.
-          css='''\n/* V3 image controls: image element + image container + slider-safe */\n#imagePanel{scroll-margin-top:8px}\n#imagePanel .drop{min-height:38px;display:flex;align-items:center;justify-content:center;font-weight:800}\n#imagePanel #deleteImage{color:#b42318;border-color:#f2b8b5;background:#fffafa}\n#imagePanel #deleteImage:hover{background:#fff1f0;border-color:#e58b86}\n'''
+          css='''
+/* V3 image controls */
+#imagePanel{scroll-margin-top:8px}
+#imagePanel .drop{min-height:38px;display:flex;align-items:center;justify-content:center;font-weight:800}
+#imagePanel #deleteImage{color:#b42318;border-color:#f2b8b5;background:#fffafa}
+#imagePanel #deleteImage:hover{background:#fff1f0;border-color:#e58b86}
+'''
           s=s.replace('</style>',css+'</style>',1)
-          s=s.replace(marker,marker) if marker in s else s.replace('</style>','/* '+marker+' */\n</style>',1)
           p.write_text(s,encoding='utf-8')
-          print('patched image controls V3, inspector replacements=',replacements)
-      - name: Validate HTML JavaScript
+          print('patched image controls V3')
+      - name: Validate JavaScript
         run: |
           python3 - <<'PY'
           import re
