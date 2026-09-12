@@ -1,0 +1,102 @@
+name: Repair Site Builder image delete
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: builder-image-delete
+  cancel-in-progress: true
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Patch image delete handler
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('site-builder.html')
+          s=p.read_text(encoding='utf-8')
+          marker='APPLE_SEED_IMAGE_DELETE_PERSISTENT_V5'
+          if marker in s:
+              print('Image delete V5 already installed.')
+              raise SystemExit(0)
+
+          def replace_assignment(src, key, replacement):
+              token=f"$(''{key}'').onclick=".replace("''", "'")
+              start=src.find(token)
+              if start < 0:
+                  raise SystemExit(f'handler not found: {key}')
+              eq=src.find('=', start)+1
+              i=eq; depth=0; quote=None; esc=False; line=False; block=False
+              while i < len(src):
+                  c=src[i]; n=src[i+1] if i+1<len(src) else ''
+                  if line:
+                      if c=='\n': line=False
+                  elif block:
+                      if c=='*' and n=='/': block=False; i+=1
+                  elif quote:
+                      if esc: esc=False
+                      elif c=='\\': esc=True
+                      elif c==quote: quote=None
+                  else:
+                      if c in "'\"`": quote=c
+                      elif c=='/' and n=='/': line=True; i+=1
+                      elif c=='/' and n=='*': block=True; i+=1
+                      elif c=='{': depth+=1
+                      elif c=='}':
+                          depth-=1
+                          if depth==0:
+                              j=i+1
+                              while j<len(src) and src[j].isspace(): j+=1
+                              if j<len(src) and src[j]==';': j+=1
+                              return src[:start]+replacement+src[j:]
+                  i+=1
+              raise SystemExit(f'unterminated handler: {key}')
+
+          helper='''\n/* APPLE_SEED_IMAGE_DELETE_PERSISTENT_V5 */\nconst AS5_BLANK_IMAGE='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';\nfunction as5ImagePhone(el){\n  if(!el)return null;\n  if(el.matches?.('.as3-phone'))return el;\n  return el.closest?.('.as3-phone')||el.querySelector?.('.as3-phone')||null;\n}\nfunction as5ClearImage(el,item){\n  if(item){\n    item.src=AS5_BLANK_IMAGE;\n    item.bgImage=AS5_BLANK_IMAGE;\n    item.imageRemoved=true;\n  }\n  const phone=as5ImagePhone(el);\n  if(phone){\n    try{applyHeroPhoneImage(phone,AS5_BLANK_IMAGE)}catch(_){phone.style.backgroundImage='url("'+AS5_BLANK_IMAGE+'")'}\n    const img=phone.querySelector('.as3-screen > img');\n    if(img)img.src=AS5_BLANK_IMAGE;\n    return;\n  }\n  if(el?.tagName==='IMG'){el.src=AS5_BLANK_IMAGE;return}\n  const img=el?.querySelector?.('img');\n  if(img){img.src=AS5_BLANK_IMAGE;return}\n  if(el?.style)el.style.backgroundImage='url("'+AS5_BLANK_IMAGE+'")';\n}\n'''
+          pos=s.find("$('deleteImage').onclick=")
+          if pos<0: raise SystemExit('deleteImage anchor missing')
+          s=s[:pos]+helper+s[pos:]
+
+          delete_code='''$('deleteImage').onclick=()=>{\n  if(!selected){toast('Chưa chọn đối tượng ảnh / khối ảnh');return}\n  checkpoint();\n  const item=getItem();\n  as5ClearImage(selected,item);\n  pendingFile=null;\n  $('file').value='';\n  $('imageUrl').value='';\n  $('imagePreview').removeAttribute('src');\n  applyAll();\n  saveDraft();\n  refreshInspector();\n  toast('🗑️ Đã xóa ảnh');\n};'''
+          s=replace_assignment(s,'deleteImage',delete_code)
+
+          # Keep the existing replace/upload path, but explicitly clear the removal flag when a new image is applied.
+          apply_anchor="$('applyImage').onclick="
+          if apply_anchor in s:
+              start=s.find(apply_anchor)
+              eq=s.find('=',start)+1
+              # Find the first getItem() in the existing handler and inject the flag reset after it.
+              end=s.find("const item=getItem();",eq)
+              if end>=0:
+                  ins=end+len("const item=getItem();")
+                  s=s[:ins]+" item.imageRemoved=false;"+s[ins:]
+
+          # The runtime apply path must not restore the original source over a deliberate blank image.
+          apply_marker='if(item.imageRemoved)'
+          if apply_marker not in s:
+              needle='function applyAll()'
+              a=s.find(needle)
+              if a>=0:
+                  brace=s.find('{',a)
+                  s=s[:brace+1]+"\n  /* V5 image removal is represented by a persistent 1x1 transparent source. */\n"+s[brace+1:]
+
+          # Remove the temporary external controller; the embedded Builder handler is the authoritative implementation.
+          s=re.sub(r'\\s*<script src="site-builder-image-controls\\.js\\?v=20260913-image1"></script>\\s*<!-- APPLE_SEED_IMAGE_CONTROLS_V1 -->','',s)
+          s=s.replace('</style>','/* V5 image delete control */\n#imagePanel #deleteImage{font-weight:900;color:#b42318!important;border-color:#efb4b4!important;background:#fffafa!important}\n</style>',1)
+          p.write_text(s,encoding='utf-8')
+          print('Installed persistent image delete handler.')
+          PY
+          git diff --check
+          git config user.name "Apple Seed Repair"; git config user.email "0898888269tv@gmail.com"
+          if git diff --quiet; then echo "No image-delete changes."; else git add site-builder.html; git commit -m "fix: make Builder image delete persistent"; git push origin HEAD:main; fi
