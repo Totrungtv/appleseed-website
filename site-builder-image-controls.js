@@ -9,9 +9,9 @@
   var BLANK='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
   function frame(){return document.querySelector('.frame iframe')||document.querySelector('iframe')}
   function getDoc(){var f=frame();return f&&f.contentDocument||null}
-  function draft(){try{return typeof window.draft!=='undefined'&&window.draft?window.draft:(typeof globalThis.draft!=='undefined'?globalThis.draft:null)}catch(_){return null}}
-  function selected(){try{return typeof window.selected!=='undefined'&&window.selected?window.selected:(typeof globalThis.selected!=='undefined'?globalThis.selected:null)}catch(_){return null}}
-  function selector(){try{return typeof window.selector==='string'?window.selector:(typeof globalThis.selector==='string'?globalThis.selector:'')}catch(_){return''}}
+  function getDraftState(){try{return typeof draft!=='undefined'?draft:(window.draft||null)}catch(_){return window.draft||null}}
+  function getSelectedEl(){try{return typeof selected!=='undefined'?selected:(window.selected||null)}catch(_){return window.selected||null}}
+  function getCurrentSelector(){try{return typeof selector==='string'?selector:(window.selector||'')}catch(_){return''}}
   function read(k,f){try{var x=JSON.parse(localStorage.getItem(k)||'null');return x||f}catch(_){return f}}
   function write(k,x){try{localStorage.setItem(k,JSON.stringify(x))}catch(_){}
   }
@@ -27,13 +27,13 @@
   function rememberOverride(sel,url){if(!sel||!url)return;var m=read(PENDING,{});m[sel]={url:url,at:Date.now()};write(PENDING,m)}
   function pendingFor(sel){var m=read(PENDING,{});return m[sel]&&m[sel].url||''}
   function captureSelected(){
-    var el=selected(),sel=selector();if(!el||!sel)return;
+    var el=getSelectedEl(),sel=getCurrentSelector();if(!el||!sel)return;
     var panel=document.getElementById('imagePanel'),u=panel&&panel.querySelector('#imageUrl');
     var url=(u&&u.value||'').trim();
     if(/^https?:\/\//i.test(url)&&url.indexOf('/storage/v1/object/public/')>=0)rememberOverride(sel,url);
   }
   function syncDraft(force){
-    var d=draft();if(!d)return d;d.items=d.items||{};
+    var d=getDraftState();if(!d)return d;d.items=d.items||{};
     var p=read(PENDING,{});
     Object.keys(p).forEach(function(sel){
       var rec=p[sel];if(!rec||!rec.url)return;
@@ -51,7 +51,7 @@
         else if(item.src||item.imageRemoved){item.src=url;delete item.bgImage;item.imageRemoved=false}
       });
     }
-    var s=selector(),ov=pendingFor(s);
+    var s=getCurrentSelector(),ov=pendingFor(s);
     if(s&&ov){var it=getItem(d,s);it.imageRemoved=false;it.src=ov;delete it.bgImage}
     try{window.draft=d}catch(_){}
     try{if(typeof saveDraft==='function')saveDraft()}catch(_){}
