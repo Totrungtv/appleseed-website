@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -23,6 +23,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Install 30 Site Builder themes
+        run: |
+          set -euo pipefail
+          python3 scripts/install-30-themes.py
+          git diff --check
+          git config user.name "Apple Seed Theme Installer"
+          git config user.email "0898888269tv@gmail.com"
+          if git diff --quiet; then
+            echo "30 themes already installed."
+          else
+            git add site-builder.html site-builder-themes.css site-builder-runtime.js
+            git commit -m "feat: add 30 selectable Site Builder themes"
+            git push origin HEAD:main
+          fi
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Fix Hero initial render, mobile slider sizing and cache bust
