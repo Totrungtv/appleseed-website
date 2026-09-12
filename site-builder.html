@@ -31,7 +31,7 @@
 </style>
 <link rel="stylesheet" href="site-builder-themes.css?v=20260912-theme1">
 <!-- APPLE_SEED_30_THEMES_V1 -->
-<link rel="stylesheet" href="site-builder-full-themes.css?v=20260912-full2">
+<link rel="stylesheet" href="site-builder-full-themes.css?v=20260912-full3">
 <!-- APPLE_SEED_30_FULL_THEMES_V1 -->
 <!-- APPLE_SEED_30_FULL_THEMES_MARKUP_REPAIR_V1 -->
 
@@ -1342,7 +1342,7 @@ const THEMES=['Apple Classic', 'Swiss Studio', 'Bento Pro', 'Glass House', 'Neo 
 let panel,grid,status;
 function valid(v){v=String(v||'01');return /^(?:[1-9]|[12][0-9]|30)$/.test(v)?v.padStart(2,'0'):'01'}
 function current(){try{return valid(localStorage.getItem(KEY)||draft?.full_theme_id||'01')}catch(_){return valid(draft?.full_theme_id||'01')}}
-function apply(v){v=valid(v);const f=document.getElementById('preview'),d=f&&f.contentDocument;if(!d||!d.documentElement)return;const r=d.documentElement;for(let i=1;i<=30;i++)r.classList.remove('as-full-theme-'+String(i).padStart(2,'0'));r.classList.add('as-full-theme-scope','as-full-theme-'+v);let l=d.getElementById('apple-seed-full-themes-link');if(!l){l=d.createElement('link');l.id='apple-seed-full-themes-link';l.rel='stylesheet';l.href='site-builder-full-themes.css?v=20260912-full2';(d.head||r).appendChild(l)}}
+function apply(v){v=valid(v);const f=document.getElementById('preview'),d=f&&f.contentDocument;if(!d||!d.documentElement)return;const r=d.documentElement;for(let i=1;i<=30;i++)r.classList.remove('as-full-theme-'+String(i).padStart(2,'0'));r.classList.add('as-full-theme-scope','as-full-theme-'+v);let l=d.getElementById('apple-seed-full-themes-link');if(!l){l=d.createElement('link');l.id='apple-seed-full-themes-link';l.rel='stylesheet';l.href='site-builder-full-themes.css?v=20260912-full3';(d.head||r).appendChild(l)}}
 function render(v){if(!grid)return;grid.querySelectorAll('[data-full-theme]').forEach(x=>x.classList.toggle('active',x.dataset.fullTheme===v));if(status)status.textContent='Đang chọn: Giao diện '+v+' — '+THEMES[parseInt(v,10)-1]}
 function set(v){v=valid(v);draft.full_theme_id=v;try{localStorage.setItem(KEY,v)}catch(_){}apply(v);render(v);if(typeof saveDraft==='function')saveDraft();if(typeof toast==='function')toast('🎭 Đã chọn giao diện '+v)}
 function init(){if(panel)return;const right=document.querySelector('.side.right');if(!right)return;panel=document.createElement('div');panel.className='panel';panel.id='appleSeedFullThemePanel';panel.innerHTML='<h3>🎭 30 Giao diện hoàn chỉnh</h3><div class="muted" style="margin-bottom:8px">30 bố cục/style website khác nhau. Không thay thế 30 bảng màu.</div><div id="appleSeedFullThemeGrid" class="as-full-theme-grid"></div><div id="appleSeedFullThemeStatus" style="margin-top:8px;font-size:10px;font-weight:850;color:#1769ff"></div><button class="btn" id="appleSeedFullThemeReset" type="button" style="width:100%;margin-top:7px">↺ Giao diện Apple Classic</button>';right.insertBefore(panel,right.firstElementChild);grid=panel.querySelector('#appleSeedFullThemeGrid');status=panel.querySelector('#appleSeedFullThemeStatus');grid.innerHTML=THEMES.map((n,i)=>'<button type="button" class="as-full-theme-choice" data-full-theme="'+String(i+1).padStart(2,'0')+'"><span class="as-full-preview p'+String(i+1).padStart(2,'0')+'"><i></i><b></b><em></em></span><strong>'+String(i+1).padStart(2,'0')+' · '+n+'</strong></button>').join('');grid.querySelectorAll('[data-full-theme]').forEach(x=>x.onclick=()=>set(x.dataset.fullTheme));panel.querySelector('#appleSeedFullThemeReset').onclick=()=>set('01');render(current());apply(current())}
@@ -1460,5 +1460,5 @@ document.addEventListener('click',function(e){const b=e.target.closest&&e.target
 </script>
 <!-- APPLE_SEED_30_THEME_SELECTION_FIX_V1 -->
 <!-- APPLE_SEED_THEME_SELECTION_BRIDGE_V2 -->
-<script src="site-theme-selection-bridge.js?v=20260912-theme-bridge2"></script>
+<script src="site-theme-selection-bridge.js?v=20260912-theme-bridge4"></script>
 </body></html>
