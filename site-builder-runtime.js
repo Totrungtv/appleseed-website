@@ -10,13 +10,34 @@
   if(location.pathname.split('/').pop().toLowerCase()==='site-builder.html') return;
   var appliedVersion='';
 
-  /* HERO PHONE MOCKUPS: disabled on the live homepage as requested.
-     The original Builder/editor DOM is untouched because this runtime is
-     explicitly skipped inside site-builder.html and Builder preview frames. */
-  function removeHeroPhones(){
+  /* HERO MODE: the published Builder config is the single source of truth.
+     Slider mode hides the six phone mockups; phone mode hides the slider.
+     Do not remove the phone DOM: Builder needs those six original slots. */
+  function applyHeroMode(mode){
+    var v=mode==='phones'?'phones':'slider';
+    document.documentElement.setAttribute('data-apple-seed-hero-mode',v);
+    document.documentElement.classList.remove('apple-seed-hero-mode-pending');
+    var styleId='apple-seed-hero-mode-runtime-v2';
+    var st=document.getElementById(styleId);
+    if(!st){
+      st=document.createElement('style');
+      st.id=styleId;
+      document.head.appendChild(st);
+    }
+    st.textContent="html[data-apple-seed-hero-mode='slider'] .as3-phone{display:none!important;visibility:hidden!important;}html[data-apple-seed-hero-mode='phones'] .apple-seed-runtime-slider-host,html[data-apple-seed-hero-mode='phones'] .apple-seed-hero-slider,html[data-apple-seed-hero-mode='phones'] #apple-seed-runtime-slider{display:none!important;}html[data-apple-seed-hero-mode='phones'] .as3-stage .as3-phone{display:block!important;visibility:visible!important;}";
+  }
+
+  function readHeroMode(){
     try{
-      document.querySelectorAll('.as3-stage > .as3-phone').forEach(function(el){el.remove();});
-    }catch(_){ }
+      return window.supabaseClient.from('site_builder_versions')
+        .select('config,version_no')
+        .eq('site_key','default').eq('status','published')
+        .order('version_no',{ascending:false}).limit(1).maybeSingle()
+        .then(function(r){
+          if(r.error||!r.data)return 'slider';
+          return r.data.config&&r.data.config.hero_mode==='phones'?'phones':'slider';
+        }).catch(function(){return 'slider'});
+    }catch(_){return Promise.resolve('slider')}
   }
 
   function deviceKey(){
@@ -26,13 +47,12 @@
   function apply(){
     try{
       if(!window.supabaseClient)return;
-      removeHeroPhones();
+      readHeroMode().then(applyHeroMode);
       window.supabaseClient.from('site_builder_versions')
         .select('version_no,config,created_at')
-        .eq('site_key','default').eq('status','published').maybeSingle()
+        .eq('site_key','default').eq('status','published').order('version_no',{ascending:false}).limit(1).maybeSingle()
         .then(function(r){
           if(r.error||!r.data||!r.data.config||!r.data.config.items)return;
-          removeHeroPhones();
           var viewKey=String(r.data.version_no)+'-'+deviceKey();
           if(viewKey===appliedVersion)return;
           var mobile=deviceKey()==='mobile';
@@ -54,104 +74,46 @@
             if(st.color)el.style.color=st.color;
             if(st.background)el.style.backgroundColor=st.background;
           });
-          /*
-           * CMS content is rendered asynchronously into #homeRenderer.
-           * Do NOT mark the published version as applied when its selectors
-           * were not in the DOM yet; otherwise the later CMS render would
-           * permanently wipe the Builder changes until a version/device change.
-           */
           if(matched>0)appliedVersion=viewKey;
-          removeHeroPhones();
         });
     }catch(_){}
   }
 
-  /*
-   * AI BOARD / CUSTOMER ROBOT VISIBILITY
-   * Always target the real launcher by ID. The previous text/ancestor
-   * detection could select a child/partial element and leave the empty pill.
-   */
-  function syncAiBoardVisibility(){
-    try{
-      var chat=document.getElementById('chatBox');
-      var launcher=document.getElementById('apple-seed-ai-board-float');
-      if(!launcher)return;
-      var chatOpen=!!(chat && chat.classList.contains('open'));
-      if(chatOpen){
-        launcher.style.setProperty('display','none','important');
-        launcher.setAttribute('aria-hidden','true');
-        launcher.setAttribute('tabindex','-1');
-      }else{
-        launcher.style.removeProperty('display');
-        launcher.removeAttribute('aria-hidden');
-        launcher.removeAttribute('tabindex');
-      }
-    }catch(_){ }
-  }
-
   function boot(){
-    removeHeroPhones();
+    /* Apply the safe default immediately. The published query below can switch
+       to phone mode in milliseconds, preventing a reload flash of six phones. */
+    applyHeroMode('slider');
     apply();
-    setTimeout(function(){removeHeroPhones();apply()},600);
-    setTimeout(function(){removeHeroPhones();apply()},1600);
-    setTimeout(function(){removeHeroPhones();apply()},3200);
-    window.addEventListener('resize',function(){removeHeroPhones();setTimeout(apply,80)});
-    setInterval(function(){removeHeroPhones();apply()},1500);
+    setTimeout(apply,600);
+    setTimeout(apply,1600);
+    setTimeout(apply,3200);
+    window.addEventListener('resize',function(){setTimeout(apply,80)});
+    setInterval(apply,1500);
     var homeRenderer=document.getElementById('homeRenderer');
-    if(homeRenderer){
-      new MutationObserver(function(){removeHeroPhones();apply()}).observe(homeRenderer,{childList:true,subtree:true});
-    }
-    document.addEventListener('visibilitychange',function(){if(!document.hidden){removeHeroPhones();apply()}});
+    if(homeRenderer){new MutationObserver(function(){apply()}).observe(homeRenderer,{childList:true,subtree:true});}
+    document.addEventListener('visibilitychange',function(){if(!document.hidden)apply()});
 
     var chatBtn=document.getElementById('chatBtn');
-    if(chatBtn){
-      chatBtn.addEventListener('click',function(){
-        var launcher=document.getElementById('apple-seed-ai-board-float');
-        if(launcher){
-          launcher.style.setProperty('display','none','important');
-          launcher.setAttribute('aria-hidden','true');
-        }
-        setTimeout(syncAiBoardVisibility,0);
-        setTimeout(syncAiBoardVisibility,50);
-        setTimeout(syncAiBoardVisibility,200);
-      },true);
-    }
-
+    if(chatBtn){chatBtn.addEventListener('click',function(){setTimeout(syncAiBoardVisibility,0);setTimeout(syncAiBoardVisibility,50);setTimeout(syncAiBoardVisibility,200)},true);}
     var chatClose=document.getElementById('chatClose');
-    if(chatClose){
-      chatClose.addEventListener('click',function(){
-        setTimeout(syncAiBoardVisibility,0);
-        setTimeout(syncAiBoardVisibility,100);
-      },true);
-    }
-
-    document.addEventListener('click',function(e){
-      try{
-        var t=e.target;
-        if(t && t.closest && t.closest('#chatBtn')){
-          var launcher=document.getElementById('apple-seed-ai-board-float');
-          if(launcher){
-            launcher.style.setProperty('display','none','important');
-            launcher.setAttribute('aria-hidden','true');
-          }
-        }else if(t && t.closest && t.closest('#chatClose')){
-          setTimeout(syncAiBoardVisibility,0);
-          setTimeout(syncAiBoardVisibility,100);
-        }
-      }catch(_){}
-    },true);
-
+    if(chatClose){chatClose.addEventListener('click',function(){setTimeout(syncAiBoardVisibility,0);setTimeout(syncAiBoardVisibility,100)},true);}
+    document.addEventListener('click',function(e){try{var t=e.target;if(t&&t.closest&&t.closest('#chatBtn')){}else if(t&&t.closest&&t.closest('#chatClose'))setTimeout(syncAiBoardVisibility,100)}catch(_){}},true);
     var chatBox=document.getElementById('chatBox');
-    if(chatBox){
-      new MutationObserver(syncAiBoardVisibility)
-        .observe(chatBox,{attributes:true,attributeFilter:['class','style']});
-    }
-
-    new MutationObserver(syncAiBoardVisibility)
-      .observe(document.body,{childList:true,subtree:true});
-
+    if(chatBox)new MutationObserver(syncAiBoardVisibility).observe(chatBox,{attributes:true,attributeFilter:['class','style']});
+    new MutationObserver(syncAiBoardVisibility).observe(document.body,{childList:true,subtree:true});
     syncAiBoardVisibility();
     setInterval(syncAiBoardVisibility,250);
+  }
+
+  function syncAiBoardVisibility(){
+    try{
+      var chat=document.getElementById('chatBox'),launcher=document.getElementById('apple-seed-ai-board-float');
+      if(!launcher)return;
+      var open=!!(chat&&chat.classList.contains('open'));
+      launcher.style.setProperty('display',open?'none':'inline-flex','important');
+      launcher.setAttribute('aria-hidden',open?'true':'false');
+      if(open)launcher.setAttribute('tabindex','-1');else launcher.removeAttribute('tabindex');
+    }catch(_){ }
   }
 
   if(document.readyState==='complete')boot();
