@@ -1,0 +1,49 @@
+/* APPLE SEED HOME THEMES V1 — shared theme tokens; content/layout stays intact */
+html[data-apple-seed-theme]{
+  --as-theme-accent:#1769ff;
+  --as-theme-bg:#fff;
+  --as-theme-surface:#f7f9fc;
+  --as-theme-text:#17233d;
+  --as-theme-muted:#61708a;
+  --as-theme-line:#e7ebf4;
+  --as-theme-radius:18px;
+}
+html[data-apple-seed-theme="apple-pure"]{--as-theme-accent:#1769ff;--as-theme-bg:#fff;--as-theme-surface:#f6f8fc;--as-theme-text:#17233d;--as-theme-radius:18px}
+html[data-apple-seed-theme="titanium-pro"]{--as-theme-accent:#9ca3af;--as-theme-bg:#0d1117;--as-theme-surface:#171b22;--as-theme-text:#f5f7fa;--as-theme-muted:#aab3c0;--as-theme-line:#303641;--as-theme-radius:16px}
+html[data-apple-seed-theme="apple-blue"]{--as-theme-accent:#087cff;--as-theme-bg:#f5f9ff;--as-theme-surface:#fff;--as-theme-text:#10234d;--as-theme-radius:20px}
+html[data-apple-seed-theme="deep-space"]{--as-theme-accent:#7c8cff;--as-theme-bg:#080b18;--as-theme-surface:#11162a;--as-theme-text:#f4f6ff;--as-theme-muted:#aab0cc;--as-theme-line:#262c48;--as-theme-radius:20px}
+html[data-apple-seed-theme="glass-apple"]{--as-theme-accent:#4f7cff;--as-theme-bg:#eef3ff;--as-theme-surface:rgba(255,255,255,.68);--as-theme-text:#18233f;--as-theme-line:rgba(255,255,255,.55);--as-theme-radius:24px}
+html[data-apple-seed-theme="board-engineer"]{--as-theme-accent:#00a878;--as-theme-bg:#07120f;--as-theme-surface:#0d211b;--as-theme-text:#eafff8;--as-theme-muted:#9bc7ba;--as-theme-line:#21483d;--as-theme-radius:12px}
+html[data-apple-seed-theme="repair-lab"]{--as-theme-accent:#14b8a6;--as-theme-bg:#f1fbfa;--as-theme-surface:#fff;--as-theme-text:#123b3a;--as-theme-radius:14px}
+html[data-apple-seed-theme="iphone-gallery"]{--as-theme-accent:#111827;--as-theme-bg:#fff;--as-theme-surface:#f3f4f6;--as-theme-text:#111827;--as-theme-radius:26px}
+html[data-apple-seed-theme="luxury-repair"]{--as-theme-accent:#c49a4a;--as-theme-bg:#11100e;--as-theme-surface:#1b1915;--as-theme-text:#f8f1df;--as-theme-muted:#c9bea5;--as-theme-line:#403927;--as-theme-radius:14px}
+html[data-apple-seed-theme="speed-tech"]{--as-theme-accent:#ff5a1f;--as-theme-bg:#f7f8fb;--as-theme-surface:#fff;--as-theme-text:#161b27;--as-theme-radius:12px}
+html[data-apple-seed-theme="corporate"]{--as-theme-accent:#2457d6;--as-theme-bg:#f7f9fc;--as-theme-surface:#fff;--as-theme-text:#17233d;--as-theme-radius:12px}
+html[data-apple-seed-theme="white-studio"]{--as-theme-accent:#111827;--as-theme-bg:#fff;--as-theme-surface:#fafafa;--as-theme-text:#111827;--as-theme-radius:8px}
+html[data-apple-seed-theme="aurora-tech"]{--as-theme-accent:#7c3aed;--as-theme-bg:#f5f3ff;--as-theme-surface:#fff;--as-theme-text:#21163d;--as-theme-radius:22px}
+html[data-apple-seed-theme="neon-dark"]{--as-theme-accent:#22d3ee;--as-theme-bg:#05070b;--as-theme-surface:#0d1118;--as-theme-text:#ecfeff;--as-theme-muted:#91a8b0;--as-theme-line:#203039;--as-theme-radius:14px}
+html[data-apple-seed-theme="editorial"]{--as-theme-accent:#9a3412;--as-theme-bg:#fbfaf7;--as-theme-surface:#fff;--as-theme-text:#292524;--as-theme-radius:4px}
+html[data-apple-seed-theme="service-store"]{--as-theme-accent:#1769ff;--as-theme-bg:#f7faff;--as-theme-surface:#fff;--as-theme-text:#15213a;--as-theme-radius:12px}
+html[data-apple-seed-theme="technician-hub"]{--as-theme-accent:#f59e0b;--as-theme-bg:#101318;--as-theme-surface:#191e26;--as-theme-text:#f8fafc;--as-theme-muted:#aeb7c4;--as-theme-line:#303744;--as-theme-radius:10px}
+html[data-apple-seed-theme="future-apple"]{--as-theme-accent:#8b5cf6;--as-theme-bg:#070711;--as-theme-surface:#11111e;--as-theme-text:#f8f7ff;--as-theme-muted:#b6b1ca;--as-theme-line:#29263f;--as-theme-radius:20px}
+html[data-apple-seed-theme="premium-center"]{--as-theme-accent:#2563eb;--as-theme-bg:#f8fafc;--as-theme-surface:#fff;--as-theme-text:#0f172a;--as-theme-radius:20px}
+html[data-apple-seed-theme="apple-classic"]{--as-theme-accent:#0071e3;--as-theme-bg:#f5f5f7;--as-theme-surface:#fff;--as-theme-text:#1d1d1f;--as-theme-radius:18px}
+html[data-apple-seed-theme="midnight-pro"]{--as-theme-accent:#60a5fa;--as-theme-bg:#020617;--as-theme-surface:#0f172a;--as-theme-text:#f8fafc;--as-theme-muted:#94a3b8;--as-theme-line:#263244;--as-theme-radius:16px}
+html[data-apple-seed-theme="silver-minimal"]{--as-theme-accent:#64748b;--as-theme-bg:#f8fafc;--as-theme-surface:#fff;--as-theme-text:#1e293b;--as-theme-radius:16px}
+html[data-apple-seed-theme="circuit-grid"]{--as-theme-accent:#10b981;--as-theme-bg:#06110d;--as-theme-surface:#0c1b15;--as-theme-text:#ecfdf5;--as-theme-muted:#9ac7b4;--as-theme-line:#1d4134;--as-theme-radius:8px}
+html[data-apple-seed-theme="oscilloscope"]{--as-theme-accent:#84cc16;--as-theme-bg:#0b1008;--as-theme-surface:#151d11;--as-theme-text:#f2fce9;--as-theme-muted:#b2c69d;--as-theme-line:#314328;--as-theme-radius:8px}
+html[data-apple-seed-theme="glass-blue"]{--as-theme-accent:#2563eb;--as-theme-bg:#edf5ff;--as-theme-surface:rgba(255,255,255,.72);--as-theme-text:#102a56;--as-theme-line:rgba(148,190,255,.45);--as-theme-radius:24px}
+html[data-apple-seed-theme="gradient-ice"]{--as-theme-accent:#06b6d4;--as-theme-bg:#effcff;--as-theme-surface:#fff;--as-theme-text:#12304a;--as-theme-radius:22px}
+html[data-apple-seed-theme="mono-tech"]{--as-theme-accent:#334155;--as-theme-bg:#f8fafc;--as-theme-surface:#fff;--as-theme-text:#0f172a;--as-theme-radius:6px}
+html[data-apple-seed-theme="black-label"]{--as-theme-accent:#d4af37;--as-theme-bg:#090909;--as-theme-surface:#151515;--as-theme-text:#fafafa;--as-theme-muted:#b6b6b6;--as-theme-line:#333;--as-theme-radius:10px}
+html[data-apple-seed-theme="future-lab"]{--as-theme-accent:#06b6d4;--as-theme-bg:#071018;--as-theme-surface:#0d1b26;--as-theme-text:#ecfeff;--as-theme-muted:#9bc2c8;--as-theme-line:#23404a;--as-theme-radius:14px}
+html[data-apple-seed-theme="orbit"]{--as-theme-accent:#f472b6;--as-theme-bg:#090714;--as-theme-surface:#151025;--as-theme-text:#fff1f8;--as-theme-muted:#c5aec0;--as-theme-line:#332448;--as-theme-radius:22px}
+
+/* Safe visual layer: only theme-aware surfaces inherit these tokens. */
+html[data-apple-seed-theme] body{background:var(--as-theme-bg);color:var(--as-theme-text)}
+html[data-apple-seed-theme] .as3-section,html[data-apple-seed-theme] .as3-card,html[data-apple-seed-theme] .service-card,html[data-apple-seed-theme] .product-card{border-radius:var(--as-theme-radius)}
+html[data-apple-seed-theme] .as3-hero{background:var(--as-theme-bg)}
+html[data-apple-seed-theme] .as3-wrap{color:var(--as-theme-text)}
+html[data-apple-seed-theme] .as3-muted,html[data-apple-seed-theme] .muted{color:var(--as-theme-muted)}
+html[data-apple-seed-theme] .as3-btn-primary,html[data-apple-seed-theme] .product-action-call{background:var(--as-theme-accent)}
+html[data-apple-seed-theme] .as3-card,html[data-apple-seed-theme] .service-card,html[data-apple-seed-theme] .product-card{border-color:var(--as-theme-line)}
