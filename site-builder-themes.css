@@ -1,0 +1,39 @@
+/* APPLE SEED SITE BUILDER — 30 THEME PACK V1
+   Applied by theme class on document root. Does not alter Hero/Slider DOM.
+*/
+:root{--as-theme-accent:#111827;--as-theme-bg:#f8fafc;--as-theme-card:#fff;--as-theme-text:#0f172a;--as-theme-muted:#64748b;--as-theme-border:#e2e8f0;--as-theme-shadow:0 12px 32px rgba(15,23,42,.08)}
+.as-theme-scope{background:var(--as-theme-bg);color:var(--as-theme-text)}
+.as-theme-scope .panel,.as-theme-scope .card,.as-theme-scope .section{border-color:var(--as-theme-border);background:var(--as-theme-card);box-shadow:var(--as-theme-shadow)}
+.as-theme-scope .btn.primary,.as-theme-scope .primary{background:var(--as-theme-accent);border-color:var(--as-theme-accent)}
+.as-theme-scope a{color:var(--as-theme-accent)}
+.as-theme-01{--as-theme-accent:#111827;--as-theme-bg:#f8fafc;--as-theme-card:#fff;--as-theme-text:#0f172a;--as-theme-muted:#64748b;--as-theme-border:#e2e8f0}
+.as-theme-02{--as-theme-accent:#2563eb;--as-theme-bg:#eff6ff;--as-theme-card:#fff;--as-theme-text:#172554;--as-theme-muted:#64748b;--as-theme-border:#bfdbfe}
+.as-theme-03{--as-theme-accent:#7c3aed;--as-theme-bg:#faf5ff;--as-theme-card:#fff;--as-theme-text:#2e1065;--as-theme-muted:#7c6f9e;--as-theme-border:#ddd6fe}
+.as-theme-04{--as-theme-accent:#059669;--as-theme-bg:#ecfdf5;--as-theme-card:#fff;--as-theme-text:#064e3b;--as-theme-muted:#5f7f73;--as-theme-border:#a7f3d0}
+.as-theme-05{--as-theme-accent:#dc2626;--as-theme-bg:#fef2f2;--as-theme-card:#fff;--as-theme-text:#450a0a;--as-theme-muted:#7f5f5f;--as-theme-border:#fecaca}
+.as-theme-06{--as-theme-accent:#ea580c;--as-theme-bg:#fff7ed;--as-theme-card:#fff;--as-theme-text:#431407;--as-theme-muted:#806958;--as-theme-border:#fed7aa}
+.as-theme-07{--as-theme-accent:#0891b2;--as-theme-bg:#ecfeff;--as-theme-card:#fff;--as-theme-text:#164e63;--as-theme-muted:#587b86;--as-theme-border:#a5f3fc}
+.as-theme-08{--as-theme-accent:#db2777;--as-theme-bg:#fdf2f8;--as-theme-card:#fff;--as-theme-text:#500724;--as-theme-muted:#85556d;--as-theme-border:#fbcfe8}
+.as-theme-09{--as-theme-accent:#4f46e5;--as-theme-bg:#eef2ff;--as-theme-card:#fff;--as-theme-text:#1e1b4b;--as-theme-muted:#63658b;--as-theme-border:#c7d2fe}
+.as-theme-10{--as-theme-accent:#0f766e;--as-theme-bg:#f0fdfa;--as-theme-card:#fff;--as-theme-text:#042f2e;--as-theme-muted:#5b7d7a;--as-theme-border:#99f6e4}
+.as-theme-11{--as-theme-accent:#ca8a04;--as-theme-bg:#fefce8;--as-theme-card:#fff;--as-theme-text:#422006;--as-theme-muted:#81704b;--as-theme-border:#fde68a}
+.as-theme-12{--as-theme-accent:#475569;--as-theme-bg:#f1f5f9;--as-theme-card:#fff;--as-theme-text:#0f172a;--as-theme-muted:#64748b;--as-theme-border:#cbd5e1}
+.as-theme-13{--as-theme-accent:#be123c;--as-theme-bg:#fff1f2;--as-theme-card:#fff;--as-theme-text:#4c0519;--as-theme-muted:#835766;--as-theme-border:#fecdd3}
+.as-theme-14{--as-theme-accent:#15803d;--as-theme-bg:#f0fdf4;--as-theme-card:#fff;--as-theme-text:#052e16;--as-theme-muted:#5c7965;--as-theme-border:#bbf7d0}
+.as-theme-15{--as-theme-accent:#0369a1;--as-theme-bg:#f0f9ff;--as-theme-card:#fff;--as-theme-text:#082f49;--as-theme-muted:#597487;--as-theme-border:#bae6fd}
+.as-theme-16{--as-theme-accent:#9333ea;--as-theme-bg:#fdf4ff;--as-theme-card:#fff;--as-theme-text:#3b0764;--as-theme-muted:#765c85;--as-theme-border:#f0abfc}
+.as-theme-17{--as-theme-accent:#c2410c;--as-theme-bg:#fff7ed;--as-theme-card:#fffaf5;--as-theme-text:#431407;--as-theme-muted:#806958;--as-theme-border:#fdba74}
+.as-theme-18{--as-theme-accent:#4338ca;--as-theme-bg:#f5f3ff;--as-theme-card:#fff;--as-theme-text:#1e1b4b;--as-theme-muted:#68638a;--as-theme-border:#ddd6fe}
+.as-theme-19{--as-theme-accent:#047857;--as-theme-bg:#ecfdf5;--as-theme-card:#f8fffc;--as-theme-text:#022c22;--as-theme-muted:#55766d;--as-theme-border:#6ee7b7}
+.as-theme-20{--as-theme-accent:#0369a1;--as-theme-bg:#e0f2fe;--as-theme-card:#f8fdff;--as-theme-text:#082f49;--as-theme-muted:#557488;--as-theme-border:#7dd3fc}
+.as-theme-21{--as-theme-accent:#334155;--as-theme-bg:#020617;--as-theme-card:#0f172a;--as-theme-text:#f8fafc;--as-theme-muted:#94a3b8;--as-theme-border:#334155}
+.as-theme-22{--as-theme-accent:#60a5fa;--as-theme-bg:#0b1120;--as-theme-card:#111827;--as-theme-text:#f1f5f9;--as-theme-muted:#94a3b8;--as-theme-border:#263449}
+.as-theme-23{--as-theme-accent:#a78bfa;--as-theme-bg:#120b20;--as-theme-card:#1e1230;--as-theme-text:#faf5ff;--as-theme-muted:#b8a6ca;--as-theme-border:#4c2b70}
+.as-theme-24{--as-theme-accent:#34d399;--as-theme-bg:#061b16;--as-theme-card:#0b2921;--as-theme-text:#ecfdf5;--as-theme-muted:#8fb8aa;--as-theme-border:#145c4c}
+.as-theme-25{--as-theme-accent:#fb7185;--as-theme-bg:#200b10;--as-theme-card:#32121a;--as-theme-text:#fff1f2;--as-theme-muted:#c99ba5;--as-theme-border:#6b2736}
+.as-theme-26{--as-theme-accent:#fbbf24;--as-theme-bg:#1c1605;--as-theme-card:#2b2108;--as-theme-text:#fffbeb;--as-theme-muted:#c7b98b;--as-theme-border:#665014}
+.as-theme-27{--as-theme-accent:#22d3ee;--as-theme-bg:#03151a;--as-theme-card:#09252b;--as-theme-text:#ecfeff;--as-theme-muted:#8eb9c0;--as-theme-border:#155e69}
+.as-theme-28{--as-theme-accent:#f472b6;--as-theme-bg:#1b0714;--as-theme-card:#2b0e20;--as-theme-text:#fdf2f8;--as-theme-muted:#c39aaa;--as-theme-border:#642044}
+.as-theme-29{--as-theme-accent:#84cc16;--as-theme-bg:#101707;--as-theme-card:#19230b;--as-theme-text:#f7fee7;--as-theme-muted:#a7b994;--as-theme-border:#3f6212}
+.as-theme-30{--as-theme-accent:#f97316;--as-theme-bg:#17100a;--as-theme-card:#24170d;--as-theme-text:#fff7ed;--as-theme-muted:#c4a58c;--as-theme-border:#713f12}
+/* End 30 themes */
