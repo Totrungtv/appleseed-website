@@ -1,10 +1,10 @@
-/* APPLE SEED IMAGE CONTROLS V3
-   Keeps image replacement selected in the Builder and restores that unsaved image
-   after the iframe/LIVE configuration finishes loading. Other draft data is untouched.
+/* APPLE SEED IMAGE CONTROLS V4
+   Keeps image replacement selected in the Builder and restores the unsaved image
+   after LIVE/iframe reload. The journal reads the Builder draft item directly.
 */
 (function(){
   'use strict';
-  var READY='__appleSeedImageControlsV3';
+  var READY='__appleSeedImageControlsV4';
   var JOURNAL='appleSeedVisualBuilderImageOverridesV2';
   function findPanel(){return document.getElementById('imagePanel');}
   function findFileInput(panel){return panel&&panel.querySelector('input[type="file"]');}
@@ -51,9 +51,7 @@
     if(!window.__APPLE_SEED_IMAGE_EDIT_ACTIVE__||!selected)return;
     var rec=identity(selected),item=draft&&draft.items&&draft.items[selector];
     rec.removed=!!(item&&item.imageRemoved);
-    if(rec.removed)rec.url='';
-    else if(typeof as4ImageUrl==='function')rec.url=as4ImageUrl(selected)||'';
-    else rec.url=selected.tagName==='IMG'?(selected.currentSrc||selected.src||''):'';
+    rec.url=rec.removed?'':((item&&item.src)||(item&&item.bgImage)||'');
     var list=readJournal(),i=list.findIndex(function(x){return x.selector===rec.selector});
     if(i>=0)list[i]=rec;else list.push(rec);
     writeJournal(list.slice(-100));
