@@ -1,9 +1,9 @@
-/* APPLE SEED IMAGE CONTROLS V6
+/* APPLE SEED IMAGE CONTROLS V7
    Make selected-image replacements authoritative at Publish time.
 */
 (function(){
   'use strict';
-  var READY='__appleSeedImageControlsV6';
+  var READY='__appleSeedImageControlsV7';
   var JOURNAL='appleSeedVisualBuilderImageOverridesV4';
   var PENDING='appleSeedVisualBuilderPendingImageOverridesV4';
   var BLANK='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
@@ -63,8 +63,8 @@
     try{return JSON.parse(JSON.stringify(d))}catch(_){return d}
   }
   function wrapRpc(){
-    var client=null;try{client=(typeof sb!=='undefined'?sb:null)||window.sb||null}catch(_){client=window.sb||null}
-    if(!client||typeof client.rpc!=='function'||client.rpc.__appleSeedImagePublishV6)return false;
+    var client=null;try{client=(typeof sb!=='undefined'?sb:null)||window.supabaseClient||window.sb||null}catch(_){client=window.supabaseClient||window.sb||null}
+    if(!client||typeof client.rpc!=='function'||client.rpc.__appleSeedImagePublishV7)return false;
     var original=client.rpc.bind(client);
     var wrapped=function(fn,args,opts){
       if(fn==='apple_seed_builder_publish'&&args){
@@ -73,7 +73,7 @@
       }
       return original(fn,args,opts);
     };
-    wrapped.__appleSeedImagePublishV6=true;
+    wrapped.__appleSeedImagePublishV7=true;
     client.rpc=wrapped;
     return true;
   }
@@ -81,19 +81,19 @@
   function ensure(){
     if(window[READY])return;window[READY]=true;
     var file=document.getElementById('file');
-    if(file&&!file.__appleSeedImageControlsV6){
+    if(file&&!file.__appleSeedImageControlsV7){
       file.addEventListener('change',function(){
         var tries=0;
         var timer=setInterval(function(){captureSelected();if(++tries>=60)clearInterval(timer)},250);
       },true);
-      file.__appleSeedImageControlsV6=true;
+      file.__appleSeedImageControlsV7=true;
     }
     var preview=document.getElementById('preview');
-    if(preview&&!preview.__appleSeedImageControlsV6){preview.addEventListener('load',function(){setTimeout(syncDraft,150);setTimeout(syncDraft,700)},false);preview.__appleSeedImageControlsV6=true}
+    if(preview&&!preview.__appleSeedImageControlsV7){preview.addEventListener('load',function(){setTimeout(syncDraft,150);setTimeout(syncDraft,700)},false);preview.__appleSeedImageControlsV7=true}
     document.addEventListener('click',function(e){var b=e.target&&e.target.closest?e.target.closest('button'):null;if(!b)return;var t=(b.textContent||'').trim();if(/xuất bản|publish/i.test(t))beforePublish()},true);
     var tries=0,boot=setInterval(function(){wrapRpc();if(++tries>=40)clearInterval(boot)},250);
     setTimeout(syncDraft,500);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensure,{once:true});else ensure();
 })();
-/* APPLE_SEED_IMAGE_CONTROLS_V6 */
+/* APPLE_SEED_IMAGE_CONTROLS_V7 */
