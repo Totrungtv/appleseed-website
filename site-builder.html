@@ -15,6 +15,13 @@
 #imagePanel .drop,#pageDesignPanel .drop{transition:.15s ease;border-color:#b9cce5;background:#f8fbff}
 #imagePanel .drop:hover,#pageDesignPanel .drop:hover{border-color:#1769ff;background:#eef6ff;transform:translateY(-1px)}
 #deleteImage,#deletePageImage{font-weight:850}
+
+/* V4 robust image controls */
+#imagePanel{scroll-margin-top:8px}
+#imagePanel .drop{min-height:40px;display:flex;align-items:center;justify-content:center;font-weight:850;border-style:dashed}
+#imagePanel #deleteImage{color:#b42318;border-color:#efb4b4;background:#fffafa;font-weight:900}
+#imagePanel #deleteImage:hover{background:#fff1f0;border-color:#dc8d88}
+#imagePanel #applyImage{font-weight:900}
 </style>
 </head>
 <body>
@@ -103,6 +110,7 @@ function safeRevokeObjectUrl(url){
 let localPreviewObjectUrl='';
 let pagePreviewObjectUrl='';
 // AI_BOARD_SITE_BUILDER_IMAGE_CONTROLS_FIX_V2
+AI_BOARD_SITE_BUILDER_IMAGE_CONTROLS_FIX_V4
 // Builder image changes are overrides. Restore removes the override and returns to the real LIVE asset.
 const builderImageBaseline=new WeakMap();
 const builderPageBaseline=new WeakMap();
@@ -361,14 +369,13 @@ function refreshInspector(){
     (phone?.querySelector('.as3-screen > img')?.currentSrc||phone?.querySelector('.as3-screen > img')?.src||'');
   const isHeroPhone=!!phone || selected.matches?.('.as3-screen');
   const computedBg=getComputedStyle(selected).backgroundImage;
-  $('imagePanel').hidden=!(selected.tagName==='IMG'||isHeroPhone||computedBg!=='none');
+  $('imagePanel').hidden=!as4ImageCapable(selected);
   $('stylePanel').hidden=false;
   if(textEditable(selected))$('text').value=selected.textContent;
-  if(selected.tagName==='IMG'){$('imagePreview').src=selected.currentSrc||selected.src;$('imageUrl').value=selected.src}
-  else if(isHeroPhone){$('imagePreview').src=phoneImage||'';$('imageUrl').value=phoneImage||''}
-  else if(computedBg!=='none'){
-    const m=computedBg.match(/url\(["']?(.+?)["']?\)/i);
-    $('imagePreview').src=m?.[1]||'';$('imageUrl').value=m?.[1]||'';
+  if(as4ImageCapable(selected)){
+    const cur=as4ImageUrl(selected);
+    $('imagePreview').src=cur||'';
+    $('imageUrl').value=cur||'';
   }
   const st=styleObject(selected),v=currentStyle();
   $('x').value=v.x??st.x;$('y').value=v.y??st.y;$('w').value=v.w??st.w;$('h').value=v.h??st.h;$('fontSize').value=v.fontSize??st.fontSize;$('radius').value=v.radius??st.radius;$('color').value=/^#[0-9a-f]{6}$/i.test(v.color??st.color)?(v.color??st.color):'#17233d';$('backgroundColor').value=/^#[0-9a-f]{6}$/i.test(v.background??st.background)?(v.background??st.background):'#ffffff';$('deviceLabel').textContent=device==='mobile'?'Mobile':'Desktop';
@@ -503,7 +510,9 @@ function applyAll(){
     applyLinkToElement(el,item);
     if(item.src!==undefined&&el.tagName==='IMG')el.src=item.src;
     if(item.bgImage!==undefined&&el.tagName!=='IMG'){
-      if(el.matches?.('.as3-phone,.as3-screen')) applyHeroPhoneImage(el,item.bgImage);
+      const phoneTarget=el.matches?.('.as3-phone')?el:(el.querySelector?.('.as3-phone')||el.closest?.('.as3-phone'));
+      if(phoneTarget) applyHeroPhoneImage(phoneTarget,item.bgImage);
+      else if(el.matches?.('.as3-screen')) applyHeroPhoneImage(el,item.bgImage);
       else el.style.backgroundImage=item.bgImage?'url("'+item.bgImage+'")':'';
     }
     controlled.forEach(k=>{el.style[k]=''});
@@ -882,9 +891,81 @@ $('file').onchange=e=>{
   if(pendingFile)showLocalImagePreview(pendingFile,'file','imagePreview');
 };
 rebindUploadControls();
-$('deleteImage').onclick=()=>{if(!selected){toast('Chưa chọn đối tượng ảnh');return}checkpoint();const item=getItem();delete item.src;delete item.bgImage;restoreBuilderImage(selected);const phone=selected.closest?.('.as3-phone');if(phone)restoreBuilderImage(phone);pendingFile=null;$('file').value='';$('imageUrl').value='';$('imagePreview').removeAttribute('src');applyAll();saveDraft();refreshInspector();toast('↩️ Đã khôi phục ảnh gốc')};
+
+/* AI_BOARD_SITE_BUILDER_IMAGE_CONTROLS_FIX_V4 */
+function as4ImagePhone(el){
+  if(!el)return null;
+  if(el.matches?.('.as3-phone'))return el;
+  return el.closest?.('.as3-phone')||el.querySelector?.('.as3-phone')||null;
+}
+function as4ImageCapable(el){
+  if(!el)return false;
+  if(el.tagName==='IMG')return true;
+  if(as4ImagePhone(el))return true;
+  if(el.querySelector?.('img'))return true;
+  try{return getComputedStyle(el).backgroundImage!=='none'||el.style.backgroundImage!=='none'}catch(_){return !!el.style?.backgroundImage}
+}
+function as4ImageUrl(el){
+  const phone=as4ImagePhone(el);
+  if(phone){
+    const bg=phone.style.backgroundImage||'';
+    const m=bg.match(/url\(["']?(.*?)["']?\)/i);
+    if(m)return m[1];
+    const img=phone.querySelector('.as3-screen > img');
+    if(img)return img.currentSrc||img.src||'';
+  }
+  const img=el?.tagName==='IMG'?el:el?.querySelector?.('img');
+  if(img)return img.currentSrc||img.src||'';
+  const bg=el?.style?.backgroundImage||'';
+  const m=bg.match(/url\(["']?(.*?)["']?\)/i);
+  return m?m[1]:'';
+}
+function as4RestoreImage(el,item){
+  if(item){delete item.src;delete item.bgImage;}
+  const phone=as4ImagePhone(el);
+  if(phone){restoreBuilderImage(phone);return;}
+  if(el?.tagName==='IMG'){restoreBuilderImage(el);return;}
+  const img=el?.querySelector?.('img');
+  if(img){restoreBuilderImage(img);return;}
+  restoreBuilderImage(el);
+}
+$('deleteImage').onclick=()=>{
+  if(!selected){toast('Chưa chọn đối tượng ảnh / khối ảnh');return}
+  checkpoint();
+  const item=getItem();
+  as4RestoreImage(selected,item);
+  pendingFile=null;
+  $('file').value='';
+  $('imageUrl').value='';
+  $('imagePreview').removeAttribute('src');
+  applyAll();
+  saveDraft();
+  refreshInspector();
+  toast('↩️ Đã khôi phục ảnh gốc');
+};
 $('deletePageImage').onclick=()=>{checkpoint();const p=ensurePage();p.bgImage='';$('pageBgUrl').value='';pagePendingFile=null;$('pageFile').value='';const target=findPageTarget(pageStyleTarget());restoreBuilderPageBackground(target);applyAll();saveDraft();refreshPageDesign();toast('↩️ Đã khôi phục nền gốc')};
-$('applyImage').onclick=async()=>{if(!selected)return;let url=$('imageUrl').value.trim();try{if(pendingFile){url=await upload(pendingFile);pendingFile=null}}catch(e){toast('Upload lỗi: '+e.message);return}if(!url)return;checkpoint();const item=getItem();if(selected.tagName==='IMG'){selected.src=url;item.src=url}else{selected.style.backgroundImage='url("'+url+'")';item.bgImage=url}saveDraft();refreshInspector();toast('Đã thay hình')};
+$('applyImage').onclick=async()=>{
+  if(!selected){toast('Chưa chọn đối tượng ảnh / khối ảnh');return}
+  let url=$('imageUrl').value.trim();
+  try{
+    if(pendingFile){url=await upload(pendingFile);pendingFile=null}
+  }catch(e){toast('Upload lỗi: '+e.message);return}
+  if(!url){toast('Hãy chọn ảnh hoặc nhập URL');return}
+  checkpoint();
+  const item=getItem();
+  const phone=as4ImagePhone(selected);
+  const img=selected.tagName==='IMG'?selected:(phone?null:selected.querySelector?.('img'));
+  if(phone){applyHeroPhoneImage(phone,url);item.bgImage=url;delete item.src}
+  else if(img){img.src=url;item.src=url;delete item.bgImage}
+  else{selected.style.backgroundImage='url("'+url.replaceAll('"','%22')+'")';item.bgImage=url;delete item.src}
+  $('file').value='';
+  $('imageUrl').value=url;
+  $('imagePreview').src=url;
+  applyAll();
+  saveDraft();
+  refreshInspector();
+  toast('☁️ Đã thêm / thay ảnh');
+};
 $('desktopBtn').onclick=()=>{device='desktop';$('desktopBtn').classList.add('active');$('mobileBtn').classList.remove('active');$('frame').classList.remove('mobile');applyAll();refreshInspector();};
 $('mobileBtn').onclick=()=>{device='mobile';$('mobileBtn').classList.add('active');$('desktopBtn').classList.remove('active');$('frame').classList.add('mobile');applyAll();refreshInspector();};
 $('undo').onclick=()=>{if(!history.length)return;future.push(snapshot());draft=history.pop();saveDraft();applyAll();toast('↶ Undo')};
