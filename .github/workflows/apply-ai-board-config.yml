@@ -1,0 +1,34 @@
+name: Apply AI Board Config
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  patch:
+    if: ${{ !contains(github.event.head_commit.message, 'chore: remove one-time AI Board config workflow') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inject live config bridge
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('ai-board.html')
+          s=p.read_text(encoding='utf-8')
+          marker='AI_BOARD_ADMIN_CONFIG_BRIDGE_V1'
+          if marker in s: raise SystemExit(0)
+          bridge=r'''<script>/* AI_BOARD_ADMIN_CONFIG_BRIDGE_V1 */
+          (()=>{const wait=()=>{const sb=window.supabaseClient;if(!sb){setTimeout(wait,400);return}load(sb)};async function load(sb){try{const r=await sb.from('ai_board_page_sections').select('slug,icon,title,subtitle,enabled,settings').eq('enabled',true).order('sort_order',{ascending:true});if(r.error||!r.data)return;const m=Object.fromEntries(r.data.map(x=>[x.slug,x]));const cards=[...document.querySelectorAll('section.grid>.card')];const apply=(el,x,heading)=>{if(!el||!x)return;if(!x.enabled){el.style.display='none';return}const h=heading||el.querySelector('h2');if(h)h.textContent=(x.icon||'')+' '+(x.title||h.textContent.replace(/^\S+\s/,'')).trim();const sub=el.querySelector(':scope > .muted');if(sub&&x.subtitle)sub.textContent=x.subtitle};apply(cards[0],m.diagnostic_workspace);apply(cards[1],m.ai_diagnosis);const si=cards[1]?.querySelector('h2[style*="margin-top"]');if(si&&m.schematic_intelligence){si.textContent=(m.schematic_intelligence.icon||'📐')+' '+(m.schematic_intelligence.title||si.textContent.replace(/^\S+\s/,''));const parent=si.parentElement;const sm=parent?.querySelector(':scope > .muted');if(sm&&m.schematic_intelligence.subtitle)sm.textContent=m.schematic_intelligence.subtitle}const lib=document.querySelector('#schematic-library');apply(lib,m.schematic_library);const all=[...document.querySelectorAll('section.card')];const panic=all.find(x=>x.querySelector('.kicker')?.textContent.trim()==='COMMUNITY');const eng=all.find(x=>x.querySelector('.kicker')?.textContent.trim()==='ENGINEERING CENTER');apply(panic,m.panic_center);apply(eng,m.engineering_center);const max=Number(m.schematic_library?.settings?.max_upload_mb||50);const input=document.querySelector('#schematic-library #file');if(input)input.dataset.maxMb=String(max)}catch(e){console.warn('AI Board admin config',e)}}wait()})();</script>'''
+          s=s.replace('</body>',bridge+'\n</body>',1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          git config user.name 'Apple Seed Bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add ai-board.html
+          git commit -m 'feat: connect AI Board sections to admin configuration'
+          git push
+          git rm .github/workflows/apply-ai-board-config.yml
+          git commit -m 'chore: remove one-time AI Board config workflow'
+          git push
