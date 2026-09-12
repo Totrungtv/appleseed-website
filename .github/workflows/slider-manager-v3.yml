@@ -19,12 +19,11 @@ jobs:
           import re
           p=Path('site-builder.html')
           s=p.read_text(encoding='utf-8')
-          marker='APPLE_SEED_SLIDER_MANAGER_V3'
-          if marker in s:
+          if 'APPLE_SEED_SLIDER_MANAGER_V3' in s:
               print('already installed')
               raise SystemExit(0)
-          new_script=Path('/tmp/slider_manager_v3.js').read_text(encoding='utf-8')
-          pat=r'<script id="APPLE_SEED_SLIDER_MANAGER_V2">[\\s\\S]*?</script>'
+          new_script=Path('slider-manager-v3.js').read_text(encoding='utf-8')
+          pat=r'<script id="APPLE_SEED_SLIDER_MANAGER_V2">[\s\S]*?</script>'
           s2,n=re.subn(pat,new_script,s,count=1)
           if n!=1:
               raise SystemExit(f'old slider manager block not found: {n}')
@@ -35,9 +34,9 @@ jobs:
           git add site-builder.html
           git commit -m 'install slider editor v3'
           git push
-      - name: Remove temporary workflow
+      - name: Remove patch payload and workflow
         if: success()
         run: |
-          git rm .github/workflows/slider-manager-v3.yml
+          git rm slider-manager-v3.js .github/workflows/slider-manager-v3.yml
           git commit -m 'cleanup slider editor v3 installer'
           git push
