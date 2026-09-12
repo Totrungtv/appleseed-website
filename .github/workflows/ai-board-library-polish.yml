@@ -1,0 +1,119 @@
+name: Polish AI Board Schematic Library
+on:
+  push:
+    paths:
+      - 'backups/ai-board-library-polish-trigger.txt'
+  workflow_dispatch:
+jobs:
+  polish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Polish library UI
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('ai-board.html')
+          s=p.read_text(encoding='utf-8')
+          marker='/* AI_BOARD_SCHEMATIC_LIBRARY_POLISH_V1 */'
+          if marker not in s:
+              css=r'''<style id="apple-seed-schematic-library-polish">
+          /* AI_BOARD_SCHEMATIC_LIBRARY_POLISH_V1 */
+          .as-schematic-pro{position:relative;overflow:hidden;background:linear-gradient(180deg,#ffffff 0%,#fbfdff 100%)!important;border:1px solid #d7e5f5!important;border-radius:24px!important;box-shadow:0 20px 60px rgba(27,76,128,.10)!important;padding:0!important}
+          .as-schematic-pro .as-lib-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 24px;background:linear-gradient(135deg,#0b2a4a,#1769ff 72%,#42a5ff);color:#fff}
+          .as-schematic-pro .as-lib-head h2{margin:0!important;color:#fff!important;font-size:24px!important;letter-spacing:-.02em}
+          .as-schematic-pro .as-lib-head p{margin:5px 0 0!important;color:#dbeafe!important;font-size:13px!important}
+          .as-schematic-pro .as-lib-head .as-lib-badge{padding:7px 11px;border-radius:999px;background:#ffffff20;border:1px solid #ffffff35;color:#fff;font-size:11px;font-weight:900;white-space:nowrap}
+          .as-schematic-pro .as-lib-body{padding:20px 24px 24px}
+          .as-schematic-pro .as-platforms{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:16px}
+          .as-schematic-pro .as-platform-btn{border:1px solid #d5e3f3!important;background:#f7fbff!important;color:#365775!important;border-radius:12px!important;padding:10px 15px!important;font-weight:900!important;cursor:pointer!important;transition:.18s!important}
+          .as-schematic-pro .as-platform-btn:hover{transform:translateY(-1px);border-color:#8bb9e8!important;background:#eef7ff!important}
+          .as-schematic-pro .as-platform-btn.active{background:#1769ff!important;color:#fff!important;border-color:#1769ff!important;box-shadow:0 8px 20px #1769ff2e!important}
+          .as-schematic-pro .as-family-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+          .as-schematic-pro .as-family-list details{border:1px solid #dbe7f3;border-radius:15px;background:#fff;overflow:hidden;transition:.18s}
+          .as-schematic-pro .as-family-list details:hover{border-color:#a9cbed;box-shadow:0 8px 24px #1e508214}
+          .as-schematic-pro .as-family-list summary{list-style:none;cursor:pointer;padding:13px 14px;font-weight:900;color:#244663;display:flex;align-items:center;gap:8px;background:#f8fbff}
+          .as-schematic-pro .as-family-list summary::-webkit-details-marker{display:none}
+          .as-schematic-pro .as-family-list summary:before{content:'›';width:23px;height:23px;border-radius:7px;display:grid;place-items:center;background:#eaf4ff;color:#1769ff;font-size:18px;transition:.18s}
+          .as-schematic-pro .as-family-list details[open] summary:before{transform:rotate(90deg);background:#1769ff;color:#fff}
+          .as-schematic-pro .as-model-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding:10px;background:#fff}
+          .as-schematic-pro .as-model-grid button,.as-schematic-pro .as-model-grid a{width:100%;min-height:38px;border:1px solid #e1eaf4!important;border-radius:10px!important;background:#fff!important;color:#31506d!important;font-size:12px!important;font-weight:800!important;text-align:left!important;padding:8px 10px!important;cursor:pointer!important;box-sizing:border-box;transition:.16s!important}
+          .as-schematic-pro .as-model-grid button:hover,.as-schematic-pro .as-model-grid a:hover{background:#eef7ff!important;border-color:#8bb9e8!important;color:#1769ff!important;transform:translateY(-1px)}
+          .as-schematic-pro .as-selected-model{margin-top:16px;padding:15px 16px;border-radius:15px;background:linear-gradient(135deg,#f1f7ff,#f8fbff);border:1px solid #cfe2f7;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+          .as-schematic-pro .as-selected-model .as-model-name{font-size:17px;font-weight:950;color:#173b5c}
+          .as-schematic-pro .as-selected-model .as-model-meta{font-size:12px;color:#71869e;margin-top:3px}
+          .as-schematic-pro .as-file-list{display:grid;gap:8px;margin-top:12px}
+          .as-schematic-pro .as-file-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 13px;border:1px solid #dce8f4;border-radius:12px;background:#fff}
+          .as-schematic-pro .as-file-item:hover{border-color:#9fc8ee;background:#fbfdff}
+          .as-schematic-pro .as-file-name{font-weight:850;color:#254966;word-break:break-word}
+          .as-schematic-pro .as-file-meta{font-size:11px;color:#7890a8;margin-top:3px}
+          .as-schematic-pro .as-upload-panel{margin-top:18px;padding:18px;border:1px solid #d7e5f3;border-radius:18px;background:#fff;box-shadow:0 8px 28px #1e50820b}
+          .as-schematic-pro .as-upload-panel h3{margin:0 0 4px;color:#173b5c;font-size:16px}
+          .as-schematic-pro .as-upload-panel>p{margin:0 0 13px;color:#71869e;font-size:12px}
+          .as-schematic-pro .as-upload-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+          .as-schematic-pro .as-upload-grid label{font-size:11px;font-weight:900;color:#49647f}
+          .as-schematic-pro .as-upload-grid select,.as-schematic-pro .as-upload-grid input[type=file]{margin-top:6px!important;background:#f8fbff!important;border:1px solid #d4e3f2!important;border-radius:11px!important;padding:10px!important}
+          .as-schematic-pro .as-upload-action{margin-top:11px;display:flex;justify-content:flex-end}
+          .as-schematic-pro .as-upload-action button{border:0!important;border-radius:11px!important;padding:11px 16px!important;background:linear-gradient(135deg,#1769ff,#42a5ff)!important;color:#fff!important;font-weight:900!important;box-shadow:0 8px 18px #1769ff26!important}
+          .as-schematic-pro .as-empty{padding:18px;text-align:center;border:1px dashed #cbdceb;border-radius:13px;background:#f8fbff;color:#71869e;font-size:13px}
+          @media(max-width:800px){.as-schematic-pro .as-lib-head{padding:18px}.as-schematic-pro .as-lib-body{padding:16px}.as-schematic-pro .as-family-list{grid-template-columns:1fr}.as-schematic-pro .as-model-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.as-schematic-pro .as-upload-grid{grid-template-columns:1fr}}
+          @media(max-width:500px){.as-schematic-pro .as-model-grid{grid-template-columns:1fr}.as-schematic-pro .as-file-item{align-items:flex-start;flex-direction:column}}
+          </style>'''
+              js=r'''<script id="apple-seed-schematic-library-polish-js">
+          (function(){
+            function polish(){
+              const heads=[...document.querySelectorAll('h1,h2,h3')];
+              const h=heads.find(x=>(x.textContent||'').trim().toLowerCase()==='schematic library');
+              if(!h) return false;
+              const card=h.closest('.card')||h.parentElement;
+              if(!card||card.classList.contains('as-schematic-pro')) return true;
+              card.classList.add('as-schematic-pro');
+              const original=[...card.children];
+              const head=document.createElement('div'); head.className='as-lib-head';
+              const left=document.createElement('div');
+              const title=document.createElement('h2'); title.textContent='Schematic Library';
+              const sub=document.createElement('p'); sub.textContent='Thư viện sơ đồ kỹ thuật iPhone & iPad — tra cứu, mở và quản lý theo model.';
+              left.append(title,sub); const badge=document.createElement('span'); badge.className='as-lib-badge'; badge.textContent='APPLE SEED • BOARD INTELLIGENCE';
+              head.append(left,badge); card.insertBefore(head,card.firstChild);
+              const body=document.createElement('div'); body.className='as-lib-body';
+              while(card.children.length>1) body.append(card.children[1]); card.append(body);
+              const controls=[...body.querySelectorAll('button')];
+              controls.slice(0,2).forEach(b=>b.classList.add('as-platform-btn'));
+              const details=[...body.querySelectorAll('details')];
+              if(details.length){
+                const top=details[0];
+                const firstSummary=(top.querySelector('summary')?.textContent||'').toLowerCase();
+                if(firstSummary.includes('iphone')||firstSummary.includes('ipad')){
+                  top.classList.add('as-platform-details');
+                }
+                details.forEach(d=>d.classList.add('as-family-list-item'));
+              }
+              return true;
+            }
+            let tries=0; const timer=setInterval(()=>{if(polish()||++tries>60)clearInterval(timer)},250);
+            new MutationObserver(()=>polish()).observe(document.body,{childList:true,subtree:true});
+          })();
+          </script>'''
+              s=s.replace('</head>',css+'\n</head>')
+              s=s.replace('</body>',js+'\n</body>')
+              p.write_text(s,encoding='utf-8')
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add ai-board.html
+          git commit -m 'Polish Schematic Library UI' || true
+          git push origin main
+      - name: Remove one-time workflow
+        if: always()
+        run: |
+          rm -f .github/workflows/ai-board-library-polish.yml backups/ai-board-library-polish-trigger.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Remove temporary library polish workflow' || true
+          git push origin main || true
