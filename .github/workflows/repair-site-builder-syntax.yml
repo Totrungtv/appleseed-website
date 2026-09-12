@@ -1,0 +1,41 @@
+name: Repair Site Builder syntax
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Remove stray V4 token
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('site-builder.html')
+          s=p.read_text(encoding='utf-8')
+          bad='AI_BOARD_SITE_BUILDER_IMAGE_CONTROLS_FIX_V4\n// Builder image changes are overrides.'
+          if bad not in s:
+              print('No syntax repair needed')
+              raise SystemExit(0)
+          s=s.replace(bad,'/* AI_BOARD_SITE_BUILDER_IMAGE_CONTROLS_FIX_V4 */\n// Builder image changes are overrides.',1)
+          p.write_text(s,encoding='utf-8')
+          print('Removed stray V4 identifier; restored valid JavaScript comment.')
+          PY
+      - name: Commit repaired Builder
+        run: |
+          if git diff --quiet -- site-builder.html; then
+            echo 'No changes to commit'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add site-builder.html
+          git commit -m 'fix: repair Site Builder JavaScript syntax'
+          git push
