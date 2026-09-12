@@ -1,10 +1,10 @@
-/* APPLE_SEED_THEME_SELECTION_BRIDGE_V9 */
+/* APPLE_SEED_THEME_SELECTION_BRIDGE_V10 */
 (function(){'use strict';
 if(location.pathname.split('/').pop().toLowerCase()!=='site-builder.html')return;
 const COLOR_KEY='APPLE_SEED_SITE_THEME_V1',FULL_KEY='APPLE_SEED_FULL_THEME_V1';let installed=false;
 function norm(v){const n=parseInt(String(v||''),10);return n>=1&&n<=30?String(n).padStart(2,'0'):''}
-function getColor(){try{return norm((typeof draft!=='undefined'&&draft&&draft.theme_id)||localStorage.getItem(COLOR_KEY)||'01')||'01'}catch(_){return'01'}}
-function getFull(){try{return norm((typeof draft!=='undefined'&&draft&&draft.full_theme_id)||localStorage.getItem(FULL_KEY)||'01')||'01'}catch(_){return'01'}}
+function getColor(){try{return norm(localStorage.getItem(COLOR_KEY)||'')||norm((typeof draft!=='undefined'&&draft&&draft.theme_id)||'')||'01'}catch(_){return'01'}}
+function getFull(){try{return norm(localStorage.getItem(FULL_KEY)||'')||norm((typeof draft!=='undefined'&&draft&&draft.full_theme_id)||'')||'01'}catch(_){return'01'}}
 function setRootClass(r,p,v){if(!r)return;for(let i=1;i<=30;i++)r.classList.remove(p+String(i).padStart(2,'0'));r.classList.add(p+v)}
 function link(d,id,href){let e=d.getElementById(id);if(!e){e=d.createElement('link');e.id=id;e.rel='stylesheet';e.href=href;(d.head||d.documentElement).appendChild(e)}else if(e.href!==new URL(href,location.href).href)e.href=href}
 function applyPreview(){const f=document.getElementById('preview'),d=f&&f.contentDocument;if(!d||!d.documentElement)return;const c=getColor(),t=getFull();setRootClass(d.documentElement,'as-theme-',c);setRootClass(d.body,'as-theme-',c);setRootClass(d.documentElement,'as-full-theme-',t);setRootClass(d.body,'as-full-theme-',t);d.documentElement.classList.add('as-theme-scope','as-full-theme-scope');if(d.body)d.body.classList.add('as-theme-scope','as-full-theme-scope');link(d,'apple-seed-30-themes-link','site-builder-themes.css?v=20260912-theme1');link(d,'apple-seed-full-themes-link','site-builder-full-themes.css?v=20260912-full3');link(d,'apple-seed-layouts-link','site-builder-layouts.css?v=20260912-layout2')}
