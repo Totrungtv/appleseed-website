@@ -19,7 +19,10 @@ jobs:
           set -euo pipefail
           grep -q 'APPLE_SEED_IMAGE_REPLACE_SELECTED_V2' site-builder.html
           grep -q 'site-builder-image-controls.js' site-builder.html
-          grep -q 'appleSeedVisualBuilderImageOverridesV2' site-builder-image-controls.js
+          grep -q 'APPLE_SEED_IMAGE_CONTROLS_V1' site-builder.html
+          grep -q 'appleSeedVisualBuilderImageOverridesV3' site-builder-image-controls.js
+          grep -q 'function beforePublish' site-builder-image-controls.js
+          grep -q 'function getDoc' site-builder-image-controls.js
           node --check site-builder-image-controls.js
           git diff --check
-          echo 'Builder image replacement controls validated.'
+          echo 'Builder image replacement/publish persistence controls validated.'
