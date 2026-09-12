@@ -30,25 +30,28 @@ jobs:
           from pathlib import Path
           import re
           p=Path('site-builder.html'); s=p.read_text(encoding='utf-8')
-          s=re.sub(r'site-theme-selection-bridge\.js\?v=[^"\']+','site-theme-selection-bridge.js?v=20260912-theme-bridge25',s)
-          s=re.sub(r'site-theme-selection-lock\.js\?v=[^"\']+','site-theme-selection-lock.js?v=20260912-lock4',s)
-          s=re.sub(r'site-builder-full-themes\.css\?v=[^"\']+','site-builder-full-themes.css?v=20260912-full3',s)
-          s=re.sub(r'site-builder-runtime\.js\?v=[^"\']+','site-builder-runtime.js?v=20260912-v16',s)
+          s=re.sub(r'site-theme-selection-bridge\\.js\\?v=[^"\\']+','site-theme-selection-bridge.js?v=20260912-theme-bridge25',s)
+          s=re.sub(r'site-theme-selection-lock\\.js\\?v=[^"\\']+','site-theme-selection-lock.js?v=20260912-lock4',s)
+          s=re.sub(r'site-builder-full-themes\\.css\\?v=[^"\\']+','site-builder-full-themes.css?v=20260912-full3',s)
+          s=re.sub(r'site-builder-runtime\\.js\\?v=[^"\\']+','site-builder-runtime.js?v=20260912-v16',s)
           s=s.replace('localStorage.getItem(KEY)||draft?.theme_id','draft?.theme_id||localStorage.getItem(KEY)')
           s=s.replace('localStorage.getItem(KEY)||draft?.full_theme_id','draft?.full_theme_id||localStorage.getItem(KEY)')
-          loop_patterns=[r'setInterval\(\s*\(\)\s*=>\s*\{[^{}]{0,1200}\}\s*,\s*1500\s*\)\s*;?',r'setInterval\(\s*\(\)\s*=>\s*(?:apply|render)\([^;]{0,800}\)\s*,\s*1500\s*\)\s*;?']
+          loop_patterns=[r'setInterval\\(\\s*\\(\\)\\s*=>\\s*\\{[^{}]{0,1200}\\}\\s*,\\s*1500\\s*\\)\\s*;?',r'setInterval\\(\\s*\\(\\)\\s*=>\\s*(?:apply|render)\\([^;]{0,800}\\)\\s*,\\s*1500\\s*\\)\\s*;?']
           for pat in loop_patterns:s=re.sub(pat,'',s,flags=re.S)
-          s=re.sub(r'<script[^>]*id=["\']APPLE_SEED_30_THEME_SELECTION_FIX_V1["\'][^>]*>.*?</script>\s*<!--\s*APPLE_SEED_30_THEME_SELECTION_FIX_V1\s*-->', '', s, flags=re.S|re.I)
+          s=re.sub(r'<script[^>]*id=["\\']APPLE_SEED_30_THEME_SELECTION_FIX_V1["\\'][^>]*>.*?</script>\\s*<!--\\s*APPLE_SEED_30_THEME_SELECTION_FIX_V1\\s*-->', '', s, flags=re.S|re.I)
           lock='<script src="site-theme-selection-lock.js?v=20260912-lock4"></script>'
-          s=re.sub(r'(?:<script src="site-theme-selection-lock\.js\?v=20260912-lock4"></script>\s*){2,}',lock+'\n',s)
+          s=re.sub(r'(?:<script src="site-theme-selection-lock\\.js\\?v=20260912-lock4"></script>\\s*){2,}',lock+'\\n',s)
           marker='APPLE_SEED_LAYOUTS_LINK_V2'; link='<link rel="stylesheet" href="site-builder-layouts.css?v=20260912-layout2">'
-          if marker not in s:s=s.replace('</head>',link+'\n<!-- '+marker+' -->\n</head>',1)
+          if marker not in s:s=s.replace('</head>',link+'\\n<!-- '+marker+' -->\\n</head>',1)
           lock_marker='APPLE_SEED_THEME_SELECTION_LOCK_V2'
-          if lock_marker not in s:s=s.replace('</body>',lock+'\n<!-- '+lock_marker+' -->\n</body>',1)
+          if lock_marker not in s:s=s.replace('</body>',lock+'\\n<!-- '+lock_marker+' -->\\n</body>',1)
+          image_marker='APPLE_SEED_IMAGE_CONTROLS_V1'
+          image_script='<script src="site-builder-image-controls.js?v=20260913-image1"></script>'
+          if image_marker not in s:s=s.replace('</body>',image_script+'\\n<!-- '+image_marker+' -->\\n</body>',1)
           bad=[]
           if 'localStorage.getItem(KEY)||draft?.theme_id' in s: bad.append('color theme getter still storage-first')
           if 'localStorage.getItem(KEY)||draft?.full_theme_id' in s: bad.append('full theme getter still storage-first')
-          if re.search(r'setInterval\(\s*\(\)\s*=>[^;]{0,1500}(?:apply|render)[^;]{0,1500},\s*1500\s*\)',s,re.S): bad.append('possible legacy 1500ms theme renderer remains')
+          if re.search(r'setInterval\\(\\s*\\(\\)\\s*=>[^;]{0,1500}(?:apply|render)[^;]{0,1500},\\s*1500\\s*\\)',s,re.S): bad.append('possible legacy 1500ms theme renderer remains')
           if bad: raise SystemExit('Theme authority validation failed: '+', '.join(bad))
           p.write_text(s,encoding='utf-8')
           PY
