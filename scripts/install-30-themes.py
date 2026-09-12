@@ -1,0 +1,57 @@
+from pathlib import Path
+
+MARKER='APPLE_SEED_30_THEMES_V1'
+
+panel='''<div class="panel" id="appleSeedThemePanel"><h3>🎨 30 Theme Website</h3><div class="muted" style="margin-bottom:8px">Chọn Theme để xem ngay trên Preview. Theme được lưu cùng bản nháp và Publish.</div><div id="appleSeedThemeGrid" class="as-theme-grid"></div><div id="appleSeedThemeStatus" style="margin-top:8px;font-size:10px;font-weight:850;color:#1769ff"></div><button class="btn" id="appleSeedThemeReset" type="button" style="width:100%;margin-top:7px">↺ Theme Apple Seed mặc định</button></div>'''
+
+ui_css='''.as-theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.as-theme-choice{position:relative;border:1px solid #dfe5ed;background:#fff;border-radius:9px;padding:7px;text-align:left;cursor:pointer;font-size:10px;font-weight:850;min-height:54px}.as-theme-choice:hover{border-color:#1769ff;transform:translateY(-1px)}.as-theme-choice.active{border-color:#1769ff;box-shadow:inset 0 0 0 2px #1769ff;background:#f5f8ff}.as-theme-dot{width:22px;height:22px;border-radius:50%;display:block;margin-bottom:4px;box-shadow:0 0 0 1px #d5dce5}.as-theme-no{position:absolute;right:6px;top:6px;color:#98a2b3;font-size:9px}'''
+
+script=r'''<script id="APPLE_SEED_30_THEMES_V1">
+(function(){
+'use strict';
+const KEY='APPLE_SEED_SITE_THEME_V1';
+const THEMES=[['01','Apple Clean'],['02','Ocean Blue'],['03','Royal Purple'],['04','Emerald'],['05','Ruby'],['06','Sunset'],['07','Cyan Tech'],['08','Rose'],['09','Indigo'],['10','Teal'],['11','Golden Light'],['12','Slate'],['13','Cherry'],['14','Forest'],['15','Sky'],['16','Violet'],['17','Copper'],['18','Deep Indigo'],['19','Mint'],['20','Ice Blue'],['21','Midnight'],['22','Night Blue'],['23','Night Purple'],['24','Night Emerald'],['25','Night Rose'],['26','Night Gold'],['27','Night Cyan'],['28','Night Pink'],['29','Night Lime'],['30','Night Orange']];
+const COLORS=['#111827','#2563eb','#7c3aed','#059669','#dc2626','#ea580c','#0891b2','#db2777','#4f46e5','#0f766e','#ca8a04','#475569','#be123c','#15803d','#0369a1','#9333ea','#c2410c','#4338ca','#047857','#0369a1','#334155','#60a5fa','#a78bfa','#34d399','#fb7185','#fbbf24','#22d3ee','#f472b6','#84cc16','#f97316'];
+let grid,status;
+function valid(v){v=String(v||'01');return /^([0-9]|[12][0-9]|30)$/.test(v)?String(v).padStart(2,'0'):'01'}
+function get(){try{return valid(localStorage.getItem(KEY)||draft?.theme_id||'01')}catch(_){return valid(draft?.theme_id||'01')}}
+function apply(v){const f=$('preview'),d=f?.contentDocument;if(!d?.body)return;for(let i=1;i<=30;i++)d.body.classList.remove('as-theme-'+String(i).padStart(2,'0'));d.body.classList.add('as-theme-scope','as-theme-'+v);let l=d.getElementById('apple-seed-30-themes-link');if(!l){l=d.createElement('link');l.id='apple-seed-30-themes-link';l.rel='stylesheet';l.href='site-builder-themes.css?v=20260912-theme1';d.head?.appendChild(l)}}
+function render(v){grid?.querySelectorAll('[data-theme-id]').forEach(x=>x.classList.toggle('active',x.dataset.themeId===v));if(status)status.textContent='Đang chọn: Theme '+v+' — '+THEMES[parseInt(v,10)-1][1]}
+function set(v){v=valid(v);draft.theme_id=v;try{localStorage.setItem(KEY,v)}catch(_){}apply(v);render(v);saveDraft();toast('🎨 Đã chọn Theme '+v)}
+function init(){grid=$('appleSeedThemeGrid');status=$('appleSeedThemeStatus');if(!grid)return;grid.innerHTML=THEMES.map((x,i)=>'<button type="button" class="as-theme-choice" data-theme-id="'+x[0]+'"><span class="as-theme-dot" style="background:'+COLORS[i]+'"></span><span>Theme '+x[0]+'</span><br><span style="font-size:9px;color:#667085;font-weight:600">'+x[1]+'</span><span class="as-theme-no">#'+x[0]+'</span></button>').join('');grid.querySelectorAll('[data-theme-id]').forEach(x=>x.onclick=()=>set(x.dataset.themeId));$('appleSeedThemeReset')?.addEventListener('click',()=>set('01'));render(get());apply(get())}
+$('preview')?.addEventListener('load',()=>setTimeout(()=>{apply(get());render(get())},250));
+const t=setInterval(()=>{if($('appleSeedThemeGrid')){init();clearInterval(t)}},100);setTimeout(()=>clearInterval(t),30000);setInterval(()=>{apply(get());render(get())},1500);
+})();
+</script>
+'''
+
+b=Path('site-builder.html')
+s=b.read_text(encoding='utf-8')
+if MARKER not in s:
+    s=s.replace('</head>','<link rel="stylesheet" href="site-builder-themes.css?v=20260912-theme1">\n<!-- '+MARKER+' -->\n</head>',1)
+    s=s.replace('</style>', '<style id="apple-seed-30-theme-ui">'+ui_css+'</style>\n</style>',1)
+    s=s.replace('<div class="panel"><h3>🕘 Lịch sử xuất bản</h3>',panel+'\n  <div class="panel"><h3>🕘 Lịch sử xuất bản</h3>',1)
+    pos=s.find("<script id='APPLE_SEED_HERO_MODE_ADMIN_V1'>")
+    if pos<0: raise SystemExit('Hero mode marker missing; refusing to patch Builder')
+    s=s[:pos]+script+s[pos:]
+    b.write_text(s,encoding='utf-8')
+
+c=Path('site-builder-themes.css')
+cs=c.read_text(encoding='utf-8')
+extra='''\n/* APPLE_SEED_30_THEMES_LIVE_V1 */\n.as-theme-scope{background:var(--as-theme-bg)!important;color:var(--as-theme-text)!important}.as-theme-scope .site-header,.as-theme-scope .site-header .header-inner{background:var(--as-theme-card)!important;border-color:var(--as-theme-border)!important}.as-theme-scope .as3-hero,.as-theme-scope .services,.as-theme-scope .contact,.as-theme-scope .dynamic-pages-section{background:var(--as-theme-bg)!important;color:var(--as-theme-text)!important}.as-theme-scope .as3-title,.as-theme-scope .as3-sub,.as-theme-scope .as3-desc,.as-theme-scope .site-header .brand-title,.as-theme-scope .site-header .menu a{color:var(--as-theme-text)!important}.as-theme-scope .as3-kicker,.as-theme-scope .as3-service .ico,.as-theme-scope .as3-stat b,.as-theme-scope .as3-play{color:var(--as-theme-accent)!important}.as-theme-scope .as3-btn.gold,.as-theme-scope .site-header .booking-nav{background:var(--as-theme-accent)!important;border-color:var(--as-theme-accent)!important}.as-theme-scope .as3-service,.as-theme-scope .as3-stats,.as-theme-scope .product-home-card,.as-theme-scope .contact-card,.as-theme-scope .map-card,.as-theme-scope .dynamic-pages-section .page-card{background:var(--as-theme-card)!important;border-color:var(--as-theme-border)!important;color:var(--as-theme-text)!important;box-shadow:var(--as-theme-shadow)!important}\n'''
+if 'APPLE_SEED_30_THEMES_LIVE_V1' not in cs:c.write_text(cs+extra,encoding='utf-8')
+
+r=Path('site-builder-runtime.js')
+rs=r.read_text(encoding='utf-8')
+if 'APPLE_SEED_30_THEMES_RUNTIME_V1' not in rs:
+    needle='  function applyHeroMode(mode){'
+    if needle not in rs: raise SystemExit('Hero runtime marker missing; refusing to patch runtime')
+    ins='''  function applyTheme(themeId){\n    var v=/^(?:[1-9]|[12][0-9]|30)$/.test(String(themeId||''))?String(themeId).padStart(2,'0'):'01';\n    try{\n      var st=document.getElementById('apple-seed-30-themes-runtime');\n      if(!st){st=document.createElement('link');st.id='apple-seed-30-themes-runtime';st.rel='stylesheet';st.href='site-builder-themes.css?v=20260912-theme1';(document.head||root).appendChild(st)}\n      for(var i=1;i<=30;i++)root.classList.remove('as-theme-'+String(i).padStart(2,'0'));\n      root.classList.add('as-theme-scope','as-theme-'+v);\n    }catch(_){ }\n  }\n\n  /* APPLE_SEED_30_THEMES_RUNTIME_V1 */\n  function applyHeroMode(mode){'''
+    rs=rs.replace(needle,ins,1)
+    old="      var mode=data&&data.config&&data.config.hero_mode==='phones'?'phones':'slider';\n      applyHeroMode(mode);"
+    new="      var mode=data&&data.config&&data.config.hero_mode==='phones'?'phones':'slider';\n      applyHeroMode(mode);\n      applyTheme(data&&data.config&&data.config.theme_id);"
+    if old not in rs: raise SystemExit('Runtime apply point missing; refusing to patch runtime')
+    rs=rs.replace(old,new,1)
+    r.write_text(rs,encoding='utf-8')
+
+print('30-theme installation prepared')
