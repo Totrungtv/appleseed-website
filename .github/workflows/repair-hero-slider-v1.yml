@@ -20,8 +20,7 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-          # The patch script stores its generated JS block with literal \\n          # sequences because it is embedded in a Python raw string. Normalize
-          # only that newly generated block; never touch the rest of Builder JS.
+          # Normalize only the newly generated Hero Slider blocks.
           p=Path('site-builder.html')
           s=p.read_text(encoding='utf-8')
           marker='/* APPLE_SEED_HERO_SLIDER_V1 */'
@@ -29,7 +28,7 @@ jobs:
               a=s.index(marker)
               b=s.find("$('deleteImage').onclick=()=>{",a)
               if b<0: raise SystemExit('Cannot locate Hero Slider block end')
-              block=s[a:b].replace('\\\\n','\\n')
+              block=s[a:b].replace('\\n','\n')
               s=s[:a]+block+s[b:]
               p.write_text(s,encoding='utf-8')
           p=Path('index.html')
@@ -39,7 +38,7 @@ jobs:
               a=s.index(marker)
               b=s.find('</script>',a)
               if b<0: raise SystemExit('Cannot locate live Hero Slider script end')
-              block=s[a:b].replace('\\\\n','\\n')
+              block=s[a:b].replace('\\n','\n')
               s=s[:a]+block+s[b:]
               p.write_text(s,encoding='utf-8')
           PY
