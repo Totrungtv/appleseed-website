@@ -1,0 +1,118 @@
+name: Repair Site Builder image controls V3
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    if: contains(github.event.head_commit.message, 'trigger site builder image controls v3')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch image controls
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          p=Path('site-builder.html')
+          s=p.read_text(encoding='utf-8')
+          marker='AI_BOARD_SITE_BUILDER_IMAGE_CONTROLS_FIX_V3'
+          if marker in s:
+              print('V3 already installed')
+              raise SystemExit(0)
+
+          def replace_assignment(src, key, replacement):
+              token=f"$(''{key}'').onclick=".replace("''", "'")
+              start=src.find(token)
+              if start<0:
+                  raise SystemExit(f'handler not found: {key}')
+              eq=src.find('=', start)+1
+              # Find the terminating semicolon while respecting braces/strings/comments.
+              i=eq; depth=0; quote=None; esc=False; line_comment=False; block_comment=False
+              while i<len(src):
+                  c=src[i]; n=src[i+1] if i+1<len(src) else ''
+                  if line_comment:
+                      if c=='\n': line_comment=False
+                  elif block_comment:
+                      if c=='*' and n=='/': block_comment=False; i+=1
+                  elif quote:
+                      if esc: esc=False
+                      elif c=='\\': esc=True
+                      elif c==quote: quote=None
+                  else:
+                      if c in "'\"`": quote=c
+                      elif c=='/' and n=='/': line_comment=True; i+=1
+                      elif c=='/' and n=='*': block_comment=True; i+=1
+                      elif c=='{': depth+=1
+                      elif c=='}':
+                          depth-=1
+                          if depth==0:
+                              j=i+1
+                              while j<len(src) and src[j].isspace(): j+=1
+                              if j<len(src) and src[j]==';': j+=1
+                              return src[:start]+replacement+src[j:]
+                  i+=1
+              raise SystemExit(f'unterminated handler: {key}')
+
+          helper=r'''\n/* AI_BOARD_SITE_BUILDER_IMAGE_CONTROLS_FIX_V3 */\nfunction as3ImageTarget(el){\n  if(!el)return null;\n  if(el.tagName==='IMG')return el;\n  return el.querySelector?.('img')||null;\n}\nfunction as3ImageCapable(el){\n  return !!(el && (el.tagName==='IMG' || el.querySelector?.('img') || el.style?.backgroundImage));\n}\nfunction as3CurrentImage(el){\n  const img=as3ImageTarget(el);\n  if(img)return img.currentSrc||img.src||'';\n  const bg=el?.style?.backgroundImage||'';\n  const m=bg.match(/url\\([\"']?(.*?)[\"']?\\)/);\n  return m?m[1]:'';\n}\nfunction as3ClearImageOverride(el,item){\n  if(item){item.src='';delete item.bgImage;}\n  const base=window.builderImageBaseline?.get?.(el);\n  const img=as3ImageTarget(el);\n  if(base?.target?.html!==undefined){\n    try{el.innerHTML=base.target.html;}catch(_){ }\n  }else if(base?.img){\n    if(img){\n      if(base.img.src)img.setAttribute('src',base.img.src);else img.removeAttribute('src');\n      if(base.img.srcset)img.setAttribute('srcset',base.imgset||base.img.srcset);else img.removeAttribute('srcset');\n      if(base.img.sizes)img.setAttribute('sizes',base.img.sizes);else img.removeAttribute('sizes');\n    }\n  }else if(img){\n    img.removeAttribute('src');img.removeAttribute('srcset');img.removeAttribute('sizes');\n  }\n  if(base?.style?.backgroundImage!==undefined)el.style.backgroundImage=base.style.backgroundImage;\n  else el.style.removeProperty('background-image');\n}\n'''
+          # Insert helper into the main application script, immediately before the first image handler.
+          first=s.find("$('deleteImage').onclick=")
+          if first<0: raise SystemExit('deleteImage anchor not found')
+          script_open=s.rfind('<script',0,first); script_close=s.find('</script>',first)
+          if script_open<0 or script_close<0: raise SystemExit('main script boundary not found')
+          s=s[:first]+helper+s[first:]
+
+          delete_code=r'''$('deleteImage').onclick=()=>{\n  if(!selected){toast('Chưa chọn đối tượng ảnh / khối ảnh');return}\n  checkpoint();\n  const item=getItem();\n  as3ClearImageOverride(selected,item);\n  pendingFile=null;\n  $('file').value='';\n  $('imageUrl').value='';\n  $('imagePreview').removeAttribute('src');\n  applyAll();\n  saveDraft();\n  refreshInspector();\n  toast('↩️ Đã khôi phục ảnh gốc');\n};'''
+          s=replace_assignment(s,'deleteImage',delete_code)
+
+          # Replace applyImage so both a real IMG and a selected image container/slider work.
+          apply_code=r'''$('applyImage').onclick=()=>{\n  if(!selected){toast('Chưa chọn đối tượng ảnh / khối ảnh');return}\n  const url=String($('imageUrl').value||'').trim();\n  const src=(pendingFile?.dataUrl||url||'').trim();\n  if(!src){toast('Hãy chọn ảnh từ máy hoặc nhập URL');return}\n  checkpoint();\n  const item=getItem();\n  const img=as3ImageTarget(selected);\n  if(img){img.src=src;item.src=src;delete item.bgImage}\n  else{selected.style.backgroundImage=`url("${src.replaceAll('"','%22')}")`;item.bgImage=src;delete item.src}\n  pendingFile=null;\n  $('file').value='';\n  $('imageUrl').value=src;\n  $('imagePreview').src=src;\n  applyAll();\n  saveDraft();\n  refreshInspector();\n  toast('☁️ Đã thêm / thay ảnh');\n};'''
+          s=replace_assignment(s,'applyImage',apply_code)
+
+          # Make the inspector expose image controls for containers that actually contain an image.
+          replacements=0
+          for pat in [r"\$\('imagePanel'\)\.hidden\s*=\s*[^;]+;", r"\$\('imagePanel'\)\.hidden\s*=\s*[^;]+"]:
+              new,n=re.subn(pat,"$('imagePanel').hidden=!as3ImageCapable(selected);",s,count=1)
+              if n:
+                  s=new; replacements+=n
+                  break
+          if replacements==0:
+              # Safe fallback: add a tiny sync routine that runs whenever selection/UI changes.
+              sync=r'''\nfunction syncImagePanelV3(){try{$('imagePanel').hidden=!as3ImageCapable(selected);if(selected){const cur=as3CurrentImage(selected);if(cur){$('imagePreview').src=cur;}}}catch(_){}}\nsetInterval(syncImagePanelV3,350);\n'''
+              s=s[:script_close]+sync+s[script_close:]
+
+          # Make the pick/drop control work even when the selected target is a wrapper.
+          pick_anchor="$('pick').onclick="
+          if pick_anchor not in s: raise SystemExit('pick handler anchor not found')
+
+          # Stronger visual state and explicit copy explaining the control is for IMG or image blocks.
+          css='''\n/* V3 image controls: image element + image container + slider-safe */\n#imagePanel{scroll-margin-top:8px}\n#imagePanel .drop{min-height:38px;display:flex;align-items:center;justify-content:center;font-weight:800}\n#imagePanel #deleteImage{color:#b42318;border-color:#f2b8b5;background:#fffafa}\n#imagePanel #deleteImage:hover{background:#fff1f0;border-color:#e58b86}\n'''
+          s=s.replace('</style>',css+'</style>',1)
+          s=s.replace(marker,marker) if marker in s else s.replace('</style>','/* '+marker+' */\n</style>',1)
+          p.write_text(s,encoding='utf-8')
+          print('patched image controls V3, inspector replacements=',replacements)
+      - name: Validate HTML JavaScript
+        run: |
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+          s=Path('site-builder.html').read_text(encoding='utf-8')
+          scripts=re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>',s,re.S|re.I)
+          Path('/tmp/site-builder.js').write_text('\n'.join(scripts),encoding='utf-8')
+          print('scripts:',len(scripts),'marker:',s.count('AI_BOARD_SITE_BUILDER_IMAGE_CONTROLS_FIX_V3'))
+          PY
+          node --check /tmp/site-builder.js
+      - name: Commit and cleanup
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add site-builder.html
+          git diff --cached --quiet || git commit -m 'fix: make Site Builder image add and restore controls robust'
+          git rm -f .github/workflows/fix-site-builder-image-v3.yml .github/site-builder-image-v3-trigger || true
+          git commit -m 'chore: remove temporary image repair workflow' || true
+          git push
