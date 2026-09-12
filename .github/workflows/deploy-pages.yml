@@ -74,8 +74,7 @@ jobs:
               for a,b in reversed(ranges): s=s[:a]+s[b:]
               p.write_text(s,encoding='utf-8')
               print(f'Removed {len(ranges)} legacy Hero phone block(s).')
-          else:
-              print('No legacy Hero phone blocks found.')
+          else: print('No legacy Hero phone blocks found.')
           PY
           git diff --check
           git config user.name "Apple Seed Deploy"
