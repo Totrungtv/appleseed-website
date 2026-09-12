@@ -23,42 +23,55 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Refresh Site Builder and layout cache
+      - name: Repair Site Builder theme authority
         run: |
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
           import re
           p=Path('site-builder.html'); s=p.read_text(encoding='utf-8')
+
+          # Cache-bust all Builder runtime dependencies.
           s=re.sub(r'site-theme-selection-bridge\.js\?v=[^"\']+','site-theme-selection-bridge.js?v=20260912-theme-bridge24',s)
           s=re.sub(r'site-theme-selection-lock\.js\?v=[^"\']+','site-theme-selection-lock.js?v=20260912-lock4',s)
           s=re.sub(r'site-builder-full-themes\.css\?v=[^"\']+','site-builder-full-themes.css?v=20260912-full3',s)
           s=re.sub(r'site-builder-runtime\.js\?v=[^"\']+','site-builder-runtime.js?v=20260912-v16',s)
 
-          # Builder Theme must have one authoritative state: the in-memory
-          # published/local draft. The legacy theme widgets used localStorage
-          # first and a 1.5s renderer loop, which could resurrect stale Theme 01
-          # and visually fight the bridge/remote Supabase config.
-          s=s.replace("function get(){try{return valid(localStorage.getItem(KEY)||draft?.theme_id||'01')}catch(_){return valid(draft?.theme_id||'01')}}", "function get(){try{return valid(draft?.theme_id||localStorage.getItem(KEY)||'01')}catch(_){return valid(draft?.theme_id||'01')}}")
-          s=s.replace("function current(){try{return valid(localStorage.getItem(KEY)||draft?.full_theme_id||'01')}catch(_){return valid(draft?.full_theme_id||'01')}}", "function current(){try{return valid(draft?.full_theme_id||localStorage.getItem(KEY)||'01')}catch(_){return valid(draft?.full_theme_id||'01')}}")
-          s=s.replace("const t=setInterval(()=>{apply(get());render(get())},1500);", "")
-          s=s.replace("setInterval(()=>{const v=current();apply(v);render(v)},1500);", "")
+          # There must never be a stale localStorage-first Theme getter.
+          s=s.replace('localStorage.getItem(KEY)||draft?.theme_id','draft?.theme_id||localStorage.getItem(KEY)')
+          s=s.replace('localStorage.getItem(KEY)||draft?.full_theme_id','draft?.full_theme_id||localStorage.getItem(KEY)')
 
-          # The old standalone theme click fixer duplicates the native theme
-          # widgets and the bridge. Remove it so there is no second click writer.
-          s=re.sub(r'<script id="APPLE_SEED_30_THEME_SELECTION_FIX_V1">.*?</script>\s*<!-- APPLE_SEED_30_THEME_SELECTION_FIX_V1 -->', '', s, flags=re.S)
-          # Remove duplicated legacy lock include while keeping one current lock.
-          s=s.replace('<script src="site-theme-selection-lock.js?v=20260912-lock4"></script>\n<!-- APPLE_SEED_THEME_SELECTION_LOCK_V1 -->\n<script src="site-theme-selection-lock.js?v=20260912-lock4"></script>\n<!-- APPLE_SEED_THEME_SELECTION_LOCK_V2 -->', '<script src="site-theme-selection-lock.js?v=20260912-lock4"></script>\n<!-- APPLE_SEED_THEME_SELECTION_LOCK_V2 -->')
+          # Remove known legacy Theme render loops, including formatting variants.
+          loop_patterns=[
+            r'setInterval\(\s*\(\)\s*=>\s*\{[^{}]{0,1200}\}\s*,\s*1500\s*\)\s*;?',
+            r'setInterval\(\s*\(\)\s*=>\s*(?:apply|render)\([^;]{0,800}\)\s*,\s*1500\s*\)\s*;?'
+          ]
+          for pat in loop_patterns:
+              s=re.sub(pat,'',s,flags=re.S)
+
+          # Remove duplicate standalone click fixer. The native controls + bridge are enough.
+          s=re.sub(r'<script[^>]*id=["\']APPLE_SEED_30_THEME_SELECTION_FIX_V1["\'][^>]*>.*?</script>\s*<!--\s*APPLE_SEED_30_THEME_SELECTION_FIX_V1\s*-->', '', s, flags=re.S|re.I)
+
+          # Keep only one legacy lock include.
+          lock='<script src="site-theme-selection-lock.js?v=20260912-lock4"></script>'
+          s=re.sub(r'(?:<script src="site-theme-selection-lock\.js\?v=20260912-lock4"></script>\s*){2,}',lock+'\n',s)
 
           marker='APPLE_SEED_LAYOUTS_LINK_V2'; link='<link rel="stylesheet" href="site-builder-layouts.css?v=20260912-layout2">'
           if marker not in s:s=s.replace('</head>',link+'\n<!-- '+marker+' -->\n</head>',1)
-          lock_marker='APPLE_SEED_THEME_SELECTION_LOCK_V2'; lock_script='<script src="site-theme-selection-lock.js?v=20260912-lock4"></script>'
-          if lock_marker not in s:s=s.replace('</body>',lock_script+'\n<!-- '+lock_marker+' -->\n</body>',1)
+          lock_marker='APPLE_SEED_THEME_SELECTION_LOCK_V2'
+          if lock_marker not in s:s=s.replace('</body>',lock+'\n<!-- '+lock_marker+' -->\n</body>',1)
+
+          # Hard validation: fail the deployment rather than silently shipping a competing Theme loop.
+          bad=[]
+          if 'localStorage.getItem(KEY)||draft?.theme_id' in s: bad.append('color theme getter still storage-first')
+          if 'localStorage.getItem(KEY)||draft?.full_theme_id' in s: bad.append('full theme getter still storage-first')
+          if re.search(r'setInterval\(\s*\(\)\s*=>[^;]{0,1500}(?:apply|render)[^;]{0,1500},\s*1500\s*\)',s,re.S): bad.append('possible legacy 1500ms theme renderer remains')
+          if bad: raise SystemExit('Theme authority validation failed: '+', '.join(bad))
           p.write_text(s,encoding='utf-8')
           PY
           git diff --check
           git config user.name "Apple Seed Deploy"; git config user.email "0898888269tv@gmail.com"
-          if git diff --quiet; then echo "Builder cache already current."; else git add site-builder.html; git commit -m "fix: make Builder theme state single-source"; git push origin HEAD:main; fi
+          if git diff --quiet; then echo "Builder theme authority already current."; else git add site-builder.html; git commit -m "fix: remove remaining Builder theme reset path"; git push origin HEAD:main; fi
       - name: Inject live website layout stylesheet
         run: |
           set -euo pipefail
