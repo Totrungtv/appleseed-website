@@ -27,6 +27,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/install-30-themes.py
+          python3 scripts/fix-30-theme-markup.py
           git diff --check
           git config user.name "Apple Seed Theme Installer"
           git config user.email "0898888269tv@gmail.com"
