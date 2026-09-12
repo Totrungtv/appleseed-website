@@ -32,22 +32,21 @@ jobs:
           p = Path('site-builder.html')
           s = p.read_text(encoding='utf-8')
           old = 'site-builder-full-themes.css?v=20260912-full1'
-          new = 'site-builder-full-themes.css?v=20260912-full2'
+          new = 'site-builder-full-themes.css?v=20260912-full3'
           if old in s:
               s = s.replace(old, new)
-              p.write_text(s, encoding='utf-8')
-              print('Refreshed Site Builder full-theme CSS cache.')
-          else:
-              print('Site Builder full-theme CSS cache already current.')
+          s = s.replace('site-builder-full-themes.css?v=20260912-full2','site-builder-full-themes.css?v=20260912-full3')
+          s = s.replace('site-theme-selection-bridge.js?v=20260912-theme-bridge2','site-theme-selection-bridge.js?v=20260912-theme-bridge4')
+          p.write_text(s, encoding='utf-8')
           PY
           git diff --check
           git config user.name "Apple Seed Deploy"
           git config user.email "0898888269tv@gmail.com"
           if git diff --quiet; then
-            echo "Builder CSS cache already current."
+            echo "Builder cache already current."
           else
             git add site-builder.html
-            git commit -m "fix: refresh Builder Slider CSS cache"
+            git commit -m "fix: refresh theme and Slider cache"
             git push origin HEAD:main
           fi
 
@@ -58,23 +57,21 @@ jobs:
           from pathlib import Path
           p = Path('site-builder.html')
           s = p.read_text(encoding='utf-8')
+          s = s.replace('site-theme-selection-bridge.js?v=20260912-theme-bridge2','site-theme-selection-bridge.js?v=20260912-theme-bridge4')
           marker = 'APPLE_SEED_THEME_SELECTION_BRIDGE_V2'
-          tag = '<script src="site-theme-selection-bridge.js?v=20260912-theme-bridge2"></script>'
+          tag = '<script src="site-theme-selection-bridge.js?v=20260912-theme-bridge4"></script>'
           if marker not in s:
               s = s.replace('</body>', '<!-- '+marker+' -->\n'+tag+'\n</body>', 1)
-              p.write_text(s, encoding='utf-8')
-              print('Installed Web Theme Selection Bridge V2.')
-          else:
-              print('Web Theme Selection Bridge V2 already installed.')
+          p.write_text(s, encoding='utf-8')
           PY
           git diff --check
           git config user.name "Apple Seed Theme Bridge"
           git config user.email "0898888269tv@gmail.com"
           if git diff --quiet; then
-            echo "Theme bridge already installed."
+            echo "Theme bridge already current."
           else
             git add site-builder.html site-theme-selection-bridge.js
-            git commit -m "fix: bind 01-30 theme selection to web publish"
+            git commit -m "fix: keep theme selection Slider size"
             git push origin HEAD:main
           fi
 
@@ -84,7 +81,6 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           import re
-
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
           tag_re = re.compile(r'<\s*(/?)\s*div\b[^>]*>', re.I)
@@ -101,12 +97,10 @@ jobs:
                   else:
                       depth += 1
           if ranges:
-              for a, b in reversed(ranges):
-                  s = s[:a] + s[b:]
+              for a, b in reversed(ranges): s = s[:a] + s[b:]
               p.write_text(s, encoding='utf-8')
               print(f'Removed {len(ranges)} legacy Hero phone block(s).')
-          else:
-              print('No legacy Hero phone blocks found.')
+          else: print('No legacy Hero phone blocks found.')
           PY
           git diff --check
           git config user.name "Apple Seed Deploy"
@@ -133,21 +127,15 @@ jobs:
           html:not([data-apple-seed-hero-mode="phones"]) .as3-phone{display:none!important;visibility:hidden!important}
           html[data-apple-seed-hero-mode="phones"] .as3-phone{display:block!important;visibility:visible!important}
           @media(max-width:650px){
-            .as3-stage.apple-seed-runtime-slider-host,
-            .apple-seed-runtime-slider-host{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important;padding-left:0!important;padding-right:0!important}
-            .as3-stage.apple-seed-runtime-slider-host > .apple-seed-runtime-slider,
-            .apple-seed-runtime-slider-host > .apple-seed-runtime-slider,
-            #apple-seed-runtime-slider{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important}
-            .apple-seed-runtime-slider-host img,
-            .apple-seed-hero-slider img,
-            #apple-seed-runtime-slider img{display:block!important;width:100%!important;max-width:100%!important;height:auto!important;object-fit:contain!important}
+            .as3-stage.apple-seed-runtime-slider-host,.apple-seed-runtime-slider-host{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important;padding-left:0!important;padding-right:0!important}
+            .as3-stage.apple-seed-runtime-slider-host > .apple-seed-runtime-slider,.apple-seed-runtime-slider-host > .apple-seed-runtime-slider,#apple-seed-runtime-slider{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important}
+            .apple-seed-runtime-slider-host img,.apple-seed-hero-slider img,#apple-seed-runtime-slider img{display:block!important;width:100%!important;max-width:100%!important;height:auto!important;object-fit:contain!important}
           }
           </style>'''
-          if marker not in s:
-              s = s.replace('</head>', css + '\n<!-- ' + marker + ' -->\n</head>', 1)
-          for old in ['20260830-v6','20260912-v8','20260912-v9','20260912-v10','20260912-v11','20260912-v12','20260912-v13']:
-              s=s.replace('site-builder-runtime.js?v='+old,'site-builder-runtime.js?v=20260912-v14')
-          p.write_text(s, encoding='utf-8')
+          if marker not in s: s=s.replace('</head>',css+'\n<!-- '+marker+' -->\n</head>',1)
+          for old in ['20260830-v6','20260912-v8','20260912-v9','20260912-v10','20260912-v11','20260912-v12','20260912-v13','20260912-v14']:
+              s=s.replace('site-builder-runtime.js?v='+old,'site-builder-runtime.js?v=20260912-v15')
+          p.write_text(s,encoding='utf-8')
           PY
           git diff --check
 
