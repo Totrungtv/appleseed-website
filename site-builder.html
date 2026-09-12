@@ -1066,6 +1066,7 @@ $('publish').onclick=async()=>{
   saveDraft();
   setStatus('Đang xuất bản version mới…');
   const payload=snapshot();payload.builder_version='V3';payload.builder_features=['blocks','responsive','group-drag','presets','ai-designer'];
+  payload.hero_mode=(function(){try{return localStorage.getItem('APPLE_SEED_HERO_MODE_DRAFT_V1')||'slider'}catch(_){return 'slider'}})();
   await preservePublishedSliderBeforePublish(payload);
   const r=await window.supabaseClient.rpc('apple_seed_builder_publish',{p_config:payload,p_site_key:'default'});
   if(r.error){toast('Publish lỗi: '+r.error.message);setStatus('Publish lỗi — website chưa đổi');return}
@@ -1297,4 +1298,51 @@ window.supabaseClient.auth.onAuthStateChange((event,session)=>{
 })();
 </script>
 
+<script id='APPLE_SEED_HERO_MODE_ADMIN_V1'>
+(function(){
+  'use strict';
+  const KEY='APPLE_SEED_HERO_MODE_DRAFT_V1';
+  const VALID=['slider','phones'];
+  const client=window.supabaseClient;
+  let panel=null;
+  function valid(v){return VALID.includes(v)?v:'slider'}
+  function get(){try{return valid(localStorage.getItem(KEY))}catch(_){return 'slider'}}
+  function render(v){
+    if(!panel)return;
+    panel.querySelectorAll('[data-hero-mode]').forEach(x=>x.classList.toggle('active',x.dataset.heroMode===v));
+    const s=panel.querySelector('[data-hero-current]');
+    if(s)s.textContent='Đang chọn: '+(v==='slider'?'HERO SLIDER':'HERO 6 ĐIỆN THOẠI');
+  }
+  function set(v){
+    v=valid(v);
+    try{localStorage.setItem(KEY,v)}catch(_){ }
+    render(v);
+    const f=document.getElementById('preview');
+    try{f&&f.contentWindow.postMessage({type:'APPLE_SEED_HERO_MODE_V1',mode:v},location.origin)}catch(_){ }
+  }
+  async function live(){
+    try{
+      const r=await client.from('site_builder_versions').select('config').eq('site_key','default').eq('status','published').order('version_no',{ascending:false}).limit(1).maybeSingle();
+      return valid(r.data&&r.data.config&&r.data.config.hero_mode);
+    }catch(_){return 'slider'}
+  }
+  async function init(){
+    let v=''; try{v=localStorage.getItem(KEY)||''}catch(_){ }
+    if(!VALID.includes(v)){v=await live();try{localStorage.setItem(KEY,v)}catch(_){ }}
+    render(v);
+  }
+  function make(){
+    if(panel||!document.querySelector('.side.right'))return;
+    panel=document.createElement('div'); panel.className='panel'; panel.id='appleSeedHeroModePanel';
+    panel.innerHTML='<h3>🎛 Chế độ Hero</h3><div class="muted" style="margin-bottom:8px">LIVE chỉ hiển thị một kiểu Hero.</div><div style="display:grid;gap:7px"><button type="button" class="btn" data-hero-mode="slider" style="width:100%;text-align:left">🎞 <b>HERO SLIDER</b><small style="display:block;color:#667085;font-weight:500">Chỉ hiện Slider</small></button><button type="button" class="btn" data-hero-mode="phones" style="width:100%;text-align:left">📱 <b>HERO 6 ĐIỆN THOẠI</b><small style="display:block;color:#667085;font-weight:500">Tắt Slider, hiện 6 máy</small></button></div><div data-hero-current style="margin-top:8px;font-size:10px;font-weight:850;color:#1769ff"></div><div class="muted" style="margin-top:6px">Chọn rồi bấm 🚀 Xuất bản.</div>';
+    const right=document.querySelector('.side.right'); right.insertBefore(panel,right.firstElementChild);
+    panel.querySelectorAll('[data-hero-mode]').forEach(x=>x.addEventListener('click',()=>set(x.dataset.heroMode)));
+    render(get());
+  }
+  const t=setInterval(()=>{if(document.querySelector('.side.right')){make();clearInterval(t)}},100);
+  setTimeout(()=>clearInterval(t),30000);
+  document.getElementById('clear')?.addEventListener('click',()=>{try{localStorage.removeItem(KEY)}catch(_){ }});
+  setTimeout(init,300);
+})();
+</script>
 </body></html>

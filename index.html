@@ -568,6 +568,13 @@ img{-webkit-user-drag:none}
 }
 @media(prefers-reduced-motion:reduce){#asRobotFriend{display:none!important}}
 
+<style id='APPLE_SEED_HERO_MODE_RUNTIME_CSS_V1'>
+html.apple-seed-hero-mode-pending .as3-phone{visibility:hidden!important}
+html.apple-seed-hero-mode-pending .apple-seed-hero-slider,html.apple-seed-hero-mode-pending .apple-seed-runtime-slider-host,html.apple-seed-hero-mode-pending #apple-seed-runtime-slider{visibility:hidden!important}
+html[data-apple-seed-hero-mode='slider'] .as3-phone{display:none!important}
+html[data-apple-seed-hero-mode='phones'] .apple-seed-hero-slider,html[data-apple-seed-hero-mode='phones'] .apple-seed-runtime-slider-host>.apple-seed-runtime-slider,html[data-apple-seed-hero-mode='phones'] #apple-seed-runtime-slider{display:none!important}
+html[data-apple-seed-hero-mode='phones'] .as3-stage.apple-seed-runtime-slider-host>.as3-phone{display:block!important;visibility:visible!important}
+</style><script>document.documentElement.classList.add('apple-seed-hero-mode-pending');</script>
 </style>
 
 
@@ -3841,6 +3848,23 @@ body.apple-seed-chat-open #apple-seed-ai-board-float{
 </footer>
 
 <!-- APPLE-SEED-ICLOUD-UI-PATCH -->
+<script id='APPLE_SEED_HERO_MODE_RUNTIME_V1'>
+(function(){
+  'use strict';
+  const KEY='APPLE_SEED_HERO_MODE_DRAFT_V1';
+  const VALID=['slider','phones'];
+  const client=window.supabaseClient;
+  function valid(v){return VALID.includes(v)?v:'slider'}
+  function apply(v){document.documentElement.dataset.appleSeedHeroMode=valid(v);document.documentElement.classList.remove('apple-seed-hero-mode-pending')}
+  async function run(){
+    const q=new URLSearchParams(location.search); const preview=q.get('builderCanvas')==='1'||q.get('appleSeedBuilderPreview')==='1';
+    if(preview){let v='';try{v=localStorage.getItem(KEY)||''}catch(_){ }apply(v||'slider');return}
+    try{const r=await client.from('site_builder_versions').select('config').eq('site_key','default').eq('status','published').order('version_no',{ascending:false}).limit(1).maybeSingle();apply(r.data&&r.data.config&&r.data.config.hero_mode)}catch(_){apply('slider')}
+  }
+  window.addEventListener('message',e=>{if(e.origin===location.origin&&e.data&&e.data.type==='APPLE_SEED_HERO_MODE_V1')apply(e.data.mode)});
+  run();
+})();
+</script>
 </body>
 </html>
 
