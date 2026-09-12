@@ -24,6 +24,33 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Refresh Site Builder Slider CSS cache
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('site-builder.html')
+          s = p.read_text(encoding='utf-8')
+          old = 'site-builder-full-themes.css?v=20260912-full1'
+          new = 'site-builder-full-themes.css?v=20260912-full2'
+          if old in s:
+              s = s.replace(old, new)
+              p.write_text(s, encoding='utf-8')
+              print('Refreshed Site Builder full-theme CSS cache.')
+          else:
+              print('Site Builder full-theme CSS cache already current.')
+          PY
+          git diff --check
+          git config user.name "Apple Seed Deploy"
+          git config user.email "0898888269tv@gmail.com"
+          if git diff --quiet; then
+            echo "Builder CSS cache already current."
+          else
+            git add site-builder.html
+            git commit -m "fix: refresh Builder Slider CSS cache"
+            git push origin HEAD:main
+          fi
+
       - name: Install Web Theme Selection Bridge
         run: |
           set -euo pipefail
