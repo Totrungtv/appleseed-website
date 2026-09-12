@@ -8,21 +8,25 @@
   }catch(_){ }
   if(location.pathname.split('/').pop().toLowerCase()==='site-builder.html') return;
 
-  /* HERO MODE FAILSAFE
-     Default is Slider. Never delete the six phone DOM nodes: Builder needs them.
-     This style is installed synchronously when this runtime executes so the
-     phone mockups cannot remain visible while the published mode is loading. */
+  /* HERO: Slider is the live website mode. The old six-phone mockups are removed
+     from the live DOM so they can never appear together with the Slider. */
   var root=document.documentElement;
   try{
     root.setAttribute('data-apple-seed-hero-mode','slider');
-    var early=document.getElementById('apple-seed-hero-mode-early-v3');
+    var early=document.getElementById('apple-seed-hero-mode-early-v4');
     if(!early){
       early=document.createElement('style');
-      early.id='apple-seed-hero-mode-early-v3';
-      early.textContent="html[data-apple-seed-hero-mode='slider'] .as3-phone{display:none!important;visibility:hidden!important;}html[data-apple-seed-hero-mode='phones'] .as3-stage .as3-phone{display:block!important;visibility:visible!important;}html[data-apple-seed-hero-mode='phones'] .apple-seed-runtime-slider-host,html[data-apple-seed-hero-mode='phones'] .apple-seed-hero-slider,html[data-apple-seed-hero-mode='phones'] #apple-seed-runtime-slider{display:none!important;}html[data-apple-seed-hero-mode='slider'] .apple-seed-runtime-slider-host,html[data-apple-seed-hero-mode='slider'] .apple-seed-hero-slider,html[data-apple-seed-hero-mode='slider'] #apple-seed-runtime-slider{display:block!important;}";
+      early.id='apple-seed-hero-mode-early-v4';
+      early.textContent="html[data-apple-seed-hero-mode='slider'] .as3-phone,html[data-apple-seed-hero-mode='slider'] .asph-phone{display:none!important;visibility:hidden!important;}";
       (document.head||root).appendChild(early);
     }
   }catch(_){ }
+
+  function removePhoneMockups(){
+    try{
+      document.querySelectorAll('.as3-phone,.asph-phone').forEach(function(el){el.remove()});
+    }catch(_){ }
+  }
 
   var appliedVersion='';
 
@@ -47,19 +51,19 @@
     }catch(_){ }
   }
 
-  /* APPLE_SEED_30_FULL_THEMES_RUNTIME_V1 */
-  function applyHeroMode(mode){
-    var v=mode==='phones'?'phones':'slider';
+  /* Slider-only live mode. Ignore any stale published hero_mode='phones'. */
+  function applyHeroMode(){
     try{
-      root.setAttribute('data-apple-seed-hero-mode',v);
+      root.setAttribute('data-apple-seed-hero-mode','slider');
       root.classList.remove('apple-seed-hero-mode-pending');
-      var st=document.getElementById('apple-seed-hero-mode-runtime-v3');
+      var st=document.getElementById('apple-seed-hero-mode-runtime-v4');
       if(!st){
         st=document.createElement('style');
-        st.id='apple-seed-hero-mode-runtime-v3';
+        st.id='apple-seed-hero-mode-runtime-v4';
         (document.head||root).appendChild(st);
       }
-      st.textContent="html[data-apple-seed-hero-mode='slider'] .as3-phone{display:none!important;visibility:hidden!important;}html[data-apple-seed-hero-mode='phones'] .as3-stage .as3-phone{display:block!important;visibility:visible!important;}html[data-apple-seed-hero-mode='phones'] .apple-seed-runtime-slider-host,html[data-apple-seed-hero-mode='phones'] .apple-seed-hero-slider,html[data-apple-seed-hero-mode='phones'] #apple-seed-runtime-slider{display:none!important;}html[data-apple-seed-hero-mode='slider'] .apple-seed-runtime-slider-host,html[data-apple-seed-hero-mode='slider'] .apple-seed-hero-slider,html[data-apple-seed-hero-mode='slider'] #apple-seed-runtime-slider{display:block!important;}";
+      st.textContent="html[data-apple-seed-hero-mode='slider'] .as3-phone,html[data-apple-seed-hero-mode='slider'] .asph-phone{display:none!important;visibility:hidden!important;}html[data-apple-seed-hero-mode='slider'] .apple-seed-runtime-slider-host,html[data-apple-seed-hero-mode='slider'] .apple-seed-hero-slider,html[data-apple-seed-hero-mode='slider'] #apple-seed-runtime-slider{display:block!important;}";
+      removePhoneMockups();
     }catch(_){ }
   }
 
@@ -81,10 +85,10 @@
 
   function apply(){
     getPublished().then(function(data){
-      var mode=data&&data.config&&data.config.hero_mode==='phones'?'phones':'slider';
-      applyHeroMode(mode);
+      applyHeroMode();
       applyTheme(data&&data.config&&data.config.theme_id);
       applyFullTheme(data&&data.config&&data.config.full_theme_id);
+      removePhoneMockups();
       if(!data||!data.config||!data.config.items)return;
       var viewKey=String(data.version_no)+'-'+deviceKey();
       if(viewKey===appliedVersion)return;
@@ -111,15 +115,16 @@
   }
 
   function boot(){
-    applyHeroMode('slider');
+    applyHeroMode();
+    removePhoneMockups();
     apply();
-    setTimeout(apply,600);
-    setTimeout(apply,1600);
-    setTimeout(apply,3200);
-    window.addEventListener('resize',function(){setTimeout(apply,80)});
-    setInterval(apply,1500);
+    setTimeout(function(){removePhoneMockups();apply()},600);
+    setTimeout(function(){removePhoneMockups();apply()},1600);
+    setTimeout(function(){removePhoneMockups();apply()},3200);
+    window.addEventListener('resize',function(){setTimeout(function(){removePhoneMockups();apply()},80)});
+    setInterval(function(){removePhoneMockups();apply()},1500);
     var homeRenderer=document.getElementById('homeRenderer');
-    if(homeRenderer)new MutationObserver(function(){apply()}).observe(homeRenderer,{childList:true,subtree:true});
+    if(homeRenderer)new MutationObserver(function(){removePhoneMockups();apply()}).observe(homeRenderer,{childList:true,subtree:true});
     document.addEventListener('visibilitychange',function(){if(!document.hidden)apply()});
     var chatBtn=document.getElementById('chatBtn');
     if(chatBtn)chatBtn.addEventListener('click',function(){setTimeout(syncAiBoardVisibility,0);setTimeout(syncAiBoardVisibility,50);setTimeout(syncAiBoardVisibility,200)},true);
