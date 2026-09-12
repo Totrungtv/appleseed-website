@@ -23,26 +23,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Refresh Site Builder and layout cache
         run: |
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
-          p=Path('site-builder.html'); s=p.read_text(encoding='utf-8')
-          import re
-          s=re.sub(r'site-theme-selection-bridge\.js\?v=[^"\']+','site-theme-selection-bridge.js?v=20260912-theme-bridge9',s)
-          s=s.replace('site-builder-full-themes.css?v=20260912-full1','site-builder-full-themes.css?v=20260912-full3').replace('site-builder-full-themes.css?v=20260912-full2','site-builder-full-themes.css?v=20260912-full3')
-          s=s.replace('site-builder-runtime.js?v=20260912-v14','site-builder-runtime.js?v=20260912-v15')
+          p=Path('site-builder.html'); s=p.read_text(encoding='utf-8'); import re
+          s=re.sub(r'site-theme-selection-bridge\.js\?v=[^"\']+','site-theme-selection-bridge.js?v=20260912-theme-bridge10',s)
+          s=s.replace('site-builder-full-themes.css?v=20260912-full1','site-builder-full-themes.css?v=20260912-full3').replace('site-builder-full-themes.css?v=20260912-full2','site-builder-full-themes.css?v=20260912-full3').replace('site-builder-runtime.js?v=20260912-v14','site-builder-runtime.js?v=20260912-v15')
           marker='APPLE_SEED_LAYOUTS_LINK_V2'; link='<link rel="stylesheet" href="site-builder-layouts.css?v=20260912-layout2">'
           if marker not in s:s=s.replace('</head>',link+'\n<!-- '+marker+' -->\n</head>',1)
           p.write_text(s,encoding='utf-8')
           PY
           git diff --check
-          git config user.name "Apple Seed Deploy"
-          git config user.email "0898888269tv@gmail.com"
-          if git diff --quiet; then echo "Builder cache already current."; else git add site-builder.html; git commit -m "fix: refresh Site Builder theme bridge cache"; git push origin HEAD:main; fi
-
+          git config user.name "Apple Seed Deploy"; git config user.email "0898888269tv@gmail.com"
+          if git diff --quiet; then echo "Builder cache already current."; else git add site-builder.html; git commit -m "fix: refresh Site Builder bridge cache"; git push origin HEAD:main; fi
       - name: Inject live website layout stylesheet
         run: |
           set -euo pipefail
@@ -51,11 +46,8 @@ jobs:
           p=Path('index.html'); s=p.read_text(encoding='utf-8'); marker='APPLE_SEED_LIVE_LAYOUTS_V2'; link='<link rel="stylesheet" href="site-builder-layouts.css?v=20260912-layout2">'
           if marker not in s:s=s.replace('</head>',link+'\n<!-- '+marker+' -->\n</head>',1); p.write_text(s,encoding='utf-8')
           PY
-          git diff --check
-          git config user.name "Apple Seed Deploy"
-          git config user.email "0898888269tv@gmail.com"
+          git diff --check; git config user.name "Apple Seed Deploy"; git config user.email "0898888269tv@gmail.com"
           if git diff --quiet; then echo "Live layout link already current."; else git add index.html; git commit -m "feat: enable real website layouts"; git push origin HEAD:main; fi
-
       - name: Remove legacy Hero phone mockups
         run: |
           set -euo pipefail
@@ -72,14 +64,10 @@ jobs:
               for a,b in reversed(ranges):s=s[:a]+s[b:]
               p.write_text(s,encoding='utf-8')
           PY
-          git diff --check
-          git config user.name "Apple Seed Deploy"
-          git config user.email "0898888269tv@gmail.com"
+          git diff --check; git config user.name "Apple Seed Deploy"; git config user.email "0898888269tv@gmail.com"
           if git diff --quiet; then echo "Hero phone DOM already clean."; else git add index.html; git commit -m "fix: remove legacy Hero phone mockups"; git push origin HEAD:main; fi
-
       - name: Setup Pages
         uses: actions/configure-pages@v5
-
       - name: Fix Hero initial render and mobile slider sizing
         run: |
           python3 - <<'PY'
@@ -91,12 +79,10 @@ jobs:
           p.write_text(s,encoding='utf-8')
           PY
           git diff --check
-
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
-
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
