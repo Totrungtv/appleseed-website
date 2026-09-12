@@ -16,6 +16,20 @@
 #imagePanel .drop:hover,#pageDesignPanel .drop:hover{border-color:#1769ff;background:#eef6ff;transform:translateY(-1px)}
 #deleteImage,#deletePageImage{font-weight:850}
 
+
+/* APPLE_SEED_HERO_SLIDER_V1 */
+#heroSliderPanel .slider-frame{position:relative;width:100%;aspect-ratio:16/10;border:1px solid #dfe5ed;border-radius:12px;overflow:hidden;background:#f5f7fa;display:flex;align-items:center;justify-content:center;margin-bottom:8px}
+#heroSliderPanel .slider-frame img{width:100%;height:100%;object-fit:contain;display:block;background:#eef1f5}
+#heroSliderPanel .slider-list{display:grid;gap:6px;max-height:270px;overflow:auto;margin-top:8px}
+#heroSliderPanel .slider-item{display:grid;grid-template-columns:56px 1fr auto;gap:7px;align-items:center;border:1px solid #e3e8ef;border-radius:9px;padding:5px;background:#fff;cursor:grab}
+#heroSliderPanel .slider-item.active{border-color:#1769ff;box-shadow:0 0 0 2px #1769ff22;background:#f7faff}
+#heroSliderPanel .slider-thumb{width:56px;height:40px;border-radius:6px;object-fit:cover;background:#f2f4f7}
+#heroSliderPanel .slider-name{font-size:10px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#heroSliderPanel .slider-actions{display:flex;gap:3px}
+#heroSliderPanel .slider-actions button{border:1px solid #d8dee8;background:#fff;border-radius:6px;padding:4px 6px;font-size:10px;cursor:pointer}
+#heroSliderPanel .slider-actions .del{color:#b42318;border-color:#efb4b4}
+#heroSliderPanel .slider-empty{font-size:10px;color:#667085;padding:7px;border:1px dashed #cfd6df;border-radius:8px;text-align:center}
+
 /* V4 robust image controls */
 #imagePanel{scroll-margin-top:8px}
 #imagePanel .drop{min-height:40px;display:flex;align-items:center;justify-content:center;font-weight:850;border-style:dashed}
@@ -53,6 +67,7 @@
   <div class="panel"><h3>🖱 Đối tượng</h3><div id="info" class="selected-name">Chưa chọn</div><span id="tag" class="tag" hidden></span></div>
   <div class="panel" id="contentPanel" hidden><h3>✏️ Nội dung</h3><div class="field"><label>Chữ</label><textarea id="text"></textarea></div><button class="btn primary" id="applyText" style="width:100%">Áp dụng chữ</button></div>
   <div class="panel" id="imagePanel" hidden><h3>🖼 Hình ảnh</h3><img id="imagePreview" class="image-preview" alt=""><div class="drop" id="pick">🖼️ Chọn / thay ảnh từ máy</div><input id="file" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden><button class="btn danger" id="deleteImage" type="button" style="width:100%;margin-top:6px">↩️ Khôi phục ảnh gốc</button><div class="field" style="margin-top:8px"><label>URL ảnh</label><input id="imageUrl" placeholder="https://…"></div><button class="btn primary" id="applyImage" style="width:100%">☁️ Thêm / thay ảnh</button></div>
+<div class="panel" id="heroSliderPanel" hidden><h3>🖼️ Hero Slider — nhiều ảnh</h3><div class="muted" style="margin-bottom:8px">Ảnh tự co vừa khung Slider, không làm tràn layout. Có thể thêm nhiều ảnh, đổi ảnh, xóa và kéo để sắp xếp.</div><div class="slider-frame"><img id="heroSliderPreview" alt="Hero Slider"></div><input id="heroSliderFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden><div class="grid2"><button class="btn primary" id="heroSliderAdd" type="button">＋ Thêm ảnh</button><button class="btn" id="heroSliderReset" type="button">↺ Ảnh gốc</button></div><div id="heroSliderList" class="slider-list"></div><div class="muted" style="margin-top:7px">Tối đa 20MB/ảnh. Xóa ảnh chỉ xóa khỏi Slider, không xóa file Media Library.</div></div>
   <div class="panel" id="pageDesignPanel"><h3>🖼️ Thiết kế Trang / Hero</h3>
     <div class="muted" style="margin-bottom:8px">Chỉnh nền Hero/trang mà không cần chọn đúng ảnh. Mỗi Desktop/Mobile có nền riêng.</div>
     <div class="grid2"><button class="btn" id="targetHero">🎯 Hero</button><button class="btn" id="targetMain">📄 Main</button></div>
@@ -372,6 +387,7 @@ function refreshInspector(){
   const isHeroPhone=!!phone || selected.matches?.('.as3-screen');
   const computedBg=getComputedStyle(selected).backgroundImage;
   $('imagePanel').hidden=!as4ImageCapable(selected);
+  refreshHeroSliderPanel();
   $('stylePanel').hidden=false;
   if(textEditable(selected))$('text').value=selected.textContent;
   if(as4ImageCapable(selected)){
@@ -528,6 +544,7 @@ function applyAll(){
     if(st.background)el.style.backgroundColor=st.background;
   }
   normalizeHeroCopy();
+  applyHeroSliderPreview();
   refreshInspector();
 }
 function loadDraft(){try{const raw=localStorage.getItem(DRAFT_KEY);if(raw){draft=JSON.parse(raw);if(!draft.items)draft.items={};if(!draft.page)draft.page={desktop:{},mobile:{}};draft.page.desktop=draft.page.desktop||{};draft.page.mobile=draft.page.mobile||{}}}catch{draft={items:{},page:{desktop:{},mobile:{}}}}}
@@ -931,6 +948,107 @@ function as4RestoreImage(el,item){
   if(img){restoreBuilderImage(img);return;}
   restoreBuilderImage(el);
 }
+
+/* APPLE_SEED_HERO_SLIDER_JS_V1 */
+function heroSliderTarget(){
+  if(!doc)return null;
+  return doc.querySelector('.as3-stage')||doc.querySelector('.shop-photo')||doc.querySelector('.hero .shop-photo');
+}
+function heroSliderItem(){
+  const target=heroSliderTarget();
+  if(!target)return null;
+  const sel=stableSelector(target);
+  if(!draft.items[sel])draft.items[sel]={styles:{desktop:{},mobile:{}}};
+  const item=draft.items[sel];
+  item.heroSlider=Array.isArray(item.heroSlider)?item.heroSlider:[];
+  return item;
+}
+function heroSliderSelected(){
+  const item=heroSliderItem();
+  if(!item)return 0;
+  const n=Math.max(0,item.heroSlider.length-1);
+  item.heroSliderIndex=Math.min(Math.max(Number(item.heroSliderIndex)||0,0),n);
+  return item.heroSliderIndex;
+}
+function applyHeroSliderPreview(){
+  const target=heroSliderTarget();
+  const item=heroSliderItem();
+  if(!target||!item)return;
+  clearInterval(window.__appleSeedHeroSliderTimer);
+  window.__appleSeedHeroSliderTimer=null;
+  target.style.setProperty('background-repeat','no-repeat','important');
+  target.style.setProperty('background-position','center','important');
+  target.style.setProperty('background-size','cover','important');
+  const list=item.heroSlider||[];
+  if(!list.length){
+    if(item.bgImage)target.style.setProperty('background-image','url("'+String(item.bgImage).replace(/"/g,'\\"')+'")','important');
+    return;
+  }
+  let idx=heroSliderSelected();
+  const show=()=>{
+    if(!item.heroSlider?.length)return;
+    idx=Math.min(Math.max(idx,0),item.heroSlider.length-1);
+    item.heroSliderIndex=idx;
+    const url=item.heroSlider[idx]?.url||'';
+    if(url)target.style.setProperty('background-image','url("'+String(url).replace(/"/g,'\\"')+'")','important');
+    const prev=document.getElementById('heroSliderPreview');
+    if(prev)prev.src=url||'';
+    renderHeroSliderList();
+  };
+  show();
+  if(list.length>1)window.__appleSeedHeroSliderTimer=setInterval(()=>{idx=(idx+1)%list.length;show()},5000);
+}
+function renderHeroSliderList(){
+  const box=document.getElementById('heroSliderList');
+  if(!box)return;
+  const item=heroSliderItem();
+  const list=item?.heroSlider||[];
+  if(!list.length){box.innerHTML='<div class="slider-empty">Chưa có ảnh Slider. Bấm ＋ Thêm ảnh.</div>';const p=document.getElementById('heroSliderPreview');if(p)p.removeAttribute('src');return;}
+  const active=Number(item.heroSliderIndex)||0;
+  box.innerHTML=list.map((x,i)=>`<div class="slider-item ${i===active?'active':''}" draggable="true" data-slider-index="${i}"><img class="slider-thumb" src="${String(x.url||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;')}" alt=""><div class="slider-name">${String(x.name||('Ảnh '+(i+1))).replace(/[&<>]/g,'')}</div><div class="slider-actions"><button type="button" data-slider-up="${i}">↑</button><button type="button" data-slider-down="${i}">↓</button><button type="button" data-slider-change="${i}">Đổi</button><button type="button" class="del" data-slider-del="${i}">×</button></div></div>`).join('');
+  box.querySelectorAll('[data-slider-index]').forEach(el=>{
+    el.addEventListener('click',e=>{if(e.target.closest('button'))return;item.heroSliderIndex=Number(el.dataset.sliderIndex)||0;saveDraft();applyHeroSliderPreview();});
+    el.addEventListener('dragstart',e=>{window.__appleSeedHeroSliderDragIndex=Number(el.dataset.sliderIndex);e.dataTransfer.effectAllowed='move';});
+    el.addEventListener('dragover',e=>e.preventDefault());
+    el.addEventListener('drop',e=>{e.preventDefault();const from=window.__appleSeedHeroSliderDragIndex,to=Number(el.dataset.sliderIndex);if(!Number.isInteger(from)||from===to)return;const moved=item.heroSlider.splice(from,1)[0];item.heroSlider.splice(to,0,moved);item.heroSliderIndex=to;window.__appleSeedHeroSliderDragIndex=null;saveDraft();applyHeroSliderPreview();});
+  });
+  box.querySelectorAll('[data-slider-up]').forEach(b=>b.onclick=()=>heroSliderMove(Number(b.dataset.sliderUp),-1));
+  box.querySelectorAll('[data-slider-down]').forEach(b=>b.onclick=()=>heroSliderMove(Number(b.dataset.sliderDown),1));
+  box.querySelectorAll('[data-slider-del]').forEach(b=>b.onclick=()=>heroSliderDelete(Number(b.dataset.sliderDel)));
+  box.querySelectorAll('[data-slider-change]').forEach(b=>b.onclick=()=>heroSliderChange(Number(b.dataset.sliderChange)));
+}
+function heroSliderMove(i,d){const item=heroSliderItem();if(!item)return;const j=i+d;if(j<0||j>=item.heroSlider.length)return;checkpoint();[item.heroSlider[i],item.heroSlider[j]]=[item.heroSlider[j],item.heroSlider[i]];item.heroSliderIndex=j;saveDraft();applyHeroSliderPreview();}
+function heroSliderDelete(i){const item=heroSliderItem();if(!item||!item.heroSlider[i])return;if(item.heroSlider.length<=1){toast('Slider phải giữ ít nhất 1 ảnh. Dùng “Ảnh gốc” để bỏ Slider.');return;}checkpoint();item.heroSlider.splice(i,1);item.heroSliderIndex=Math.min(Number(item.heroSliderIndex)||0,item.heroSlider.length-1);item.bgImage=item.heroSlider[item.heroSliderIndex]?.url||'';saveDraft();applyHeroSliderPreview();toast('🗑️ Đã xóa ảnh khỏi Slider');}
+function heroSliderChange(i){const input=document.getElementById('heroSliderFile');if(!input)return;input.dataset.replaceIndex=String(i);input.multiple=false;input.value='';input.click();}
+async function heroSliderAddFiles(files,replaceIndex=null){
+  const arr=[...(files||[])];if(!arr.length)return;
+  const item=heroSliderItem();if(!item)return;
+  checkpoint();
+  try{
+    for(const file of arr){
+      if(!/^image\/(png|jpe?g|webp|gif)$/i.test(String(file.type||'')))throw new Error('Chỉ nhận PNG, JPG, WEBP hoặc GIF.');
+      if(file.size>20*1024*1024)throw new Error('Ảnh quá lớn (tối đa 20MB/ảnh).');
+      const url=await upload(file);
+      const entry={url,name:file.name||'Hero Slider',alt:'Hero Slider'};
+      if(replaceIndex!==null&&replaceIndex!==undefined){item.heroSlider[Number(replaceIndex)]=entry;replaceIndex=null;}else item.heroSlider.push(entry);
+    }
+    item.heroSliderIndex=Math.min(Number(item.heroSliderIndex)||0,item.heroSlider.length-1);
+    item.bgImage=item.heroSlider[item.heroSliderIndex]?.url||item.bgImage;
+    saveDraft();applyHeroSliderPreview();toast('🖼️ Đã thêm '+arr.length+' ảnh vào Slider');
+  }catch(e){toast('Upload Slider lỗi: '+(e?.message||String(e)));}
+  finally{const input=document.getElementById('heroSliderFile');if(input){input.value='';input.multiple=true;delete input.dataset.replaceIndex;}}
+}
+function resetHeroSlider(){const item=heroSliderItem();if(!item)return;checkpoint();delete item.heroSlider;delete item.heroSliderIndex;applyHeroSliderPreview();saveDraft();toast('↺ Đã về ảnh Hero gốc');}
+function refreshHeroSliderPanel(){
+  const panel=document.getElementById('heroSliderPanel');if(!panel)return;
+  const target=heroSliderTarget();
+  const show=!!target&&!!selected&&(selected===target||selected.closest?.('.as3-stage')===target);
+  panel.hidden=!show;
+  if(show){renderHeroSliderList();applyHeroSliderPreview();}
+}
+document.getElementById('heroSliderAdd')?.addEventListener('click',()=>{const f=document.getElementById('heroSliderFile');f.value='';f.multiple=true;f.dataset.replaceIndex='';f.click();});
+document.getElementById('heroSliderReset')?.addEventListener('click',resetHeroSlider);
+document.getElementById('heroSliderFile')?.addEventListener('change',e=>{const i=e.target.dataset.replaceIndex;heroSliderAddFiles(e.target.files,i===''?null:Number(i));});
 $('deleteImage').onclick=()=>{
   if(!selected){toast('Chưa chọn đối tượng ảnh / khối ảnh');return}
   checkpoint();

@@ -3841,7 +3841,32 @@ body.apple-seed-chat-open #apple-seed-ai-board-float{
 </footer>
 
 <!-- APPLE-SEED-ICLOUD-UI-PATCH -->
-</body>
+\n<script>
+/* APPLE_SEED_HERO_SLIDER_LIVE_V1 */
+(function(){
+  const sb=window.supabaseClient;if(!sb)return;
+  let timer=null,lastKey='';
+  const target=()=>document.querySelector('.as3-stage');
+  function start(list){
+    const el=target();if(!el||!list.length)return;
+    clearInterval(timer);let i=0;
+    const show=()=>{const url=list[i]?.url||'';if(!url)return;el.style.setProperty('background-image','url("'+String(url).replace(/\\/g,'\\\\').replace(/"/g,'\\"')+'")','important');el.style.setProperty('background-size','cover','important');el.style.setProperty('background-position','center','important');el.style.setProperty('background-repeat','no-repeat','important');};
+    show();if(list.length>1)timer=setInterval(()=>{i=(i+1)%list.length;show();},5000);
+  }
+  async function load(){
+    try{
+      const r=await sb.from('site_builder_versions').select('config,version_no').eq('site_key','default').eq('status','published').order('version_no',{ascending:false}).limit(1).maybeSingle();
+      if(r.error||!r.data?.config)return;
+      const item=Object.values(r.data.config.items||{}).find(x=>Array.isArray(x?.heroSlider)&&x.heroSlider.length);
+      if(!item)return;
+      const list=item.heroSlider.filter(x=>x&&x.url);const key=String(r.data.version_no)+'|'+list.map(x=>x.url).join('|');
+      if(key===lastKey)return;lastKey=key;start(list);
+    }catch(e){console.warn('Hero Slider live:',e);}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();
+  window.addEventListener('load',()=>setTimeout(load,700),{once:true});
+})();
+</script>\n</body>
 </html>
 
 
