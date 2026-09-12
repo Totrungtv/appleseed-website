@@ -37,6 +37,17 @@
   }
 
   /* APPLE_SEED_30_THEMES_RUNTIME_V1 */
+  function applyFullTheme(themeId){
+    var v=/^(?:[1-9]|[12][0-9]|30)$/.test(String(themeId||''))?String(themeId).padStart(2,'0'):'01';
+    try{
+      var st=document.getElementById('apple-seed-full-themes-runtime');
+      if(!st){st=document.createElement('link');st.id='apple-seed-full-themes-runtime';st.rel='stylesheet';st.href='site-builder-full-themes.css?v=20260912-full1';(document.head||root).appendChild(st)}
+      for(var i=1;i<=30;i++)root.classList.remove('as-full-theme-'+String(i).padStart(2,'0'));
+      root.classList.add('as-full-theme-scope','as-full-theme-'+v);
+    }catch(_){ }
+  }
+
+  /* APPLE_SEED_30_FULL_THEMES_RUNTIME_V1 */
   function applyHeroMode(mode){
     var v=mode==='phones'?'phones':'slider';
     try{
@@ -73,6 +84,7 @@
       var mode=data&&data.config&&data.config.hero_mode==='phones'?'phones':'slider';
       applyHeroMode(mode);
       applyTheme(data&&data.config&&data.config.theme_id);
+      applyFullTheme(data&&data.config&&data.config.full_theme_id);
       if(!data||!data.config||!data.config.items)return;
       var viewKey=String(data.version_no)+'-'+deviceKey();
       if(viewKey===appliedVersion)return;
