@@ -22,6 +22,8 @@
 #imagePanel #deleteImage{color:#b42318;border-color:#efb4b4;background:#fffafa;font-weight:900}
 #imagePanel #deleteImage:hover{background:#fff1f0;border-color:#dc8d88}
 #imagePanel #applyImage{font-weight:900}
+
+/* SITE_BUILDER_LOGIN_FIX_V2 */
 </style>
 </head>
 <body>
@@ -1064,7 +1066,35 @@ $('publish').onclick=async()=>{
     $('preview').src=u.toString();
   }catch(_){}
 };
-$('loginBtn').onclick=async()=>{const r=await window.supabaseClient.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(r.error){$('loginMsg').textContent=r.error.message;return}location.reload()};
+$('loginBtn').onclick=async()=>{
+  const btn=$('loginBtn');
+  const email=$('email').value.trim();
+  const password=$('password').value;
+  if(!email||!password){$('loginMsg').textContent='Vui lòng nhập Email và Mật khẩu.';return}
+  btn.disabled=true;
+  const oldText=btn.textContent;
+  btn.textContent='Đang đăng nhập…';
+  $('loginMsg').textContent='';
+  try{
+    const r=await Promise.race([
+      window.supabaseClient.auth.signInWithPassword({email,password}),
+      new Promise((_,reject)=>setTimeout(()=>reject(new Error('Kết nối đăng nhập quá lâu. Hãy tải lại trang rồi thử lại.')),15000))
+    ]);
+    if(r.error){$('loginMsg').textContent=r.error.message;return}
+    $('loginMsg').textContent='Đăng nhập thành công. Đang kiểm tra quyền…';
+    const ok=await Promise.race([
+      checkRole().then(()=>true),
+      new Promise(resolve=>setTimeout(()=>resolve(false),10000))
+    ]);
+    if(!ok){$('loginMsg').textContent='Đăng nhập đã thành công nhưng kiểm tra quyền quá lâu. Hãy bấm F5 và thử lại.';return}
+  }catch(e){
+    $('loginMsg').textContent=e?.message||'Không thể đăng nhập. Hãy thử lại.';
+  }finally{
+    btn.disabled=false;
+    btn.textContent=oldText;
+  }
+};
+$('password').addEventListener('keydown',e=>{if(e.key==='Enter')$('loginBtn').click()});
 async function checkRole(){
   const s=await window.supabaseClient.auth.getSession();if(!s.data.session){$('login').style.display='flex';return}
   const u=await window.supabaseClient.auth.getUser();if(!u.data.user){$('login').style.display='flex';return}
@@ -1093,7 +1123,8 @@ async function checkRole(){
   });
 })();
 (async()=>{
-  await checkRole();
+  const roleBoot=await Promise.race([checkRole().then(()=>true),new Promise(resolve=>setTimeout(()=>resolve(false),12000))]);
+  if(!roleBoot){$('login').style.display='flex';$('loginMsg').textContent='Không kết nối được hệ thống quyền sau 12 giây. Kiểm tra mạng rồi bấm Đăng nhập lại.';}
   // Always start the Builder from a fresh copy of the real index.html so an
   // older cached canvas cannot become a second, different homepage.
   try{
