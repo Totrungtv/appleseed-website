@@ -1,0 +1,35 @@
+name: Add AI Board Admin Link
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  patch:
+    if: ${{ github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, 'chore: add AI Board admin link') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch link
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('admin.html')
+          s=p.read_text(encoding='utf-8')
+          anchor='<a class="btn2" href="site-builder.html" style="background:#fff8e7;border-color:#e8c66a;color:#8a5a00">🎨 Thiết kế website</a>'
+          link='<a class="btn2" href="ai-board-admin.html" style="background:#eef2ff;border-color:#c7d2fe;color:#4338ca">🧠 AI Board Control</a>'
+          if 'href="ai-board-admin.html"' not in s:
+              if anchor not in s: raise SystemExit('anchor not found')
+              s=s.replace(anchor,anchor+'\n      '+link,1)
+              p.write_text(s,encoding='utf-8')
+          PY
+          git config user.name 'Apple Seed Bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add admin.html
+          git commit -m 'chore: add AI Board admin link' || true
+          git push
+          git rm .github/workflows/add-ai-board-admin-link.yml || true
+          git commit -m 'chore: remove one-time AI Board admin link workflow' || true
+          git push || true
