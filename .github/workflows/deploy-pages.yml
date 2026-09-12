@@ -25,6 +25,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
+      - name: Cache bust runtime URL
+        run: sed -i 's/site-builder-runtime\.js?v=20260830-v6/site-builder-runtime.js?v=20260912-v7/g' index.html
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
