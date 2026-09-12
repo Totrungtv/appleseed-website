@@ -12,6 +12,19 @@ window.supabaseClient =
         window.SUPABASE_ANON_KEY
     );
 
+/* Apple Seed Entertainment runtime loader.
+ * Scoped to entertainment.html so other pages are untouched.
+ */
+(function appleSeedEntertainmentRuntimeLoader(){
+    if ((location.pathname.split('/').pop() || '').toLowerCase() !== 'entertainment.html') return;
+    if (document.querySelector('script[data-apple-seed-entertainment-runtime]')) return;
+    const script = document.createElement('script');
+    script.src = './entertainment-runtime-v4.js';
+    script.async = false;
+    script.dataset.appleSeedEntertainmentRuntime = '1';
+    (document.head || document.documentElement).appendChild(script);
+})();
+
 /* Apple Seed Admin compatibility bridge. */
 (function appleSeedAdminCompatibility(){
     if (location.pathname.split('/').pop().toLowerCase() !== 'admin.html') return;
