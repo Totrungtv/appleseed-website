@@ -1,4 +1,4 @@
-/* APPLE_SEED_THEME_SELECTION_BRIDGE_V14 */
+/* APPLE_SEED_THEME_SELECTION_BRIDGE_V15 */
 (function(){'use strict';
 if(location.pathname.split('/').pop().toLowerCase()!=='site-builder.html')return;
 const COLOR_KEY='APPLE_SEED_SITE_THEME_V1',FULL_KEY='APPLE_SEED_FULL_THEME_V1';
@@ -33,40 +33,68 @@ function intercept(e){const el=e.target&&e.target.closest&&e.target.closest('.as
 function enforce(){persistLocked();applyPreview();mark()}
 function watchPreview(){const f=document.getElementById('preview');if(!f)return;if(f.__appleSeedThemeWatched)return;f.__appleSeedThemeWatched=true;f.addEventListener('load',()=>{enforce();setTimeout(enforce,50);setTimeout(enforce,200);setTimeout(enforce,600)});try{const d=f.contentDocument;if(d&&d.documentElement){observer=new MutationObserver(()=>{if(!observer.__busy){observer.__busy=true;requestAnimationFrame(()=>{observer.__busy=false;enforce()})}});observer.observe(d.documentElement,{attributes:true,attributeFilter:['class'],subtree:true});}}catch(_){} }
 function loginBox(){return document.querySelector('.login')}
-function loginError(message){const box=loginBox();if(!box)return;let el=box.querySelector('.danger');if(!el){el=document.createElement('div');el.className='danger';const card=box.querySelector('.login-card')||box;card.appendChild(el)}el.textContent=message||'Đăng nhập thất bại. Vui lòng kiểm tra Email và Mật khẩu.';el.style.display='block'}
-function loginFields(){const box=loginBox();if(!box)return null;const email=box.querySelector('input[type="email"],input[name="email"],#loginEmail');const password=box.querySelector('input[type="password"],input[name="password"],#loginPassword');const button=box.querySelector('button[type="submit"],button');if(!email||!password||!button)return null;return {box,email,password,button}}
+function loginError(message){const box=loginBox();if(!box)return;const el=document.getElementById('loginMsg')||box.querySelector('.danger');if(el){el.textContent=message||'';el.style.display='block'}}
+function loginFields(){const box=loginBox();if(!box)return null;const email=box.querySelector('#email,input[type="email"],input[name="email"],#loginEmail');const password=box.querySelector('#password,input[type="password"],input[name="password"],#loginPassword');const button=box.querySelector('#loginBtn,button[type="submit"],button');if(!email||!password||!button)return null;return{box,email,password,button}}
+function withTimeout(p,ms,message){return Promise.race([p,new Promise((_,reject)=>setTimeout(()=>reject(new Error(message)),ms))])}
+async function verifyBuilderRole(user){
+  if(!user?.id)throw new Error('Không xác định được tài khoản sau khi đăng nhập.');
+  const r=await withTimeout(window.supabaseClient.rpc('apple_seed_is_admin_or_staff'),10000,'Kiểm tra quyền Builder quá lâu.');
+  if(r.error)throw new Error('Không kiểm tra được quyền Builder: '+r.error.message);
+  if(r.data!==true)throw new Error('Tài khoản đã đăng nhập nhưng không có quyền Visual Site Builder.');
+  try{allowed=true}catch(_){}
+  return true;
+}
+async function finishBuilderLogin(f){
+  const session=await withTimeout(window.supabaseClient.auth.getSession(),8000,'Không đọc được phiên đăng nhập.');
+  if(session.error)throw session.error;
+  const user=session.data?.session?.user;
+  if(!user)throw new Error('Phiên đăng nhập chưa được tạo.');
+  await verifyBuilderRole(user);
+  if(f)f.button.textContent='Đã đăng nhập';
+  const box=loginBox();if(box)box.style.display='none';
+  const status=document.getElementById('status');if(status)status.textContent='Đã xác thực · Admin/Staff';
+  try{if(typeof loadPublished==='function')await withTimeout(loadPublished(),12000,'Nạp dữ liệu Builder quá lâu.')}catch(e){console.warn('Builder load after login:',e)}
+}
 async function loginFallback(e){
   const f=loginFields();if(!f||loginBusy)return;
   if(e){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation()}
   const email=String(f.email.value||'').trim(),password=String(f.password.value||'');
   if(!email||!password){loginError('Vui lòng nhập Email và Mật khẩu.');return}
   const client=window.supabaseClient;
-  if(!client||!client.auth||typeof client.auth.signInWithPassword!=='function'){loginError('Không tải được hệ thống đăng nhập. Hãy tải lại trang.');return}
-  loginBusy=true;f.button.disabled=true;const oldText=f.button.textContent;f.button.textContent='Đang đăng nhập…';loginError('');
+  if(!client?.auth||typeof client.auth.signInWithPassword!=='function'){loginError('Không tải được hệ thống đăng nhập. Hãy tải lại trang.');return}
+  loginBusy=true;f.button.disabled=true;const oldText=f.button.textContent;f.button.textContent='Đang đăng nhập…';loginError('Đang xác thực tài khoản…');
   try{
-    const {data,error}=await client.auth.signInWithPassword({email,password});
-    if(error)throw error;
-    if(!data||!data.session)throw new Error('Không tạo được phiên đăng nhập.');
+    const r=await withTimeout(client.auth.signInWithPassword({email,password}),15000,'Kết nối Supabase quá lâu (15 giây). Kiểm tra mạng rồi thử lại.');
+    if(r.error)throw r.error;
+    if(!r.data?.session)throw new Error('Supabase không tạo được phiên đăng nhập.');
+    loginError('Đăng nhập thành công · đang kiểm tra quyền…');
+    await finishBuilderLogin(f);
     try{sessionStorage.setItem('APPLE_SEED_BUILDER_LOGIN_OK','1')}catch(_){}
-    f.button.textContent='Đã đăng nhập';
-    setTimeout(()=>{location.reload()},120);
   }catch(err){
-    console.error('Apple Seed Builder login fallback:',err);
-    loginError(err&&err.message==='Invalid login credentials'?'Email hoặc Mật khẩu không đúng.':(err&&err.message)||'Đăng nhập thất bại. Vui lòng thử lại.');
+    console.error('Apple Seed Builder login V15:',err);
+    loginError(err?.message==='Invalid login credentials'?'Email hoặc Mật khẩu không đúng.':(err?.message||'Đăng nhập thất bại. Vui lòng thử lại.'));
     f.button.disabled=false;f.button.textContent=oldText;loginBusy=false;
   }
+}
+async function recoverExistingSession(){
+  const box=loginBox();if(!box)return;
+  try{
+    const s=await withTimeout(window.supabaseClient.auth.getSession(),8000,'');
+    if(s.data?.session?.user){
+      try{await verifyBuilderRole(s.data.session.user);box.style.display='none';const st=document.getElementById('status');if(st)st.textContent='Đã xác thực · Admin/Staff';}catch(e){console.warn('Builder existing session role:',e)}
+    }
+  }catch(_){ }
 }
 function loginIntercept(e){
   const box=loginBox();if(!box||getComputedStyle(box).display==='none')return;
   const target=e.target;
   if(e.type==='keydown'){
-    if(e.key!=='Enter')return;
-    if(!target||!box.contains(target))return;
+    if(e.key!=='Enter'||!target||!box.contains(target))return;
   }else{
     const f=loginFields();if(!f||!(target===f.button||f.button.contains(target)))return;
   }
   loginFallback(e);
 }
-function install(){if(installed)return;installed=true;bootstrap();enforce();watchPreview();window.addEventListener('pointerdown',intercept,true);window.addEventListener('click',intercept,true);window.addEventListener('click',loginIntercept,true);window.addEventListener('keydown',loginIntercept,true);if(enforceTimer)clearInterval(enforceTimer);enforceTimer=setInterval(enforce,500);new MutationObserver(()=>{watchPreview();mark()}).observe(document.body,{childList:true,subtree:true});}
+function install(){if(installed)return;installed=true;bootstrap();enforce();watchPreview();window.addEventListener('pointerdown',intercept,true);window.addEventListener('click',intercept,true);window.addEventListener('click',loginIntercept,true);window.addEventListener('keydown',loginIntercept,true);if(enforceTimer)clearInterval(enforceTimer);enforceTimer=setInterval(enforce,500);new MutationObserver(()=>{watchPreview();mark()}).observe(document.body,{childList:true,subtree:true});setTimeout(recoverExistingSession,0);}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 })();
