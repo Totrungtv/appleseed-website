@@ -98,6 +98,7 @@
 <div class="ai-modal" id="aiModal"><div class="ai-card"><div class="ai-head"><div style="font-size:25px">🤖</div><div><h2>Apple Seed AI Designer</h2><div class="muted">AI tư vấn bố cục, responsive, nội dung và phong cách Apple Seed.</div></div><button class="btn ai-close" id="aiClose">✕</button></div><div class="ai-actions"><button class="ai-chip" data-ai="review">🔎 Phân tích trang</button><button class="ai-chip" data-ai="mobile">📱 Tối ưu Mobile</button><button class="ai-chip" data-ai="premium">✨ Cao cấp</button><button class="ai-chip" data-ai="simple">🧹 Đơn giản</button><button class="ai-chip" data-ai="seo">🚀 SEO</button><button class="ai-chip ai-fix" id="aiFixWebsite" type="button">🛠️ FIX LỖI TOÀN WEBSITE</button></div><div class="ai-log" id="aiLog"><div class="ai-msg ai-bot">Chào bro 👋 Tôi có thể phân tích trang đang thiết kế và đề xuất cách chỉnh. AI không tự ý sửa production.</div></div><div class="ai-row"><textarea id="aiInput" placeholder="Ví dụ: Làm Hero gọn hơn trên mobile nhưng giữ cụm iPhone nổi bật..."></textarea><button class="btn primary" id="aiSend">Gửi AI</button></div></div></div>
 <script>
 window.__APPLE_SEED_BUILDER_SAFE_SYNC__=true;
+window.__APPLE_SEED_BUILDER_UNIFYING__=false;
 /* Drag hardening: movement is always based on the position captured at pointerdown. */
 window.__APPLE_SEED_BUILDER_DRAG_SAFE__=true;
 
@@ -776,7 +777,8 @@ $('preview').addEventListener('load',async()=>{
   doc.addEventListener('pointercancel',finishMove,true);
   doc.addEventListener('pointerleave',()=>{if(!drag)hideOverlaySoon(700)},true);
   captureBuilderImageBaseline();
-  await loadPublished();applyAll();refreshPageDesign();rebindUploadControls();syncLiveItemCount();setStatus('Sẵn sàng — bấm trực tiếp để chỉnh');renderLayers();
+  if(!window.__APPLE_SEED_BUILDER_UNIFYING__){await loadPublished();applyAll();refreshPageDesign();rebindUploadControls();syncLiveItemCount();setStatus('Sẵn sàng — bấm trực tiếp để chỉnh');renderLayers();}
+  else{rebindUploadControls();syncLiveItemCount();}
   // One-shot recovery for a stale/blank iframe cache. Never loops.
   setTimeout(function(){
     try{
@@ -1092,43 +1094,60 @@ $('undo').onclick=()=>{if(!history.length)return;future.push(snapshot());draft=h
 $('redo').onclick=()=>{if(!future.length)return;history.push(snapshot());draft=future.pop();saveDraft();applyAll();toast('↷ Redo')};
 $('backAdmin').onclick=()=>{location.href='admin.html'};
 $('save').onclick=saveDraft;$('reload').onclick=()=>location.reload();$('clear').onclick=()=>{if(confirm('Xóa toàn bộ nháp Builder trên máy?')){localStorage.removeItem(DRAFT_KEY);location.reload()}};
-/* AI_BOARD_INDEX_BUILDER_UNIFIED_V3
- * One source of truth for editing: the actual index.html rendered in the iframe.
- * Refreshes INDEX, preserves current draft, removes only stale selectors, and reapplies valid edits.
+/* AI_BOARD_INDEX_BUILDER_UNIFIED_V4
+ * Real INDEX is the DOM source of truth. During this operation the iframe load
+ * handler is locked out so it cannot race loadPublished() and overwrite draft.
+ * Valid existing draft items are retained; only selectors absent from INDEX are pruned.
  */
 async function unifyIndexAndBuilder(){
   if(!allowed){toast('Tài khoản không có quyền');return}
-  const btn=$('unifyIndexBuilder'); if(btn)btn.disabled=true;
+  const btn=$('unifyIndexBuilder');if(btn)btn.disabled=true;
   const preserved=JSON.parse(JSON.stringify(draft||{items:{},page:{desktop:{},mobile:{}}}));
+  window.__APPLE_SEED_BUILDER_UNIFYING__=true;
   try{
     setStatus('Đang hợp nhất INDEX ↔ BUILDER…');
+    const p=$('preview');if(!p)throw new Error('Không tìm thấy canvas INDEX.');
     localStorage.setItem(DRAFT_KEY,JSON.stringify(preserved));
-    const before=Object.keys(preserved.items||{});
-    const p=$('preview'); if(!p)throw new Error('Không tìm thấy canvas INDEX.');
+    const u=new URL('index.html',location.href);
+    u.searchParams.set('appleSeedBuilderPreview','1');
+    u.searchParams.set('builderCanvas','1');
+    u.searchParams.set('v','unified-'+Date.now());
     const wait=new Promise((resolve,reject)=>{
       let done=false;
-      const finish=ok=>{if(done)return;done=true;clearTimeout(timer);p.removeEventListener('load',onload);ok?resolve():reject(new Error('INDEX không tải được trong 15 giây.'))};
-      const onload=()=>finish(true); const timer=setTimeout(()=>finish(false),15000);
+      const finish=(ok,err)=>{if(done)return;done=true;clearTimeout(timer);p.removeEventListener('load',onload);ok?resolve():reject(err||new Error('INDEX không tải được trong 15 giây.'))};
+      const onload=()=>finish(true);
+      const timer=setTimeout(()=>finish(false),15000);
       p.addEventListener('load',onload,{once:true});
     });
-    const u=new URL('index.html',location.href);
-    u.searchParams.set('appleSeedBuilderPreview','1');u.searchParams.set('builderCanvas','1');u.searchParams.set('v','unified-'+Date.now());
-    p.dataset.builderRetry='';p.src=u.toString();await wait;
-    doc=p.contentDocument;if(!doc?.body)throw new Error('INDEX đã tải nhưng không có nội dung.');
+    p.dataset.builderRetry='';
+    p.src=u.toString();
+    await wait;
+    doc=p.contentDocument;
+    if(!doc?.body)throw new Error('INDEX đã tải nhưng không có nội dung.');
     captureBuilderImageBaseline();
-    const fresh={items:{},page:preserved.page||{desktop:{},mobile:{}}};
-    for(const sel of before){let el=null;try{el=doc.querySelector(sel)}catch(_){}if(el)fresh.items[sel]=preserved.items[sel]}
-    draft=fresh;localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));applyAll();refreshPageDesign();renderLayers();refreshOverlay();
+    const fresh={items:{},page:JSON.parse(JSON.stringify(preserved.page||{desktop:{},mobile:{}}))};
+    const before=Object.keys(preserved.items||{});
+    for(const sel of before){
+      let el=null;try{el=doc.querySelector(sel)}catch(_){ }
+      if(el)fresh.items[sel]=preserved.items[sel];
+    }
+    draft=fresh;
+    localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));
+    applyAll();refreshPageDesign();renderLayers();refreshOverlay();
     const kept=Object.keys(draft.items||{}).length;
     setStatus('INDEX ↔ BUILDER đã hợp nhất · '+kept+'/'+before.length+' mục hợp lệ');
     toast('🧬 Đã hợp nhất INDEX thật với Builder');
   }catch(e){
-    console.error('Unify INDEX ↔ Builder:',e);draft=preserved;
-    try{localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));applyAll();renderLayers();refreshOverlay()}catch(_){}
-    setStatus('Hợp nhất thất bại — nháp vẫn được giữ nguyên');toast('⚠️ Hợp nhất lỗi: '+(e?.message||'Không xác định'));
-  }finally{if(btn)btn.disabled=false}
+    console.error('Unify INDEX ↔ Builder:',e);
+    draft=preserved;
+    try{localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));applyAll();renderLayers();refreshOverlay()}catch(_){ }
+    setStatus('Hợp nhất thất bại — nháp vẫn được giữ nguyên');
+    toast('⚠️ Hợp nhất lỗi: '+(e?.message||'Không xác định'));
+  }finally{
+    window.__APPLE_SEED_BUILDER_UNIFYING__=false;
+    if(btn)btn.disabled=false;
+  }
 }
-
 $('unifyIndexBuilder').onclick=unifyIndexAndBuilder;
 $('syncLive').onclick=async()=>{
   if(!allowed){toast('Tài khoản không có quyền');return}
@@ -1146,43 +1165,67 @@ $('syncLive').onclick=async()=>{
   }catch(e){console.error('Safe LIVE sync:',e);setStatus('Đồng bộ LIVE thất bại — website không bị thay đổi');toast('⚠️ Đồng bộ lỗi: '+(e?.message||'Không xác định'))}
   finally{btn.disabled=false}
 };
+async function readLatestPublishedBuilderConfig(){
+  const r=await window.supabaseClient.from('site_builder_versions')
+    .select('version_no,config,created_at')
+    .eq('site_key','default')
+    .eq('status','published')
+    .order('version_no',{ascending:false})
+    .limit(1)
+    .maybeSingle();
+  if(r.error)throw r.error;
+  return r.data||null;
+}
+function mergeBuilderPublishConfig(base,current){
+  const empty={items:{},page:{desktop:{},mobile:{}}};
+  const out=JSON.parse(JSON.stringify(base||empty));
+  const cur=JSON.parse(JSON.stringify(current||empty));
+  out.items=out.items||{};
+  Object.entries(cur.items||{}).forEach(([sel,item])=>{out.items[sel]=item});
+  out.page=out.page||{};
+  for(const dk of ['desktop','mobile']){
+    const bp=out.page[dk]||{};const cp=cur.page?.[dk]||{};
+    out.page[dk]={...bp,...cp};
+  }
+  return out;
+}
 $('publish').onclick=async()=>{
   if(!allowed){toast('Tài khoản không có quyền');return}
-  saveDraft();
-  setStatus('Đang xuất bản version mới…');
-  const payload=snapshot();payload.builder_version='V3';payload.builder_features=['blocks','responsive','group-drag','presets','ai-designer'];
-  const r=await window.supabaseClient.rpc('apple_seed_builder_publish',{p_config:payload,p_site_key:'default'});
-  if(r.error){toast('Publish lỗi: '+r.error.message);setStatus('Publish lỗi — website chưa đổi');return}
-  const versionNo=r.data?.version_no;
-  // Mark this local draft as based on the version just published.
-  // Future Builder reloads can safely keep unsaved edits only until a newer
-  // published version exists.
-  if(versionNo!=null)localStorage.setItem(PUBLISHED_VERSION_KEY,String(versionNo));
-  toast('🚀 Đã xuất bản V'+(versionNo||''));
-  setStatus('Đã xuất bản V'+(versionNo||''));
+  const btn=$('publish');if(btn)btn.disabled=true;
+  setStatus('Đang kiểm tra LIVE trước khi xuất bản…');
   try{
-    const verify=await window.supabaseClient.from('site_builder_versions').select('version_no,config').eq('site_key','default').eq('status','published').order('version_no',{ascending:false}).limit(1).maybeSingle();
-    if(verify.error) console.warn('Publish verify:',verify.error.message);
-    else if(verify.data?.config?.items){
-      // IMPORTANT: after Publish the canvas must use the exact config that
-      // the live homepage will read. Never leave an older local draft here.
-      draft=JSON.parse(JSON.stringify(verify.data.config));
-      draft.items=draft.items||{};
-      draft.page=draft.page||{desktop:{},mobile:{}};
-      draft.page.desktop=draft.page.desktop||{};
-      draft.page.mobile=draft.page.mobile||{};
-      localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));
-      if(verify.data.version_no!=null)localStorage.setItem(PUBLISHED_VERSION_KEY,String(verify.data.version_no));
-    }
-  }catch(err){console.warn('Publish verify:',err)}
-  refreshPageDesign();
-  applyAll();
-  try{
+    const latest=await readLatestPublishedBuilderConfig();
+    const payload=mergeBuilderPublishConfig(latest?.config,draft);
+    payload.builder_version='V4';
+    payload.builder_features=['blocks','responsive','group-drag','presets','ai-designer','hero-slider','index-builder-unify'];
+    const r=await window.supabaseClient.rpc('apple_seed_builder_publish',{p_config:payload,p_site_key:'default'});
+    if(r.error)throw r.error;
+    const versionNo=r.data?.version_no;
+    draft=JSON.parse(JSON.stringify(payload));
+    localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));
+    if(versionNo!=null)localStorage.setItem(PUBLISHED_VERSION_KEY,String(versionNo));
+    toast('🚀 Đã xuất bản V'+(versionNo||''));
+    setStatus('Đã xuất bản V'+(versionNo||''));
+    const verify=await window.supabaseClient.from('site_builder_versions')
+      .select('version_no,config,status')
+      .eq('site_key','default').eq('status','published')
+      .order('version_no',{ascending:false}).limit(1).maybeSingle();
+    if(verify.error)throw verify.error;
+    if(!verify.data?.config)throw new Error('Không đọc lại được cấu hình vừa xuất bản.');
+    draft=JSON.parse(JSON.stringify(verify.data.config));
+    draft.items=draft.items||{};draft.page=draft.page||{desktop:{},mobile:{}};
+    draft.page.desktop=draft.page.desktop||{};draft.page.mobile=draft.page.mobile||{};
+    localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));
+    if(verify.data.version_no!=null)localStorage.setItem(PUBLISHED_VERSION_KEY,String(verify.data.version_no));
+    refreshPageDesign();applyAll();
     const u=new URL($('preview').src,location.href);
     u.searchParams.set('v','builder-live-'+Date.now());
-    $('preview').dataset.builderRetry='';
-    $('preview').src=u.toString();
-  }catch(_){}
+    $('preview').dataset.builderRetry='';$('preview').src=u.toString();
+  }catch(e){
+    console.error('Safe Publish V4:',e);
+    toast('❌ Publish lỗi: '+(e?.message||String(e)));
+    setStatus('Publish lỗi — website chưa đổi');
+  }finally{if(btn)btn.disabled=false}
 };
 /* SITE_BUILDER_AUTH_FIX_V3 */
 let builderRolePromise=null;
