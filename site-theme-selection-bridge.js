@@ -1,6 +1,7 @@
-/* APPLE_SEED_THEME_SELECTION_BRIDGE_V2
+/* APPLE_SEED_THEME_SELECTION_BRIDGE_V3
    One 01-30 selection controls both the Web Theme and the Web Layout Theme.
-   Builder preview and published LIVE site use the same selected number.
+   Capture on pointerdown so older Builder click handlers cannot trap the choice
+   inside the Builder-only state.
 */
 (function(){
   'use strict';
@@ -12,11 +13,11 @@
   }
   function applyToBuilder(v){
     const d=document;
-    d.documentElement.classList.add('as-theme-scope','as-theme-'+v,'as-full-theme-scope','as-full-theme-'+v);
     for(let i=1;i<=30;i++){
       const n=String(i).padStart(2,'0');
-      if(n!==v){d.documentElement.classList.remove('as-theme-'+n,'as-full-theme-'+n)}
+      d.documentElement.classList.remove('as-theme-'+n,'as-full-theme-'+n);
     }
+    d.documentElement.classList.add('as-theme-scope','as-theme-'+v,'as-full-theme-scope','as-full-theme-'+v);
     const frame=document.getElementById('preview');
     const fd=frame&&frame.contentDocument;
     if(fd&&fd.documentElement){
@@ -47,13 +48,16 @@
   }
   function boot(){
     if(location.pathname.split('/').pop().toLowerCase()!=='site-builder.html')return;
-    const v=current();
-    set(v,false);
+    set(current(),false);
+    document.addEventListener('pointerdown',function(e){
+      const c=e.target&&e.target.closest?e.target.closest('.as-theme-choice,.as-full-theme-choice'):null;
+      if(!c)return;
+      set(c.dataset.themeId||c.dataset.fullTheme,true);
+    },true);
     document.addEventListener('click',function(e){
       const c=e.target&&e.target.closest?e.target.closest('.as-theme-choice,.as-full-theme-choice'):null;
       if(!c)return;
-      const v=norm(c.dataset.themeId||c.dataset.fullTheme);
-      set(v,true);
+      set(c.dataset.themeId||c.dataset.fullTheme,true);
     },true);
     const frame=document.getElementById('preview');
     if(frame)frame.addEventListener('load',function(){set(current(),false)});
