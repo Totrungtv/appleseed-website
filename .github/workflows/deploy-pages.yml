@@ -33,8 +33,9 @@ jobs:
           s = p.read_text(encoding='utf-8')
           s = s.replace('site-builder-full-themes.css?v=20260912-full1','site-builder-full-themes.css?v=20260912-full3')
           s = s.replace('site-builder-full-themes.css?v=20260912-full2','site-builder-full-themes.css?v=20260912-full3')
-          s = s.replace('site-theme-selection-bridge.js?v=20260912-theme-bridge2','site-theme-selection-bridge.js?v=20260912-theme-bridge5')
-          s = s.replace('site-theme-selection-bridge.js?v=20260912-theme-bridge4','site-theme-selection-bridge.js?v=20260912-theme-bridge5')
+          s = s.replace('site-theme-selection-bridge.js?v=20260912-theme-bridge2','site-theme-selection-bridge.js?v=20260912-theme-bridge6')
+          s = s.replace('site-theme-selection-bridge.js?v=20260912-theme-bridge4','site-theme-selection-bridge.js?v=20260912-theme-bridge6')
+          s = s.replace('site-theme-selection-bridge.js?v=20260912-theme-bridge5','site-theme-selection-bridge.js?v=20260912-theme-bridge6')
           s = s.replace('site-builder-runtime.js?v=20260912-v14','site-builder-runtime.js?v=20260912-v15')
           p.write_text(s, encoding='utf-8')
           PY
