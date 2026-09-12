@@ -20,11 +20,12 @@ jobs:
           set -euo pipefail
           grep -q 'APPLE_SEED_IMAGE_REPLACE_SELECTED_V2' site-builder.html
           grep -q 'site-builder-image-controls.js' site-builder.html
-          grep -q 'APPLE_SEED_IMAGE_CONTROLS_V6' site-builder-image-controls.js
+          grep -q 'APPLE_SEED_IMAGE_CONTROLS_V7' site-builder-image-controls.js
           grep -q 'appleSeedVisualBuilderImageOverridesV4' site-builder-image-controls.js
           grep -q 'appleSeedVisualBuilderPendingImageOverridesV4' site-builder-image-controls.js
           grep -q "fn==='apple_seed_builder_publish'" site-builder-image-controls.js
           grep -q 'function freshPayload' site-builder-image-controls.js
+          grep -q 'window.supabaseClient' site-builder-image-controls.js
           node --check site-builder-image-controls.js
           git diff --check
 
@@ -35,11 +36,10 @@ jobs:
           from pathlib import Path
           p = Path('site-builder.html')
           s = p.read_text(encoding='utf-8')
-          old = 'site-builder-image-controls.js?v=20260913-image1'
-          new = 'site-builder-image-controls.js?v=20260913-image6'
-          if old in s:
-              s = s.replace(old, new)
-          s = s.replace('<!-- APPLE_SEED_IMAGE_CONTROLS_V2 -->', '<!-- APPLE_SEED_IMAGE_CONTROLS_V6 -->')
+          s = s.replace('site-builder-image-controls.js?v=20260913-image1', 'site-builder-image-controls.js?v=20260913-image7')
+          s = s.replace('site-builder-image-controls.js?v=20260913-image6', 'site-builder-image-controls.js?v=20260913-image7')
+          s = s.replace('<!-- APPLE_SEED_IMAGE_CONTROLS_V2 -->', '<!-- APPLE_SEED_IMAGE_CONTROLS_V7 -->')
+          s = s.replace('<!-- APPLE_SEED_IMAGE_CONTROLS_V6 -->', '<!-- APPLE_SEED_IMAGE_CONTROLS_V7 -->')
           p.write_text(s, encoding='utf-8')
           PY
           if git diff --quiet -- site-builder.html; then
@@ -48,15 +48,15 @@ jobs:
             git config user.name 'Apple Seed Repair'
             git config user.email '0898888269tv@gmail.com'
             git add site-builder.html
-            git commit -m 'chore: bust Builder image helper cache'
+            git commit -m 'chore: bust Builder image helper cache V7'
             git push origin main
           fi
 
       - name: Final validation
         run: |
           set -euo pipefail
-          grep -q 'site-builder-image-controls.js?v=20260913-image6' site-builder.html
-          grep -q 'APPLE_SEED_IMAGE_CONTROLS_V6' site-builder.html
+          grep -q 'site-builder-image-controls.js?v=20260913-image7' site-builder.html
+          grep -q 'APPLE_SEED_IMAGE_CONTROLS_V7' site-builder.html
           node --check site-builder-image-controls.js
           git diff --check
           echo 'Builder image replacement and publish persistence controls validated.'
