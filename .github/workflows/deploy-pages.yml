@@ -25,17 +25,31 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
-      - name: Fix Hero initial render and cache bust
+      - name: Fix Hero initial render, mobile slider sizing and cache bust
         run: |
           python3 - <<'PY'
           from pathlib import Path
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          marker = 'APPLE_SEED_HERO_MODE_INITIAL_V2'
-          css = '<style id="apple-seed-hero-mode-initial-v2">html:not([data-apple-seed-hero-mode="phones"]) .as3-phone{display:none!important;visibility:hidden!important}html[data-apple-seed-hero-mode="phones"] .as3-phone{display:block!important;visibility:visible!important}</style>'
+          marker = 'APPLE_SEED_HERO_MODE_INITIAL_V3'
+          css = '''<style id="apple-seed-hero-mode-initial-v3">
+          html:not([data-apple-seed-hero-mode="phones"]) .as3-phone{display:none!important;visibility:hidden!important}
+          html[data-apple-seed-hero-mode="phones"] .as3-phone{display:block!important;visibility:visible!important}
+          @media(max-width:650px){
+            .as3-stage.apple-seed-runtime-slider-host,
+            .apple-seed-runtime-slider-host{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important;padding-left:0!important;padding-right:0!important}
+            .as3-stage.apple-seed-runtime-slider-host > .apple-seed-runtime-slider,
+            .apple-seed-runtime-slider-host > .apple-seed-runtime-slider,
+            #apple-seed-runtime-slider{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important}
+            .apple-seed-runtime-slider-host img,
+            .apple-seed-runtime-slider img,
+            #apple-seed-runtime-slider img{display:block!important;width:100%!important;max-width:100%!important;height:auto!important;object-fit:contain!important}
+          }
+          </style>'''
           if marker not in s:
               s = s.replace('</head>', css + '\n<!-- ' + marker + ' -->\n</head>', 1)
-          s = s.replace('site-builder-runtime.js?v=20260830-v6', 'site-builder-runtime.js?v=20260912-v8')
+          s = s.replace('site-builder-runtime.js?v=20260830-v6', 'site-builder-runtime.js?v=20260912-v9')
+          s = s.replace('site-builder-runtime.js?v=20260912-v8', 'site-builder-runtime.js?v=20260912-v9')
           p.write_text(s, encoding='utf-8')
           PY
       - name: Upload site
