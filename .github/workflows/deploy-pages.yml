@@ -26,46 +26,9 @@ jobs:
       - name: Repair Site Builder auth v3
         run: |
           python .github/repair-site-builder-auth-v3.py
-          rm -f .github/repair-site-builder-auth-v3.py
-          cat > .github/workflows/deploy-pages.yml <<'YAML'
-          name: Deploy Apple Seed to GitHub Pages
-
-          on:
-            push:
-              branches: [main]
-            workflow_dispatch:
-
-          permissions:
-            contents: write
-            pages: write
-            id-token: write
-
-          concurrency:
-            group: pages
-            cancel-in-progress: true
-
-          jobs:
-            deploy:
-              environment:
-                name: github-pages
-                url: ${{ steps.deployment.outputs.page_url }}
-              runs-on: ubuntu-latest
-              steps:
-                - name: Checkout
-                  uses: actions/checkout@v4
-                - name: Setup Pages
-                  uses: actions/configure-pages@v5
-                - name: Upload site
-                  uses: actions/upload-pages-artifact@v3
-                  with:
-                    path: .
-                - name: Deploy
-                  id: deployment
-                  uses: actions/deploy-pages@v4
-          YAML
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add site-builder.html .github/repair-site-builder-auth-v3.py .github/workflows/deploy-pages.yml
+          git add site-builder.html
           git commit -m "fix: robust Site Builder auth" || echo "No repair commit needed"
           git push
       - name: Setup Pages
