@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Apple Seed Marketplace</title>
+<meta name="description" content="Chợ Apple Seed - mua bán máy, linh kiện, dụng cụ và thiết bị kỹ thuật.">
+<link rel="stylesheet" href="marketplace.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="member-auth.js"></script>
+</head>
+<body>
+<header class="market-head">
+  <a class="brand" href="index.html">🍎 <strong>Apple Seed</strong><span>Marketplace</span></a>
+  <div class="head-search"><input id="searchInput" type="search" placeholder="Tìm máy, linh kiện, màn hình, dụng cụ..."><button id="searchBtn">🔎</button></div>
+  <nav><a href="index.html">Trang chủ</a><a href="panic-center.html">PANIC</a><a href="member-account.html">Tài khoản</a></nav>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div><div class="eyebrow">APPLE SEED MARKETPLACE · V1</div><h1>Chợ kỹ thuật của anh em ngành điện thoại</h1><p>Mua bán máy, linh kiện, IC, màn hình, pin, dụng cụ và thiết bị. Mỗi người có thể mở gian hàng riêng.</p></div>
+    <button id="openSeller" class="primary">🏪 Mở gian hàng</button>
+  </section>
+
+  <section class="categories" id="categories">
+    <button class="cat active" data-cat="">Tất cả</button>
+    <button class="cat" data-cat="Máy">📱 Máy</button>
+    <button class="cat" data-cat="Linh kiện">🧩 Linh kiện</button>
+    <button class="cat" data-cat="IC">🔬 IC</button>
+    <button class="cat" data-cat="Màn hình">🖥️ Màn hình</button>
+    <button class="cat" data-cat="Pin">🔋 Pin</button>
+    <button class="cat" data-cat="Dụng cụ">🛠️ Dụng cụ</button>
+    <button class="cat" data-cat="Thiết bị">⚙️ Thiết bị</button>
+    <button class="cat" data-cat="Phần mềm">💻 Phần mềm</button>
+  </section>
+
+  <section class="toolbar"><div><strong id="resultTitle">Sản phẩm mới</strong><span id="resultCount"></span></div><select id="sort"><option value="new">Mới nhất</option><option value="priceAsc">Giá thấp → cao</option><option value="priceDesc">Giá cao → thấp</option></select></section>
+
+  <section id="productGrid" class="grid"><div class="loading">Đang tải sản phẩm...</div></section>
+
+  <section class="seller-card">
+    <div><span class="eyebrow">DÀNH CHO NGƯỜI BÁN</span><h2>Bắt đầu bán hàng trên Apple Seed</h2><p>Tạo gian hàng, đăng sản phẩm và quản lý hàng hóa. Phần đơn hàng, thanh toán và vận chuyển sẽ nối tiếp ở phiên bản Marketplace tiếp theo.</p></div>
+    <button id="openSeller2" class="secondary">+ Đăng sản phẩm</button>
+  </section>
+</main>
+
+<div id="sellerModal" class="modal" aria-hidden="true">
+ <div class="modal-box">
+  <button class="close" id="closeSeller">×</button>
+  <div class="eyebrow">GIAN HÀNG CỦA TÔI</div><h2>Tạo gian hàng</h2>
+  <p class="muted">Cần đăng nhập Member. Gian hàng mới ở trạng thái chờ duyệt để Admin kiểm soát.</p>
+  <label>Tên gian hàng<input id="shopName" placeholder="VD: Trung tâm Linh kiện ABC"></label>
+  <label>Slug<input id="shopSlug" placeholder="abc-linh-kien"></label>
+  <label>Mô tả<textarea id="shopDesc" rows="3" placeholder="Bạn bán gì?"></textarea></label>
+  <label>Số điện thoại<input id="shopPhone" placeholder="Số liên hệ"></label>
+  <button id="createShop" class="primary full">Tạo gian hàng</button>
+  <div id="sellerMsg" class="msg"></div>
+ </div>
+</div>
+<script src="marketplace.js"></script>
+</body>
+</html>
