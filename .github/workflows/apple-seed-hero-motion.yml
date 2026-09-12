@@ -6,7 +6,6 @@ on:
     paths:
       - ".github/workflows/apple-seed-hero-motion.yml"
       - "scripts/apple-seed-hero-motion.py"
-      - "scripts/slider-load-persistence.py"
   workflow_dispatch:
 
 permissions:
@@ -24,22 +23,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
-
-      - name: Restore LIVE Slider on Builder Load
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 scripts/slider-load-persistence.py
-          git diff --check
-          if git diff --quiet -- site-builder.html; then
-            echo "No load persistence patch needed."
-          else
-            git config user.name "Apple Seed Slider Fix"
-            git config user.email "0898888269tv@gmail.com"
-            git add site-builder.html
-            git commit -m "fix: restore live slider on builder load"
-            git push origin HEAD:main
-          fi
 
       - name: Install Hero motion effects
         shell: bash
