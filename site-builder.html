@@ -914,10 +914,40 @@ $('applyLink').onclick=()=>{if(!selected)return;const url=$('linkUrl').value.tri
 $('clearLink').onclick=()=>{if(!selected)return;checkpoint();delete getItem().link;applyAll();saveDraft();refreshInspector();toast('🔗 Đã xóa liên kết')};
 $('applyStyle').onclick=()=>{if(!selected)return;checkpoint();const v=getItem().styles[deviceKey()];for(const k of ['x','y','w','h']){const n=parseFloat($(k).value);if(Number.isFinite(n))v[k]=n}for(const k of ['fontSize','radius']){const n=parseFloat($(k).value);if(Number.isFinite(n))v[k]=n}v.color=$('color').value;v.background=$('backgroundColor').value;selected.style.translate=(v.x||0)+'px '+(v.y||0)+'px';if(v.w)selected.style.width=v.w+'px';if(v.h)selected.style.height=v.h+'px';if(v.fontSize)selected.style.fontSize=v.fontSize+'px';if(v.radius!==undefined)selected.style.borderRadius=v.radius+'px';if(v.color)selected.style.color=v.color;if(v.background)selected.style.backgroundColor=v.background;saveDraft();refreshOverlay();toast('Đã áp dụng giao diện')};
 $('pick').onclick=()=>{$('file').click()};
-$('file').onchange=e=>{
-  pendingFile=e.target.files[0]||null;
-  if(pendingFile)showLocalImagePreview(pendingFile,'file','imagePreview');
+$('file').onchange=async e=>{
+  const file=e.target.files[0]||null;
+  pendingFile=file;
+  if(!file)return;
+  if(!selected){toast('Chưa chọn đối tượng ảnh / khối ảnh');return}
+  if(!showLocalImagePreview(file,'file','imagePreview')){pendingFile=null;return}
+  const before=snapshot();
+  try{
+    toast('☁️ Đang tải ảnh và thay ảnh đang chọn…');
+    const url=await upload(file);
+    checkpoint();
+    const item=getItem();
+    item.imageRemoved=false;
+    const phone=as4ImagePhone(selected);
+    const img=selected.tagName==='IMG'?selected:(phone?null:selected.querySelector?.('img'));
+    if(phone){applyHeroPhoneImage(phone,url);item.bgImage=url;delete item.src}
+    else if(img){img.src=url;item.src=url;delete item.bgImage}
+    else{selected.style.backgroundImage='url("'+url.replaceAll('\"','%22')+'")';item.bgImage=url;delete item.src}
+    pendingFile=null;
+    e.target.value='';
+    $('imageUrl').value=url;
+    $('imagePreview').src=url;
+    applyAll();
+    saveDraft();
+    refreshInspector();
+    toast('🖼️ Đã thay ảnh đang chọn');
+  }catch(err){
+    pendingFile=null;
+    e.target.value='';
+    history.push(before);
+    toast('Upload lỗi: '+(err?.message||String(err)));
+  }
 };
+/* APPLE_SEED_IMAGE_REPLACE_SELECTED_V2 */
 rebindUploadControls();
 
 /* AI_BOARD_SITE_BUILDER_IMAGE_CONTROLS_FIX_V4 */
@@ -1311,7 +1341,7 @@ window.supabaseClient.auth.onAuthStateChange((event,session)=>{
   }
   function slotStyle(b,active,add){b.style.cssText='min-height:82px;border:2px solid '+(active?'#1769ff':add?'#c8d1dc':'#e3e8ef')+';border-radius:8px;background:'+(add?'#fbfcfe':'#fff')+';padding:3px;cursor:pointer;aspect-ratio:16/10;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;gap:5px;flex-direction:column;color:#667085'}
   function ensureSlot(){const s=slider();if(!s)return;while(s.images.length<=activeIndex)s.images.push({fit:'cover',pos:'center',src:'',sub:'PREMIUM IPHONE REPAIR',desc:'REPAIR TODAY · A BETTER TOMORROW',title:'APPLE SEED'})}
-  function pickFile(){const f=q('file');if(f){f.value='';f.click()}}
+  function pickFile(){const f=q('asSliderFile');if(f){f.value='';f.click()}}
   async function handleFile(file){
     if(!file)return;ensureSlot();
     try{
@@ -1321,7 +1351,7 @@ window.supabaseClient.auth.onAuthStateChange((event,session)=>{
       if(typeof saveDraft==='function')saveDraft();render();if(typeof toast==='function')toast('🖼️ Đã thêm / thay ảnh Slider số '+(activeIndex+1));
     }catch(e){if(typeof toast==='function')toast('Upload lỗi: '+(e?.message||e))}
   }
-  function bindFile(){if(fileBound)return;const f=q('file');if(!f)return;fileBound=true;f.addEventListener('change',()=>{const file=f.files?.[0];if(file)handleFile(file)})}
+  function bindFile(){if(fileBound)return;const f=q('asSliderFile');if(!f)return;fileBound=true;f.addEventListener('change',()=>{const file=f.files?.[0];if(file)handleFile(file)})}
   function deleteActive(){
     const s=slider();if(!s||!s.images.length)return;if(!s.images[activeIndex]?.src){status.textContent='Khung này đã trống';return}
     if(!confirm('Xóa ảnh Slider số '+(activeIndex+1)+'? Khung sẽ được giữ lại để bấm thêm ảnh mới.'))return;
@@ -1341,7 +1371,7 @@ window.supabaseClient.auth.onAuthStateChange((event,session)=>{
   }
   function build(){
     if(panel)return;const right=document.querySelector('.right');if(!right)return;panel=document.createElement('div');panel.id='appleSeedSliderPanel';panel.className='panel';
-    panel.innerHTML='<h3>🎞 Slider — Tất cả ảnh</h3><div id="asSliderGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;max-height:300px;overflow:auto;padding:2px"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:7px"><button class="btn danger" id="asSliderDelete">🗑 Xóa ảnh</button><button class="btn" id="asSliderRefresh">↻ Làm mới</button></div><div style="display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center;margin-top:8px"><label style="font:800 10px system-ui;color:#475467">⏱ Chuyển ảnh (giây)</label><input id="asSliderInterval" type="number" min="1" max="120" step="1" value="5" style="width:78px;border:1px solid #d5dce5;border-radius:8px;padding:7px 8px"></div><button class="btn primary" id="asSliderApplyInterval" style="width:100%;margin-top:6px">⏱️ Lưu số giây chuyển ảnh</button><div id="asSliderStatus" class="muted" style="margin-top:6px"></div>';
+    panel.innerHTML='<h3>🎞 Slider — Tất cả ảnh</h3><input id="asSliderFile" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden><div id="asSliderGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;max-height:300px;overflow:auto;padding:2px"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:7px"><button class="btn danger" id="asSliderDelete">🗑 Xóa ảnh</button><button class="btn" id="asSliderRefresh">↻ Làm mới</button></div><div style="display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center;margin-top:8px"><label style="font:800 10px system-ui;color:#475467">⏱ Chuyển ảnh (giây)</label><input id="asSliderInterval" type="number" min="1" max="120" step="1" value="5" style="width:78px;border:1px solid #d5dce5;border-radius:8px;padding:7px 8px"></div><button class="btn primary" id="asSliderApplyInterval" style="width:100%;margin-top:6px">⏱️ Lưu số giây chuyển ảnh</button><div id="asSliderStatus" class="muted" style="margin-top:6px"></div>';
     right.insertBefore(panel,right.firstChild);grid=q('asSliderGrid');status=q('asSliderStatus');intervalInput=q('asSliderInterval');q('asSliderDelete').onclick=deleteActive;q('asSliderRefresh').onclick=render;q('asSliderApplyInterval').onclick=applyInterval;bindFile();render();
   }
   function boot(){build();bindFile();const f=frame();if(f)f.addEventListener('load',()=>setTimeout(render,400));}
@@ -1437,5 +1467,5 @@ document.addEventListener('click',function(e){const b=e.target.closest&&e.target
 <script src="site-theme-selection-lock.js?v=20260912-lock4"></script>
 <!-- APPLE_SEED_THEME_SELECTION_LOCK_V2 -->
 <script src="site-builder-image-controls.js?v=20260913-image1"></script>
-<!-- APPLE_SEED_IMAGE_CONTROLS_V1 -->
+<!-- APPLE_SEED_IMAGE_CONTROLS_V2 -->
 </body></html>
