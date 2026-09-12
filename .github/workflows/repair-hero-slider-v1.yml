@@ -25,6 +25,7 @@ jobs:
           marker='/* APPLE_SEED_HERO_SLIDER_JS_V1 */'
           if marker in s:
               a=s.index(marker)
+              if a>=2 and s[a-2:a]=='\\n': a-=2
               b=s.find("$('deleteImage').onclick=()=>{",a)
               if b<0: raise SystemExit('Cannot locate Hero Slider JS block end')
               block=s[a:b].replace('\\n','\n')
@@ -35,6 +36,7 @@ jobs:
           marker='/* APPLE_SEED_HERO_SLIDER_LIVE_V1 */'
           if marker in s:
               a=s.index(marker)
+              if a>=2 and s[a-2:a]=='\\n': a-=2
               b=s.find('</script>',a)
               if b<0: raise SystemExit('Cannot locate live Hero Slider script end')
               block=s[a:b].replace('\\n','\n')
