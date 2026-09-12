@@ -28,6 +28,8 @@
 /* apple-seed-30-theme-ui */
 .as-theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.as-theme-choice{position:relative;border:1px solid #dfe5ed;background:#fff;border-radius:9px;padding:7px;text-align:left;cursor:pointer;font-size:10px;font-weight:850;min-height:54px}.as-theme-choice:hover{border-color:#1769ff;transform:translateY(-1px)}.as-theme-choice.active{border-color:#1769ff;box-shadow:inset 0 0 0 2px #1769ff;background:#f5f8ff}.as-theme-dot{width:22px;height:22px;border-radius:50%;display:block;margin-bottom:4px;box-shadow:0 0 0 1px #d5dce5}.as-theme-no{position:absolute;right:6px;top:6px;color:#98a2b3;font-size:9px}
 
+/* V5 image delete control */
+#imagePanel #deleteImage{font-weight:900;color:#b42318!important;border-color:#efb4b4!important;background:#fffafa!important}
 </style>
 <link rel="stylesheet" href="site-builder-themes.css?v=20260912-theme1">
 <!-- APPLE_SEED_30_THEMES_V1 -->
@@ -522,6 +524,8 @@ function normalizeHeroCopy(){
   });
 }
 function applyAll(){
+  /* V5 image removal is represented by a persistent 1x1 transparent source. */
+
   if(!doc)return;
   const dk=deviceKey();
   const page=ensurePage();
@@ -953,11 +957,37 @@ function as4RestoreImage(el,item){
   if(img){restoreBuilderImage(img);return;}
   restoreBuilderImage(el);
 }
+
+/* APPLE_SEED_IMAGE_DELETE_PERSISTENT_V5 */
+const AS5_BLANK_IMAGE='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+function as5ImagePhone(el){
+  if(!el)return null;
+  if(el.matches?.('.as3-phone'))return el;
+  return el.closest?.('.as3-phone')||el.querySelector?.('.as3-phone')||null;
+}
+function as5ClearImage(el,item){
+  if(item){
+    item.src=AS5_BLANK_IMAGE;
+    item.bgImage=AS5_BLANK_IMAGE;
+    item.imageRemoved=true;
+  }
+  const phone=as5ImagePhone(el);
+  if(phone){
+    try{applyHeroPhoneImage(phone,AS5_BLANK_IMAGE)}catch(_){phone.style.backgroundImage='url("'+AS5_BLANK_IMAGE+'")'}
+    const img=phone.querySelector('.as3-screen > img');
+    if(img)img.src=AS5_BLANK_IMAGE;
+    return;
+  }
+  if(el?.tagName==='IMG'){el.src=AS5_BLANK_IMAGE;return}
+  const img=el?.querySelector?.('img');
+  if(img){img.src=AS5_BLANK_IMAGE;return}
+  if(el?.style)el.style.backgroundImage='url("'+AS5_BLANK_IMAGE+'")';
+}
 $('deleteImage').onclick=()=>{
   if(!selected){toast('Chưa chọn đối tượng ảnh / khối ảnh');return}
   checkpoint();
   const item=getItem();
-  as4RestoreImage(selected,item);
+  as5ClearImage(selected,item);
   pendingFile=null;
   $('file').value='';
   $('imageUrl').value='';
@@ -965,7 +995,7 @@ $('deleteImage').onclick=()=>{
   applyAll();
   saveDraft();
   refreshInspector();
-  toast('↩️ Đã khôi phục ảnh gốc');
+  toast('🗑️ Đã xóa ảnh');
 };
 $('deletePageImage').onclick=()=>{checkpoint();const p=ensurePage();p.bgImage='';$('pageBgUrl').value='';pagePendingFile=null;$('pageFile').value='';const target=findPageTarget(pageStyleTarget());restoreBuilderPageBackground(target);applyAll();saveDraft();refreshPageDesign();toast('↩️ Đã khôi phục nền gốc')};
 $('applyImage').onclick=async()=>{
@@ -976,7 +1006,7 @@ $('applyImage').onclick=async()=>{
   }catch(e){toast('Upload lỗi: '+e.message);return}
   if(!url){toast('Hãy chọn ảnh hoặc nhập URL');return}
   checkpoint();
-  const item=getItem();
+  const item=getItem(); item.imageRemoved=false;
   const phone=as4ImagePhone(selected);
   const img=selected.tagName==='IMG'?selected:(phone?null:selected.querySelector?.('img'));
   if(phone){applyHeroPhoneImage(phone,url);item.bgImage=url;delete item.src}
