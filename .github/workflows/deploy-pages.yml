@@ -29,7 +29,7 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           p=Path('site-builder.html'); s=p.read_text(encoding='utf-8'); import re
-          s=re.sub(r'site-theme-selection-bridge\.js\?v=[^"\']+','site-theme-selection-bridge.js?v=20260912-theme-bridge15',s)
+          s=re.sub(r'site-theme-selection-bridge\.js\?v=[^"\']+','site-theme-selection-bridge.js?v=20260912-theme-bridge16',s)
           s=s.replace('site-builder-full-themes.css?v=20260912-full1','site-builder-full-themes.css?v=20260912-full3').replace('site-builder-full-themes.css?v=20260912-full2','site-builder-full-themes.css?v=20260912-full3').replace('site-builder-runtime.js?v=20260912-v14','site-builder-runtime.js?v=20260912-v15')
           marker='APPLE_SEED_LAYOUTS_LINK_V2'; link='<link rel="stylesheet" href="site-builder-layouts.css?v=20260912-layout2">'
           if marker not in s:s=s.replace('</head>',link+'\n<!-- '+marker+' -->\n</head>',1)
