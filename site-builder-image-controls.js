@@ -1,23 +1,18 @@
-/* APPLE SEED IMAGE CONTROLS V2
-   Adds the explicit image delete control and keeps the selected-image replacement
-   after a hard reload. Only image overrides are journaled; other Builder draft data
-   keeps its existing source-of-truth rules.
+/* APPLE SEED IMAGE CONTROLS V3
+   Keeps image replacement selected in the Builder and restores that unsaved image
+   after the iframe/LIVE configuration finishes loading. Other draft data is untouched.
 */
 (function(){
   'use strict';
-  var READY='__appleSeedImageControlsV2';
+  var READY='__appleSeedImageControlsV3';
   var JOURNAL='appleSeedVisualBuilderImageOverridesV2';
-
   function findPanel(){return document.getElementById('imagePanel');}
   function findFileInput(panel){return panel&&panel.querySelector('input[type="file"]');}
   function readJournal(){try{var x=JSON.parse(localStorage.getItem(JOURNAL)||'[]');return Array.isArray(x)?x:[]}catch(_){return[]}}
   function writeJournal(x){try{localStorage.setItem(JOURNAL,JSON.stringify(x||[]))}catch(_){}
   }
   function currentVersion(){try{return localStorage.getItem('appleSeedVisualBuilderPublishedVersionV3')||''}catch(_){return''}}
-  function imageTarget(el){
-    var phone=typeof as4ImagePhone==='function'?as4ImagePhone(el):null;
-    return phone||el;
-  }
+  function imageTarget(el){var phone=typeof as4ImagePhone==='function'?as4ImagePhone(el):null;return phone||el;}
   function identity(el){
     var target=imageTarget(el),img=target&&target.tagName==='IMG'?target:target&&target.querySelector&&target.querySelector('img');
     return {selector:typeof selector==='string'?selector:'',id:target&&target.id||'',alt:img&&img.getAttribute('alt')||el&&el.getAttribute&&el.getAttribute('alt')||'',classes:Array.prototype.slice.call((target&&target.classList)||[]).slice(0,8),tag:target&&target.tagName||el&&el.tagName||'',baseVersion:currentVersion()};
@@ -77,9 +72,16 @@
     if(typeof saveDraft==='function'&&!saveDraft.__appleSeedImageJournal){
       var original=saveDraft;
       var wrapped=function(){var r=original.apply(this,arguments);try{journalCurrent()}catch(_){}return r};
-      wrapped.__appleSeedImageJournal=true;
-      saveDraft=wrapped;
-      window.saveDraft=wrapped;
+      wrapped.__appleSeedImageJournal=true;saveDraft=wrapped;window.saveDraft=wrapped;
+    }
+    if(typeof loadPublished==='function'&&!loadPublished.__appleSeedImageJournal){
+      var originalLoad=loadPublished;
+      var wrappedLoad=function(){
+        var result=originalLoad.apply(this,arguments);
+        if(result&&typeof result.then==='function')return result.then(function(v){setTimeout(applyJournal,60);return v});
+        setTimeout(applyJournal,60);return result;
+      };
+      wrappedLoad.__appleSeedImageJournal=true;loadPublished=wrappedLoad;window.loadPublished=wrappedLoad;
     }
     var apply=document.getElementById('applyImage');
     if(apply&&!apply.__appleSeedImageJournal){apply.addEventListener('click',markEdit,true);apply.__appleSeedImageJournal=true}
@@ -88,11 +90,8 @@
     var del=document.getElementById('deleteImage');
     if(del&&!del.__appleSeedImageJournal){del.addEventListener('click',markEdit,true);del.__appleSeedImageJournal=true}
     var preview=document.getElementById('preview');
-    if(preview&&!preview.__appleSeedImageJournal){preview.addEventListener('load',function(){setTimeout(applyJournal,180)},false);preview.__appleSeedImageJournal=true}
-    setTimeout(applyJournal,450);
+    if(preview&&!preview.__appleSeedImageJournal){preview.addEventListener('load',function(){setTimeout(applyJournal,1200);setTimeout(applyJournal,2500)},false);preview.__appleSeedImageJournal=true}
+    setTimeout(applyJournal,800);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensure,{once:true});else ensure();
-  var observer=new MutationObserver(ensure);
-  observer.observe(document.documentElement,{childList:true,subtree:true});
-  setTimeout(function(){try{observer.disconnect()}catch(_){}},30000);
 })();
