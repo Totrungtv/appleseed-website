@@ -1,0 +1,1 @@
+Temporary trigger for AI Board admin finalizer; workflow removes itself after patching.
