@@ -28,8 +28,9 @@ jobs:
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
-          p=Path('site-builder.html'); s=p.read_text(encoding='utf-8'); import re
-          s=re.sub(r'site-theme-selection-bridge\.js\?v=[^"\']+','site-theme-selection-bridge.js?v=20260912-theme-bridge19',s)
+          import re
+          p=Path('site-builder.html'); s=p.read_text(encoding='utf-8')
+          s=re.sub(r'site-theme-selection-bridge\.js\?v=[^"\']+','site-theme-selection-bridge.js?v=20260912-theme-bridge20',s)
           s=re.sub(r'site-theme-selection-lock\.js\?v=[^"\']+','site-theme-selection-lock.js?v=20260912-lock4',s)
           s=s.replace('site-builder-full-themes.css?v=20260912-full1','site-builder-full-themes.css?v=20260912-full3').replace('site-builder-full-themes.css?v=20260912-full2','site-builder-full-themes.css?v=20260912-full3').replace('site-builder-runtime.js?v=20260912-v14','site-builder-runtime.js?v=20260912-v15')
           marker='APPLE_SEED_LAYOUTS_LINK_V2'; link='<link rel="stylesheet" href="site-builder-layouts.css?v=20260912-layout2">'
@@ -51,24 +52,6 @@ jobs:
           PY
           git diff --check; git config user.name "Apple Seed Deploy"; git config user.email "0898888269tv@gmail.com"
           if git diff --quiet; then echo "Live layout link already current."; else git add index.html; git commit -m "feat: enable real website layouts"; git push origin HEAD:main; fi
-      - name: Remove legacy Hero phone mockups
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-          import re
-          p=Path('index.html'); s=p.read_text(encoding='utf-8'); tag_re=re.compile(r'<\s*(/?)\s*div\b[^>]*>',re.I); starts=list(re.finditer(r'<div\b[^>]*class=["\'][^"\']*\bas3-phone\b[^"\']*["\'][^>]*>',s,re.I)); ranges=[]
-          for m in starts:
-              depth=1
-              for t in tag_re.finditer(s,m.end()):
-                  depth += -1 if t.group(1) else 1
-                  if depth==0:ranges.append((m.start(),t.end()));break
-          if ranges:
-              for a,b in reversed(ranges):s=s[:a]+s[b:]
-              p.write_text(s,encoding='utf-8')
-          PY
-          git diff --check; git config user.name "Apple Seed Deploy"; git config user.email "0898888269tv@gmail.com"
-          if git diff --quiet; then echo "Hero phone DOM already clean."; else git add index.html; git commit -m "fix: remove legacy Hero phone mockups"; git push origin HEAD:main; fi
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Fix Hero initial render and mobile slider sizing
