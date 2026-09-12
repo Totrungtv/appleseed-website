@@ -1314,7 +1314,7 @@ window.supabaseClient.auth.onAuthStateChange((event,session)=>{
     panel.innerHTML='<h3>🎞 Slider — Tất cả ảnh</h3><div id="asSliderGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;max-height:300px;overflow:auto;padding:2px"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:7px"><button class="btn danger" id="asSliderDelete">🗑 Xóa ảnh</button><button class="btn" id="asSliderRefresh">↻ Làm mới</button></div><div style="display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center;margin-top:8px"><label style="font:800 10px system-ui;color:#475467">⏱ Chuyển ảnh (giây)</label><input id="asSliderInterval" type="number" min="1" max="120" step="1" value="5" style="width:78px;border:1px solid #d5dce5;border-radius:8px;padding:7px 8px"></div><button class="btn primary" id="asSliderApplyInterval" style="width:100%;margin-top:6px">⏱️ Lưu số giây chuyển ảnh</button><div id="asSliderStatus" class="muted" style="margin-top:6px"></div>';
     right.insertBefore(panel,right.firstChild);grid=q('asSliderGrid');status=q('asSliderStatus');intervalInput=q('asSliderInterval');q('asSliderDelete').onclick=deleteActive;q('asSliderRefresh').onclick=render;q('asSliderApplyInterval').onclick=applyInterval;bindFile();render();
   }
-  function boot(){build();bindFile();const f=frame();if(f)f.addEventListener('load',()=>setTimeout(render,400));setInterval(()=>{bindFile();renderPreview()},1500)}
+  function boot(){build();bindFile();const f=frame();if(f)f.addEventListener('load',()=>setTimeout(render,400));}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
 </script>
@@ -1333,7 +1333,7 @@ function render(v){grid?.querySelectorAll('[data-theme-id]').forEach(x=>x.classL
 function set(v){v=valid(v);draft.theme_id=v;try{localStorage.setItem(KEY,v)}catch(_){}apply(v);render(v);saveDraft();toast('🎨 Đã chọn Theme '+v)}
 function init(){grid=$('appleSeedThemeGrid');status=$('appleSeedThemeStatus');if(!grid)return;grid.innerHTML=THEMES.map((x,i)=>'<button type="button" class="as-theme-choice" data-theme-id="'+x[0]+'"><span class="as-theme-dot" style="background:'+COLORS[i]+'"></span><span>Theme '+x[0]+'</span><br><span style="font-size:9px;color:#667085;font-weight:600">'+x[1]+'</span><span class="as-theme-no">#'+x[0]+'</span></button>').join('');grid.querySelectorAll('[data-theme-id]').forEach(x=>x.onclick=()=>set(x.dataset.themeId));$('appleSeedThemeReset')?.addEventListener('click',()=>set('01'));render(get());apply(get())}
 $('preview')?.addEventListener('load',()=>setTimeout(()=>{apply(get());render(get())},250));
-const t=setInterval(()=>{if($('appleSeedThemeGrid')){init();clearInterval(t)}},100);setTimeout(()=>clearInterval(t),30000);setInterval(()=>{apply(get());render(get())},1500);
+const t=setInterval(()=>{if($('appleSeedThemeGrid')){init();clearInterval(t)}},100);setTimeout(()=>clearInterval(t),30000);
 })();
 </script>
 <script id="APPLE_SEED_30_FULL_THEMES_V1">
