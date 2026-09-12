@@ -1,10 +1,10 @@
-/* APPLE SEED IMAGE CONTROLS V7
-   Make selected-image replacements authoritative at Publish time.
+/* APPLE SEED IMAGE CONTROLS V8
+   Keep selected-image replacement authoritative at Publish time and restore
+   the visible delete controls without disturbing the working replacement flow.
 */
 (function(){
   'use strict';
-  var READY='__appleSeedImageControlsV7';
-  var JOURNAL='appleSeedVisualBuilderImageOverridesV4';
+  var READY='__appleSeedImageControlsV8';
   var PENDING='appleSeedVisualBuilderPendingImageOverridesV4';
   var BLANK='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
   function frame(){return document.querySelector('.frame iframe')||document.querySelector('iframe')}
@@ -25,46 +25,56 @@
   function target(el){try{return typeof as4ImagePhone==='function'?(as4ImagePhone(el)||el):el}catch(_){return el}}
   function getItem(d,sel){if(!d||!sel)return null;d.items=d.items||{};return d.items[sel]||(d.items[sel]={})}
   function rememberOverride(sel,url){if(!sel||!url)return;var m=read(PENDING,{});m[sel]={url:url,at:Date.now()};write(PENDING,m)}
+  function forgetOverride(sel){if(!sel)return;var m=read(PENDING,{});if(m[sel]){delete m[sel];write(PENDING,m)}}
   function pendingFor(sel){var m=read(PENDING,{});return m[sel]&&m[sel].url||''}
   function captureSelected(){
     var el=getSelectedEl(),sel=getCurrentSelector();if(!el||!sel)return;
+    var d=getDraftState();var item=d&&d.items&&d.items[sel];
     var panel=document.getElementById('imagePanel'),u=panel&&panel.querySelector('#imageUrl');
     var url=(u&&u.value||'').trim();
-    if(/^https?:\/\//i.test(url)&&url.indexOf('/storage/v1/object/public/')>=0)rememberOverride(sel,url);
+    if(/^https?:\/\//i.test(url)&&url.indexOf('/storage/v1/object/public/')>=0){
+      if(item?.imageRemoved) item.imageRemoved=false;
+      rememberOverride(sel,url);
+      return;
+    }
+    if(item?.imageRemoved||url==='')forgetOverride(sel);
   }
-  function syncDraft(force){
+  function syncDraft(){
     var d=getDraftState();if(!d)return d;d.items=d.items||{};
     var p=read(PENDING,{});
     Object.keys(p).forEach(function(sel){
       var rec=p[sel];if(!rec||!rec.url)return;
-      var item=getItem(d,sel);item.imageRemoved=false;item.src=rec.url;delete item.bgImage;
+      var item=getItem(d,sel);
+      if(item.imageRemoved)return;
+      item.imageRemoved=false;item.src=rec.url;delete item.bgImage;
     });
     var doc=getDoc();
     if(doc){
       Object.keys(d.items).forEach(function(sel){
-        var item=d.items[sel],el=null;
-        try{el=doc.querySelector(sel)}catch(_){}
+        var item=d.items[sel];if(item?.imageRemoved)return;
+        var el=null;try{el=doc.querySelector(sel)}catch(_){}
         if(!el)return;
         var t=target(el),url=imageSrc(t);
         if(!url||url===BLANK||url.indexOf('data:image')===0)return;
         if(item.bgImage&&!item.src){item.bgImage=url;item.imageRemoved=false}
-        else if(item.src||item.imageRemoved){item.src=url;delete item.bgImage;item.imageRemoved=false}
+        else if(item.src){item.src=url;delete item.bgImage;item.imageRemoved=false}
       });
     }
-    var s=getCurrentSelector(),ov=pendingFor(s);
-    if(s&&ov){var it=getItem(d,s);it.imageRemoved=false;it.src=ov;delete it.bgImage}
+    var s=getCurrentSelector(),ov=pendingFor(s),current=d.items?.[s];
+    if(s&&ov&&!current?.imageRemoved){var it=getItem(d,s);it.imageRemoved=false;it.src=ov;delete it.bgImage}
     try{window.draft=d}catch(_){}
     try{if(typeof saveDraft==='function')saveDraft()}catch(_){}
     return d;
   }
   function freshPayload(){
-    var d=syncDraft(true);
+    var d=syncDraft();
     if(!d)return null;
     try{return JSON.parse(JSON.stringify(d))}catch(_){return d}
   }
   function wrapRpc(){
     var client=null;try{client=(typeof sb!=='undefined'?sb:null)||window.supabaseClient||window.sb||null}catch(_){client=window.supabaseClient||window.sb||null}
-    if(!client||typeof client.rpc!=='function'||client.rpc.__appleSeedImagePublishV7)return false;
+    if(!client||typeof client.rpc!=='function')return false;
+    if(client.rpc.__appleSeedImagePublishV8)return true;
     var original=client.rpc.bind(client);
     var wrapped=function(fn,args,opts){
       if(fn==='apple_seed_builder_publish'&&args){
@@ -73,27 +83,52 @@
       }
       return original(fn,args,opts);
     };
-    wrapped.__appleSeedImagePublishV7=true;
+    wrapped.__appleSeedImagePublishV8=true;
     client.rpc=wrapped;
     return true;
   }
-  function beforePublish(){captureSelected();syncDraft(true);wrapRpc()}
+  function addButton(parent,id,text,kind,handler,afterId){
+    if(!parent||document.getElementById(id))return;
+    var b=document.createElement('button');b.id=id;b.type='button';b.className='btn '+(kind||'');b.style.cssText='width:100%;margin-top:6px;font-weight:900;';b.textContent=text;b.addEventListener('click',handler);
+    var after=afterId&&document.getElementById(afterId);if(after&&after.parentElement===parent)after.insertAdjacentElement('afterend',b);else parent.appendChild(b);
+  }
+  function ensureDeleteControls(){
+    var imagePanel=document.getElementById('imagePanel');
+    var pagePanel=document.getElementById('pageDesignPanel');
+    var del=document.getElementById('deleteImage');
+    if(del){del.textContent='🗑️ Xóa ảnh';del.title='Xóa ảnh đang chọn khỏi bản nháp';del.style.display='block'}
+    var restore=document.getElementById('asRestoreImageV8');
+    if(imagePanel&&!restore){
+      addButton(imagePanel,'asRestoreImageV8','↩️ Khôi phục ảnh gốc','',function(){
+        var el=getSelectedEl(),d=getDraftState(),sel=getCurrentSelector();if(!el||!d||!sel)return;
+        try{checkpoint();var item=getItem();if(typeof as4RestoreImage==='function')as4RestoreImage(el,item);else{delete item.src;delete item.bgImage;item.imageRemoved=false}item.imageRemoved=false;forgetOverride(sel);var p=read(PENDING,{});delete p[sel];write(PENDING,p);saveDraft();applyAll();refreshInspector();toast('↩️ Đã khôi phục ảnh gốc')}catch(e){toast('Khôi phục lỗi: '+(e?.message||String(e)))}
+      },'deleteImage');
+    }
+    if(pagePanel){
+      var pdel=document.getElementById('deletePageImage');
+      if(pdel){pdel.textContent='🗑️ Xóa ảnh nền';pdel.title='Xóa ảnh nền đang áp dụng';pdel.style.display='block'}
+    }
+  }
+  function beforePublish(){captureSelected();syncDraft();wrapRpc()}
   function ensure(){
     if(window[READY])return;window[READY]=true;
+    ensureDeleteControls();
     var file=document.getElementById('file');
-    if(file&&!file.__appleSeedImageControlsV7){
+    if(file&&!file.__appleSeedImageControlsV8){
       file.addEventListener('change',function(){
-        var tries=0;
-        var timer=setInterval(function(){captureSelected();if(++tries>=60)clearInterval(timer)},250);
-      },true);
-      file.__appleSeedImageControlsV7=true;
+        var tries=0;var timer=setInterval(function(){captureSelected();if(++tries>=60)clearInterval(timer)},250);
+      },true);file.__appleSeedImageControlsV8=true;
     }
     var preview=document.getElementById('preview');
-    if(preview&&!preview.__appleSeedImageControlsV7){preview.addEventListener('load',function(){setTimeout(syncDraft,150);setTimeout(syncDraft,700)},false);preview.__appleSeedImageControlsV7=true}
-    document.addEventListener('click',function(e){var b=e.target&&e.target.closest?e.target.closest('button'):null;if(!b)return;var t=(b.textContent||'').trim();if(/xuất bản|publish/i.test(t))beforePublish()},true);
-    var tries=0,boot=setInterval(function(){wrapRpc();if(++tries>=40)clearInterval(boot)},250);
+    if(preview&&!preview.__appleSeedImageControlsV8){preview.addEventListener('load',function(){setTimeout(function(){ensureDeleteControls();syncDraft()},150);setTimeout(syncDraft,700)},false);preview.__appleSeedImageControlsV8=true}
+    document.addEventListener('click',function(e){
+      var b=e.target&&e.target.closest?e.target.closest('button'):null;if(!b)return;
+      var t=(b.textContent||'').trim();if(/xuất bản|publish/i.test(t))beforePublish();
+      setTimeout(ensureDeleteControls,0);
+    },true);
+    var tries=0,boot=setInterval(function(){wrapRpc();ensureDeleteControls();if(++tries>=40)clearInterval(boot)},250);
     setTimeout(syncDraft,500);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensure,{once:true});else ensure();
 })();
-/* APPLE_SEED_IMAGE_CONTROLS_V7 */
+/* APPLE_SEED_IMAGE_CONTROLS_V8 */
