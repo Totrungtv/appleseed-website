@@ -1,0 +1,101 @@
+name: Patch iCloud UI crash
+
+on:
+  push:
+    branches:
+      - fix/icloud-check-ui-crash
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch obsolete result element references
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('icloud-check.html')
+          s = p.read_text(encoding='utf-8')
+          old = """  }catch(e){
+    processingArea.style.display='none';
+    resultArea.style.display='block';
+    const card=$('resultCard'); card.className='result-card';
+    $('resultIcon').textContent='×';
+    $('resultTitle').textContent='TRA CỨU THẤT BẠI';
+    $('resultMessage').textContent='Hiện tại chưa thể hoàn tất tra cứu. Vui lòng thử lại sau. Nếu đã thanh toán, hệ thống sẽ giữ nguyên giao dịch để xử lý lại.';
+    $('resultIdentifier').textContent=normalize();
+    $('resultRef').textContent=paymentRefValue||'—';
+    $('resultTxn').textContent='—';
+    $('resultTime').textContent=new Date().toLocaleString('vi-VN');
+    startBtn.disabled=false;
+    saveHistory({ref:paymentRefValue||'—',identifier:normalize(),time:new Date().toLocaleString('vi-VN'),status:'Lỗi xử lý'});
+  }"""
+          new = """  }catch(e){
+    processingArea.style.display='none';
+    resultArea.style.display='block';
+
+    const card=$('resultCard');
+    card.className='result-card unknown';
+
+    const badge=$('resultBadge');
+    if(badge){
+      badge.className='badge unknown';
+      badge.innerHTML='<span class=\"status-dot unknown\"></span> TRA CỨU CHƯA HOÀN TẤT';
+    }
+
+    const pill=$('resultStatusPill');
+    if(pill){
+      pill.className='status-pill unknown';
+      pill.innerHTML='<span class=\"status-dot unknown\"></span> CHƯA XÁC MINH';
+    }
+
+    $('resultModelName').textContent=model.value||'iPhone';
+    $('resultModelDetail').textContent='Nguồn kiểm tra chưa trả kết quả.';
+    $('resultMessage').textContent=e?.message||'Hiện tại chưa thể hoàn tất tra cứu. Nếu đã thanh toán, giao dịch vẫn được giữ để xử lý lại.';
+    $('heroIdentifier').textContent=normalize()||'—';
+    $('heroFmi').textContent='—';
+    $('heroActivation').textContent='—';
+    $('heroSimlock').textContent='—';
+    $('deviceDetails').innerHTML='';
+    $('lockDetails').innerHTML='';
+    $('networkDetails').innerHTML='';
+    $('lockSection').style.display='none';
+    $('networkSection').style.display='none';
+    $('resultIdentifier').textContent=normalize()||'—';
+    $('resultRef').textContent=paymentRefValue||'—';
+    $('resultTxn').textContent='—';
+    $('resultTime').textContent=new Date().toLocaleString('vi-VN');
+    startBtn.disabled=false;
+    saveHistory({ref:paymentRefValue||'—',identifier:normalize(),time:new Date().toLocaleString('vi-VN'),status:'Lỗi xử lý'});
+  }"""
+          if old not in s:
+              raise SystemExit('Expected old catch block was not found; refusing to modify the file.')
+          p.write_text(s.replace(old, new, 1), encoding='utf-8')
+          PY
+      - name: Validate JavaScript references
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          s = Path('icloud-check.html').read_text(encoding='utf-8')
+          assert "$('resultIcon').textContent" not in s
+          assert "$('resultTitle').textContent" not in s
+          assert "$('resultStatusPill')" in s
+          assert "className='result-card unknown'" in s
+          print('iCloud UI patch validation: OK')
+          PY
+      - name: Commit patch and remove temporary workflow
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add icloud-check.html
+          git commit -m 'fix: prevent iCloud check error UI crash'
+          git rm .github/workflows/patch-icloud-ui.yml
+          git rm .icloud-patch-trigger || true
+          git commit -m 'chore: remove temporary patch workflow'
+          git push
