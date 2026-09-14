@@ -1,10 +1,10 @@
+import argparse
 import hashlib
 import json
 import os
 import shutil
 import sys
 import tempfile
-import urllib.error
 import urllib.request
 from datetime import datetime
 from pathlib import Path
@@ -15,10 +15,9 @@ BRANCH = "robot-demo"
 REMOTE_ROOT = "robot/demo/"
 ROOT = Path(__file__).resolve().parents[1]
 BACKUP_ROOT = ROOT / "data" / "backups"
+MANIFEST = ROOT / "data" / "sync-manifest.json"
 API_TREE = f"https://api.github.com/repos/{OWNER}/{REPO}/git/trees/{BRANCH}?recursive=1"
-RAW_BASE = f"https://raw.githubusercontent.com/{OWNER}/{REPO}/{BRANCH}/"
-
-# Large/local runtime data must never be touched by source sync.
+RAW_BASE = f"https://raw.githubusercontent.com/{OWNER}/{REPO}/{BRANCH}/robot/demo/"
 EXCLUDED_TOP = {"runtime", "models", "data"}
 
 
@@ -28,26 +27,24 @@ def git_blob_sha(data: bytes) -> str:
 
 
 def request_json(url: str):
-    req = urllib.request.Request(url, headers={"User-Agent": "Apple-Seed-Robot-Updater/1.0", "Accept": "application/vnd.github+json"})
+    req = urllib.request.Request(url, headers={
+        "User-Agent": "Apple-Seed-Robot-Updater/2.0",
+        "Accept": "application/vnd.github+json",
+    })
     with urllib.request.urlopen(req, timeout=20) as r:
         return json.loads(r.read().decode("utf-8"))
 
 
 def download_bytes(url: str) -> bytes:
-    req = urllib.request.Request(url, headers={"User-Agent": "Apple-Seed-Robot-Updater/1.0"})
+    req = urllib.request.Request(url, headers={"User-Agent": "Apple-Seed-Robot-Updater/2.0"})
     with urllib.request.urlopen(req, timeout=60) as r:
         return r.read()
-
-
-def managed(rel: str) -> bool:
-    parts = Path(rel).parts
-    return bool(parts) and parts[0] == REMOTE_ROOT.rstrip("/").split("/")[0] and len(parts) >= 3 and parts[1] == "demo" and parts[2] not in EXCLUDED_TOP
 
 
 def remote_files():
     tree = request_json(API_TREE)
     if tree.get("truncated"):
-        raise RuntimeError("GitHub tree quá lớn, không thể đồng bộ an toàn bằng snapshot này.")
+        raise RuntimeError("GitHub tree quá lớn, không thể đồng bộ an toàn.")
     out = {}
     prefix = REMOTE_ROOT
     for item in tree.get("tree", []):
@@ -76,6 +73,21 @@ def local_files():
     return out
 
 
+def load_manifest():
+    try:
+        obj = json.loads(MANIFEST.read_text(encoding="utf-8"))
+        return obj if isinstance(obj, dict) else {}
+    except Exception:
+        return {}
+
+
+def save_manifest(remote):
+    MANIFEST.parent.mkdir(parents=True, exist_ok=True)
+    tmp = MANIFEST.with_suffix(".tmp")
+    tmp.write_text(json.dumps({"branch": BRANCH, "files": remote}, ensure_ascii=False, indent=2), encoding="utf-8")
+    os.replace(tmp, MANIFEST)
+
+
 def safe_backup(path: Path, backup_root: Path):
     if not path.exists():
         return
@@ -85,10 +97,15 @@ def safe_backup(path: Path, backup_root: Path):
 
 
 def main():
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument("--yes", action="store_true")
+    args = parser.parse_args()
+
     print("=" * 62)
     print("APPLE SEED ROBOT — ĐỒNG BỘ GITHUB")
     print("Chỉ đồng bộ source/config/assets; KHÔNG đụng runtime/models/data.")
     print("=" * 62)
+
     try:
         remote = remote_files()
         local = local_files()
@@ -96,8 +113,11 @@ def main():
         print(f"\n[LOI] Không thể kiểm tra GitHub: {e}")
         return 1
 
+    old_manifest = load_manifest().get("files", {})
     changed = [rel for rel, sha in remote.items() if local.get(rel) != sha]
-    deleted = [rel for rel in local if rel not in remote]
+    # Only delete files that this updater previously tracked. Never delete an
+    # arbitrary local file just because it is absent from GitHub.
+    deleted = [rel for rel in old_manifest if rel not in remote and (ROOT / rel).is_file()]
 
     print(f"\nGitHub: {len(remote)} file source")
     print(f"Máy:   {len(local)} file source")
@@ -105,6 +125,7 @@ def main():
     print(f"Xóa theo GitHub: {len(deleted)}")
 
     if not changed and not deleted:
+        save_manifest(remote)
         print("\n✓ Máy đã đồng bộ. Không cần tải gì thêm.")
         return 0
 
@@ -114,10 +135,11 @@ def main():
     for rel in deleted:
         print("  -", rel)
 
-    answer = input("\nTiến hành đồng bộ? (Y/N): ").strip().lower()
-    if answer not in {"y", "yes", "c", "co"}:
-        print("Đã hủy.")
-        return 0
+    if not args.yes:
+        answer = input("\nTiến hành đồng bộ? (Y/N): ").strip().lower()
+        if answer not in {"y", "yes", "c", "co"}:
+            print("Đã hủy.")
+            return 0
 
     stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     backup_root = BACKUP_ROOT / stamp
@@ -127,13 +149,14 @@ def main():
         for rel in changed:
             target = ROOT / rel
             safe_backup(target, backup_root)
-            url = RAW_BASE + "robot/demo/" + rel.replace(os.sep, "/")
-            data = download_bytes(url)
+            data = download_bytes(RAW_BASE + rel.replace(os.sep, "/"))
             target.parent.mkdir(parents=True, exist_ok=True)
             fd, tmp = tempfile.mkstemp(prefix="as_update_", dir=str(target.parent))
             try:
                 with os.fdopen(fd, "wb") as f:
                     f.write(data)
+                if git_blob_sha(data) != remote[rel]:
+                    raise RuntimeError(f"SHA xác minh thất bại: {rel}")
                 os.replace(tmp, target)
             finally:
                 if os.path.exists(tmp):
@@ -143,6 +166,13 @@ def main():
             target = ROOT / rel
             safe_backup(target, backup_root)
             target.unlink(missing_ok=True)
+
+        # Verify all managed files after the update.
+        after = local_files()
+        bad = [rel for rel, sha in remote.items() if after.get(rel) != sha]
+        if bad:
+            raise RuntimeError("Xác minh sau cập nhật thất bại: " + ", ".join(bad[:10]))
+        save_manifest(remote)
 
     except Exception as e:
         print(f"\n[LOI] Cập nhật thất bại: {e}")
