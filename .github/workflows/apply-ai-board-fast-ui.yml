@@ -22,7 +22,7 @@ jobs:
           import re
           s=re.sub(r'<script[^>]+src=["\']ai-board-fast-ui-v1\.js[^>]*></script>\s*','',s,flags=re.I)
           if '</body>' not in s: raise SystemExit('ai-board.html missing </body>')
-          s=s.replace('</body>','<script src="ai-board-fast-ui-v1.js?v=20260917fast1"></script>\n</body>',1)
+          s=s.replace('</body>','<script src="ai-board-fast-ui-v1.js?v=20260917fast2"></script>\n</body>',1)
           p.write_text(s,encoding='utf-8')
           PY
           git config user.name "github-actions[bot]"
