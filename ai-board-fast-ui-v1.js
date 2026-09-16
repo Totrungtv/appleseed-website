@@ -1,4 +1,4 @@
-/* APPLE SEED AI BOARD — FAST RESULT + TYPEWRITER V4 + COPY */
+/* APPLE SEED AI BOARD — FAST RESULT + TYPEWRITER V4.1 + COPY */
 (()=>{
   'use strict';
   const result=document.getElementById('result');
@@ -24,14 +24,8 @@
         setTimeout(()=>btn.querySelector('span').textContent='Sao chép kết quả',1400);
         return;
       }
-      try{
-        await navigator.clipboard.writeText(text);
-      }catch{
-        const ta=document.createElement('textarea');
-        ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
-        document.body.appendChild(ta);ta.select();
-        try{document.execCommand('copy')}catch{}
-        ta.remove();
+      try{await navigator.clipboard.writeText(text);}catch{
+        const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch{}ta.remove();
       }
       btn.innerHTML='✅ <span>Đã sao chép!</span>';
       setTimeout(()=>{btn.innerHTML='📋 <span>Sao chép kết quả</span>';},1600);
@@ -44,33 +38,15 @@
     if(!pre||typing)return;
     const text=pre.textContent||'';
     if(!text.trim()||text===target)return;
-
-    target=text;
-    typing=true;
-    pre.dataset.asTyping='1';
-    pre.textContent='';
-    let i=0;
-
+    target=text;typing=true;pre.dataset.asTyping='1';pre.textContent='';let i=0;
     const tick=()=>{
-      if(i>=target.length){
-        pre.textContent=target;
-        pre.dataset.asTyping='';
-        typing=false;
-        ensureCopyButton();
-        return;
-      }
+      if(i>=target.length){pre.textContent=target;pre.dataset.asTyping='';typing=false;ensureCopyButton();return;}
       i=Math.min(target.length,i+Math.max(4,Math.ceil(target.length/220)));
-      pre.textContent=target.slice(0,i);
-      setTimeout(tick,speed);
-    };
-    tick();
+      pre.textContent=target.slice(0,i);setTimeout(tick,speed);
+    };tick();
   }
 
-  new MutationObserver(()=>{
-    ensureCopyButton();
-    if(!typing)setTimeout(animate,0);
-  }).observe(result,{subtree:true,childList:true,characterData:true});
-
+  new MutationObserver(()=>{ensureCopyButton();if(!typing)setTimeout(animate,0);}).observe(result,{subtree:true,childList:true,characterData:true});
   ensureCopyButton();
   setTimeout(animate,100);
 })();
