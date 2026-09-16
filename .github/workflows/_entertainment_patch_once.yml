@@ -1,0 +1,77 @@
+name: Entertainment temporary patch runner
+
+on:
+  push:
+    branches:
+      - fix/entertainment-run11-20260917
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply safe Entertainment patches
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('entertainment.html')
+          s = p.read_text(encoding='utf-8')
+
+          old = """document.querySelectorAll('[data-tiktok-action]').forEach(btn=>btn.addEventListener('click',()=>{\n"""
+          new = """function ensureTikTokStatus(){\n  let status=document.getElementById('tiktokStatus');\n  if(status) return status;\n  const frame=document.getElementById('tiktokFrame');\n  if(!frame) return null;\n  status=document.createElement('div');\n  status.id='tiktokStatus';\n  status.className='social-note';\n  status.setAttribute('aria-live','polite');\n  frame.parentElement?.appendChild(status);\n  return status;\n}\nensureTikTokStatus();\ndocument.querySelectorAll('[data-tiktok-action]').forEach(btn=>btn.addEventListener('click',()=>{\n"""
+          if old not in s:
+              raise SystemExit('TikTok anchor not found')
+          s=s.replace(old,new,1)
+
+          old = """function loadTikTok(id){\n const frame=document.getElementById('tiktokFrame'), status=document.getElementById('tiktokStatus');\n if(!/^\\d{8,30}$/.test(String(id||''))){status.textContent='Không có ID TikTok hợp lệ.';return;}\n clearTimeout(tiktokLoadTimer);\n status.classList.remove('ok');\n status.textContent='⏳ Đang tải trình phát TikTok…';\n frame.src='about:blank';\n requestAnimationFrame(()=>{ frame.src=tiktokPlayerUrl(id); });\n frame.setAttribute('allow','fullscreen; autoplay');\n frame.setAttribute('referrerpolicy','strict-origin-when-cross-origin');\n tiktokLoadTimer=setTimeout(()=>{\n   status.innerHTML='TikTok không phản hồi trình phát nhúng lúc này. Apple Seed không vượt bảo mật của TikTok. Hãy thử một video công khai khác.';\n },9000);\n}\n"""
+          new = """function loadTikTok(id){\n const frame=document.getElementById('tiktokFrame'), status=ensureTikTokStatus();\n if(!frame||!status)return;\n if(!/^\\d{8,30}$/.test(String(id||''))){status.textContent='Không có ID TikTok hợp lệ.';return;}\n clearTimeout(tiktokLoadTimer);\n status.classList.remove('ok');\n status.textContent='⏳ Đang tải trình phát TikTok…';\n frame.onload=null;\n frame.src=tiktokPlayerUrl(id);\n frame.setAttribute('allow','fullscreen; autoplay');\n frame.setAttribute('referrerpolicy','strict-origin-when-cross-origin');\n tiktokLoadTimer=setTimeout(()=>{\n   status.innerHTML='TikTok không phản hồi trình phát nhúng lúc này. Apple Seed không vượt bảo mật của TikTok. Hãy thử một video công khai khác.';\n },9000);\n}\n"""
+          if old not in s:
+              raise SystemExit('TikTok loader block not found')
+          s=s.replace(old,new,1)
+
+          old = """document.getElementById('tiktokFrame').addEventListener('load',()=>{document.getElementById('tiktokFrame').style.background='#000';document.getElementById('tiktokStatus').classList.add('ok');clearTimeout(tiktokLoadTimer)});\n"""
+          new = """document.getElementById('tiktokFrame')?.addEventListener('load',()=>{const status=ensureTikTokStatus();if(status){status.classList.add('ok');status.textContent='✓ Trình phát TikTok đã sẵn sàng.';}const frame=document.getElementById('tiktokFrame');if(frame)frame.style.background='#000';clearTimeout(tiktokLoadTimer)});\n"""
+          if old not in s:
+              raise SystemExit('TikTok load handler not found')
+          s=s.replace(old,new,1)
+
+          p.write_text(s,encoding='utf-8')
+          PY
+
+      - name: Commit TikTok fix
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add entertainment.html
+          git diff --cached --quiet || git commit -m 'fix(entertainment): harden TikTok player state'
+          git push
+
+      - name: Apply RSS performance patch
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('entertainment.html')
+          s = p.read_text(encoding='utf-8')
+          old = """  const all=[];\n  for(const [source,url] of feeds){\n   try{\n const res=await fetchWithTimeout(PROXY+encodeURIComponent(url),{cache:'no-store'});\n if(!res.ok) throw new Error('RSS '+res.status);\n const j=await res.json();\n (j.items||[]).slice(0,10).forEach(x=>all.push({...x,source}));\n }catch(e){}\n  }\n"""
+          new = """  const results=await Promise.allSettled(feeds.map(async([source,url])=>{\n   const res=await fetchWithTimeout(PROXY+encodeURIComponent(url),{cache:'no-store'});\n   if(!res.ok) throw new Error('RSS '+res.status);\n   const j=await res.json();\n   return (j.items||[]).slice(0,10).map(x=>({...x,source}));\n  }));\n  const all=[];\n  results.forEach(r=>{if(r.status==='fulfilled') all.push(...r.value);});\n"""
+          if old not in s:
+              raise SystemExit('RSS sequential block not found')
+          s=s.replace(old,new,1)
+          p.write_text(s,encoding='utf-8')
+          PY
+
+      - name: Commit RSS performance fix and remove runner
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add entertainment.html
+          git commit -m 'perf(entertainment): parallelize RSS feed loading'
+          git rm .github/workflows/_entertainment_patch_once.yml
+          git commit -m 'chore(entertainment): remove temporary patch runner'
+          git push
