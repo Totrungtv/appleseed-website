@@ -97,7 +97,7 @@ class PdfEditor(QWidget):
         self.doc = None
         self.path = None
         self.page_index = 0
-        self.zoom = 1.0
+        self.zoom = 1.25
         self.tool = 'pan'
         self.text_input = QLineEdit()
         self.text_input.setPlaceholderText('Nhập chữ rồi chọn Thêm chữ → click lên trang PDF…')
@@ -110,73 +110,28 @@ class PdfEditor(QWidget):
         root = QVBoxLayout(self)
         root.setContentsMargins(20, 18, 20, 20)
         root.setSpacing(9)
-
         title = QLabel('📄  PDF READER & EDITOR')
         title.setStyleSheet('font-size:22px;font-weight:700;color:#0f172a;')
         root.addWidget(title)
         root.addWidget(QLabel('Đọc PDF • kéo/scroll • zoom • xoay • thêm chữ • tô sáng • vẽ • khung • lưu file mới'))
-
         bar = QHBoxLayout()
         buttons = [
-            ('📂 Mở PDF', self.open_pdf, 'primary'),
-            ('💾 Lưu thành…', self.save_as, 'ghost'),
-            ('↶ Xoay', self.rotate, 'ghost'),
-            ('🖐 Di chuyển', lambda: self.set_tool('pan'), 'ghost'),
-            ('＋ Thêm chữ', lambda: self.set_tool('text'), 'ghost'),
-            ('🖍 Tô sáng', lambda: self.set_tool('highlight'), 'ghost'),
-            ('▣ Khung', lambda: self.set_tool('rect'), 'ghost'),
-            ('✎ Vẽ', lambda: self.set_tool('draw'), 'ghost'),
-            ('↶ Xóa chú thích', self.remove_last_annotation, 'ghost'),
-        ]
+            ('📂 Mở PDF', self.open_pdf, 'primary'), ('💾 Lưu thành…', self.save_as, 'ghost'),
+            ('↶ Xoay', self.rotate, 'ghost'), ('🖐 Di chuyển', lambda: self.set_tool('pan'), 'ghost'),
+            ('＋ Thêm chữ', lambda: self.set_tool('text'), 'ghost'), ('🖍 Tô sáng', lambda: self.set_tool('highlight'), 'ghost'),
+            ('▣ Khung', lambda: self.set_tool('rect'), 'ghost'), ('✎ Vẽ', lambda: self.set_tool('draw'), 'ghost'),
+            ('↶ Xóa chú thích', self.remove_last_annotation, 'ghost')]
         for text, fn, obj in buttons:
-            b = QPushButton(text)
-            b.setObjectName(obj)
-            b.clicked.connect(fn)
-            bar.addWidget(b)
-        minus = QPushButton('−')
-        minus.setToolTip('Thu nhỏ')
-        minus.clicked.connect(lambda: self.change_zoom(-0.1))
-        plus = QPushButton('＋')
-        plus.setToolTip('Phóng to')
-        plus.clicked.connect(lambda: self.change_zoom(0.1))
-        bar.addWidget(minus)
-        bar.addWidget(plus)
-        bar.addStretch()
-        root.addLayout(bar)
+            b = QPushButton(text); b.setObjectName(obj); b.clicked.connect(fn); bar.addWidget(b)
+        minus = QPushButton('−'); minus.setToolTip('Thu nhỏ'); minus.clicked.connect(lambda: self.change_zoom(-0.1))
+        plus = QPushButton('＋'); plus.setToolTip('Phóng to'); plus.clicked.connect(lambda: self.change_zoom(0.1))
+        bar.addWidget(minus); bar.addWidget(plus); bar.addStretch(); root.addLayout(bar)
         root.addWidget(self.text_input)
-
-        # Thanh chuyển trang nằm sát hai bên vùng PDF, dễ bấm hơn trên màn hình rộng.
-        nav_row = QHBoxLayout()
-        nav_row.setContentsMargins(0, 0, 0, 0)
-        nav_row.setSpacing(8)
-
-        self.prev_btn = QPushButton('‹')
-        self.prev_btn.setToolTip('Trang trước')
-        self.prev_btn.setFixedWidth(48)
-        self.prev_btn.setMinimumHeight(76)
-        self.prev_btn.setObjectName('ghost')
-        self.prev_btn.setStyleSheet('font-size:38px;font-weight:700;border-radius:12px;')
-        self.prev_btn.clicked.connect(lambda: self.goto_page(-1))
-
-        self.scroll = QScrollArea()
-        self.scroll.setWidgetResizable(False)
-        self.scroll.setFrameShape(QFrame.NoFrame)
-        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.scroll.setWidget(self.canvas)
-
-        self.next_btn = QPushButton('›')
-        self.next_btn.setToolTip('Trang sau')
-        self.next_btn.setFixedWidth(48)
-        self.next_btn.setMinimumHeight(76)
-        self.next_btn.setObjectName('ghost')
-        self.next_btn.setStyleSheet('font-size:38px;font-weight:700;border-radius:12px;')
-        self.next_btn.clicked.connect(lambda: self.goto_page(1))
-
-        nav_row.addWidget(self.prev_btn, 0, Qt.AlignVCenter)
-        nav_row.addWidget(self.scroll, 1)
-        nav_row.addWidget(self.next_btn, 0, Qt.AlignVCenter)
-        root.addLayout(nav_row, 1)
+        nav_row = QHBoxLayout(); nav_row.setContentsMargins(0, 0, 0, 0); nav_row.setSpacing(8)
+        self.prev_btn = QPushButton('‹'); self.prev_btn.setToolTip('Trang trước'); self.prev_btn.setFixedWidth(48); self.prev_btn.setMinimumHeight(76); self.prev_btn.setObjectName('ghost'); self.prev_btn.setStyleSheet('font-size:38px;font-weight:700;border-radius:12px;'); self.prev_btn.clicked.connect(lambda: self.goto_page(-1))
+        self.scroll = QScrollArea(); self.scroll.setWidgetResizable(False); self.scroll.setFrameShape(QFrame.NoFrame); self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded); self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded); self.scroll.setWidget(self.canvas)
+        self.next_btn = QPushButton('›'); self.next_btn.setToolTip('Trang sau'); self.next_btn.setFixedWidth(48); self.next_btn.setMinimumHeight(76); self.next_btn.setObjectName('ghost'); self.next_btn.setStyleSheet('font-size:38px;font-weight:700;border-radius:12px;'); self.next_btn.clicked.connect(lambda: self.goto_page(1))
+        nav_row.addWidget(self.prev_btn, 0, Qt.AlignVCenter); nav_row.addWidget(self.scroll, 1); nav_row.addWidget(self.next_btn, 0, Qt.AlignVCenter); root.addLayout(nav_row, 1)
         root.addWidget(self.status)
 
     def set_tool(self, tool):
@@ -187,129 +142,75 @@ class PdfEditor(QWidget):
 
     def open_pdf(self):
         if fitz is None:
-            QMessageBox.critical(self, 'Thiếu PyMuPDF', 'Robot chưa có PyMuPDF. Chạy START_UI.bat để tự cài thư viện PDF.')
-            return
+            QMessageBox.critical(self, 'Thiếu PyMuPDF', 'Robot chưa có PyMuPDF. Chạy START_UI.bat để tự cài thư viện PDF.'); return
         path, _ = QFileDialog.getOpenFileName(self, 'Mở PDF', '', 'PDF files (*.pdf)')
-        if not path:
-            return
+        if not path: return
         try:
-            self.doc = fitz.open(path)
-            self.path = path
-            self.page_index = 0
-            self.zoom = 1.0
-            self.page_spin.setMaximum(max(1, len(self.doc)))
-            self.page_spin.setValue(1)
-            self.render()
-            self.status.setText(f'Đã mở: {Path(path).name} • {len(self.doc)} trang • con lăn để xem, kéo chuột phải để di chuyển')
-        except Exception as e:
-            QMessageBox.critical(self, 'Không mở được PDF', str(e))
+            self.doc = fitz.open(path); self.path = path; self.page_index = 0; self.zoom = 1.25
+            self.page_spin.setMaximum(max(1, len(self.doc))); self.page_spin.setValue(1); self.render()
+            self.status.setText(f'Đã mở: {Path(path).name} • {len(self.doc)} trang • PDF chất lượng cao')
+        except Exception as e: QMessageBox.critical(self, 'Không mở được PDF', str(e))
 
     def render(self):
-        if not self.doc:
-            return
+        if not self.doc: return
         page = self.doc[self.page_index]
-        mat = fitz.Matrix(self.zoom * 1.4, self.zoom * 1.4)
+        # Render 2x density để chữ/đường mạch trong PDF nét hơn khi xem trên màn hình.
+        render_scale = self.zoom * 2.0
+        mat = fitz.Matrix(render_scale, render_scale)
         pix = page.get_pixmap(matrix=mat, alpha=False)
         img = QImage(pix.samples, pix.width, pix.height, pix.stride, QImage.Format_RGB888).copy()
         self.canvas.setPixmap(QPixmap.fromImage(img))
         self.canvas.setMinimumSize(pix.width + 8, pix.height + 8)
         self.canvas.adjustSize()
-        self.scroll.horizontalScrollBar().setValue(0)
-        self.scroll.verticalScrollBar().setValue(0)
-        self.prev_btn.setEnabled(self.page_index > 0)
-        self.next_btn.setEnabled(self.page_index < len(self.doc) - 1)
-        self.status.setText(f'Trang {self.page_index + 1}/{len(self.doc)} • zoom {self.zoom:.1f}x • Công cụ: {self.tool}')
+        self.prev_btn.setEnabled(self.page_index > 0); self.next_btn.setEnabled(self.page_index < len(self.doc) - 1)
+        self.status.setText(f'Trang {self.page_index + 1}/{len(self.doc)} • zoom {self.zoom:.2f}x • render HD')
 
     def goto_page(self, delta):
-        if not self.doc:
-            return
-        self.page_index = max(0, min(len(self.doc) - 1, self.page_index + delta))
-        self.page_spin.blockSignals(True)
-        self.page_spin.setValue(self.page_index + 1)
-        self.page_spin.blockSignals(False)
-        self.render()
+        if not self.doc: return
+        self.page_index = max(0, min(len(self.doc) - 1, self.page_index + delta)); self.page_spin.blockSignals(True); self.page_spin.setValue(self.page_index + 1); self.page_spin.blockSignals(False); self.render()
 
     def spin_page(self, value):
-        if self.doc:
-            self.page_index = max(0, min(len(self.doc) - 1, value - 1))
-            self.render()
+        if self.doc: self.page_index = max(0, min(len(self.doc) - 1, value - 1)); self.render()
 
     def change_zoom(self, delta):
-        self.zoom = max(0.4, min(4.0, self.zoom + delta))
-        self.render()
+        self.zoom = max(0.5, min(5.0, self.zoom + delta)); self.render()
 
     def rotate(self):
-        if not self.doc:
-            return
-        page = self.doc[self.page_index]
-        page.set_rotation((page.rotation + 90) % 360)
-        self.render()
-        self.status.setText('Đã xoay trang • bấm Lưu thành… để ghi file')
+        if not self.doc: return
+        page = self.doc[self.page_index]; page.set_rotation((page.rotation + 90) % 360); self.render(); self.status.setText('Đã xoay trang • bấm Lưu thành… để ghi file')
 
     def widget_to_pdf(self, x, y):
-        if not self.doc:
-            return None
+        if not self.doc: return None
         pix = self.canvas.pixmap()
-        if not pix or pix.width() == 0:
-            return None
-        page = self.doc[self.page_index]
-        return fitz.Point(x * page.rect.width / pix.width(), y * page.rect.height / pix.height())
+        if not pix or pix.width() == 0: return None
+        page = self.doc[self.page_index]; return fitz.Point(x * page.rect.width / pix.width(), y * page.rect.height / pix.height())
 
     def insert_text_at(self, x, y):
         text = self.text_input.text().strip()
-        if not text:
-            QMessageBox.information(self, 'PDF', 'Nhập nội dung cần thêm trước.')
-            return
-        page = self.doc[self.page_index]
-        page.insert_text((x, y), text, fontsize=12, color=(0.05, 0.35, 0.8), overlay=True)
-        self.render()
-        self.status.setText(f'Đã thêm chữ: {text}')
-        self.set_tool('pan')
+        if not text: QMessageBox.information(self, 'PDF', 'Nhập nội dung cần thêm trước.'); return
+        self.doc[self.page_index].insert_text((x, y), text, fontsize=12, color=(0.05, 0.35, 0.8), overlay=True); self.render(); self.status.setText(f'Đã thêm chữ: {text}'); self.set_tool('pan')
 
     def apply_area_tool(self, a, b):
-        page = self.doc[self.page_index]
-        rect = fitz.Rect(min(a.x, b.x), min(a.y, b.y), max(a.x, b.x), max(a.y, b.y))
-        if rect.width < 3 or rect.height < 3:
-            return
+        page = self.doc[self.page_index]; rect = fitz.Rect(min(a.x, b.x), min(a.y, b.y), max(a.x, b.x), max(a.y, b.y))
+        if rect.width < 3 or rect.height < 3: return
         if self.tool == 'highlight':
-            annot = page.add_highlight_annot(rect)
-            annot.update()
-            msg = 'Đã tô sáng vùng chọn.'
+            annot = page.add_highlight_annot(rect); annot.update(); msg = 'Đã tô sáng vùng chọn.'
         elif self.tool == 'rect':
-            annot = page.add_rect_annot(rect)
-            annot.set_colors(stroke=(0.9, 0.1, 0.1))
-            annot.update()
-            msg = 'Đã tạo khung vùng chọn.'
+            annot = page.add_rect_annot(rect); annot.set_colors(stroke=(0.9, 0.1, 0.1)); annot.update(); msg = 'Đã tạo khung vùng chọn.'
         else:
-            annot = page.add_ink_annot([[(a.x, a.y), (b.x, b.y)]])
-            annot.set_colors(stroke=(0.1, 0.3, 0.9))
-            annot.update()
-            msg = 'Đã vẽ đường.'
-        self.render()
-        self.status.setText(msg + ' • bấm Lưu thành… để lưu')
-        self.set_tool('pan')
+            annot = page.add_ink_annot([[(a.x, a.y), (b.x, b.y)]]); annot.set_colors(stroke=(0.1, 0.3, 0.9)); annot.update(); msg = 'Đã vẽ đường.'
+        self.render(); self.status.setText(msg + ' • bấm Lưu thành… để lưu'); self.set_tool('pan')
 
     def remove_last_annotation(self):
-        if not self.doc:
-            return
-        page = self.doc[self.page_index]
-        annots = list(page.annots() or [])
-        if not annots:
-            self.status.setText('Trang hiện tại chưa có chú thích để xóa.')
-            return
-        page.delete_annot(annots[-1])
-        self.render()
-        self.status.setText('Đã xóa chú thích cuối trên trang hiện tại • bấm Lưu thành… để lưu')
+        if not self.doc: return
+        page = self.doc[self.page_index]; annots = list(page.annots() or [])
+        if not annots: self.status.setText('Trang hiện tại chưa có chú thích để xóa.'); return
+        page.delete_annot(annots[-1]); self.render(); self.status.setText('Đã xóa chú thích cuối trên trang hiện tại • bấm Lưu thành… để lưu')
 
     def save_as(self):
-        if not self.doc:
-            QMessageBox.information(self, 'PDF', 'Chưa có PDF để lưu.')
-            return
+        if not self.doc: QMessageBox.information(self, 'PDF', 'Chưa có PDF để lưu.'); return
         path, _ = QFileDialog.getSaveFileName(self, 'Lưu PDF', 'apple_seed_edited.pdf', 'PDF files (*.pdf)')
-        if not path:
-            return
+        if not path: return
         try:
-            self.doc.save(path, garbage=4, deflate=True)
-            self.status.setText(f'Đã lưu: {Path(path).name}')
-        except Exception as e:
-            QMessageBox.critical(self, 'Không lưu được', str(e))
+            self.doc.save(path, garbage=4, deflate=True); self.status.setText(f'Đã lưu: {Path(path).name}')
+        except Exception as e: QMessageBox.critical(self, 'Không lưu được', str(e))
