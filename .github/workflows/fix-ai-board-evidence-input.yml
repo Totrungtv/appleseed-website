@@ -1,0 +1,54 @@
+name: Fix AI Board evidence input
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch AI Board evidence flow
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('ai-board.html')
+          s=p.read_text(encoding='utf-8')
+
+          # Add an explicit real-world symptom field if it is not already present.
+          marker='<div class="field full"><label>PANIC LOG</label><textarea id="panic"'
+          if 'id="asSymptom"' not in s and marker in s:
+              start=s.index(marker)
+              end=s.index('</textarea></div>', start)+len('</textarea></div>')
+              block=s[start:end]
+              symptom='''\n<div class="field full"><label>TRIỆU CHỨNG THỰC TẾ</label><textarea id="asSymptom" placeholder="Ví dụ: chạy trắng máy, treo táo, reboot liên tục, mất cảm ứng..."></textarea></div>'''
+              s=s[:end]+symptom+s[end:]
+
+          # Send the technician's real symptom to the backend.
+          old="'PANIC LOG: '+($('panic')?.value||''),"
+          new="'PANIC LOG: '+($('panic')?.value||''),\n   'TRIỆU CHỨNG THỰC TẾ: '+($('asSymptom')?.value||''),"
+          if old in s and new not in s:
+              s=s.replace(old,new,1)
+
+          # Never inject a Compass board value when the technician did not enter one.
+          s=s.replace("const boardCode=area||'I2C compass / PP_VDD';","const boardCode=area||'';")
+
+          # Remove the old hard-coded Compass case card from the static UI.
+          import re
+          s=re.sub(r'<div class="result"><strong>Case Intelligence</strong><div class="case"><b>iPhone 14 Pro Max · 0x20000 · Compass</b><div class="muted">Ưu tiên compass/sensor \+ I2C\. Cần đo và đối chiếu board tốt\.</div><span class="pill">I2C</span><span class="pill">PANIC</span></div></div>', '<div class="result"><strong>Case Intelligence</strong><div class="case"><b>Ca hiện tại</b><div class="muted">Kết quả sẽ lấy từ PANIC + triệu chứng thực tế + số đo + bằng chứng board của chính ca này.</div><span class="pill">EVIDENCE-FIRST</span><span class="pill">CURRENT CASE</span></div></div>', s, flags=re.I)
+
+          # Bump cache for the AI Board page so mobile/browser does not keep the old JS.
+          s=s.replace('ai-board-fast-ui-v1.js?v=20260917diag3','ai-board-fast-ui-v1.js?v=20260917diag4')
+          s=s.replace('ai-board-diagnostics-guide-v1.js?v=20260917diag3','ai-board-diagnostics-guide-v1.js?v=20260917diag4')
+
+          p.write_text(s,encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ai-board.html
+          git diff --cached --quiet && exit 0
+          git commit -m "fix: capture real symptom and remove default compass"
+          git push
