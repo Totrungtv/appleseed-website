@@ -1,7 +1,27 @@
 @echo off
-setlocal
+setlocal EnableExtensions
 cd /d "%~dp0"
 title Apple Seed Robot
+
+REM Always refresh the Robot source from the selected branch before launch.
+REM This prevents an old local PDF tool from surviving a sync.
+set "RAW=https://raw.githubusercontent.com/Totrungtv/appleseed-website/robot-demo/robot/demo"
+if not exist "%~dp0app" mkdir "%~dp0app"
+if not exist "%~dp0assets" mkdir "%~dp0assets"
+
+echo [Apple Seed Robot] Dang dong bo source moi nhat...
+curl.exe -L --fail --silent --show-error --connect-timeout 15 --max-time 60 "%RAW%/app/pdf_tool.py" -o "%~dp0app\pdf_tool.py"
+if errorlevel 1 (
+  echo [LOI] Khong tai duoc pdf_tool.py. Kiem tra Internet.
+  pause
+  exit /b 10
+)
+curl.exe -L --fail --silent --show-error --connect-timeout 15 --max-time 60 "%RAW%/app/launcher.py" -o "%~dp0app\launcher.py"
+if errorlevel 1 (
+  echo [LOI] Khong tai duoc launcher.py. Kiem tra Internet.
+  pause
+  exit /b 11
+)
 
 if not exist runtime\llama-server.exe (
   echo.
