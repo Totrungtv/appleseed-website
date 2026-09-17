@@ -123,10 +123,28 @@ class PdfEditor(QWidget):
             ('↶ Xóa chú thích', self.remove_last_annotation, 'ghost')]
         for text, fn, obj in buttons:
             b = QPushButton(text); b.setObjectName(obj); b.clicked.connect(fn); bar.addWidget(b)
+
+        self.prev_top = QPushButton('◀')
+        self.prev_top.setToolTip('Trang trước')
+        self.prev_top.clicked.connect(lambda: self.goto_page(-1))
+        self.next_top = QPushButton('▶')
+        self.next_top.setToolTip('Trang sau')
+        self.next_top.clicked.connect(lambda: self.goto_page(1))
+        self.page_spin = QSpinBox()
+        self.page_spin.setMinimum(1)
+        self.page_spin.setMaximum(1)
+        self.page_spin.setFixedWidth(72)
+        self.page_spin.setToolTip('Số trang')
+        self.page_spin.valueChanged.connect(self.spin_page)
+        bar.addWidget(self.prev_top)
+        bar.addWidget(self.page_spin)
+        bar.addWidget(self.next_top)
+
         minus = QPushButton('−'); minus.setToolTip('Thu nhỏ'); minus.clicked.connect(lambda: self.change_zoom(-0.1))
         plus = QPushButton('＋'); plus.setToolTip('Phóng to'); plus.clicked.connect(lambda: self.change_zoom(0.1))
         bar.addWidget(minus); bar.addWidget(plus); bar.addStretch(); root.addLayout(bar)
         root.addWidget(self.text_input)
+
         nav_row = QHBoxLayout(); nav_row.setContentsMargins(0, 0, 0, 0); nav_row.setSpacing(8)
         self.prev_btn = QPushButton('‹'); self.prev_btn.setToolTip('Trang trước'); self.prev_btn.setFixedWidth(48); self.prev_btn.setMinimumHeight(76); self.prev_btn.setObjectName('ghost'); self.prev_btn.setStyleSheet('font-size:38px;font-weight:700;border-radius:12px;'); self.prev_btn.clicked.connect(lambda: self.goto_page(-1))
         self.scroll = QScrollArea(); self.scroll.setWidgetResizable(False); self.scroll.setFrameShape(QFrame.NoFrame); self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded); self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded); self.scroll.setWidget(self.canvas)
@@ -154,7 +172,6 @@ class PdfEditor(QWidget):
     def render(self):
         if not self.doc: return
         page = self.doc[self.page_index]
-        # Render 2x density để chữ/đường mạch trong PDF nét hơn khi xem trên màn hình.
         render_scale = self.zoom * 2.0
         mat = fitz.Matrix(render_scale, render_scale)
         pix = page.get_pixmap(matrix=mat, alpha=False)
@@ -163,6 +180,7 @@ class PdfEditor(QWidget):
         self.canvas.setMinimumSize(pix.width + 8, pix.height + 8)
         self.canvas.adjustSize()
         self.prev_btn.setEnabled(self.page_index > 0); self.next_btn.setEnabled(self.page_index < len(self.doc) - 1)
+        self.prev_top.setEnabled(self.page_index > 0); self.next_top.setEnabled(self.page_index < len(self.doc) - 1)
         self.status.setText(f'Trang {self.page_index + 1}/{len(self.doc)} • zoom {self.zoom:.2f}x • render HD')
 
     def goto_page(self, delta):
@@ -170,7 +188,8 @@ class PdfEditor(QWidget):
         self.page_index = max(0, min(len(self.doc) - 1, self.page_index + delta)); self.page_spin.blockSignals(True); self.page_spin.setValue(self.page_index + 1); self.page_spin.blockSignals(False); self.render()
 
     def spin_page(self, value):
-        if self.doc: self.page_index = max(0, min(len(self.doc) - 1, value - 1)); self.render()
+        if self.doc:
+            self.page_index = max(0, min(len(self.doc) - 1, value - 1)); self.render()
 
     def change_zoom(self, delta):
         self.zoom = max(0.5, min(5.0, self.zoom + delta)); self.render()
