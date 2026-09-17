@@ -4,15 +4,22 @@ from PySide6.QtGui import QPixmap
 import main
 from pdf_tool import PdfEditor
 
-_original_pix = main.pix
 
 def pix_with_fallback(name, w, h):
     p = main.ASSETS / name
     if not p.exists() and p.suffix.lower() == '.png':
-        p = p.with_suffix('.svg')
+        # Prefer the real uploaded assets; SVG remains the final fallback.
+        for ext in ('.jpg', '.jpeg', '.svg'):
+            candidate = p.with_suffix(ext)
+            if candidate.exists():
+                p = candidate
+                break
     if not p.exists():
         return QPixmap()
-    return QPixmap(str(p)).scaled(w, h, main.Qt.KeepAspectRatio, main.Qt.SmoothTransformation)
+    pm = QPixmap(str(p))
+    if pm.isNull():
+        return QPixmap()
+    return pm.scaled(w, h, main.Qt.KeepAspectRatio, main.Qt.SmoothTransformation)
 
 main.pix = pix_with_fallback
 
