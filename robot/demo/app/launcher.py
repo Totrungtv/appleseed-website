@@ -1,8 +1,20 @@
 import sys
 from PySide6.QtWidgets import QApplication, QPushButton
+from PySide6.QtGui import QPixmap
 import main
 from pdf_tool import PdfEditor
 
+_original_pix = main.pix
+
+def pix_with_fallback(name, w, h):
+    p = main.ASSETS / name
+    if not p.exists() and p.suffix.lower() == '.png':
+        p = p.with_suffix('.svg')
+    if not p.exists():
+        return QPixmap()
+    return QPixmap(str(p)).scaled(w, h, main.Qt.KeepAspectRatio, main.Qt.SmoothTransformation)
+
+main.pix = pix_with_fallback
 
 class AppleSeedWindow(main.MainWindow):
     def __init__(self):
@@ -23,11 +35,12 @@ class AppleSeedWindow(main.MainWindow):
         for i, n in enumerate(self.navs):
             active = ((idx == 0 and i == 0) or (idx == 1 and i in [1,2,3]))
             n.setObjectName('navActive' if active else 'nav')
-            n.style().unpolish(n); n.style().polish(n)
+            n.style().unpolish(n)
+            n.style().polish(n)
         if hasattr(self, 'pdf_nav'):
             self.pdf_nav.setObjectName('navActive' if idx == self.pdf_index else 'nav')
-            self.pdf_nav.style().unpolish(self.pdf_nav); self.pdf_nav.style().polish(self.pdf_nav)
-
+            self.pdf_nav.style().unpolish(self.pdf_nav)
+            self.pdf_nav.style().polish(self.pdf_nav)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
