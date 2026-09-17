@@ -27,5 +27,15 @@ if not exist models\mmproj-Qwen3VL-4B-Instruct-Q8_0.gguf (
   if errorlevel 1 exit /b 1
 )
 
-python app\main.py
+echo [Apple Seed Robot] Kiem tra PDF engine...
+python -c "import fitz" >nul 2>&1
+if errorlevel 1 (
+  echo [Apple Seed Robot] Dang cai PyMuPDF cho PDF Reader/Editor...
+  python -m pip install --disable-pip-version-check -q PyMuPDF
+  if errorlevel 1 (
+    echo [PDF] Khong cai duoc PyMuPDF. AI Robot van co the chay, PDF se bao thieu thu vien.
+  )
+)
+
+python app\launcher.py
 if errorlevel 1 pause
