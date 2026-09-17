@@ -343,6 +343,7 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
 </select></div>
 <div class="field"><label>Loại lỗi</label><select><option>PANIC / Kernel</option><option>Boot / No Power</option><option>Baseband</option><option>Face ID</option><option>I2C / Sensor</option></select></div>
 <div class="field full"><label>PANIC LOG</label><textarea id="panic" placeholder="Dán PANIC LOG vào đây để AI phân tích..."></textarea></div>
+<div class="field full"><label>TRIỆU CHỨNG THỰC TẾ</label><textarea id="asSymptom" placeholder="Ví dụ: chạy trắng máy, treo táo, reboot liên tục, mất cảm ứng..."></textarea></div>
 <div class="field"><label>Boot current</label><input placeholder="0.080A → 0.000A"></div>
 <div class="field"><label>Vbat / nguồn</label><input placeholder="4.20V"></div>
 <div class="field"><label>Diode / Resistance</label><input placeholder="Giá trị đo"></div>
@@ -352,7 +353,7 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
 <div class="actions"><button class="btn primary" id="analyze">⚡ PHÂN TÍCH AI · 20 COIN</button></div><div id="result" class="result">Chưa phân tích.</div></div>
 
 <div class="card"><h2>🧠 AI Diagnosis</h2><div class="muted">Evidence-first • không kết luận khi thiếu dữ liệu.</div>
-<div class="result"><strong>Case Intelligence</strong><div class="case"><b>iPhone 14 Pro Max · 0x20000 · Compass</b><div class="muted">Ưu tiên compass/sensor + I2C. Cần đo và đối chiếu board tốt.</div><span class="pill">I2C</span><span class="pill">PANIC</span></div></div>
+<div class="result"><strong>Case Intelligence</strong><div class="case"><b>Ca hiện tại</b><div class="muted">Kết quả sẽ lấy từ PANIC + triệu chứng thực tế + số đo + bằng chứng board của chính ca này.</div><span class="pill">EVIDENCE-FIRST</span><span class="pill">CURRENT CASE</span></div></div>
 <h2 style="margin-top:22px">📐 Schematic Intelligence</h2><div class="fields"><div class="field"><label>Tài liệu</label><select id="asSchematicType"><option>Schematic</option><option>Boardview / ZXW</option><option>Pinout</option><option>Ảnh main</option></select></div><div class="field"><label>Vùng / linh kiện</label><input id="asSchematicArea" placeholder="U5200 / I2C compass / PP_VDD"></div></div><div class="drop" id="asSchematicDrop" style="cursor:pointer;margin-top:14px">📐<br><strong>Chọn / kéo thả ảnh Schematic / Boardview</strong><br><span class="muted">PNG / JPG / WEBP</span><input class="as-upload-input" id="asSchematicFile" type="file" accept="image/png,image/jpeg,image/webp"></div><div class="as-file-preview" id="asSchematicPreview"></div><div class="actions"><button class="btn primary" id="asAnalyzeSchematic" type="button">📐 ANALYZE SCHEMATIC</button></div><div id="asSchematicStatus" class="muted" style="margin-top:9px"></div><div id="asSchematicResult" class="result">Chưa có phân tích sơ đồ.</div></div>
 </section>
 
@@ -713,6 +714,7 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
  async function session(){const r=await sb?.auth?.getSession();return r?.data?.session||null;}
  function notes(){return [
    'PANIC LOG: '+($('panic')?.value||''),
+   'TRIỆU CHỨNG THỰC TẾ: '+($('asSymptom')?.value||''),
    'Boot current: '+(document.querySelector('input[placeholder*="0.080A"]')?.value||''),
    'Vbat / nguồn: '+(document.querySelector('input[placeholder="4.20V"]')?.value||''),
    'Diode / Resistance: '+(document.querySelector('input[placeholder="Giá trị đo"]')?.value||''),
@@ -730,7 +732,7 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
    if(!sb){status.textContent='Supabase chưa sẵn sàng.';if(analyzeBtn){analyzeBtn.disabled=false;analyzeBtn.classList.remove('is-analyzing');analyzeBtn.innerHTML=originalBtnText;}return;}
    const model=document.querySelector('.field select')?.value||'iPhone 14 Pro Max';
    const area=$('asSchematicArea')?.value.trim()||'';
-   const boardCode=area||'I2C compass / PP_VDD';
+   const boardCode=area||'';
    const n=notes();
    status.innerHTML='<span class="as-analysis-hourglass" aria-hidden="true">⌛</span><span><strong>Đang chờ dữ liệu phân tích…</strong><small>Hệ thống đang tải ảnh và gửi dữ liệu tới AI. Vui lòng chờ.</small></span>';status.classList.add('show');
    out.innerHTML='<div class="as-analysis-wait"><span class="as-analysis-hourglass" aria-hidden="true">⌛</span><span>Đang phân tích…<small>AI đang xử lý PANIC LOG và ảnh MAIN / Boardview.</small></span></div>';
@@ -827,6 +829,6 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
   let n=0;const t=setInterval(()=>{if(enhance()||++n>80)clearInterval(t)} ,250);new MutationObserver(enhance).observe(document.body,{childList:true,subtree:true});
 })();
 </script>
-<script src="ai-board-fast-ui-v1.js?v=20260917diag3"></script>
-<script src="ai-board-diagnostics-guide-v1.js?v=20260917diag3"></script>
+<script src="ai-board-fast-ui-v1.js?v=20260917diag4"></script>
+<script src="ai-board-diagnostics-guide-v1.js?v=20260917diag4"></script>
 </body></html>
