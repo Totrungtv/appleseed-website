@@ -1,7 +1,7 @@
 from pathlib import Path
-from PySide6.QtCore import Qt, QPoint
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QImage, QPixmap, QPainter, QPen
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QFileDialog, QSpinBox, QLineEdit, QMessageBox, QScrollArea, QFrame, QColorDialog
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QFileDialog, QSpinBox, QLineEdit, QMessageBox, QScrollArea, QFrame
 try:
     import fitz
 except Exception:
@@ -45,7 +45,7 @@ class PdfCanvas(QLabel):
             self._draft_end = event.position().toPoint()
             self.update()
             return
-        if self._dragging and self.parentWidget() is not None:
+        if self._dragging:
             delta = event.position().toPoint() - self._drag_start
             self._drag_start = event.position().toPoint()
             area = self.owner.scroll
@@ -72,17 +72,12 @@ class PdfCanvas(QLabel):
         super().mouseReleaseEvent(event)
 
     def wheelEvent(self, event):
-        # Normal wheel = scroll the PDF. Ctrl + wheel = zoom.
         if event.modifiers() & Qt.ControlModifier:
             self.owner.change_zoom(0.1 if event.angleDelta().y() > 0 else -0.1)
             event.accept()
             return
-        self.owner.scroll.verticalScrollBar().setValue(
-            self.owner.scroll.verticalScrollBar().value() - event.angleDelta().y()
-        )
-        self.owner.scroll.horizontalScrollBar().setValue(
-            self.owner.scroll.horizontalScrollBar().value() - event.angleDelta().x()
-        )
+        self.owner.scroll.verticalScrollBar().setValue(self.owner.scroll.verticalScrollBar().value() - event.angleDelta().y())
+        self.owner.scroll.horizontalScrollBar().setValue(self.owner.scroll.horizontalScrollBar().value() - event.angleDelta().x())
         event.accept()
 
     def paintEvent(self, event):
@@ -92,9 +87,7 @@ class PdfCanvas(QLabel):
         painter = QPainter(self)
         pen = QPen(Qt.yellow if self.owner.tool == 'highlight' else Qt.red, 3)
         painter.setPen(pen)
-        painter.drawRect(self._draft_start.x(), self._draft_start.y(),
-                         self._draft_end.x() - self._draft_start.x(),
-                         self._draft_end.y() - self._draft_start.y())
+        painter.drawRect(self._draft_start.x(), self._draft_start.y(), self._draft_end.x() - self._draft_start.x(), self._draft_end.y() - self._draft_start.y())
         painter.end()
 
 
@@ -140,19 +133,6 @@ class PdfEditor(QWidget):
             b.setObjectName(obj)
             b.clicked.connect(fn)
             bar.addWidget(b)
-        prev = QPushButton('◀')
-        prev.setToolTip('Trang trước')
-        prev.clicked.connect(lambda: self.goto_page(-1))
-        nxt = QPushButton('▶')
-        nxt.setToolTip('Trang sau')
-        nxt.clicked.connect(lambda: self.goto_page(1))
-        self.page_spin = QSpinBox()
-        self.page_spin.setMinimum(1)
-        self.page_spin.setMaximum(1)
-        self.page_spin.valueChanged.connect(self.spin_page)
-        bar.addWidget(prev)
-        bar.addWidget(self.page_spin)
-        bar.addWidget(nxt)
         minus = QPushButton('−')
         minus.setToolTip('Thu nhỏ')
         minus.clicked.connect(lambda: self.change_zoom(-0.1))
@@ -163,15 +143,40 @@ class PdfEditor(QWidget):
         bar.addWidget(plus)
         bar.addStretch()
         root.addLayout(bar)
-
         root.addWidget(self.text_input)
+
+        # Thanh chuyển trang nằm sát hai bên vùng PDF, dễ bấm hơn trên màn hình rộng.
+        nav_row = QHBoxLayout()
+        nav_row.setContentsMargins(0, 0, 0, 0)
+        nav_row.setSpacing(8)
+
+        self.prev_btn = QPushButton('‹')
+        self.prev_btn.setToolTip('Trang trước')
+        self.prev_btn.setFixedWidth(48)
+        self.prev_btn.setMinimumHeight(76)
+        self.prev_btn.setObjectName('ghost')
+        self.prev_btn.setStyleSheet('font-size:38px;font-weight:700;border-radius:12px;')
+        self.prev_btn.clicked.connect(lambda: self.goto_page(-1))
+
         self.scroll = QScrollArea()
         self.scroll.setWidgetResizable(False)
         self.scroll.setFrameShape(QFrame.NoFrame)
         self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.scroll.setWidget(self.canvas)
-        root.addWidget(self.scroll, 1)
+
+        self.next_btn = QPushButton('›')
+        self.next_btn.setToolTip('Trang sau')
+        self.next_btn.setFixedWidth(48)
+        self.next_btn.setMinimumHeight(76)
+        self.next_btn.setObjectName('ghost')
+        self.next_btn.setStyleSheet('font-size:38px;font-weight:700;border-radius:12px;')
+        self.next_btn.clicked.connect(lambda: self.goto_page(1))
+
+        nav_row.addWidget(self.prev_btn, 0, Qt.AlignVCenter)
+        nav_row.addWidget(self.scroll, 1)
+        nav_row.addWidget(self.next_btn, 0, Qt.AlignVCenter)
+        root.addLayout(nav_row, 1)
         root.addWidget(self.status)
 
     def set_tool(self, tool):
@@ -195,7 +200,7 @@ class PdfEditor(QWidget):
             self.page_spin.setMaximum(max(1, len(self.doc)))
             self.page_spin.setValue(1)
             self.render()
-            self.status.setText(f'Đã mở: {Path(path).name} • {len(self.doc)} trang • dùng con lăn hoặc kéo chuột phải để xem')
+            self.status.setText(f'Đã mở: {Path(path).name} • {len(self.doc)} trang • con lăn để xem, kéo chuột phải để di chuyển')
         except Exception as e:
             QMessageBox.critical(self, 'Không mở được PDF', str(e))
 
@@ -211,6 +216,8 @@ class PdfEditor(QWidget):
         self.canvas.adjustSize()
         self.scroll.horizontalScrollBar().setValue(0)
         self.scroll.verticalScrollBar().setValue(0)
+        self.prev_btn.setEnabled(self.page_index > 0)
+        self.next_btn.setEnabled(self.page_index < len(self.doc) - 1)
         self.status.setText(f'Trang {self.page_index + 1}/{len(self.doc)} • zoom {self.zoom:.1f}x • Công cụ: {self.tool}')
 
     def goto_page(self, delta):
