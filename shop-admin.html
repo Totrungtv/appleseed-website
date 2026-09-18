@@ -1212,7 +1212,7 @@ window.deletePartPage=async(id,name)=>{
 };
 function openPartForm(x={}){
   let opts=partPages.map(p=>`<option value="${esc(p.name)}">${esc(p.icon||"🧩")} ${esc(p.name)}</option>`).join('');
-  let modelOpts=`<option value="">${ALL_MODEL_LABEL}</option>`+IPHONE_MODELS.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join('')+`<option value="${esc(UNKNOWN_MODEL_LABEL)}">${UNKNOWN_MODEL_LABEL}</option>`;
+  let modelOpts=`<option value="">Tất cả ${esc(activeDeviceFamily||"model")}</option>`+IPHONE_MODELS.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join('')+`<option value="${esc(UNKNOWN_MODEL_LABEL)}">${UNKNOWN_MODEL_LABEL}</option>`;
   openModal(x.id?'Sửa linh kiện':'Thêm linh kiện',`<form id="partForm" class="formgrid">
   <label>Tên linh kiện<input id="ptName" value="${esc(x.name||'')}" required></label>
   <div class="code-row"><label>Mã / SKU<input id="ptSku" value="${esc(x.sku||'')}" placeholder="AS-CS-260825-AB12"></label><button type="button" class="btn code-gen" id="genPartSku">🎲 Tạo mã</button></div>
