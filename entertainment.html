@@ -327,15 +327,14 @@ async function loadSection(id,feeds){
  el.innerHTML='<div class="empty"><span class="spinner"></span> Đang cập nhật…</div>';
  if(secondary)secondary.innerHTML='';
  try{
+  const results=await Promise.allSettled(feeds.map(async([source,url])=>{
+   const res=await fetchWithTimeout(PROXY+encodeURIComponent(url),{cache:'no-store'});
+   if(!res.ok) throw new Error('RSS '+res.status);
+   const j=await res.json();
+   return (j.items||[]).slice(0,10).map(x=>({...x,source}));
+  }));
   const all=[];
-  for(const [source,url] of feeds){
-   try{
- const res=await fetchWithTimeout(PROXY+encodeURIComponent(url),{cache:'no-store'});
- if(!res.ok) throw new Error('RSS '+res.status);
- const j=await res.json();
- (j.items||[]).slice(0,10).forEach(x=>all.push({...x,source}));
- }catch(e){}
-  }
+  results.forEach(r=>{if(r.status==='fulfilled') all.push(...r.value);});
   const seen=new Set();
   all.sort((a,b)=>new Date(b.pubDate)-new Date(a.pubDate));
   const unique=all.filter(x=>{const k=x.link||x.title;if(!k||seen.has(k))return false;seen.add(k);return true;});
@@ -619,6 +618,19 @@ bindYoutubeSearch();
 
 
 
+function ensureTikTokStatus(){
+  let status=document.getElementById('tiktokStatus');
+  if(status) return status;
+  const frame=document.getElementById('tiktokFrame');
+  if(!frame) return null;
+  status=document.createElement('div');
+  status.id='tiktokStatus';
+  status.className='social-note';
+  status.setAttribute('aria-live','polite');
+  frame.parentElement?.appendChild(status);
+  return status;
+}
+ensureTikTokStatus();
 document.querySelectorAll('[data-tiktok-action]').forEach(btn=>btn.addEventListener('click',()=>{
   document.querySelectorAll('.tiktok-nav[data-tiktok-action]').forEach(x=>x.classList.remove('active'));
   if(btn.classList.contains('tiktok-nav')) btn.classList.add('active');
@@ -644,13 +656,14 @@ function tiktokPlayerUrl(id){
 }
 let tiktokLoadTimer=null;
 function loadTikTok(id){
- const frame=document.getElementById('tiktokFrame'), status=document.getElementById('tiktokStatus');
+ const frame=document.getElementById('tiktokFrame'), status=ensureTikTokStatus();
+ if(!frame||!status)return;
  if(!/^\d{8,30}$/.test(String(id||''))){status.textContent='Không có ID TikTok hợp lệ.';return;}
  clearTimeout(tiktokLoadTimer);
  status.classList.remove('ok');
  status.textContent='⏳ Đang tải trình phát TikTok…';
- frame.src='about:blank';
- requestAnimationFrame(()=>{ frame.src=tiktokPlayerUrl(id); });
+ frame.onload=null;
+ frame.src=tiktokPlayerUrl(id);
  frame.setAttribute('allow','fullscreen; autoplay');
  frame.setAttribute('referrerpolicy','strict-origin-when-cross-origin');
  tiktokLoadTimer=setTimeout(()=>{
@@ -665,7 +678,7 @@ document.getElementById('tiktokLoad').onclick=()=>{
  else document.getElementById('tiktokUrl').setCustomValidity('URL TikTok chưa đúng dạng /video/ID.');
 };
 document.getElementById('tiktokUrl').addEventListener('input',e=>e.target.setCustomValidity(''));
-document.getElementById('tiktokFrame').addEventListener('load',()=>{document.getElementById('tiktokFrame').style.background='#000';document.getElementById('tiktokStatus').classList.add('ok');clearTimeout(tiktokLoadTimer)});
+document.getElementById('tiktokFrame')?.addEventListener('load',()=>{const status=ensureTikTokStatus();if(status){status.classList.add('ok');status.textContent='✓ Trình phát TikTok đã sẵn sàng.';}const frame=document.getElementById('tiktokFrame');if(frame)frame.style.background='#000';clearTimeout(tiktokLoadTimer)});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('#reader.open').forEach(x=>x.classList.remove('open'));document.getElementById('pClose').click();document.body.classList.remove('modal-open')}});
 async function refreshAll(){
  await Promise.allSettled([
