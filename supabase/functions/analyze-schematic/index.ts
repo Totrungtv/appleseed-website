@@ -308,8 +308,22 @@ Lưu ý: Đây là hỗ trợ chẩn đoán. Kỹ thuật viên phải xác minh
         .trim() || "";
 
     const exactPanic = panicKeywordLookup(notes);
+    const i2c0Evidence = /\\bi2c0\\b/i.test(normalizePanic(notes));
     if (exactPanic && !/EXACT KB:\s*i2c0/i.test(analysis)) {
       analysis = `=== TRA CỨU PANIC KEYWORD — APPLE SEED ===\n${exactPanic}\n\n${analysis}`;
+    }
+
+    // Evidence-first guard: when the actual PAN contains I2C0, prevent Gemini
+    // from inventing a camera/VCM mapping for an opaque device identifier.
+    if (i2c0Evidence) {
+      analysis = analysis
+        .replace(/\\bAD5860\\b[^\\n]*/gi, "AD5860: identifier thiết bị trên bus; chưa có mapping KB/schematic")
+        .replace(/cụm camera sau[^\\n]*/gi, "ngoại vi trên I2C0: chưa xác định")
+        .replace(/camera sau[^\\n]*/gi, "ngoại vi trên I2C0: chưa xác định")
+        .replace(/driver VCM[^\\n]*/gi, "driver I2C: chưa xác định")
+        .replace(/motor lấy nét[^\\n]*/gi, "thiết bị I2C: chưa xác định")
+        .replace(/Khả năng cao nhất[^\\n]*/gi, "Khu vực liên quan: I2C0; chưa đủ bằng chứng xác định linh kiện")
+        .replace(/Lỗi Kernel Panic xuất phát từ driver[^\\n]*/gi, "PANIC xác nhận lỗi interrupt trên I2C0; chưa đủ bằng chứng kết luận driver/IC cụ thể");
     }
 
     if (!analysis) {
