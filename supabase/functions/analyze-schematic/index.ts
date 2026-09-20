@@ -179,7 +179,18 @@ Deno.serve(async (req) => {
     // 2. Prompt AI phân tích PAN + schematic
     // ---------------------------------------------------------
 
-    const prompt = `
+    const normalizePanic = (text: string) => String(text || "")
+  .replace(/i2c\\s*[-_:]?\\s*o\\b/gi, "i2c0")
+  .replace(/i2c\\s+0\\b/gi, "i2c0")
+  .replace(/i2c\\s*[-_:]?\\s*0\\b/gi, "i2c0");
+
+const panicKeywordLookup = (text: string) => {
+  const t = normalizePanic(text).toLowerCase();
+  if (/\\bi2c0\\b/.test(t)) return "EXACT KB: i2c0 → Cụm sạc";
+  return "";
+};
+
+const prompt = `
 Bạn là AI kỹ thuật hỗ trợ sửa chữa mainboard iPhone cấp độ board-level
 cho Apple Seed.
 
@@ -288,11 +299,16 @@ Lưu ý: Đây là hỗ trợ chẩn đoán. Kỹ thuật viên phải xác minh
       );
     }
 
-    const analysis =
+    let analysis =
       geminiData?.candidates?.[0]?.content?.parts
         ?.map((p: any) => p.text || "")
         .join("\n")
         .trim() || "";
+
+    const exactPanic = panicKeywordLookup(notes);
+    if (exactPanic && !/EXACT KB:\s*i2c0/i.test(analysis)) {
+      analysis = `=== TRA CỨU PANIC KEYWORD — APPLE SEED ===\n${exactPanic}\n\n${analysis}`;
+    }
 
     if (!analysis) {
       throw new Error("Gemini không trả về kết quả phân tích");
