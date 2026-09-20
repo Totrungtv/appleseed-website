@@ -10,9 +10,10 @@
   const PANIC_KB=[
     ['AOP PANIC','Cảm biến / Cụm sạc'],
     ['TTBR','Flex cảm biến / Audio'],
-    ['Pulse','Flex cảm biến'],
+    ['Pulse','Cảm biến bổ sung'],
     ['Moly','Flex cảm biến'],
-    ['Pearl','Flex cảm biến'],
+    ['Pearl','Cảm biến bổ sung'],
+    ['Pear','Cảm biến bổ sung'],
     ['Dart-aop','Flex cảm biến / Audio'],
     ['I2C0','Cụm sạc'],
     ['I2CSCM0','Thay cụm sạc trước (đa số done)'],
