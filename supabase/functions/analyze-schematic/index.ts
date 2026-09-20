@@ -189,6 +189,7 @@ const panicKeywordLookup = (text: string) => {
   if (/\\bi2c0\\b/.test(t)) return "EXACT KB: i2c0 → Cụm sạc";
   return "";
 };
+const hasI2C0Evidence = (text: string) => /\\bi2c0\\b/i.test(normalizePanic(text));
 
 const prompt = `
 Bạn là AI kỹ thuật hỗ trợ sửa chữa mainboard iPhone cấp độ board-level
@@ -231,7 +232,8 @@ YÊU CẦU PHÂN TÍCH:
    - kiểm tra điện áp
    - kiểm tra tín hiệu
    - so sánh board tốt.
-10. Nếu schematic không đủ rõ để kết luận thì nói rõ cần thêm ảnh hoặc số đo.
+10. Nếu schematic không đủ rõ để kết luận thì nói rõ cần thêm ảnh hoặc số đo.\n11. Nếu dữ liệu PAN có I2C0/i2c0, chỉ được kết luận rằng PANIC có liên quan bus/controller I2C0. Không được tự suy ra ad5860 là camera, VCM, camera sau hoặc linh kiện cụ thể nếu không có schematic/KB chính thức chứng minh mapping đó. Không dùng chữ "khả năng cao nhất" cho linh kiện chưa có bằng chứng.
+12. Nếu có chuỗi device như ad5860, phải giữ nguyên như một identifier của thiết bị/driver và ghi "chưa xác định" nếu không có bảng mapping chính thức.
 
 TRẢ KẾT QUẢ THEO CẤU TRÚC:
 
