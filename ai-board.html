@@ -1546,4 +1546,47 @@ document.addEventListener('paste',e=>{
 document.querySelectorAll('.as-ai-chat-toolbar button,.as-ai-ref-action').forEach(b=>b.onclick=()=>{input.value=b.dataset.prompt||'';input.focus()});
 load();
 })();
+</script><style id="apple-seed-autopilot-ui">
+#asAiChatStatus{transition:all .25s ease}
+.as-ai-runtime-badge{margin-left:6px;padding:3px 7px;border:1px solid rgba(125,255,226,.3);border-radius:999px;color:#baffee;font-weight:800;font-size:9px;letter-spacing:.02em;background:rgba(0,0,0,.1)}
+.as-ai-3d-topline .status.evolving{box-shadow:0 0 18px rgba(52,239,181,.18)}
+</style>
+<script id="apple-seed-ai-autopilot-ui">
+(()=>{
+  const endpoint='https://nuismqcjyutqigdydfkg.supabase.co/functions/v1/ai-autopilot';
+  const statusEl=document.getElementById('asAiChatStatus');
+  const brainHits=document.getElementById('asAiBrainHits');
+  const topStatus=document.querySelector('.as-ai-3d-topline .status');
+  const hint=document.querySelector('.as-ai-chat-hint span');
+  async function refreshRuntime(){
+    try{
+      const r=await fetch(endpoint,{cache:'no-store'});
+      if(!r.ok) return;
+      const x=await r.json();
+      if(!x.runtime) return;
+      const rt=x.runtime, st=x.stats||{};
+      const cycle=Number(rt.learning_cycles||0);
+      const atoms=Number(st.knowledge_atoms||rt.stats?.brain_knowledge||0);
+      const next=rt.next_run_at ? new Date(rt.next_run_at) : null;
+      const nextText=next && !Number.isNaN(next.getTime()) ? next.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'}) : '';
+      if(statusEl){
+        statusEl.innerHTML='Electronic Brain • tự học nền <span class="as-ai-runtime-badge">v'+(rt.brain_version||1)+' • cycle '+cycle+'</span>';
+      }
+      if(topStatus){
+        topStatus.classList.add('evolving');
+        topStatus.innerHTML='<i></i> Online • Evolution';
+      }
+      if(brainHits){
+        brainHits.textContent='🧠 '+atoms.toLocaleString('vi-VN')+' kiến thức';
+      }
+      if(hint){
+        hint.textContent=nextText
+          ? 'Ctrl + V để dán ảnh • Robot vẫn tự học khi ông đóng website • vòng tiếp theo '+nextText
+          : 'Ctrl + V để dán ảnh • Robot vẫn tự học khi ông đóng website';
+      }
+    }catch(_){}
+  }
+  refreshRuntime();
+  setInterval(refreshRuntime,60000);
+})();
 </script></body></html>
