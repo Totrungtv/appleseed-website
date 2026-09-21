@@ -83,7 +83,7 @@ async function stats(){
   $("docs").textContent=d.count||0;$("atoms").textContent=k.count||0;$("rels").textContent=r.count||0;
   const q=await sb.from("brain_documents").select("*").order("created_at",{ascending:false}).limit(30);
   if(q.error) throw q.error;
-  $("list").innerHTML=(q.data||[]).map(x=>'<div class="file"><div class="row"><b>'+esc(x.file_name)+'</b><span>'+esc(x.status)+'</span></div><div class="muted">'+(x.atoms_learned||0)+' atoms · '+(x.relationships_learned||0)+' relationships · '+(x.pages_learned||0)+' pages</div><div class="bar"><i style="width:'+(x.status==="completed"?100:x.status==="learning"?50:0)+'%"></i></div>'+(x.error_message?'<div class="error">'+esc(x.error_message)+'</div>':'')+'</div>').join("")||'<div class="muted">Chưa có tài liệu.</div>';
+  $("list").innerHTML=(q.data||[]).map(x=>'<div class="file"><div class="row"><b>'+esc(x.file_name)+'</b><span>'+esc(x.status)+'</span></div><div class="muted">'+(x.atoms_learned||0)+' atoms · '+(x.relationships_learned||0)+' relationships · '+(x.pages_learned||0)+' pages</div><div class="bar"><i style="width:'+(x.status==="completed"?100:x.status==="learning"?50:0)+'%"></i></div>'+(x.error_message?'<div class="error">'+esc(x.error_message)+'</div>':'')+'<div style="margin-top:10px"><button type="button" class="secondary relearn" data-id="'+esc(x.id)+'">🔄 Học lại tài liệu</button></div></div>').join("")||'<div class="muted">Chưa có tài liệu.</div>';
  }catch(e){msg("Không tải được dữ liệu: "+(e.message||e),"error")}
 }
 
@@ -115,7 +115,36 @@ $("drop").addEventListener("dragover",e=>{e.preventDefault();$("drop").style.bor
 $("drop").addEventListener("dragleave",()=> $("drop").style.borderColor="#84adf0");
 $("drop").addEventListener("drop",e=>{e.preventDefault();$("drop").style.borderColor="#84adf0";selectFile(e.dataTransfer.files[0])});
 $("refresh").addEventListener("click",()=>stats());
+$("list").addEventListener("click",async e=>{
+  const btn=e.target.closest(".relearn");
+  if(!btn||busy)return;
+  busy=true;btn.disabled=true;$("choose").disabled=true;$("learn").disabled=true;
+  try{await auth();await sb.from("brain_documents").update({status:"queued",error_message:null,atoms_learned:0,relationships_learned:0}).eq("id",btn.dataset.id);await stats();await startLearning(btn.dataset.id)}
+  catch(err){msg("❌ "+(err.message||err),"error")}
+  finally{busy=false;btn.disabled=false;$("choose").disabled=false;$("learn").disabled=!picked}
+});
 
+async function startLearning(docId){
+  msg("🧠 AI đang đọc và hấp thụ tài liệu…");
+  sb.functions.invoke("brain-learn-document",{body:{document_id:docId}})
+    .then(r=>{if(r.error)console.warn("Brain worker:",r.error)})
+    .catch(e=>console.warn("Brain worker:",e));
+  for(let i=0;i<180;i++){
+    await new Promise(r=>setTimeout(r,2000));
+    const q=await sb.from("brain_documents").select("status,atoms_learned,relationships_learned,error_message").eq("id",docId).maybeSingle();
+    if(q.error||!q.data)continue;
+    const d=q.data;
+    if(d.status==="completed"){
+      if((d.atoms_learned||0)>0) msg("✅ Đã học xong: "+d.atoms_learned+" knowledge atoms · "+(d.relationships_learned||0)+" quan hệ.","ok");
+      else msg("⚠️ AI hoàn tất nhưng chưa tạo knowledge atoms. Đã sửa bộ đọc Responses API — hãy bấm Học lại.","error");
+      await stats(); return;
+    }
+    if(d.status==="failed"){msg("❌ AI học thất bại: "+(d.error_message||"Không rõ lỗi"),"error");await stats();return}
+    msg("🧠 AI đang đọc và hấp thụ…");
+  }
+  msg("⏳ Tài liệu vẫn đang được xử lý. Không cần bấm lại.","");
+  await stats();
+}
 $("learn").addEventListener("click",async()=>{
  if(!picked||busy)return;
  busy=true;$("learn").disabled=true;$("choose").disabled=true;
@@ -137,30 +166,7 @@ $("learn").addEventListener("click",async()=>{
    msg("📤 Đã upload. AI bắt đầu hấp thụ — trang này sẽ không bị treo.");
    await stats();
 
-   // Fire the learner without blocking the UI. The worker updates brain_documents.status.
-   sb.functions.invoke("brain-learn-document",{body:{document_id:docId}})
-     .then(r=>{if(r.error) console.warn("Brain worker:",r.error)})
-     .catch(e=>console.warn("Brain worker:",e));
-
-   for(let i=0;i<180;i++){
-     await new Promise(r=>setTimeout(r,2000));
-     const q=await sb.from("brain_documents")
-       .select("status,atoms_learned,relationships_learned,error_message")
-       .eq("id",docId).maybeSingle();
-     if(q.error) continue;
-     const d=q.data;
-     if(!d) continue;
-     if(d.status==="completed"){
-       msg("✅ Đã học xong: "+(d.atoms_learned||0)+" knowledge atoms · "+(d.relationships_learned||0)+" quan hệ.","ok");
-       await stats(); break;
-     }
-     if(d.status==="failed"){
-       msg("❌ AI học tài liệu thất bại: "+(d.error_message||"Không rõ lỗi"),"error");
-       await stats(); break;
-     }
-     msg("🧠 AI đang đọc và hấp thụ "+picked.name+"…");
-     await stats();
-   }
+   await startLearning(docId);
  }catch(e){msg("❌ "+(e.message||String(e)),"error");await stats()}
  finally{busy=false;$("choose").disabled=false;$("learn").disabled=!picked}
 });
