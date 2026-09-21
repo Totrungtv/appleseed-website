@@ -217,6 +217,73 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
   .as-ai-hero-robot{left:0!important;bottom:0!important;width:160px!important;height:160px!important}
   .as-ai-hero-copy{right:10px!important;top:14px!important;width:57%!important}
 }
+</style><style id="apple-seed-ai-modern-hero">
+.as-ai-chat-hero.as-ai-hero-premium{
+  height:268px!important;min-height:268px!important;position:relative;overflow:hidden;
+  background:radial-gradient(circle at 18% 30%,rgba(42,255,207,.19),transparent 28%),
+             radial-gradient(circle at 82% 20%,rgba(89,114,255,.16),transparent 25%),
+             linear-gradient(135deg,#061918 0%,#071F20 45%,#092B2C 100%)!important;
+  border-bottom:1px solid rgba(102,255,225,.22)!important;
+  isolation:isolate;
+}
+.as-ai-hero-premium .as-ai-hero-grid{
+  opacity:.18;mask-image:linear-gradient(90deg,#000 0 75%,transparent 100%);
+  background-size:30px 30px!important;
+  background-image:linear-gradient(rgba(71,255,218,.18) 1px,transparent 1px),linear-gradient(90deg,rgba(71,255,218,.18) 1px,transparent 1px)!important;
+}
+.as-ai-hero-premium .as-ai-hero-scan{
+  position:absolute;inset:0;pointer-events:none;opacity:.16;
+  background:repeating-linear-gradient(180deg,transparent 0 5px,rgba(126,255,237,.11) 6px,transparent 7px);
+  mix-blend-mode:screen;
+}
+.as-ai-hero-glow{position:absolute;border-radius:50%;filter:blur(24px);pointer-events:none;opacity:.45}
+.as-ai-hero-glow.g1{width:220px;height:220px;left:5%;top:12%;background:#0edeb4}
+.as-ai-hero-glow.g2{width:190px;height:190px;right:5%;top:3%;background:#415fff}
+.as-ai-hero-status{
+  position:absolute;left:18px;top:16px;z-index:5;display:flex;align-items:center;gap:7px;
+  padding:6px 10px;border:1px solid rgba(116,255,227,.22);border-radius:999px;
+  background:rgba(4,26,27,.62);backdrop-filter:blur(14px) saturate(140%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 10px 28px rgba(0,0,0,.16);
+  color:#b9fff0;font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;
+}
+.as-ai-hero-status i{width:7px;height:7px;border-radius:50%;background:#39f6bf;box-shadow:0 0 12px #39f6bf;animation:asAiOnline 1.6s ease-in-out infinite}
+.as-ai-hero-status b{color:#6f8b88;font-weight:700;text-transform:none;letter-spacing:0;margin-left:3px}
+@keyframes asAiOnline{50%{opacity:.38;transform:scale(.78)}}
+.as-ai-hero-hud{
+  position:absolute;z-index:5;bottom:15px;padding:5px 8px;border-radius:7px;
+  border:1px solid rgba(91,255,224,.16);background:rgba(2,22,23,.46);
+  color:#6de8cf;font:700 8px/1 Inter,system-ui,sans-serif;letter-spacing:.16em;
+  backdrop-filter:blur(10px)
+}
+.as-ai-hero-hud.hud-left{left:18px}.as-ai-hero-hud.hud-right{right:18px;color:#9b99ff;border-color:rgba(155,129,255,.18)}
+.as-ai-hero-premium .as-ai-hero-robot{
+  left:-12px!important;bottom:-18px!important;width:60%!important;height:292px!important;z-index:4!important;
+  pointer-events:none!important;overflow:visible!important;transform-origin:50% 100%;
+  animation:asAiRobotHover 4.2s ease-in-out infinite;
+}
+.as-ai-hero-premium .robot-picture{display:block!important;width:100%!important;height:100%!important;object-fit:contain!important;object-position:center bottom!important;background:transparent!important;overflow:visible!important;filter:drop-shadow(0 26px 32px rgba(0,0,0,.35))!important}
+@keyframes asAiRobotHover{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-6px) scale(1.01)}}
+.as-ai-hero-copy{
+  position:absolute!important;z-index:6!important;right:20px!important;top:54px!important;width:42%!important;
+  padding:18px 18px 16px!important;border-radius:22px!important;
+  color:#e6fff9!important;background:linear-gradient(145deg,rgba(5,24,25,.82),rgba(9,40,39,.52))!important;
+  border:1px solid rgba(126,255,235,.24)!important;box-shadow:0 24px 50px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.08)!important;
+  backdrop-filter:blur(18px) saturate(145%)!important;
+}
+.as-ai-hero-kicker{font-size:8px!important;letter-spacing:.23em!important;color:#70e8d0!important;font-weight:800!important;margin-bottom:8px!important}
+.as-ai-hero-copy b{display:block!important;font-size:26px!important;line-height:1.05!important;color:#fff!important;margin-bottom:9px!important;letter-spacing:-.02em}
+.as-ai-hero-copy span{display:block!important;font-size:12px!important;line-height:1.5!important;color:#d8efea!important}
+.as-ai-hero-copy span strong{color:#76ffe0!important}
+.as-ai-hero-copy em{display:block!important;margin-top:8px!important;font-style:normal!important;color:#9cb9b5!important;font-size:9px!important;line-height:1.45!important}
+.as-ai-hero-actions{display:flex!important;gap:5px!important;flex-wrap:wrap!important;margin-top:13px!important}
+.as-ai-hero-actions span{font-size:8px!important;font-weight:800!important;padding:6px 8px!important;border-radius:999px!important;color:#bffef2!important;background:rgba(20,237,193,.08)!important;border:1px solid rgba(93,255,224,.18)!important}
+@media(max-width:760px){
+ .as-ai-chat-hero.as-ai-hero-premium{height:230px!important;min-height:230px!important}
+ .as-ai-hero-premium .as-ai-hero-robot{left:-25px!important;width:64%!important;height:250px!important;bottom:-12px!important}
+ .as-ai-hero-copy{right:11px!important;top:43px!important;width:43%!important;padding:13px!important}
+ .as-ai-hero-copy b{font-size:19px!important}.as-ai-hero-copy em{display:none!important}.as-ai-hero-actions{display:none!important}
+ .as-ai-hero-status{left:12px!important}.as-ai-hero-hud{display:none!important}
+}
 </style></head>
 <body><main class="wrap">
 <!-- ===== APPLE SEED FULL MEMBER / COMMUNITY / CHAT RESTORE ===== -->
@@ -915,52 +982,132 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
     <button data-prompt="Tôi muốn tìm hiểu sâu về lỗi này, hãy dạy tôi từng bước.">📚 Học sửa</button>
   </div>
  
-  <div class="as-ai-chat-hero">
-    <div class="as-ai-hero-grid"></div>
-    <div class="as-ai-hero-robot"><svg class="robot-picture" aria-label="Apple Seed AI Robot" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 720" fill="none">
-<defs>
-<linearGradient id="armor" x1="170" y1="90" x2="550" y2="660" gradientUnits="userSpaceOnUse"><stop stop-color="#F9FFFE"/><stop offset=".28" stop-color="#D9EEEA"/><stop offset=".62" stop-color="#9AB8B4"/><stop offset="1" stop-color="#536F6D"/></linearGradient>
-<linearGradient id="armorDark" x1="210" y1="260" x2="540" y2="650" gradientUnits="userSpaceOnUse"><stop stop-color="#173A38"/><stop offset=".55" stop-color="#0B2222"/><stop offset="1" stop-color="#071214"/></linearGradient>
-<linearGradient id="visor" x1="208" y1="204" x2="512" y2="280" gradientUnits="userSpaceOnUse"><stop stop-color="#020F13"/><stop offset=".45" stop-color="#0D3540"/><stop offset=".7" stop-color="#0C555A"/><stop offset="1" stop-color="#021014"/></linearGradient>
-<linearGradient id="cyan" x1="280" y1="300" x2="470" y2="540" gradientUnits="userSpaceOnUse"><stop stop-color="#B5FFF1"/><stop offset=".35" stop-color="#43F6D0"/><stop offset="1" stop-color="#00A98B"/></linearGradient>
-<radialGradient id="core"><stop stop-color="#FFFFFF"/><stop offset=".28" stop-color="#7CFFE2"/><stop offset=".72" stop-color="#11C9A4"/><stop offset="1" stop-color="#086A63"/></radialGradient>
-<filter id="glow"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-<filter id="soft"><feGaussianBlur stdDeviation="18"/></filter>
-<filter id="shadow" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="24" stdDeviation="20" flood-color="#00352D" flood-opacity=".22"/></filter>
-</defs>
-<circle cx="170" cy="170" r="110" fill="#27EAC122" filter="url(#soft)"/><circle cx="555" cy="172" r="125" fill="#6B6CFF18" filter="url(#soft)"/>
-<circle cx="365" cy="585" r="215" stroke="#22E4C51A" stroke-width="2"/><circle cx="365" cy="585" r="178" stroke="#22E4C51A" stroke-width="2" stroke-dasharray="6 13"/>
-<path d="M92 610c85-40 145-58 273-58s189 18 265 58" stroke="#19D9BC2A" stroke-width="3" stroke-linecap="round"/>
-<g filter="url(#shadow)">
-<path d="M142 310l-54 30 43 18-57 50 82-16" stroke="#2DEDC7" stroke-width="5" opacity=".6" filter="url(#glow)"/><path d="M578 310l54 30-43 18 57 50-82-16" stroke="#9B5BFF" stroke-width="5" opacity=".55" filter="url(#glow)"/>
-<path d="M360 104V58" stroke="#547875" stroke-width="8" stroke-linecap="round"/><circle cx="360" cy="43" r="12" fill="#6CFFE0" filter="url(#glow)"/>
-<path d="M220 125L260 92H460L500 125L526 200L506 292L456 333H264L214 292L194 200L220 125Z" fill="url(#armor)" stroke="#557D79" stroke-width="8"/>
-<path d="M220 125L260 92H460L500 125" stroke="#fff" stroke-width="5" opacity=".65"/>
-<path d="M198 182h-36v82h36" fill="#0C2425" stroke="#5A8A85" stroke-width="7"/><path d="M522 182h36v82h-36" fill="#0C2425" stroke="#5A8A85" stroke-width="7"/>
-<path d="M166 209h25M529 209h25" stroke="#35EED0" stroke-width="4" opacity=".8"/>
-<path d="M244 167L281 147H439L476 167L489 215L458 259H262L231 215L244 167Z" fill="url(#visor)" stroke="#168D85" stroke-width="6"/>
-<path d="M260 178H460" stroke="#6CFFF0" stroke-width="2" opacity=".35"/>
-<circle cx="302" cy="208" r="13" fill="#6CFFE3" filter="url(#glow)"/><circle cx="418" cy="208" r="13" fill="#FF9CEF" filter="url(#glow)"/>
-<path d="M333 232h54" stroke="#6CFCE3" stroke-width="6" stroke-linecap="round" opacity=".8"/><path d="M274 245h34M412 245h34" stroke="#5AE9D3" stroke-width="4" opacity=".5"/>
-<path d="M320 316h80v48l-20 24h-40l-20-24v-48Z" fill="#244340" stroke="#5B8882" stroke-width="7"/>
-<path d="M156 654V492L196 400L272 355H448L524 400L564 492V654H156Z" fill="url(#armorDark)" stroke="#4F7773" stroke-width="9"/>
-<path d="M196 400l76-45h176l76 45" stroke="#A8FFF0" stroke-width="3" opacity=".22"/>
-<path d="M188 470l64-40h76M532 470l-64-40h-76" stroke="#40F2D1" stroke-width="4" opacity=".35"/>
-<path d="M160 425l-82 34v118l82-28 38-78-38-46Z" fill="url(#armor)" stroke="#5C8580" stroke-width="8"/><path d="M560 425l82 34v118l-82-28-38-78 38-46Z" fill="url(#armor)" stroke="#5C8580" stroke-width="8"/>
-<path d="M93 487l58-20M627 487l-58-20" stroke="#1CD9B5" stroke-width="5" opacity=".7"/>
-<circle cx="360" cy="490" r="86" fill="#071619" stroke="#1B7D72" stroke-width="7"/>
-<circle cx="360" cy="490" r="72" stroke="#42F1D0" stroke-width="3" stroke-dasharray="10 10" opacity=".8"/>
-<circle cx="360" cy="490" r="54" fill="url(#core)" filter="url(#glow)"/><circle cx="360" cy="490" r="38" fill="#063C39" opacity=".65"/>
-<path d="M330 478l12 15 20-30 18 29 14-14" stroke="#7CFFF0" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="360" y="520" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="18" font-weight="800" fill="#C8FFF5">AI CORE</text>
-<path d="M230 573h72M418 573h72" stroke="#4BEFD3" stroke-width="6" stroke-linecap="round" opacity=".65"/><path d="M248 603h42M430 603h42" stroke="#9A70FF" stroke-width="5" stroke-linecap="round" opacity=".55"/>
-<circle cx="220" cy="573" r="7" fill="#4BEFD3" filter="url(#glow)"/><circle cx="500" cy="573" r="7" fill="#FF8FE9" filter="url(#glow)"/>
-<path d="M112 545l-54 76" stroke="#95AAA7" stroke-width="34" stroke-linecap="round"/><path d="M608 545l54 76" stroke="#95AAA7" stroke-width="34" stroke-linecap="round"/>
-<path d="M73 613l28 22-17 25-33-17z" fill="#5D7B78" stroke="#345653" stroke-width="6"/><path d="M647 613l-28 22 17 25 33-17z" fill="#5D7B78" stroke="#345653" stroke-width="6"/>
-<g opacity=".72"><circle cx="74" cy="260" r="24" stroke="#2FECCD" stroke-width="3"/><path d="M62 260h24M74 248v24" stroke="#2FECCD" stroke-width="3"/><circle cx="646" cy="260" r="24" stroke="#A568FF" stroke-width="3"/><path d="M634 260h24M646 248v24" stroke="#A568FF" stroke-width="3"/></g>
-</g></svg></div>
-    <div class="as-ai-hero-copy"><b>Xin chào! 👋</b><span>Tôi là <strong>Apple Seed AI Robot</strong>.<br>Sẵn sàng hỗ trợ bạn sửa chữa iPhone.</span></div>
-  </div> <div id="asAiChatMessages" class="as-ai-chat-messages"></div>
+  <div class="as-ai-chat-hero as-ai-hero-premium">
+  <div class="as-ai-hero-grid"></div>
+  <div class="as-ai-hero-scan"></div>
+  <div class="as-ai-hero-glow g1"></div><div class="as-ai-hero-glow g2"></div>
+  <div class="as-ai-hero-status"><i></i><span>AI CORE ONLINE</span><b>Electronic Brain</b></div>
+  <div class="as-ai-hero-hud hud-left">BOARD-LEVEL / LIVE</div>
+  <div class="as-ai-hero-hud hud-right">NEURAL LINK • 100%</div>
+  <div class="as-ai-hero-robot">
+    <svg class="robot-picture as-ai-future-robot" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 700" role="img" aria-label="Apple Seed futuristic AI Robot">
+      <defs>
+        <linearGradient id="r2-shell" x1="160" y1="80" x2="600" y2="610" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#FFFFFF"/><stop offset=".28" stop-color="#D7E8E5"/><stop offset=".58" stop-color="#789591"/><stop offset="1" stop-color="#243C3C"/>
+        </linearGradient>
+        <linearGradient id="r2-shell2" x1="340" y1="260" x2="680" y2="620" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#F8FFFE"/><stop offset=".32" stop-color="#D7E7E4"/><stop offset="1" stop-color="#6D8885"/>
+        </linearGradient>
+        <linearGradient id="r2-black" x1="350" y1="230" x2="580" y2="650" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#1E3334"/><stop offset=".5" stop-color="#0A171A"/><stop offset="1" stop-color="#02090C"/>
+        </linearGradient>
+        <linearGradient id="r2-visor" x1="250" y1="170" x2="610" y2="260" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#02070B"/><stop offset=".45" stop-color="#061F25"/><stop offset=".75" stop-color="#103F45"/><stop offset="1" stop-color="#020608"/>
+        </linearGradient>
+        <radialGradient id="r2-eye"><stop stop-color="#F7FFFD"/><stop offset=".24" stop-color="#6BFFE1"/><stop offset=".7" stop-color="#0EC29F"/><stop offset="1" stop-color="#07574F"/></radialGradient>
+        <radialGradient id="r2-core"><stop stop-color="#F7FFFF"/><stop offset=".18" stop-color="#92FFE8"/><stop offset=".52" stop-color="#20E8BD"/><stop offset="1" stop-color="#075F59"/></radialGradient>
+        <linearGradient id="r2-holo" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#44FFE1" stop-opacity=".95"/><stop offset=".55" stop-color="#44C8FF" stop-opacity=".65"/><stop offset="1" stop-color="#A86AFF" stop-opacity=".4"/></linearGradient>
+        <filter id="r2-glow" x="-80%" y="-80%" width="260%" height="260%">
+          <feGaussianBlur stdDeviation="7" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="r2-soft" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="28"/></filter>
+        <filter id="r2-shadow" x="-50%" y="-50%" width="220%" height="240%"><feDropShadow dx="0" dy="26" stdDeviation="18" flood-color="#001B18" flood-opacity=".42"/></filter>
+      </defs>
+
+      <ellipse cx="405" cy="636" rx="290" ry="30" fill="#00DDBA18" filter="url(#r2-soft)"/>
+      <circle cx="170" cy="310" r="110" fill="#14FFD022" filter="url(#r2-soft)"/>
+      <circle cx="690" cy="250" r="125" fill="#4D7CFF18" filter="url(#r2-soft)"/>
+
+      <g filter="url(#r2-shadow)">
+        <!-- back halo -->
+        <path d="M106 382 C155 315 196 278 258 248" stroke="#42FFD8" stroke-width="4" opacity=".42" filter="url(#r2-glow)"/>
+        <path d="M706 343 C770 287 804 261 846 248" stroke="#8E68FF" stroke-width="4" opacity=".38" filter="url(#r2-glow)"/>
+
+        <!-- head -->
+        <path d="M217 88 L288 48 L505 48 L578 92 L606 173 L584 260 L512 320 L302 320 L230 260 L205 173 Z" fill="url(#r2-shell)" stroke="#54716E" stroke-width="8"/>
+        <path d="M264 92 L311 67 L480 67 L531 96" stroke="#FFFFFF" stroke-width="6" opacity=".72"/>
+        <path d="M205 154 L169 170 L169 246 L211 253" fill="#172A2C" stroke="#547C78" stroke-width="7"/>
+        <path d="M606 154 L642 170 L642 246 L600 253" fill="#172A2C" stroke="#547C78" stroke-width="7"/>
+        <path d="M174 194 H206 M605 194 H637" stroke="#43F7D0" stroke-width="4" opacity=".7"/>
+
+        <!-- face visor -->
+        <path d="M270 118 Q395 76 530 118 L560 160 L544 224 Q494 262 402 267 Q310 262 260 224 L243 160 Z" fill="url(#r2-visor)" stroke="#157E79" stroke-width="6"/>
+        <path d="M264 137 Q401 103 541 136" stroke="#72FFE6" stroke-width="2" opacity=".34"/>
+        <circle cx="331" cy="185" r="17" fill="url(#r2-eye)" filter="url(#r2-glow)"/>
+        <circle cx="474" cy="175" r="15" fill="#82FFE8" filter="url(#r2-glow)"/>
+        <path d="M358 219 Q405 236 452 216" stroke="#60EED6" stroke-width="5" stroke-linecap="round" opacity=".7"/>
+        <path d="M301 238 H340 M473 238 H512" stroke="#41D7C1" stroke-width="4" opacity=".45"/>
+
+        <!-- neck -->
+        <path d="M349 302 H441 V352 L409 382 H381 L349 352 Z" fill="#1A3231" stroke="#557F79" stroke-width="7"/>
+        <path d="M368 326 H422" stroke="#36EFD0" stroke-width="4" opacity=".5"/>
+
+        <!-- torso -->
+        <path d="M255 352 L318 322 H478 L555 366 L614 520 L585 653 H214 L183 520 L214 400 Z" fill="url(#r2-black)" stroke="#486764" stroke-width="9"/>
+        <path d="M315 326 L396 300 L476 326" stroke="#8AFFF0" stroke-width="3" opacity=".18"/>
+        <path d="M232 430 L302 392 H505 L570 432" stroke="#35E7CA" stroke-width="4" opacity=".25"/>
+
+        <!-- chest reactor -->
+        <circle cx="392" cy="456" r="96" fill="#061317" stroke="#176A63" stroke-width="7"/>
+        <circle cx="392" cy="456" r="79" stroke="#40F1CF" stroke-width="3" stroke-dasharray="8 12" opacity=".76"/>
+        <circle cx="392" cy="456" r="58" fill="url(#r2-core)" filter="url(#r2-glow)"/>
+        <circle cx="392" cy="456" r="40" fill="#062F2E" opacity=".8"/>
+        <path d="M360 456 L377 476 L405 428 L423 463 L448 441" stroke="#A5FFF0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="392" y="505" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="18" font-weight="800" fill="#D8FFF8">APPLE SEED</text>
+
+        <!-- left shoulder -->
+        <path d="M226 365 L148 401 L110 510 L199 544 L256 456 Z" fill="url(#r2-shell)" stroke="#5A7E79" stroke-width="8"/>
+        <path d="M126 430 L191 405" stroke="#42EED0" stroke-width="5" opacity=".65"/>
+
+        <!-- right shoulder / raised arm -->
+        <path d="M557 368 L624 348 L696 414 L670 470 L594 455 Z" fill="url(#r2-shell2)" stroke="#5A7E79" stroke-width="8"/>
+        <path d="M631 378 L673 419" stroke="#45F5D4" stroke-width="5" opacity=".7"/>
+
+        <!-- extended arm -->
+        <path d="M664 444 L734 405 L797 431 L759 484 L681 501 Z" fill="url(#r2-black)" stroke="#456662" stroke-width="8"/>
+        <path d="M760 432 L820 458 L800 502 L735 477 Z" fill="#8BA4A0" stroke="#4F706C" stroke-width="7"/>
+        <!-- palm -->
+        <path d="M790 483 Q822 466 849 484 L862 523 L832 548 L790 532 L772 509 Z" fill="#1C3334" stroke="#4F7772" stroke-width="7"/>
+        <path d="M815 488 L849 500 M805 503 L846 514 M802 519 L838 528" stroke="#44F0D1" stroke-width="4" opacity=".78"/>
+
+        <!-- left arm hanging -->
+        <path d="M184 500 L120 557 L87 620" stroke="#879F9A" stroke-width="35" stroke-linecap="round"/>
+        <path d="M96 611 L69 645 L89 662 L120 635 L126 607 Z" fill="#627B77" stroke="#36534F" stroke-width="6"/>
+
+        <!-- circuit accents -->
+        <path d="M258 582 H333 M449 582 H520" stroke="#39EBCB" stroke-width="6" stroke-linecap="round" opacity=".72"/>
+        <path d="M276 610 H318 M466 610 H508" stroke="#8F70FF" stroke-width="5" stroke-linecap="round" opacity=".58"/>
+        <circle cx="240" cy="582" r="7" fill="#54FFE0" filter="url(#r2-glow)"/>
+        <circle cx="541" cy="582" r="7" fill="#9D74FF" filter="url(#r2-glow)"/>
+
+        <!-- holographic board -->
+        <g transform="translate(618 112)">
+          <rect x="0" y="0" width="190" height="142" rx="20" fill="#06282A88" stroke="url(#r2-holo)" stroke-width="3"/>
+          <rect x="18" y="18" width="154" height="106" rx="12" fill="#051B1F66" stroke="#59FFE033"/>
+          <path d="M36 46 H78 V72 H112 V41 H151 M39 92 H69 V70 M116 91 H150 V67" stroke="#59F7D7" stroke-width="4" opacity=".9"/>
+          <path d="M24 103 H44 M82 32 V16 M151 92 V115" stroke="#75BFFF" stroke-width="3" opacity=".8"/>
+          <circle cx="36" cy="46" r="6" fill="#65FFE0" filter="url(#r2-glow)"/><circle cx="112" cy="41" r="6" fill="#68BEFF" filter="url(#r2-glow)"/>
+          <circle cx="69" cy="92" r="6" fill="#B06FFF" filter="url(#r2-glow)"/>
+          <text x="95" y="115" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="12" fill="#AFFFF0" opacity=".9">BOARD INTELLIGENCE</text>
+        </g>
+      </g>
+
+      <!-- floating status glyphs -->
+      <g opacity=".78">
+        <circle cx="86" cy="299" r="22" stroke="#46F7D5" stroke-width="3"/><path d="M75 299 H97 M86 288 V310" stroke="#46F7D5" stroke-width="3"/>
+        <circle cx="798" cy="310" r="22" stroke="#9D70FF" stroke-width="3"/><path d="M787 310 H809 M798 299 V321" stroke="#9D70FF" stroke-width="3"/>
+      </g>
+    </svg>
+  </div>
+  <div class="as-ai-hero-copy">
+    <div class="as-ai-hero-kicker">APPLE SEED • ELECTRONIC BRAIN</div>
+    <b>Xin chào! 👋</b>
+    <span>Tôi là <strong>Apple Seed AI Robot</strong>.</span>
+    <em>Phân tích board-level • Power sequence • Panic • Sơ đồ mạch</em>
+    <div class="as-ai-hero-actions"><span>🔬 Phân tích ca</span><span>⚡ Power</span><span>🧠 Panic</span></div>
+  </div>
+</div>
+  <div id="asAiChatMessages" class="as-ai-chat-messages"></div>
   <div id="asAiChatImage" class="as-ai-image-preview"><button id="asAiChatImageClear" type="button">×</button><img id="asAiChatImagePreview" alt="Ảnh đính kèm"></div>
   <div class="as-ai-chat-compose">
     <div class="as-ai-chat-input-wrap">
