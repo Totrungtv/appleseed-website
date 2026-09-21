@@ -188,6 +188,14 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
 .as-ai-hero-robot{left:12px!important;bottom:-5px!important;width:175px!important;height:150px!important;z-index:2!important;pointer-events:none!important}
 .as-ai-hero-robot > .robot-picture{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center top!important;border-radius:0!important;mix-blend-mode:normal!important}
 .as-ai-hero-robot .head,.as-ai-hero-robot .body{display:none!important}
+</style>
+<style id="apple-seed-ai-typewriter-fix">
+.as-ai-hero-robot{left:12px!important;bottom:-5px!important;width:175px!important;height:150px!important;overflow:hidden!important}
+.as-ai-hero-robot > .robot-picture{display:block!important;width:100%!important;height:100%!important;object-fit:contain!important;object-position:center bottom!important;background:transparent!important;mix-blend-mode:normal!important;filter:none!important}
+.as-ai-type-cursor{display:inline-block;width:2px;height:1.05em;margin-left:3px;vertical-align:-.15em;background:#18bf91;border-radius:2px;animation:asAiCaret .75s steps(1,end) infinite}
+@keyframes asAiCaret{50%{opacity:0}}
+.as-ai-bubble.as-ai-typing-live{white-space:pre-wrap}
+.as-ai-bubble.as-ai-typing-live::selection{background:#b9efdf}
 </style></head>
 <body><main class="wrap">
 <!-- ===== APPLE SEED FULL MEMBER / COMMUNITY / CHAT RESTORE ===== -->
@@ -888,7 +896,7 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
  
   <div class="as-ai-chat-hero">
     <div class="as-ai-hero-grid"></div>
-    <div class="as-ai-hero-robot"><img class="robot-picture" src="apple-seed-ai-robot-reference.jpg?v=1" alt="Apple Seed AI Robot"></div>
+    <div class="as-ai-hero-robot"><img class="robot-picture" src="apple-seed-ai-robot.webp?v=2" alt="Apple Seed AI Robot"></div>
     <div class="as-ai-hero-copy"><b>Xin chào! 👋</b><span>Tôi là <strong>Apple Seed AI Robot</strong>.<br>Sẵn sàng hỗ trợ bạn sửa chữa iPhone.</span></div>
   </div> <div id="asAiChatMessages" class="as-ai-chat-messages"></div>
   <div id="asAiChatImage" class="as-ai-image-preview"><button id="asAiChatImageClear" type="button">×</button><img id="asAiChatImagePreview" alt="Ảnh đính kèm"></div>
@@ -902,16 +910,103 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
     <div class="as-ai-chat-hint"><span>Ctrl + V để dán ảnh • Brain sẽ tự tra kiến thức liên quan</span><span id="asAiBrainHits" class="as-ai-chat-brain"></span></div>
   </div>
 </div><script id="apple-seed-ai-chat-js">
-(()=>{const $=id=>document.getElementById(id),sb=window.supabaseClient;const launch=$('asAiChatLaunch'),win=$('asAiChatWindow'),msgsEl=$('asAiChatMessages'),input=$('asAiChatInput'),send=$('asAiChatSend'),file=$('asAiChatFile'),preview=$('asAiChatImage'),previewImg=$('asAiChatImagePreview'),status=$('asAiChatStatus'),hits=$('asAiBrainHits');let imageData='',busy=false,messages=[];
+(()=>{
+const $=id=>document.getElementById(id),sb=window.supabaseClient;
+const launch=$('asAiChatLaunch'),win=$('asAiChatWindow'),msgsEl=$('asAiChatMessages'),input=$('asAiChatInput'),send=$('asAiChatSend'),file=$('asAiChatFile'),preview=$('asAiChatImage'),previewImg=$('asAiChatImagePreview'),status=$('asAiChatStatus'),hits=$('asAiBrainHits');
+let imageData='',busy=false,messages=[];
+
 function key(){return 'apple_seed_ai_chat_'+((window.__asChatUserId)||'guest')}
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-function render(){if(!messages.length){msgsEl.innerHTML='<div class="as-ai-chat-empty"><div class="big"></div><h3>Xin chào, tôi là Apple Seed AI</h3><p>Cứ hỏi thoải mái. Tôi sẽ dùng Electronic Brain làm kiến thức nền rồi tự suy luận theo từng ca, không bị ép theo một kịch bản cố định.</p></div>';return}msgsEl.innerHTML=messages.map(m=>'<div class="as-ai-msg '+(m.role==='user'?'user':'')+'"><div class="as-ai-msg-avatar">'+(m.role==='user'?'⌁':'AI')+'</div><div><div class="as-ai-bubble">'+esc(m.content)+'</div><div class="as-ai-msg-meta">'+(m.role==='user'?'Bạn':'Apple Seed AI')+'</div></div></div>').join('');msgsEl.scrollTop=msgsEl.scrollHeight}
+
+function render(){
+  if(!messages.length){
+    msgsEl.innerHTML='<div class="as-ai-chat-empty"><div class="big"></div><h3>Xin chào, tôi là Apple Seed AI</h3><p>Cứ hỏi thoải mái. Tôi sẽ dùng Electronic Brain làm kiến thức nền rồi tự suy luận theo từng ca, không bị ép theo một kịch bản cố định.</p></div>';
+    return;
+  }
+  msgsEl.innerHTML=messages.map(m=>'<div class="as-ai-msg '+(m.role==='user'?'user':'')+'"><div class="as-ai-msg-avatar">'+(m.role==='user'?'⌁':'AI')+'</div><div><div class="as-ai-bubble">'+esc(m.content)+'</div><div class="as-ai-msg-meta">'+(m.role==='user'?'Bạn':'Apple Seed AI')+'</div></div></div>').join('');
+  msgsEl.scrollTop=msgsEl.scrollHeight;
+}
+
 function save(){try{localStorage.setItem(key(),JSON.stringify(messages.slice(-40)))}catch(_){}}
 async function user(){try{const r=await sb?.auth?.getSession();const u=r?.data?.session?.user;if(u){window.__asChatUserId=u.id;return u}}catch(_){}return null}
 async function load(){await user();try{messages=JSON.parse(localStorage.getItem(key())||'[]')||[]}catch(_){messages=[]}render()}
 function setImage(f){if(!f)return;const rd=new FileReader();rd.onload=()=>{imageData=String(rd.result||'');previewImg.src=imageData;preview.classList.add('show')};rd.readAsDataURL(f)}
 function clearImage(){imageData='';previewImg.src='';preview.classList.remove('show');file.value=''}
-async function ask(){const text=input.value.trim();if((!text&&!imageData)||busy)return;const u=await user();if(!u){status.textContent='Đăng nhập để chat với AI';$('asAccountBtn')?.click();return}const sent=text||'Hãy phân tích ảnh tôi gửi.';messages.push({role:'user',content:sent});input.value='';render();save();busy=true;send.disabled=true;status.textContent='AI đang suy luận…';const typing=document.createElement('div');typing.className='as-ai-msg';typing.innerHTML='<div class="as-ai-msg-avatar">🧠</div><div class="as-ai-bubble"><span class="as-ai-typing"><i></i><i></i><i></i></span></div>';msgsEl.appendChild(typing);msgsEl.scrollTop=msgsEl.scrollHeight;try{const call=await sb.functions.invoke('ai-board-chat',{body:{message:sent,messages:messages.slice(-13),image_data:imageData||''}});if(call.error)throw call.error;if(call.data?.error)throw new Error(call.data.error);const answer=String(call.data?.answer||'AI không trả lời.');messages.push({role:'assistant',content:answer});hits.textContent=call.data?.brain_hits?('🧠 '+call.data.brain_hits+' kiến thức'):'';status.textContent='Electronic Brain • '+(call.data?.model||'AI') ;save()}catch(e){messages.push({role:'assistant',content:'❌ '+(e?.message||String(e))});status.textContent='Có lỗi khi kết nối AI'}finally{busy=false;send.disabled=false;clearImage();render();input.focus()}}
-launch.onclick=()=>{win.classList.add('open');input.focus()};$('asAiChatClose').onclick=()=>win.classList.remove('open');$('asAiChatMin').onclick=()=>win.classList.toggle('minimized');$('asAiChatClear').onclick=()=>{if(confirm('Xóa toàn bộ cuộc trò chuyện này?')){messages=[];save();render()}};$('asAiChatAttach').onclick=()=>file.click();file.onchange=()=>setImage(file.files?.[0]);$('asAiChatImageClear').onclick=clearImage;send.onclick=ask;input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();ask()}});document.addEventListener('paste',e=>{if(!win.classList.contains('open'))return;const f=[...(e.clipboardData?.items||[])].find(x=>x.type?.startsWith('image/'))?.getAsFile();if(f){setImage(f);status.textContent='📋 Đã dán ảnh — gửi để AI phân tích'}});document.querySelectorAll('.as-ai-chat-toolbar button').forEach(b=>b.onclick=()=>{input.value=b.dataset.prompt||'';input.focus()});load();
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+async function typeAnswer(answer){
+  const target=String(answer||'AI không trả lời.');
+  messages.push({role:'assistant',content:''});
+  render();
+  const bubbles=msgsEl.querySelectorAll('.as-ai-bubble');
+  const bubble=bubbles[bubbles.length-1];
+  if(!bubble){messages[messages.length-1].content=target;render();return}
+  bubble.classList.add('as-ai-typing-live');
+  const cursor=document.createElement('span');
+  cursor.className='as-ai-type-cursor';
+  bubble.appendChild(cursor);
+  let i=0;
+  const chars=target.length>2500?28:target.length>1200?20:target.length>500?12:7;
+  while(i<target.length){
+    i=Math.min(target.length,i+chars);
+    const visible=target.slice(0,i);
+    bubble.textContent=visible;
+    bubble.appendChild(cursor);
+    msgsEl.scrollTop=msgsEl.scrollHeight;
+    await sleep(18);
+  }
+  cursor.remove();
+  bubble.classList.remove('as-ai-typing-live');
+  bubble.textContent=target;
+  save();
+}
+
+async function ask(){
+  const text=input.value.trim();
+  if((!text&&!imageData)||busy)return;
+  const u=await user();
+  if(!u){status.textContent='Đăng nhập để chat với AI';$('asAccountBtn')?.click();return}
+  const sent=text||'Hãy phân tích ảnh tôi gửi.';
+  messages.push({role:'user',content:sent});
+  input.value='';render();save();
+  busy=true;send.disabled=true;status.textContent='AI đang suy luận…';
+  const typing=document.createElement('div');
+  typing.className='as-ai-msg';
+  typing.innerHTML='<div class="as-ai-msg-avatar">🧠</div><div><div class="as-ai-bubble"><span class="as-ai-typing"><i></i><i></i><i></i></span></div><div class="as-ai-msg-meta">Apple Seed AI</div></div>';
+  msgsEl.appendChild(typing);msgsEl.scrollTop=msgsEl.scrollHeight;
+  try{
+    const call=await sb.functions.invoke('ai-board-chat',{body:{message:sent,messages:messages.slice(-13),image_data:imageData||''}});
+    if(call.error)throw call.error;
+    if(call.data?.error)throw new Error(call.data.error);
+    typing.remove();
+    hits.textContent=call.data?.brain_hits?('🧠 '+call.data.brain_hits+' kiến thức'):'';
+    status.textContent='Electronic Brain • '+(call.data?.model||'AI');
+    await typeAnswer(String(call.data?.answer||'AI không trả lời.'));
+  }catch(e){
+    typing.remove();
+    messages.push({role:'assistant',content:'❌ '+(e?.message||String(e))});
+    status.textContent='Có lỗi khi kết nối AI';
+    render();save();
+  }finally{
+    busy=false;send.disabled=false;clearImage();input.focus();
+  }
+}
+
+launch.onclick=()=>{win.classList.add('open');input.focus()};
+$('asAiChatClose').onclick=()=>win.classList.remove('open');
+$('asAiChatMin').onclick=()=>win.classList.toggle('minimized');
+$('asAiChatClear').onclick=()=>{if(confirm('Xóa toàn bộ cuộc trò chuyện này?')){messages=[];save();render()}};
+$('asAiChatAttach').onclick=()=>file.click();
+file.onchange=()=>setImage(file.files?.[0]);
+$('asAiChatImageClear').onclick=clearImage;
+send.onclick=ask;
+input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();ask()}});
+document.addEventListener('paste',e=>{
+  if(!win.classList.contains('open'))return;
+  const f=[...(e.clipboardData?.items||[])].find(x=>x.type?.startsWith('image/'))?.getAsFile();
+  if(f){setImage(f);status.textContent='📋 Đã dán ảnh — gửi để AI phân tích'}
+});
+document.querySelectorAll('.as-ai-chat-toolbar button').forEach(b=>b.onclick=()=>{input.value=b.dataset.prompt||'';input.focus()});
+load();
 })();
 </script></body></html>
