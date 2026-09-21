@@ -621,3 +621,145 @@ window.supabaseClient =
         boot();
     }
 })();
+
+/* ===== APPLE SEED AI BOARD AUTH RECOVERY V1 =====
+ * Adds a safe password-recovery path to ai-board-admin.html.
+ * Does not expose or store passwords in the browser.
+ */
+(function appleSeedAiBoardAuthRecovery(){
+  "use strict";
+
+  const path = location.pathname.split("/").pop().toLowerCase();
+  if (path !== "ai-board-admin.html") return;
+
+  function setMsg(message, error){
+    const el = document.getElementById("loginMsg");
+    if (!el) return;
+    el.textContent = message;
+    el.style.color = error ? "#b42318" : "#175cd3";
+  }
+
+  function addRecoveryUi(){
+    const form = document.querySelector("#login .form");
+    const loginBtn = document.getElementById("loginBtn");
+    const email = document.getElementById("email");
+    if (!form || !loginBtn || !email || document.getElementById("forgotPasswordBtn")) return;
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.id = "forgotPasswordBtn";
+    btn.className = "btn";
+    btn.textContent = "🔑 Quên / đặt lại mật khẩu";
+    btn.style.width = "100%";
+    btn.addEventListener("click", async function(){
+      const address = String(email.value || "").trim();
+      if (!address) {
+        setMsg("Nhập email Admin trước.", true);
+        email.focus();
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "Đang gửi email đặt lại mật khẩu…";
+      try {
+        const redirectTo = location.origin + "/ai-board-admin.html";
+        const { error } = await window.supabaseClient.auth.resetPasswordForEmail(address, {
+          redirectTo
+        });
+        if (error) throw error;
+        setMsg("Đã gửi yêu cầu đặt lại mật khẩu. Kiểm tra email và bấm liên kết trong email.", false);
+      } catch (err) {
+        console.error("Apple Seed password recovery:", err);
+        setMsg("Không gửi được email đặt lại mật khẩu: " + (err?.message || "Lỗi không xác định"), true);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "🔑 Quên / đặt lại mật khẩu";
+      }
+    });
+
+    loginBtn.insertAdjacentElement("afterend", btn);
+  }
+
+  function showRecoveryForm(){
+    const form = document.querySelector("#login .form");
+    const email = document.getElementById("email");
+    const password = document.getElementById("password");
+    const loginBtn = document.getElementById("loginBtn");
+    if (!form || !password) return;
+
+    if (loginBtn) loginBtn.style.display = "none";
+    const forgot = document.getElementById("forgotPasswordBtn");
+    if (forgot) forgot.style.display = "none";
+    password.style.display = "none";
+    const passwordLabel = password.previousElementSibling;
+    if (passwordLabel) passwordLabel.style.display = "none";
+
+    let newPassword = document.getElementById("newAdminPassword");
+    if (!newPassword) {
+      const wrap = document.createElement("div");
+      wrap.innerHTML =
+        '<label for="newAdminPassword">Mật khẩu mới</label>' +
+        '<input id="newAdminPassword" type="password" autocomplete="new-password" minlength="8" placeholder="Tối thiểu 8 ký tự">';
+      password.insertAdjacentElement("beforebegin", wrap);
+      newPassword = document.getElementById("newAdminPassword");
+    }
+
+    let save = document.getElementById("saveNewAdminPassword");
+    if (!save) {
+      save = document.createElement("button");
+      save.type = "button";
+      save.id = "saveNewAdminPassword";
+      save.className = "btn primary";
+      save.textContent = "💾 Lưu mật khẩu mới";
+      save.style.width = "100%";
+      newPassword.parentElement.insertAdjacentElement("afterend", save);
+      save.addEventListener("click", async function(){
+        const value = String(newPassword.value || "");
+        if (value.length < 8) {
+          setMsg("Mật khẩu mới phải có ít nhất 8 ký tự.", true);
+          return;
+        }
+        save.disabled = true;
+        try {
+          const { error } = await window.supabaseClient.auth.updateUser({ password: value });
+          if (error) throw error;
+          await window.supabaseClient.auth.signOut();
+          setMsg("Đổi mật khẩu thành công. Đang tải lại trang đăng nhập…", false);
+          setTimeout(() => location.replace(location.origin + "/ai-board-admin.html"), 800);
+        } catch (err) {
+          console.error("Apple Seed password update:", err);
+          setMsg("Không đổi được mật khẩu: " + (err?.message || "Lỗi không xác định"), true);
+          save.disabled = false;
+        }
+      });
+    }
+
+    if (email) email.disabled = true;
+    setMsg("Chế độ khôi phục mật khẩu Admin. Nhập mật khẩu mới rồi lưu.", false);
+  }
+
+  function boot(){
+    addRecoveryUi();
+
+    const auth = window.supabaseClient?.auth;
+    if (!auth) {
+      setMsg("Không tải được Supabase Auth. Hãy tải lại trang.", true);
+      return;
+    }
+
+    auth.onAuthStateChange(function(event){
+      if (event === "PASSWORD_RECOVERY") showRecoveryForm();
+    });
+
+    const hash = String(location.hash || "");
+    if (/type=recovery/i.test(hash) || /access_token=/i.test(hash) && /type=recovery/i.test(hash)) {
+      setTimeout(showRecoveryForm, 150);
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot, {once:true});
+  } else {
+    boot();
+  }
+})();
