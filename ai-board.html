@@ -284,6 +284,83 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
  .as-ai-hero-copy b{font-size:19px!important}.as-ai-hero-copy em{display:none!important}.as-ai-hero-actions{display:none!important}
  .as-ai-hero-status{left:12px!important}.as-ai-hero-hud{display:none!important}
 }
+</style><style id="apple-seed-ai-reference-hero">
+.as-ai-chat-hero.as-ai-hero-reference{
+  position:relative!important;height:382px!important;min-height:382px!important;overflow:hidden!important;
+  background:#061A1A!important;border-radius:0!important;isolation:isolate!important;
+}
+.as-ai-ref-bg{
+  position:absolute;inset:0;z-index:0;
+  background:
+    radial-gradient(circle at 28% 58%,rgba(32,255,198,.17),transparent 30%),
+    radial-gradient(circle at 82% 42%,rgba(0,125,105,.15),transparent 28%),
+    linear-gradient(120deg,#061516 0%,#0B2324 42%,#08191C 100%)!important;
+}
+.as-ai-ref-bg:before{
+  content:"";position:absolute;inset:0;opacity:.12;
+  background-image:linear-gradient(rgba(79,255,220,.25) 1px,transparent 1px),linear-gradient(90deg,rgba(79,255,220,.25) 1px,transparent 1px);
+  background-size:28px 28px;
+}
+.as-ai-ref-vignette{position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,transparent 0 45%,rgba(3,17,18,.12) 65%,rgba(1,9,11,.45) 100%);pointer-events:none}
+.as-ai-ref-status{
+  position:absolute;right:24px;top:18px;z-index:8;padding:6px 10px;display:flex;align-items:center;gap:7px;
+  border:1px solid rgba(98,255,223,.22);border-radius:999px;background:rgba(8,34,34,.72);
+  color:#a9fff0;font:800 10px/1 Inter,system-ui,sans-serif;backdrop-filter:blur(14px)
+}
+.as-ai-ref-status .dot{width:7px;height:7px;border-radius:50%;background:#39f5bd;box-shadow:0 0 13px #39f5bd;animation:asRefOnline 1.5s ease-in-out infinite}
+@keyframes asRefOnline{50%{opacity:.35;transform:scale(.72)}}
+.as-ai-ref-brand{
+  position:absolute;left:28px;top:20px;z-index:8;color:#90b3ae;letter-spacing:.2em;font:700 9px/1 Inter,system-ui,sans-serif
+}
+.as-ai-ref-robot-wrap{position:absolute;left:0;bottom:0;width:56%;height:100%;z-index:4}
+.as-ai-ref-robot{
+  position:absolute;left:16px;bottom:0;width:78%;height:100%;object-fit:cover;object-position:center top;
+  filter:drop-shadow(0 22px 34px rgba(0,0,0,.48));animation:asRefFloat 4s ease-in-out infinite;
+}
+@keyframes asRefFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.as-ai-ref-holo{
+  position:absolute;right:-7%;top:26%;width:28%;aspect-ratio:1;z-index:6;border-radius:14px;overflow:hidden;
+  border:1px solid rgba(67,255,218,.45);box-shadow:0 0 26px rgba(21,250,200,.25),inset 0 0 26px rgba(21,250,200,.08);
+  transform:skewY(-3deg);background:rgba(13,65,60,.16);backdrop-filter:blur(5px)
+}
+.as-ai-ref-holo img{width:100%;height:100%;object-fit:cover;display:block;filter:brightness(1.05) saturate(1.08)}
+.as-ai-ref-copy{
+  position:absolute;right:42px;top:72px;width:42%;z-index:7;color:#fff;
+  text-shadow:0 2px 18px rgba(0,0,0,.34)
+}
+.as-ai-ref-kicker{font:700 11px/1 Inter,system-ui,sans-serif;letter-spacing:.28em;color:#8db4ad;margin-bottom:14px}
+.as-ai-ref-copy h3{margin:0 0 10px;font:800 40px/1 Inter,system-ui,sans-serif;letter-spacing:-.035em;color:#fff}
+.as-ai-ref-copy p{margin:0;color:#eaf7f4;font:500 15px/1.55 Inter,system-ui,sans-serif}
+.as-ai-ref-copy p strong{color:#fff}
+.as-ai-ref-quote{
+  display:inline-block;margin-top:22px;padding:11px 16px;border:1px solid rgba(101,255,224,.25);
+  border-radius:12px;background:rgba(9,43,42,.5);color:#c5e8e2;font:600 12px/1.5 Inter,system-ui,sans-serif
+}
+.as-ai-ref-toolbar{
+  position:absolute;right:28px;bottom:24px;z-index:9;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:49%;
+}
+.as-ai-ref-action{
+  min-height:66px;border-radius:14px!important;border:1px solid rgba(74,255,221,.18)!important;
+  background:rgba(255,255,255,.94)!important;color:#123b38!important;
+  box-shadow:0 10px 24px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.9)!important;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;
+  font:700 10px/1.1 Inter,system-ui,sans-serif!important;transition:transform .18s ease,box-shadow .18s ease,background .18s ease!important
+}
+.as-ai-ref-action .ico{font-size:19px;line-height:1}.as-ai-ref-action b{font-size:10px}
+.as-ai-ref-action:hover{transform:translateY(-3px)!important;box-shadow:0 16px 30px rgba(0,0,0,.22)!important;background:#fff!important}
+.as-ai-chat-window > .as-ai-chat-toolbar{display:none!important}
+@media(max-width:760px){
+  .as-ai-chat-hero.as-ai-hero-reference{height:330px!important;min-height:330px!important}
+  .as-ai-ref-brand{left:15px;top:15px;font-size:8px}
+  .as-ai-ref-status{right:15px;top:15px}
+  .as-ai-ref-robot-wrap{left:-8px;width:62%}
+  .as-ai-ref-robot{left:0;width:100%}
+  .as-ai-ref-holo{display:none}
+  .as-ai-ref-copy{right:15px;top:58px;width:43%}
+  .as-ai-ref-copy h3{font-size:25px}.as-ai-ref-copy p{font-size:11px}.as-ai-ref-quote{font-size:9px;margin-top:12px}
+  .as-ai-ref-toolbar{right:12px;bottom:12px;width:54%;gap:5px}
+  .as-ai-ref-action{min-height:54px;border-radius:11px!important}.as-ai-ref-action b{font-size:8px}.as-ai-ref-action .ico{font-size:16px}
+}
 </style></head>
 <body><main class="wrap">
 <!-- ===== APPLE SEED FULL MEMBER / COMMUNITY / CHAT RESTORE ===== -->
@@ -975,139 +1052,34 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
       <button id="asAiChatClose" title="Đóng">×</button>
     </div>
   </div>
-  <div class="as-ai-chat-toolbar">
-    <button data-prompt="Phân tích ca này như kỹ thuật viên board-level.">🔬 Phân tích ca</button>
-    <button data-prompt="Hãy suy luận power sequence và chỉ ra phép đo tiếp theo.">⚡ Power sequence</button>
-    <button data-prompt="Giải thích panic log này theo kiến thức Brain.">🧠 Panic</button>
-    <button data-prompt="Tôi muốn tìm hiểu sâu về lỗi này, hãy dạy tôi từng bước.">📚 Học sửa</button>
+<div class="as-ai-chat-hero as-ai-hero-reference">
+  <div class="as-ai-ref-bg"></div>
+  <div class="as-ai-ref-vignette"></div>
+  <div class="as-ai-ref-status"><span class="dot"></span><b>Online</b></div>
+  <div class="as-ai-ref-brand">ELECTRONIC BRAIN • SẴN SÀNG HỖ TRỢ</div>
+
+  <div class="as-ai-ref-robot-wrap">
+    <img class="as-ai-ref-robot" src="apple-seed-robot-futuristic.webp?v=4" alt="Apple Seed AI Robot">
+    <div class="as-ai-ref-holo">
+      <img src="apple-seed-board-hologram.webp?v=4" alt="Board hologram">
+    </div>
   </div>
- 
-  <div class="as-ai-chat-hero as-ai-hero-premium">
-  <div class="as-ai-hero-grid"></div>
-  <div class="as-ai-hero-scan"></div>
-  <div class="as-ai-hero-glow g1"></div><div class="as-ai-hero-glow g2"></div>
-  <div class="as-ai-hero-status"><i></i><span>AI CORE ONLINE</span><b>Electronic Brain</b></div>
-  <div class="as-ai-hero-hud hud-left">BOARD-LEVEL / LIVE</div>
-  <div class="as-ai-hero-hud hud-right">NEURAL LINK • 100%</div>
-  <div class="as-ai-hero-robot">
-    <svg class="robot-picture as-ai-future-robot" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 700" role="img" aria-label="Apple Seed futuristic AI Robot">
-      <defs>
-        <linearGradient id="r2-shell" x1="160" y1="80" x2="600" y2="610" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#FFFFFF"/><stop offset=".28" stop-color="#D7E8E5"/><stop offset=".58" stop-color="#789591"/><stop offset="1" stop-color="#243C3C"/>
-        </linearGradient>
-        <linearGradient id="r2-shell2" x1="340" y1="260" x2="680" y2="620" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#F8FFFE"/><stop offset=".32" stop-color="#D7E7E4"/><stop offset="1" stop-color="#6D8885"/>
-        </linearGradient>
-        <linearGradient id="r2-black" x1="350" y1="230" x2="580" y2="650" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#1E3334"/><stop offset=".5" stop-color="#0A171A"/><stop offset="1" stop-color="#02090C"/>
-        </linearGradient>
-        <linearGradient id="r2-visor" x1="250" y1="170" x2="610" y2="260" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#02070B"/><stop offset=".45" stop-color="#061F25"/><stop offset=".75" stop-color="#103F45"/><stop offset="1" stop-color="#020608"/>
-        </linearGradient>
-        <radialGradient id="r2-eye"><stop stop-color="#F7FFFD"/><stop offset=".24" stop-color="#6BFFE1"/><stop offset=".7" stop-color="#0EC29F"/><stop offset="1" stop-color="#07574F"/></radialGradient>
-        <radialGradient id="r2-core"><stop stop-color="#F7FFFF"/><stop offset=".18" stop-color="#92FFE8"/><stop offset=".52" stop-color="#20E8BD"/><stop offset="1" stop-color="#075F59"/></radialGradient>
-        <linearGradient id="r2-holo" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#44FFE1" stop-opacity=".95"/><stop offset=".55" stop-color="#44C8FF" stop-opacity=".65"/><stop offset="1" stop-color="#A86AFF" stop-opacity=".4"/></linearGradient>
-        <filter id="r2-glow" x="-80%" y="-80%" width="260%" height="260%">
-          <feGaussianBlur stdDeviation="7" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-        <filter id="r2-soft" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="28"/></filter>
-        <filter id="r2-shadow" x="-50%" y="-50%" width="220%" height="240%"><feDropShadow dx="0" dy="26" stdDeviation="18" flood-color="#001B18" flood-opacity=".42"/></filter>
-      </defs>
 
-      <ellipse cx="405" cy="636" rx="290" ry="30" fill="#00DDBA18" filter="url(#r2-soft)"/>
-      <circle cx="170" cy="310" r="110" fill="#14FFD022" filter="url(#r2-soft)"/>
-      <circle cx="690" cy="250" r="125" fill="#4D7CFF18" filter="url(#r2-soft)"/>
-
-      <g filter="url(#r2-shadow)">
-        <!-- back halo -->
-        <path d="M106 382 C155 315 196 278 258 248" stroke="#42FFD8" stroke-width="4" opacity=".42" filter="url(#r2-glow)"/>
-        <path d="M706 343 C770 287 804 261 846 248" stroke="#8E68FF" stroke-width="4" opacity=".38" filter="url(#r2-glow)"/>
-
-        <!-- head -->
-        <path d="M217 88 L288 48 L505 48 L578 92 L606 173 L584 260 L512 320 L302 320 L230 260 L205 173 Z" fill="url(#r2-shell)" stroke="#54716E" stroke-width="8"/>
-        <path d="M264 92 L311 67 L480 67 L531 96" stroke="#FFFFFF" stroke-width="6" opacity=".72"/>
-        <path d="M205 154 L169 170 L169 246 L211 253" fill="#172A2C" stroke="#547C78" stroke-width="7"/>
-        <path d="M606 154 L642 170 L642 246 L600 253" fill="#172A2C" stroke="#547C78" stroke-width="7"/>
-        <path d="M174 194 H206 M605 194 H637" stroke="#43F7D0" stroke-width="4" opacity=".7"/>
-
-        <!-- face visor -->
-        <path d="M270 118 Q395 76 530 118 L560 160 L544 224 Q494 262 402 267 Q310 262 260 224 L243 160 Z" fill="url(#r2-visor)" stroke="#157E79" stroke-width="6"/>
-        <path d="M264 137 Q401 103 541 136" stroke="#72FFE6" stroke-width="2" opacity=".34"/>
-        <circle cx="331" cy="185" r="17" fill="url(#r2-eye)" filter="url(#r2-glow)"/>
-        <circle cx="474" cy="175" r="15" fill="#82FFE8" filter="url(#r2-glow)"/>
-        <path d="M358 219 Q405 236 452 216" stroke="#60EED6" stroke-width="5" stroke-linecap="round" opacity=".7"/>
-        <path d="M301 238 H340 M473 238 H512" stroke="#41D7C1" stroke-width="4" opacity=".45"/>
-
-        <!-- neck -->
-        <path d="M349 302 H441 V352 L409 382 H381 L349 352 Z" fill="#1A3231" stroke="#557F79" stroke-width="7"/>
-        <path d="M368 326 H422" stroke="#36EFD0" stroke-width="4" opacity=".5"/>
-
-        <!-- torso -->
-        <path d="M255 352 L318 322 H478 L555 366 L614 520 L585 653 H214 L183 520 L214 400 Z" fill="url(#r2-black)" stroke="#486764" stroke-width="9"/>
-        <path d="M315 326 L396 300 L476 326" stroke="#8AFFF0" stroke-width="3" opacity=".18"/>
-        <path d="M232 430 L302 392 H505 L570 432" stroke="#35E7CA" stroke-width="4" opacity=".25"/>
-
-        <!-- chest reactor -->
-        <circle cx="392" cy="456" r="96" fill="#061317" stroke="#176A63" stroke-width="7"/>
-        <circle cx="392" cy="456" r="79" stroke="#40F1CF" stroke-width="3" stroke-dasharray="8 12" opacity=".76"/>
-        <circle cx="392" cy="456" r="58" fill="url(#r2-core)" filter="url(#r2-glow)"/>
-        <circle cx="392" cy="456" r="40" fill="#062F2E" opacity=".8"/>
-        <path d="M360 456 L377 476 L405 428 L423 463 L448 441" stroke="#A5FFF0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-        <text x="392" y="505" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="18" font-weight="800" fill="#D8FFF8">APPLE SEED</text>
-
-        <!-- left shoulder -->
-        <path d="M226 365 L148 401 L110 510 L199 544 L256 456 Z" fill="url(#r2-shell)" stroke="#5A7E79" stroke-width="8"/>
-        <path d="M126 430 L191 405" stroke="#42EED0" stroke-width="5" opacity=".65"/>
-
-        <!-- right shoulder / raised arm -->
-        <path d="M557 368 L624 348 L696 414 L670 470 L594 455 Z" fill="url(#r2-shell2)" stroke="#5A7E79" stroke-width="8"/>
-        <path d="M631 378 L673 419" stroke="#45F5D4" stroke-width="5" opacity=".7"/>
-
-        <!-- extended arm -->
-        <path d="M664 444 L734 405 L797 431 L759 484 L681 501 Z" fill="url(#r2-black)" stroke="#456662" stroke-width="8"/>
-        <path d="M760 432 L820 458 L800 502 L735 477 Z" fill="#8BA4A0" stroke="#4F706C" stroke-width="7"/>
-        <!-- palm -->
-        <path d="M790 483 Q822 466 849 484 L862 523 L832 548 L790 532 L772 509 Z" fill="#1C3334" stroke="#4F7772" stroke-width="7"/>
-        <path d="M815 488 L849 500 M805 503 L846 514 M802 519 L838 528" stroke="#44F0D1" stroke-width="4" opacity=".78"/>
-
-        <!-- left arm hanging -->
-        <path d="M184 500 L120 557 L87 620" stroke="#879F9A" stroke-width="35" stroke-linecap="round"/>
-        <path d="M96 611 L69 645 L89 662 L120 635 L126 607 Z" fill="#627B77" stroke="#36534F" stroke-width="6"/>
-
-        <!-- circuit accents -->
-        <path d="M258 582 H333 M449 582 H520" stroke="#39EBCB" stroke-width="6" stroke-linecap="round" opacity=".72"/>
-        <path d="M276 610 H318 M466 610 H508" stroke="#8F70FF" stroke-width="5" stroke-linecap="round" opacity=".58"/>
-        <circle cx="240" cy="582" r="7" fill="#54FFE0" filter="url(#r2-glow)"/>
-        <circle cx="541" cy="582" r="7" fill="#9D74FF" filter="url(#r2-glow)"/>
-
-        <!-- holographic board -->
-        <g transform="translate(618 112)">
-          <rect x="0" y="0" width="190" height="142" rx="20" fill="#06282A88" stroke="url(#r2-holo)" stroke-width="3"/>
-          <rect x="18" y="18" width="154" height="106" rx="12" fill="#051B1F66" stroke="#59FFE033"/>
-          <path d="M36 46 H78 V72 H112 V41 H151 M39 92 H69 V70 M116 91 H150 V67" stroke="#59F7D7" stroke-width="4" opacity=".9"/>
-          <path d="M24 103 H44 M82 32 V16 M151 92 V115" stroke="#75BFFF" stroke-width="3" opacity=".8"/>
-          <circle cx="36" cy="46" r="6" fill="#65FFE0" filter="url(#r2-glow)"/><circle cx="112" cy="41" r="6" fill="#68BEFF" filter="url(#r2-glow)"/>
-          <circle cx="69" cy="92" r="6" fill="#B06FFF" filter="url(#r2-glow)"/>
-          <text x="95" y="115" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="12" fill="#AFFFF0" opacity=".9">BOARD INTELLIGENCE</text>
-        </g>
-      </g>
-
-      <!-- floating status glyphs -->
-      <g opacity=".78">
-        <circle cx="86" cy="299" r="22" stroke="#46F7D5" stroke-width="3"/><path d="M75 299 H97 M86 288 V310" stroke="#46F7D5" stroke-width="3"/>
-        <circle cx="798" cy="310" r="22" stroke="#9D70FF" stroke-width="3"/><path d="M787 310 H809 M798 299 V321" stroke="#9D70FF" stroke-width="3"/>
-      </g>
-    </svg>
+  <div class="as-ai-ref-copy">
+    <div class="as-ai-ref-kicker">APPLE SEED</div>
+    <h3>Xin chào! 👋</h3>
+    <p>Tôi là <strong>Apple Seed AI Robot.</strong><br>Sẵn sàng hỗ trợ bạn sửa chữa iPhone.</p>
+    <div class="as-ai-ref-quote">“Phân tích chính xác hơn<br>Sửa chữa hiệu quả hơn”</div>
   </div>
-  <div class="as-ai-hero-copy">
-    <div class="as-ai-hero-kicker">APPLE SEED • ELECTRONIC BRAIN</div>
-    <b>Xin chào! 👋</b>
-    <span>Tôi là <strong>Apple Seed AI Robot</strong>.</span>
-    <em>Phân tích board-level • Power sequence • Panic • Sơ đồ mạch</em>
-    <div class="as-ai-hero-actions"><span>🔬 Phân tích ca</span><span>⚡ Power</span><span>🧠 Panic</span></div>
+
+  <div class="as-ai-ref-toolbar">
+    <button class="as-ai-ref-action" data-prompt="Phân tích ca này như kỹ thuật viên board-level."><span class="ico">⌁</span><b>Phân tích ca</b></button>
+    <button class="as-ai-ref-action" data-prompt="Hãy suy luận power sequence và chỉ ra phép đo tiếp theo."><span class="ico">⚡</span><b>Power sequence</b></button>
+    <button class="as-ai-ref-action" data-prompt="Giải thích panic log này theo kiến thức Brain."><span class="ico">🧠</span><b>Panic log</b></button>
+    <button class="as-ai-ref-action" data-prompt="Tôi muốn tìm hiểu sâu về lỗi này, hãy dạy tôi từng bước."><span class="ico">📖</span><b>Học sửa</b></button>
   </div>
 </div>
-  <div id="asAiChatMessages" class="as-ai-chat-messages"></div>
+<div id="asAiChatMessages" class="as-ai-chat-messages"></div>
   <div id="asAiChatImage" class="as-ai-image-preview"><button id="asAiChatImageClear" type="button">×</button><img id="asAiChatImagePreview" alt="Ảnh đính kèm"></div>
   <div class="as-ai-chat-compose">
     <div class="as-ai-chat-input-wrap">
@@ -1215,7 +1187,7 @@ document.addEventListener('paste',e=>{
   const f=[...(e.clipboardData?.items||[])].find(x=>x.type?.startsWith('image/'))?.getAsFile();
   if(f){setImage(f);status.textContent='📋 Đã dán ảnh — gửi để AI phân tích'}
 });
-document.querySelectorAll('.as-ai-chat-toolbar button').forEach(b=>b.onclick=()=>{input.value=b.dataset.prompt||'';input.focus()});
+document.querySelectorAll('.as-ai-chat-toolbar button,.as-ai-ref-action').forEach(b=>b.onclick=()=>{input.value=b.dataset.prompt||'';input.focus()});
 load();
 })();
 </script></body></html>
