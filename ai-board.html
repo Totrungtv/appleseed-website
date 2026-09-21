@@ -718,6 +718,68 @@ linear-gradient(120deg,#041515 0%,#082122 48%,#041214 100%)}
   .as-ai-chat-messages{min-height:0!important;padding:12px!important}
   .as-ai-chat-compose{flex-basis:92px!important}
 }
+</style><style id="apple-seed-image-send-fix">
+/* Attachment must never consume the chat area. The green arrow always remains visible. */
+.as-ai-image-preview{
+  display:none!important;
+  position:relative!important;
+  margin:6px 12px 0!important;
+  padding:6px 42px 6px 8px!important;
+  height:86px!important;
+  min-height:86px!important;
+  max-height:86px!important;
+  border:1px solid #cfe5de!important;
+  border-radius:14px!important;
+  background:linear-gradient(135deg,#f6fffc,#eefaf6)!important;
+  overflow:hidden!important;
+  align-items:center!important;
+}
+.as-ai-image-preview.show{display:flex!important}
+.as-ai-image-preview:before{
+  content:'Ảnh đã sẵn sàng • Bấm ➤ để gửi';
+  position:absolute!important;
+  left:74px!important;
+  top:7px!important;
+  color:#158565!important;
+  font-size:11px!important;
+  font-weight:800!important;
+  z-index:2!important;
+  pointer-events:none!important;
+}
+.as-ai-image-preview img{
+  display:block!important;
+  width:58px!important;
+  height:58px!important;
+  max-width:58px!important;
+  max-height:58px!important;
+  object-fit:cover!important;
+  object-position:center!important;
+  margin:0!important;
+  border-radius:9px!important;
+  border:1px solid #bfe0d5!important;
+}
+.as-ai-image-preview button{
+  position:absolute!important;
+  right:8px!important;
+  top:50%!important;
+  transform:translateY(-50%)!important;
+  width:30px!important;
+  height:30px!important;
+}
+.as-ai-chat-compose{
+  flex:0 0 auto!important;
+  position:relative!important;
+  z-index:20!important;
+}
+.as-ai-chat-send{
+  min-width:54px!important;
+  width:54px!important;
+  height:46px!important;
+  font-weight:900!important;
+}
+.as-ai-chat-send.has-image{
+  box-shadow:0 0 0 3px rgba(20,200,148,.13),0 8px 22px rgba(21,189,145,.32)!important;
+}
 </style></head>
 <body><main class="wrap">
 <!-- ===== APPLE SEED FULL MEMBER / COMMUNITY / CHAT RESTORE ===== -->
@@ -1467,8 +1529,30 @@ function render(){
 function save(){try{localStorage.setItem(key(),JSON.stringify(messages.slice(-40)))}catch(_){}}
 async function user(){try{const r=await sb?.auth?.getSession();const u=r?.data?.session?.user;if(u){window.__asChatUserId=u.id;return u}}catch(_){}return null}
 async function load(){await user();try{messages=JSON.parse(localStorage.getItem(key())||'[]')||[]}catch(_){messages=[]}render()}
-function setImage(f){if(!f)return;const rd=new FileReader();rd.onload=()=>{imageData=String(rd.result||'');previewImg.src=imageData;preview.classList.add('show')};rd.readAsDataURL(f)}
-function clearImage(){imageData='';previewImg.src='';preview.classList.remove('show');file.value=''}
+function setImage(f){
+  if(!f)return;
+  if(!/^image\/(png|jpe?g|webp)$/i.test(f.type||'')){status.textContent='Chỉ nhận PNG / JPG / WEBP';return}
+  const rd=new FileReader();
+  rd.onload=()=>{
+    imageData=String(rd.result||'');
+    previewImg.src=imageData;
+    preview.classList.add('show');
+    send.classList.add('has-image');
+    send.textContent='➤';
+    send.title='Gửi ảnh cho AI';
+    status.textContent='📎 Ảnh đã sẵn sàng — bấm nút ➤ để gửi';
+  };
+  rd.readAsDataURL(f);
+}
+function clearImage(){
+  imageData='';
+  previewImg.src='';
+  preview.classList.remove('show');
+  send.classList.remove('has-image');
+  send.title='Gửi';
+  send.textContent='➤';
+  if(file)file.value='';
+}
 
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
 async function typeAnswer(answer){
