@@ -196,6 +196,11 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
 @keyframes asAiCaret{50%{opacity:0}}
 .as-ai-bubble.as-ai-typing-live{white-space:pre-wrap}
 .as-ai-bubble.as-ai-typing-live::selection{background:#b9efdf}
+</style><style id="apple-seed-ai-robot-future-css">
+.as-ai-hero-robot{left:8px!important;bottom:-18px!important;width:205px!important;height:188px!important;z-index:3!important;pointer-events:none!important;animation:asAiRobotFloat 3.6s ease-in-out infinite}
+.as-ai-hero-robot .robot-picture{display:block!important;width:100%!important;height:100%!important;object-fit:contain!important;object-position:center bottom!important;background:transparent!important;mix-blend-mode:normal!important;filter:drop-shadow(0 16px 25px rgba(0,90,82,.20))!important}
+@keyframes asAiRobotFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@media(max-width:700px){.as-ai-hero-robot{left:-8px!important;bottom:-14px!important;width:185px!important;height:175px!important}}
 </style></head>
 <body><main class="wrap">
 <!-- ===== APPLE SEED FULL MEMBER / COMMUNITY / CHAT RESTORE ===== -->
@@ -896,7 +901,7 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
  
   <div class="as-ai-chat-hero">
     <div class="as-ai-hero-grid"></div>
-    <div class="as-ai-hero-robot"><img class="robot-picture" src="apple-seed-ai-robot.webp?v=2" alt="Apple Seed AI Robot"></div>
+    <div class="as-ai-hero-robot"><img class="robot-picture" src="apple-seed-ai-robot-future.svg?v=3" alt="Apple Seed AI Robot"></div>
     <div class="as-ai-hero-copy"><b>Xin chào! 👋</b><span>Tôi là <strong>Apple Seed AI Robot</strong>.<br>Sẵn sàng hỗ trợ bạn sửa chữa iPhone.</span></div>
   </div> <div id="asAiChatMessages" class="as-ai-chat-messages"></div>
   <div id="asAiChatImage" class="as-ai-image-preview"><button id="asAiChatImageClear" type="button">×</button><img id="asAiChatImagePreview" alt="Ảnh đính kèm"></div>
