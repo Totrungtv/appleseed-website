@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Apple Seed — Electronic Brain</title>
+<style>
+body{margin:0;font-family:Inter,system-ui,sans-serif;background:#f5f7fb;color:#101828}.wrap{max-width:1180px;margin:auto;padding:28px 16px 60px}
+h1{margin:0}.muted{color:#667085;font-size:13px}.panel{background:#fff;border:1px solid #e4e7ec;border-radius:16px;padding:18px;margin-top:16px;box-shadow:0 4px 16px rgba(16,24,40,.04)}
+.drop{border:2px dashed #84adf0;border-radius:15px;padding:35px;text-align:center;background:#f8fbff;cursor:pointer}.drop input{display:none}
+button{border:0;border-radius:10px;padding:10px 15px;font-weight:800;cursor:pointer;background:#2563eb;color:#fff}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:#f8fafc;border:1px solid #eaecf0;border-radius:12px;padding:14px}.stat b{font-size:24px;display:block;margin-top:4px}
+.file{border:1px solid #eaecf0;border-radius:12px;padding:12px;margin-top:10px}.row{display:flex;justify-content:space-between;gap:10px;align-items:center}.bar{height:8px;background:#eaecf0;border-radius:99px;overflow:hidden;margin-top:10px}.bar i{display:block;height:100%;background:#2563eb;width:0}.status{margin-top:8px;font-weight:700}.error{color:#b42318}.ok{color:#027a48}
+@media(max-width:750px){.grid{grid-template-columns:1fr}}
+</style></head><body><main class="wrap">
+<h1>🧠 Apple Seed Electronic Brain</h1>
+<p class="muted">Quăng tài liệu vào đây. AI sẽ hấp thụ kiến thức thành bộ não điện tử, không chỉ lưu PDF để đọc lại.</p>
+
+<section class="panel">
+  <div class="grid">
+    <div class="stat">Tài liệu <b id="docs">0</b></div>
+    <div class="stat">Knowledge atoms <b id="atoms">0</b></div>
+    <div class="stat">Quan hệ mạch <b id="rels">0</b></div>
+  </div>
+</section>
+
+<section class="panel">
+  <label class="drop">📚<br><b>Chọn tài liệu điện tử</b><br><span class="muted">PDF / schematic / datasheet</span>
+    <input id="file" type="file" accept=".pdf,.txt,.md,.json,application/pdf,text/plain,text/markdown,application/json">
+  </label>
+  <div id="picked" class="muted" style="margin-top:10px"></div>
+  <button id="learn" disabled>🧠 HỌC VÀO BỘ NÃO</button>
+  <div id="status" class="status"></div>
+</section>
+
+<section class="panel"><h2>Đã học</h2><div id="list"></div></section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script>
+(()=>{const sb=window.supabaseClient,$=id=>document.getElementById(id);let picked=null;
+function msg(t,cls=''){const x=$('status');x.textContent=t;x.className='status '+cls}
+async function auth(){const {data:{session}}=await sb.auth.getSession();if(!session)throw Error('Cần đăng nhập');const r=await sb.from('profiles').select('role').eq('id',session.user.id).maybeSingle();if(!r.data||!['admin','staff'].includes(r.data.role))throw Error('Chỉ Admin/Staff được dùng bộ não');}
+async function stats(){const [d,k,r]=await Promise.all([
+ sb.from('brain_documents').select('id',{count:'exact',head:true}),
+ sb.from('brain_knowledge').select('id',{count:'exact',head:true}),
+ sb.from('brain_relationships').select('id',{count:'exact',head:true})]);
+ $('docs').textContent=d.count||0;$('atoms').textContent=k.count||0;$('rels').textContent=r.count||0;
+ const q=await sb.from('brain_documents').select('*').order('created_at',{ascending:false}).limit(30);
+ $('list').innerHTML=(q.data||[]).map(x=>'<div class="file"><div class="row"><b>'+esc(x.file_name)+'</b><span>'+esc(x.status)+'</span></div><div class="muted">'+(x.atoms_learned||0)+' atoms · '+(x.relationships_learned||0)+' relationships · '+(x.pages_learned||0)+' pages</div><div class="bar"><i style="width:'+(x.status==='completed'?100:x.status==='learning'?50:0)+'%"></i></div>'+(x.error_message?'<div class="error">'+esc(x.error_message)+'</div>':'')+'</div>').join('')||'<div class="muted">Chưa có tài liệu.</div>';
+}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+$('file').onchange=e=>{picked=e.target.files[0]||null;$('picked').textContent=picked?picked.name+' · '+Math.round(picked.size/1024/1024*10)/10+' MB':'';$('learn').disabled=!picked};
+$('learn').onclick=async()=>{if(!picked)return;try{ $('learn').disabled=true;msg('Đang upload tài liệu...');await auth();
+ const path='documents/'+crypto.randomUUID()+'-'+picked.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+ const up=await sb.storage.from('electronic-brain').upload(path,picked,{upsert:false,contentType:picked.type||'application/pdf'});if(up.error)throw up.error;
+ const ins=await sb.from('brain_documents').insert({uploaded_by:(await sb.auth.getUser()).data.user.id,file_name:picked.name,storage_path:path,mime_type:picked.type||null,file_size:picked.size,status:'queued'}).select('id').single();if(ins.error)throw ins.error;
+ msg('Đã upload. AI đang hấp thụ toàn bộ tài liệu...');
+ const r=await sb.functions.invoke('brain-learn-document',{body:{document_id:ins.data.id}});if(r.error)throw r.error;if(!r.data?.ok)throw Error(r.data?.error||'Learning failed');
+ msg('Đã học xong: '+r.data.atoms_learned+' knowledge atoms, '+r.data.relationships_learned+' quan hệ.','ok');await stats();
+ }catch(e){msg(e.message||String(e),'error')}finally{$('learn').disabled=false}};
+auth().then(stats).catch(e=>msg(e.message,'error'));
+})();
+</script></main></body></html>
