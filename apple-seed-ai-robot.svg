@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800" fill="none">
+<defs>
+  <linearGradient id="bgGlow" x1="120" y1="90" x2="690" y2="720" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#FFFFFF"/>
+    <stop offset=".52" stop-color="#E7FFF8"/>
+    <stop offset="1" stop-color="#BDEFE2"/>
+  </linearGradient>
+  <linearGradient id="metal" x1="250" y1="150" x2="600" y2="700" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#F9FFFE"/>
+    <stop offset=".45" stop-color="#DCECE9"/>
+    <stop offset="1" stop-color="#A8C8C1"/>
+  </linearGradient>
+  <linearGradient id="metal2" x1="300" y1="330" x2="510" y2="730" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#FFFFFF"/>
+    <stop offset=".55" stop-color="#D2E6E2"/>
+    <stop offset="1" stop-color="#92B7AE"/>
+  </linearGradient>
+  <linearGradient id="visor" x1="292" y1="225" x2="545" y2="300" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#082F2B"/>
+    <stop offset=".5" stop-color="#14574D"/>
+    <stop offset="1" stop-color="#06201D"/>
+  </linearGradient>
+  <radialGradient id="core" cx="50%" cy="35%" r="70%">
+    <stop stop-color="#DFFFF6"/>
+    <stop offset=".5" stop-color="#5BFFD4"/>
+    <stop offset="1" stop-color="#08AE80"/>
+  </radialGradient>
+  <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#0D6E5B" flood-opacity=".2"/></filter>
+  <filter id="glow"><feGaussianBlur stdDeviation="8" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+
+<ellipse cx="420" cy="720" rx="260" ry="38" fill="#0B806855"/>
+<circle cx="150" cy="170" r="72" fill="#7DFFE633"/>
+<circle cx="640" cy="180" r="88" fill="#61B8FF22"/>
+
+<g filter="url(#shadow)">
+  <!-- Antenna -->
+  <path d="M408 148V102" stroke="#5D8D86" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="408" cy="85" r="15" fill="#35E8B5" filter="url(#glow)"/>
+
+  <!-- Head -->
+  <rect x="240" y="125" width="340" height="255" rx="88" fill="url(#metal)" stroke="#5E8C85" stroke-width="9"/>
+  <rect x="210" y="220" width="36" height="92" rx="18" fill="#B9D2CD" stroke="#5E8C85" stroke-width="8"/>
+  <rect x="574" y="220" width="36" height="92" rx="18" fill="#B9D2CD" stroke="#5E8C85" stroke-width="8"/>
+
+  <!-- Face visor -->
+  <rect x="285" y="195" width="250" height="92" rx="46" fill="url(#visor)" stroke="#0D6E60" stroke-width="6"/>
+  <circle cx="354" cy="242" r="13" fill="#69FFD9" filter="url(#glow)"/>
+  <circle cx="466" cy="242" r="13" fill="#69FFD9" filter="url(#glow)"/>
+  <path d="M395 269h30" stroke="#54E8C0" stroke-width="7" stroke-linecap="round" opacity=".8"/>
+
+  <!-- Neck -->
+  <rect x="372" y="360" width="78" height="42" rx="18" fill="#86A9A3"/>
+
+  <!-- Body -->
+  <path d="M205 690V535c0-110 88-176 215-176s215 66 215 176v155H205Z" fill="url(#metal2)" stroke="#638F87" stroke-width="9"/>
+  <path d="M205 690c20-115 94-162 215-162s195 47 215 162" stroke="#FFFFFF" stroke-opacity=".5" stroke-width="8"/>
+
+  <!-- Core -->
+  <circle cx="420" cy="500" r="72" fill="#E9FFF9" stroke="#16C995" stroke-width="9"/>
+  <circle cx="420" cy="500" r="52" fill="url(#core)" opacity=".9" filter="url(#glow)"/>
+  <text x="420" y="512" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="34" font-weight="900" fill="#075E4C">AI</text>
+
+  <!-- Shoulder plates -->
+  <rect x="146" y="468" width="92" height="150" rx="44" fill="#B7D1CC" stroke="#628C84" stroke-width="8"/>
+  <rect x="602" y="468" width="92" height="150" rx="44" fill="#B7D1CC" stroke="#628C84" stroke-width="8"/>
+
+  <!-- Arms -->
+  <path d="M155 594l-72 86" stroke="#88AAA4" stroke-width="42" stroke-linecap="round"/>
+  <path d="M685 594l72 86" stroke="#88AAA4" stroke-width="42" stroke-linecap="round"/>
+  <circle cx="80" cy="694" r="28" fill="#A9C5BF" stroke="#5F8A81" stroke-width="8"/>
+  <circle cx="760" cy="694" r="28" fill="#A9C5BF" stroke="#5F8A81" stroke-width="8"/>
+
+  <!-- chest details -->
+  <path d="M318 406h204" stroke="#7EA29B" stroke-width="8" stroke-linecap="round" opacity=".55"/>
+  <path d="M286 440h268" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" opacity=".55"/>
+  <circle cx="296" cy="490" r="7" fill="#27CDA0"/>
+  <circle cx="544" cy="490" r="7" fill="#27CDA0"/>
+</g>
+</svg>
