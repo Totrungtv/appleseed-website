@@ -780,6 +780,60 @@ linear-gradient(120deg,#041515 0%,#082122 48%,#041214 100%)}
 .as-ai-chat-send.has-image{
   box-shadow:0 0 0 3px rgba(20,200,148,.13),0 8px 22px rgba(21,189,145,.32)!important;
 }
+</style><style id="apple-seed-image-composer-final">
+/* FINAL composer sizing: preview + composer always stay inside the fixed chat window. */
+.as-ai-chat-window{
+  display:flex!important;
+  flex-direction:column!important;
+}
+.as-ai-chat-messages{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  height:auto!important;
+  overflow:auto!important;
+}
+.as-ai-image-preview{
+  flex:0 0 76px!important;
+  width:auto!important;
+  height:76px!important;
+  min-height:76px!important;
+  max-height:76px!important;
+  box-sizing:border-box!important;
+  margin:6px 12px 0!important;
+}
+.as-ai-image-preview img{
+  width:54px!important;
+  height:54px!important;
+  max-width:54px!important;
+  max-height:54px!important;
+}
+.as-ai-chat-compose{
+  flex:0 0 82px!important;
+  min-height:82px!important;
+  box-sizing:border-box!important;
+  padding:8px 12px!important;
+}
+.as-ai-chat-input-wrap{
+  min-height:52px!important;
+}
+.as-ai-chat-send{
+  width:50px!important;
+  min-width:50px!important;
+  height:44px!important;
+  flex:0 0 50px!important;
+}
+@media(max-width:700px){
+  .as-ai-image-preview{
+    flex-basis:68px!important;
+    height:68px!important;
+    min-height:68px!important;
+    max-height:68px!important;
+  }
+  .as-ai-chat-compose{
+    flex-basis:82px!important;
+    min-height:82px!important;
+  }
+}
 </style></head>
 <body><main class="wrap">
 <!-- ===== APPLE SEED FULL MEMBER / COMMUNITY / CHAT RESTORE ===== -->
