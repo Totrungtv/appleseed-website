@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 700" fill="none">
+<defs>
+<linearGradient id="shell" x1="170" y1="70" x2="470" y2="610" gradientUnits="userSpaceOnUse"><stop stop-color="#fff"/><stop offset=".55" stop-color="#dcebe8"/><stop offset="1" stop-color="#a7c2bd"/></linearGradient>
+<linearGradient id="shell2" x1="200" y1="300" x2="440" y2="650" gradientUnits="userSpaceOnUse"><stop stop-color="#fff"/><stop offset=".6" stop-color="#d0e4e0"/><stop offset="1" stop-color="#91b2ac"/></linearGradient>
+<linearGradient id="visor" x1="220" y1="200" x2="420" y2="200" gradientUnits="userSpaceOnUse"><stop stop-color="#062d29"/><stop offset=".5" stop-color="#176357"/><stop offset="1" stop-color="#05231f"/></linearGradient>
+<radialGradient id="core"><stop stop-color="#ecfffa"/><stop offset=".45" stop-color="#61f4cf"/><stop offset="1" stop-color="#0bb285"/></radialGradient>
+<filter id="shadow" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#075b4d" flood-opacity=".22"/></filter>
+<filter id="glow"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<g filter="url(#shadow)">
+<ellipse cx="320" cy="650" rx="185" ry="24" fill="#0a806522"/>
+<path d="M320 92V55" stroke="#628d86" stroke-width="10" stroke-linecap="round"/>
+<circle cx="320" cy="42" r="11" fill="#41efbb" filter="url(#glow)"/>
+<rect x="160" y="82" width="320" height="235" rx="82" fill="url(#shell)" stroke="#5f8d86" stroke-width="8"/>
+<rect x="137" y="166" width="32" height="82" rx="16" fill="#b6d0cb" stroke="#5a8982" stroke-width="7"/>
+<rect x="471" y="166" width="32" height="82" rx="16" fill="#b6d0cb" stroke="#5a8982" stroke-width="7"/>
+<rect x="204" y="152" width="232" height="78" rx="39" fill="url(#visor)" stroke="#0b6d5d" stroke-width="6"/>
+<circle cx="270" cy="191" r="11" fill="#6bffdb" filter="url(#glow)"/>
+<circle cx="370" cy="191" r="11" fill="#6bffdb" filter="url(#glow)"/>
+<path d="M299 217h42" stroke="#51e2bf" stroke-width="6" stroke-linecap="round" opacity=".8"/>
+<rect x="292" y="305" width="56" height="35" rx="14" fill="#86aaa4"/>
+<path d="M136 650V498c0-116 73-172 184-172s184 56 184 172v152H136Z" fill="url(#shell2)" stroke="#668f88" stroke-width="8"/>
+<path d="M177 645c18-92 67-132 143-132s125 40 143 132" stroke="#fff" stroke-opacity=".52" stroke-width="7"/>
+<circle cx="320" cy="451" r="69" fill="#eafff9" stroke="#19c995" stroke-width="9"/>
+<circle cx="320" cy="451" r="50" fill="url(#core)" filter="url(#glow)"/>
+<text x="320" y="462" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="31" font-weight="800" fill="#075f4e">AI</text>
+<circle cx="226" cy="453" r="6" fill="#26cda1"/><circle cx="414" cy="453" r="6" fill="#26cda1"/>
+<path d="M250 386h140" stroke="#7da49d" stroke-width="7" stroke-linecap="round" opacity=".58"/>
+<path d="M224 410h192" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".6"/>
+<rect x="88" y="449" width="73" height="113" rx="34" fill="#b7d2cc" stroke="#638d85" stroke-width="8"/>
+<rect x="479" y="449" width="73" height="113" rx="34" fill="#b7d2cc" stroke="#638d85" stroke-width="8"/>
+<path d="M108 544 57 608" stroke="#8aa9a3" stroke-width="32" stroke-linecap="round"/>
+<path d="M532 544 583 608" stroke="#8aa9a3" stroke-width="32" stroke-linecap="round"/>
+<circle cx="51" cy="615" r="21" fill="#aac6c0" stroke="#628b84" stroke-width="7"/>
+<circle cx="589" cy="615" r="21" fill="#aac6c0" stroke="#628b84" stroke-width="7"/>
+</g></svg>
