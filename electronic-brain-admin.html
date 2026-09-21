@@ -34,7 +34,7 @@ button.secondary{background:#eef2f7;color:#344054}button:disabled{opacity:.45;cu
 <label class="drop" id="drop">
   <div style="font-size:34px">📚</div>
   <strong>CHỌN TÀI LIỆU ĐỂ HỌC</strong>
-  <span class="muted">PDF · JPG · JPEG · PNG · TXT · MD · JSON</span>
+  <span class="muted">PDF · JPG · JPEG · PNG · TXT · MD · JSON</span><br><span style="color:#2563eb;font-weight:800">⚡ Hoặc Ctrl + V để dán ảnh trực tiếp</span>
   <input id="file" type="file" accept=".pdf,.jpg,.jpeg,.png,.txt,.md,.json,application/pdf,image/jpeg,image/png,text/plain,text/markdown,application/json">
 </label>
 <div id="picked" class="muted" style="margin-top:10px">Chưa chọn file.</div>
@@ -96,6 +96,18 @@ function selectFile(file){
    const img=document.createElement("img");img.src=URL.createObjectURL(picked);pv.appendChild(img);pv.classList.add("show");
  }else pv.classList.remove("show");
 }
+document.addEventListener("paste",function(e){
+  if(busy)return;
+  const items=[...(e.clipboardData?.items||[])];
+  const imageItem=items.find(x=>x.type&&x.type.startsWith("image/"));
+  if(!imageItem)return;
+  const blob=imageItem.getAsFile();
+  if(!blob)return;
+  const ext=blob.type==="image/png"?"png":blob.type==="image/jpeg"?"jpg":"img";
+  const file=new File([blob],"pasted-boardview-"+Date.now()+"."+ext,{type:blob.type,lastModified:Date.now()});
+  selectFile(file);
+  msg("📋 Đã dán ảnh từ Clipboard. Bấm HỌC VÀO BỘ NÃO để phân tích.","ok");
+});
 
 $("file").addEventListener("change",e=>selectFile(e.target.files[0]));
 $("choose").addEventListener("click",()=> $("file").click());
@@ -114,14 +126,41 @@ $("learn").addEventListener("click",async()=>{
    const path="documents/"+crypto.randomUUID()+"-"+safe;
    const up=await sb.storage.from("electronic-brain").upload(path,picked,{upsert:false,contentType:picked.type||"application/octet-stream"});
    if(up.error)throw up.error;
-   const ins=await sb.from("brain_documents").insert({uploaded_by:user.id,file_name:picked.name,storage_path:path,mime_type:picked.type||null,file_size:picked.size,status:"queued"}).select("id").single();
+
+   const ins=await sb.from("brain_documents").insert({
+     uploaded_by:user.id,file_name:picked.name,storage_path:path,
+     mime_type:picked.type||null,file_size:picked.size,status:"queued"
+   }).select("id").single();
    if(ins.error)throw ins.error;
-   msg("Đã upload. AI đang đọc và hấp thụ tài liệu...");
-   const r=await sb.functions.invoke("brain-learn-document",{body:{document_id:ins.data.id}});
-   if(r.error)throw r.error;
-   if(!r.data?.ok)throw Error(r.data?.error||"Learning failed");
-   msg("✅ Đã học xong: "+r.data.atoms_learned+" knowledge atoms · "+r.data.relationships_learned+" quan hệ.","ok");
+
+   const docId=ins.data.id;
+   msg("📤 Đã upload. AI bắt đầu hấp thụ — trang này sẽ không bị treo.");
    await stats();
+
+   // Fire the learner without blocking the UI. The worker updates brain_documents.status.
+   sb.functions.invoke("brain-learn-document",{body:{document_id:docId}})
+     .then(r=>{if(r.error) console.warn("Brain worker:",r.error)})
+     .catch(e=>console.warn("Brain worker:",e));
+
+   for(let i=0;i<180;i++){
+     await new Promise(r=>setTimeout(r,2000));
+     const q=await sb.from("brain_documents")
+       .select("status,atoms_learned,relationships_learned,error_message")
+       .eq("id",docId).maybeSingle();
+     if(q.error) continue;
+     const d=q.data;
+     if(!d) continue;
+     if(d.status==="completed"){
+       msg("✅ Đã học xong: "+(d.atoms_learned||0)+" knowledge atoms · "+(d.relationships_learned||0)+" quan hệ.","ok");
+       await stats(); break;
+     }
+     if(d.status==="failed"){
+       msg("❌ AI học tài liệu thất bại: "+(d.error_message||"Không rõ lỗi"),"error");
+       await stats(); break;
+     }
+     msg("🧠 AI đang đọc và hấp thụ "+picked.name+"…");
+     await stats();
+   }
  }catch(e){msg("❌ "+(e.message||String(e)),"error");await stats()}
  finally{busy=false;$("choose").disabled=false;$("learn").disabled=!picked}
 });
