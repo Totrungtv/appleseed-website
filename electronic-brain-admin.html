@@ -39,6 +39,11 @@ button.secondary{background:#eef2f7;color:#344054}button:disabled{opacity:.45;cu
 </label>
 <div id="picked" class="muted" style="margin-top:10px">Chưa chọn file.</div>
 <div id="preview" class="preview"></div>
+<div id="pasteZone" style="margin-top:12px;border:2px dashed #7c3aed;border-radius:14px;padding:18px;text-align:center;background:#faf7ff;cursor:pointer">
+  <div style="font-size:28px">📋</div>
+  <b>DÁN ẢNH BOARDVIEW / SCHEMATIC</b>
+  <div class="muted" style="margin-top:5px">Bấm vào đây rồi nhấn <b>Ctrl + V</b> · hoặc chụp màn hình rồi Ctrl + V</div>
+</div>
 <div class="actions">
   <button id="choose" type="button">📂 CHỌN FILE</button>
   <button id="learn" type="button" disabled>🧠 HỌC VÀO BỘ NÃO</button>
@@ -106,7 +111,7 @@ document.addEventListener("paste",function(e){
   const ext=blob.type==="image/png"?"png":blob.type==="image/jpeg"?"jpg":"img";
   const file=new File([blob],"pasted-boardview-"+Date.now()+"."+ext,{type:blob.type,lastModified:Date.now()});
   selectFile(file);
-  msg("📋 Đã dán ảnh từ Clipboard. Bấm HỌC VÀO BỘ NÃO để phân tích.","ok");
+  msg("📋 ĐÃ DÁN ẢNH! Bấm 🧠 HỌC VÀO BỘ NÃO để phân tích.","ok");
 });
 
 $("file").addEventListener("change",e=>selectFile(e.target.files[0]));
@@ -114,6 +119,7 @@ $("choose").addEventListener("click",()=> $("file").click());
 $("drop").addEventListener("dragover",e=>{e.preventDefault();$("drop").style.borderColor="#2563eb"});
 $("drop").addEventListener("dragleave",()=> $("drop").style.borderColor="#84adf0");
 $("drop").addEventListener("drop",e=>{e.preventDefault();$("drop").style.borderColor="#84adf0";selectFile(e.dataTransfer.files[0])});
+$("pasteZone").addEventListener("click",()=>msg("📋 Đã chọn vùng dán. Bây giờ nhấn Ctrl + V để đưa ảnh vào.", "ok"));
 $("refresh").addEventListener("click",()=>stats());
 $("list").addEventListener("click",async e=>{
   const btn=e.target.closest(".relearn");
