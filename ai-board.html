@@ -151,84 +151,39 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
 @media(max-width:800px){.as-schematic-pro .as-lib-head{padding:22px 18px!important}.as-schematic-pro .as-lib-body{padding:16px!important}.as-lib-toolbar{align-items:stretch}.as-lib-search{min-width:100%}.as-schematic-pro details button,.as-schematic-pro details a{width:100%!important}}
 </style>
 <style id="apple-seed-ai-chat-css">
-/* APPLE SEED AI — FUTURE ROBOT CHAT */
-.as-ai-chat-launch{
- position:fixed;right:24px;bottom:24px;z-index:210000;width:66px;height:66px;border:1px solid #37f5bd88;
- border-radius:22px;background:linear-gradient(145deg,#061b1a,#062d28 55%,#073d35);color:#5fffd0;
- box-shadow:0 0 0 1px #20d9aa22,0 12px 35px #0008,0 0 34px #18e0ae44;
- cursor:pointer;display:grid;place-items:center;transition:.2s;overflow:hidden
-}
-.as-ai-chat-launch:before{content:"";position:absolute;inset:5px;border-radius:17px;border:1px solid #5fffd022;background:radial-gradient(circle at 50% 25%,#37f5bd22,transparent 55%)}
-.as-ai-robot-face{position:relative;width:32px;height:27px;border:2px solid #61ffd4;border-radius:10px;background:linear-gradient(180deg,#102f2c,#061b1a);box-shadow:0 0 15px #27edb080}
-.as-ai-robot-face:before,.as-ai-robot-face:after{content:"";position:absolute;top:9px;width:5px;height:5px;border-radius:50%;background:#7affdb;box-shadow:0 0 8px #5fffd0}
-.as-ai-robot-face:before{left:7px}.as-ai-robot-face:after{right:7px}
-.as-ai-robot-antenna{position:absolute;width:2px;height:7px;background:#61ffd4;left:50%;top:-8px;transform:translateX(-50%)}
-.as-ai-robot-antenna:after{content:"";position:absolute;width:5px;height:5px;border-radius:50%;background:#61ffd4;left:50%;top:-4px;transform:translateX(-50%);box-shadow:0 0 10px #61ffd4}
-.as-ai-chat-launch:hover{transform:translateY(-4px) scale(1.04);box-shadow:0 18px 45px #0009,0 0 45px #18e0ae66}
-.as-ai-chat-window{
- position:fixed;right:24px;bottom:100px;z-index:210001;width:min(590px,calc(100vw - 32px));height:min(780px,calc(100vh - 125px));
- background:#061311;border:1px solid #1d6656;border-radius:24px;box-shadow:0 35px 110px #000b,0 0 45px #10dca033;
- display:none;overflow:hidden;flex-direction:column;color:#dffef5
-}
-.as-ai-chat-window.open{display:flex}.as-ai-chat-window.minimized{height:68px!important}
-.as-ai-chat-window.minimized>*:not(.as-ai-chat-head){display:none!important}
-.as-ai-chat-head{
- position:relative;padding:14px 16px;background:linear-gradient(135deg,#061d1a,#073c32 60%,#08251f);
- border-bottom:1px solid #1b6957;color:#ecfffa;display:flex;align-items:center;justify-content:space-between;gap:12px;overflow:hidden
-}
-.as-ai-chat-head:after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:linear-gradient(90deg,transparent,#4dffd0,transparent);opacity:.65}
-.as-ai-chat-brand{display:flex;align-items:center;gap:11px;min-width:0}
-.as-ai-chat-orb{
- position:relative;width:44px;height:44px;border-radius:14px;background:#071d1a;border:1px solid #43efc088;
- display:grid;place-items:center;flex:0 0 auto;box-shadow:inset 0 0 18px #31f0ba18,0 0 18px #19dfac25
-}
-.as-ai-chat-orb .as-ai-mini-robot{width:24px;height:21px;border:1.5px solid #67ffd8;border-radius:7px;position:relative}
-.as-ai-chat-orb .as-ai-mini-robot:before,.as-ai-chat-orb .as-ai-mini-robot:after{content:"";position:absolute;top:7px;width:3px;height:3px;border-radius:50%;background:#67ffd8;box-shadow:0 0 6px #67ffd8}
-.as-ai-chat-orb .as-ai-mini-robot:before{left:5px}.as-ai-chat-orb .as-ai-mini-robot:after{right:5px}
-.as-ai-chat-brand b{display:block;font-size:16px;letter-spacing:.01em}.as-ai-chat-brand small{display:block;color:#7edfc7;font-size:10px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.as-ai-chat-head-actions{display:flex;gap:6px}.as-ai-chat-head-actions button{width:35px;height:35px;border:1px solid #5d9f9180;border-radius:10px;background:#ffffff0b;color:#bfffee;cursor:pointer;font-size:16px}
-.as-ai-chat-head-actions button:hover{background:#35eeb522;border-color:#54f6d0}
-.as-ai-chat-toolbar{padding:9px 12px;border-bottom:1px solid #174439;background:#071916;display:flex;gap:7px;overflow:auto}
-.as-ai-chat-toolbar button{
- white-space:nowrap;border:1px solid #245d51;background:#0b211d;color:#9debd8;border-radius:999px;padding:8px 11px;font-size:11px;font-weight:850;cursor:pointer
-}
-.as-ai-chat-toolbar button:hover{background:#0d352d;border-color:#40eac0;color:#d8fff5;box-shadow:0 0 14px #20dfaa22}
-.as-ai-chat-messages{
- flex:1;overflow:auto;padding:17px;background:
- radial-gradient(circle at 80% 0,#0b3a3028 0,transparent 35%),
- radial-gradient(circle at 10% 90%,#11382e22 0,transparent 30%),#04100f
-}
-.as-ai-chat-messages::-webkit-scrollbar{width:7px}.as-ai-chat-messages::-webkit-scrollbar-thumb{background:#24574d;border-radius:99px}
-.as-ai-chat-empty{text-align:center;padding:52px 24px;color:#729e93}
-.as-ai-chat-empty .big{font-size:0;width:74px;height:74px;margin:0 auto 18px;border:1px solid #3ef0c066;border-radius:22px;background:#071f1b;box-shadow:0 0 30px #1ce4ad22;position:relative}
-.as-ai-chat-empty .big:before{content:"";position:absolute;left:18px;top:24px;width:34px;height:27px;border:2px solid #5fffd0;border-radius:10px;box-shadow:0 0 14px #43efc066}
-.as-ai-chat-empty .big:after{content:"•  •";position:absolute;left:25px;top:25px;color:#66ffd7;font-size:17px;letter-spacing:3px}
-.as-ai-chat-empty h3{margin:0 0 8px;color:#d9fff5;font-size:18px}.as-ai-chat-empty p{margin:0;line-height:1.65;font-size:13px}
-.as-ai-msg{display:flex;gap:9px;margin:13px 0;align-items:flex-end}.as-ai-msg.user{justify-content:flex-end}
-.as-ai-msg-avatar{
- width:31px;height:31px;border-radius:10px;display:grid;place-items:center;background:#08251f;border:1px solid #2a8f79;color:#62ffd6;flex:0 0 auto;position:relative
-}
-.as-ai-msg-avatar:before{content:"";width:15px;height:12px;border:1px solid currentColor;border-radius:5px}.as-ai-msg-avatar:after{content:"• •";position:absolute;font-size:8px;letter-spacing:1px;top:9px;color:currentColor}
-.as-ai-msg.user .as-ai-msg-avatar{order:2;background:#0b4b3e;color:#baffea;border-color:#38dcb5}
-.as-ai-bubble{
- max-width:84%;padding:11px 13px;border-radius:16px 16px 16px 5px;background:#0a1d19;border:1px solid #1e4d42;
- box-shadow:0 5px 20px #0005;font-size:13px;line-height:1.6;white-space:pre-wrap;word-break:break-word;color:#d9f9f0
-}
-.as-ai-msg.user .as-ai-bubble{border-radius:16px 16px 5px 16px;background:linear-gradient(135deg,#08745e,#0a5a4b);color:#effffb;border-color:#26c7a2}
-.as-ai-msg-meta{font-size:9px;color:#5f9185;margin-top:6px}.as-ai-typing{display:inline-flex;gap:5px;padding:5px 0}.as-ai-typing i{width:6px;height:6px;border-radius:50%;background:#54ffd2;animation:asChatDot 1s infinite;box-shadow:0 0 8px #54ffd2}.as-ai-typing i:nth-child(2){animation-delay:.15s}.as-ai-typing i:nth-child(3){animation-delay:.3s}
-@keyframes asChatDot{0%,70%,100%{transform:translateY(0);opacity:.35}35%{transform:translateY(-5px);opacity:1}}
-.as-ai-image-preview{display:none;margin:8px 12px 0;padding:8px;border:1px solid #245d51;border-radius:12px;background:#071c18;position:relative}.as-ai-image-preview.show{display:block}.as-ai-image-preview img{display:block;max-width:100%;max-height:140px;margin:auto;border-radius:8px}.as-ai-image-preview button{position:absolute;right:6px;top:6px;width:28px;height:28px;border:1px solid #245d51;border-radius:50%;background:#09221e;color:#c9fff1;box-shadow:0 3px 10px #0007;cursor:pointer}
-.as-ai-chat-compose{padding:10px 12px;border-top:1px solid #174439;background:#061512}
-.as-ai-chat-input-wrap{display:flex;align-items:flex-end;gap:7px;border:1px solid #276254;border-radius:17px;background:#071d19;padding:6px;box-shadow:inset 0 0 18px #16d9a30a}
-.as-ai-chat-input{flex:1;border:0!important;background:transparent!important;color:#e6fff8!important;outline:none;resize:none;min-height:42px;max-height:130px;padding:8px!important;margin:0!important}.as-ai-chat-input::placeholder{color:#5c877d}
-.as-ai-chat-iconbtn{width:38px;height:38px;border:1px solid #245d51;border-radius:11px;background:#0b2822;color:#67ffd8;cursor:pointer;font-size:17px;flex:0 0 auto}.as-ai-chat-iconbtn:hover{background:#0d3a30}
-.as-ai-chat-send{width:43px;height:43px;border:1px solid #57ffd3;border-radius:13px;background:linear-gradient(135deg,#19c99e,#43f3c5);color:#03251e;cursor:pointer;font-size:18px;flex:0 0 auto;box-shadow:0 0 18px #25e6b055}.as-ai-chat-send:disabled{opacity:.45;cursor:not-allowed}
-.as-ai-chat-hint{display:flex;justify-content:space-between;gap:8px;padding:6px 3px 0;color:#52776e;font-size:10px}.as-ai-chat-brain{color:#54e4be;font-weight:800}
-@media(max-width:700px){
- .as-ai-chat-launch{right:16px;bottom:16px;width:60px;height:60px;border-radius:19px}
- .as-ai-chat-window{right:0;bottom:0;width:100vw;height:100dvh;max-height:none;border-radius:0;border:0}
- .as-ai-chat-head{padding-top:max(12px,env(safe-area-inset-top))}.as-ai-chat-messages{padding:12px}.as-ai-bubble{max-width:88%}
-}
+/* APPLE SEED AI ROBOT — LIGHT / FUTURISTIC */
+.as-ai-chat-launch{position:fixed;right:24px;bottom:24px;z-index:210000;width:64px;height:64px;border:1px solid #16a878;border-radius:20px;background:linear-gradient(145deg,#ffffff,#e9fff7);box-shadow:0 12px 35px #0b665633,0 0 25px #1bd39b33;cursor:pointer;display:grid;place-items:center;transition:.2s}
+.as-ai-chat-launch:hover{transform:translateY(-3px) scale(1.04);box-shadow:0 16px 40px #0b665644,0 0 32px #1bd39b55}
+.as-ai-robot-face{position:relative;width:34px;height:28px;border:2px solid #0ba77a;border-radius:10px;background:linear-gradient(180deg,#faffff,#d8fff2);box-shadow:0 0 14px #25dca066}
+.as-ai-robot-face:before,.as-ai-robot-face:after{content:"";position:absolute;top:9px;width:5px;height:5px;border-radius:50%;background:#0bd99a;box-shadow:0 0 7px #0bd99a}.as-ai-robot-face:before{left:7px}.as-ai-robot-face:after{right:7px}
+.as-ai-robot-antenna{position:absolute;width:2px;height:8px;background:#0ba77a;left:50%;top:9px;transform:translateX(-50%)}.as-ai-robot-antenna:after{content:"";position:absolute;width:5px;height:5px;border-radius:50%;background:#16d99d;left:50%;top:-5px;transform:translateX(-50%);box-shadow:0 0 8px #16d99d}
+.as-ai-chat-window{position:fixed;right:24px;bottom:100px;z-index:210001;width:min(640px,calc(100vw - 32px));height:min(780px,calc(100vh - 125px));background:#fff;border:1px solid #d9e9e5;border-radius:24px;box-shadow:0 28px 90px #123b3230,0 0 35px #18c99718;display:none;overflow:hidden;flex-direction:column;color:#173c35}
+.as-ai-chat-window.open{display:flex}.as-ai-chat-window.minimized{height:68px!important}.as-ai-chat-window.minimized>*:not(.as-ai-chat-head){display:none!important}
+.as-ai-chat-head{position:relative;padding:13px 16px;background:linear-gradient(135deg,#073b31,#0b8068 65%,#0ca67e);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:12px;overflow:hidden}
+.as-ai-chat-head:after{content:"";position:absolute;inset:auto 0 0;height:2px;background:linear-gradient(90deg,transparent,#8bffe0,transparent)}
+.as-ai-chat-brand{display:flex;align-items:center;gap:11px;min-width:0}.as-ai-chat-orb{position:relative;width:44px;height:44px;border-radius:14px;background:#ffffff15;border:1px solid #7affdf88;display:grid;place-items:center;flex:0 0 auto}
+.as-ai-chat-orb .as-ai-mini-robot{width:25px;height:21px;border:1.5px solid #a8ffeb;border-radius:7px;position:relative}.as-ai-chat-orb .as-ai-mini-robot:before,.as-ai-chat-orb .as-ai-mini-robot:after{content:"";position:absolute;top:7px;width:3px;height:3px;border-radius:50%;background:#b0ffed;box-shadow:0 0 6px #8affdf}.as-ai-chat-orb .as-ai-mini-robot:before{left:5px}.as-ai-chat-orb .as-ai-mini-robot:after{right:5px}
+.as-ai-chat-brand b{display:block;font-size:16px}.as-ai-chat-brand small{display:block;color:#c6fff0;font-size:10px;margin-top:3px}.as-ai-chat-head-actions{display:flex;gap:6px}.as-ai-chat-head-actions button{width:35px;height:35px;border:1px solid #ffffff55;border-radius:10px;background:#ffffff15;color:#fff;cursor:pointer;font-size:16px}.as-ai-chat-head-actions button:hover{background:#ffffff28}
+.as-ai-chat-toolbar{padding:8px 12px;border-bottom:1px solid #dcebe7;background:#fff;display:flex;gap:7px;overflow:auto}.as-ai-chat-toolbar button{white-space:nowrap;border:1px solid #d6e7e2;background:#f7fbfa;color:#216356;border-radius:999px;padding:8px 11px;font-size:11px;font-weight:850;cursor:pointer}.as-ai-chat-toolbar button:hover{background:#e9fff7;border-color:#6edbbd;color:#08765d}
+.as-ai-chat-hero{height:154px;position:relative;overflow:hidden;background:linear-gradient(135deg,#effffc,#d9fff2 52%,#f6fffd);border-bottom:1px solid #d6ebe5}
+.as-ai-chat-hero:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 22% 60%,#32dca744,transparent 24%),radial-gradient(circle at 78% 20%,#65b7ff24,transparent 28%)}
+.as-ai-hero-grid{position:absolute;inset:0;opacity:.32;background-image:linear-gradient(#43bfa018 1px,transparent 1px),linear-gradient(90deg,#43bfa018 1px,transparent 1px);background-size:28px 28px;mask-image:linear-gradient(90deg,#000,transparent 78%)}
+.as-ai-hero-robot{position:absolute;left:28px;bottom:-25px;width:190px;height:175px}
+.as-ai-hero-robot .head{position:absolute;left:53px;top:12px;width:84px;height:67px;border-radius:28px 28px 23px 23px;background:linear-gradient(145deg,#ffffff,#d8e7e5);border:3px solid #5a8b84;box-shadow:inset -8px -8px 16px #8bb4ae44,0 8px 25px #277d6b25;z-index:3}
+.as-ai-hero-robot .visor{position:absolute;left:12px;top:14px;width:56px;height:30px;border-radius:16px;background:linear-gradient(90deg,#062e29,#123f3a);box-shadow:inset 0 0 12px #1de5ae55}
+.as-ai-hero-robot .visor:before,.as-ai-hero-robot .visor:after{content:"";position:absolute;top:11px;width:7px;height:7px;border-radius:50%;background:#55ffd1;box-shadow:0 0 10px #36e9b3}.as-ai-hero-robot .visor:before{left:13px}.as-ai-hero-robot .visor:after{right:13px}
+.as-ai-hero-robot .ear{position:absolute;top:29px;width:14px;height:27px;border-radius:8px;background:#b8d0cc;border:2px solid #57857e}.as-ai-hero-robot .ear.l{left:-12px}.as-ai-hero-robot .ear.r{right:-12px}
+.as-ai-hero-robot .body{position:absolute;left:25px;top:74px;width:142px;height:125px;border-radius:58px 58px 25px 25px;background:linear-gradient(145deg,#f9fffe,#cbdedb);border:3px solid #6d9892;box-shadow:inset -12px -5px 20px #8eb1ab33,0 15px 30px #267a6822}
+.as-ai-hero-robot .core{position:absolute;left:52px;top:28px;width:42px;height:42px;border-radius:50%;background:#eafff9;border:3px solid #19c995;box-shadow:0 0 20px #1de3ae66}.as-ai-hero-robot .core:after{content:"AI";position:absolute;inset:0;display:grid;place-items:center;color:#0b9b73;font-size:12px;font-weight:900}
+.as-ai-hero-copy{position:absolute;right:22px;top:20px;width:56%;padding:13px 16px;border-radius:18px;background:#ffffffdd;border:1px solid #bfe9dd;box-shadow:0 8px 22px #207a6520;color:#2b514a}.as-ai-hero-copy b{display:block;font-size:15px;color:#087a60;margin-bottom:4px}.as-ai-hero-copy span{font-size:12px;line-height:1.5}
+.as-ai-chat-messages{flex:1;overflow:auto;padding:15px;background:linear-gradient(180deg,#f9fdfc,#fff)}.as-ai-chat-messages::-webkit-scrollbar{width:7px}.as-ai-chat-messages::-webkit-scrollbar-thumb{background:#b9d9d1;border-radius:99px}
+.as-ai-chat-empty{text-align:center;padding:30px 22px;color:#6a8982}.as-ai-chat-empty .big{font-size:0;width:62px;height:62px;margin:0 auto 14px;border:1px solid #8adcc6;border-radius:19px;background:#effff9;box-shadow:0 8px 25px #28cfa633;position:relative}.as-ai-chat-empty .big:before{content:"";position:absolute;left:14px;top:18px;width:30px;height:24px;border:2px solid #10ae80;border-radius:9px}.as-ai-chat-empty .big:after{content:"•  •";position:absolute;left:21px;top:19px;color:#11bd89;font-size:16px;letter-spacing:2px}.as-ai-chat-empty h3{margin:0 0 7px;color:#173f37;font-size:17px}.as-ai-chat-empty p{margin:0;line-height:1.6;font-size:12px}
+.as-ai-msg{display:flex;gap:9px;margin:11px 0;align-items:flex-end}.as-ai-msg.user{justify-content:flex-end}.as-ai-msg-avatar{width:31px;height:31px;border-radius:10px;display:grid;place-items:center;background:#effff9;border:1px solid #9ddfce;color:#0c9c73;flex:0 0 auto;position:relative}.as-ai-msg-avatar:before{content:"";width:15px;height:12px;border:1px solid currentColor;border-radius:5px}.as-ai-msg-avatar:after{content:"• •";position:absolute;font-size:8px;letter-spacing:1px;top:9px}.as-ai-msg.user .as-ai-msg-avatar{order:2;background:#eef5ff;color:#5680b8;border-color:#c4d8f2}
+.as-ai-bubble{max-width:84%;padding:11px 13px;border-radius:16px 16px 16px 5px;background:#f1faf7;border:1px solid #d7e9e4;box-shadow:0 4px 14px #173f3710;font-size:13px;line-height:1.58;white-space:pre-wrap;word-break:break-word;color:#284b44}.as-ai-msg.user .as-ai-bubble{border-radius:16px 16px 5px 16px;background:#e8f3ff;color:#244b78;border-color:#c7def6}
+.as-ai-msg-meta{font-size:9px;color:#78958e;margin-top:5px}.as-ai-typing{display:inline-flex;gap:4px;padding:5px 0}.as-ai-typing i{width:6px;height:6px;border-radius:50%;background:#16b889;animation:asChatDot 1s infinite}.as-ai-typing i:nth-child(2){animation-delay:.15s}.as-ai-typing i:nth-child(3){animation-delay:.3s}@keyframes asChatDot{0%,70%,100%{transform:translateY(0);opacity:.35}35%{transform:translateY(-4px);opacity:1}}
+.as-ai-image-preview{display:none;margin:8px 12px 0;padding:8px;border:1px solid #d4e7e1;border-radius:12px;background:#f8fdfb;position:relative}.as-ai-image-preview.show{display:block}.as-ai-image-preview img{display:block;max-width:100%;max-height:125px;margin:auto;border-radius:8px}.as-ai-image-preview button{position:absolute;right:6px;top:6px;width:28px;height:28px;border:1px solid #d4e7e1;border-radius:50%;background:#fff;color:#397067;box-shadow:0 3px 10px #0001;cursor:pointer}
+.as-ai-chat-compose{padding:9px 12px;border-top:1px solid #dcebe7;background:#fff}.as-ai-chat-input-wrap{display:flex;align-items:flex-end;gap:7px;border:1px solid #cfe1dc;border-radius:17px;background:#fbfefd;padding:6px;box-shadow:inset 0 0 15px #1db98c0b}.as-ai-chat-input{flex:1;border:0!important;background:transparent!important;color:#274b44!important;outline:none;resize:none;min-height:42px;max-height:130px;padding:8px!important;margin:0!important}.as-ai-chat-input::placeholder{color:#819a95}.as-ai-chat-iconbtn{width:38px;height:38px;border:1px solid #d1e5df;border-radius:11px;background:#f5faf8;color:#168c6b;cursor:pointer;font-size:17px;flex:0 0 auto}.as-ai-chat-send{width:43px;height:43px;border:0;border-radius:13px;background:linear-gradient(135deg,#11c894,#43e6bd);color:#fff;cursor:pointer;font-size:18px;flex:0 0 auto;box-shadow:0 7px 18px #15bd9140}.as-ai-chat-send:disabled{opacity:.45;cursor:not-allowed}.as-ai-chat-hint{display:flex;justify-content:space-between;gap:8px;padding:5px 3px 0;color:#819994;font-size:10px}.as-ai-chat-brain{color:#12936e;font-weight:800}
+@media(max-width:700px){.as-ai-chat-launch{right:16px;bottom:16px;width:60px;height:60px;border-radius:19px}.as-ai-chat-window{right:0;bottom:0;width:100vw;height:100dvh;max-height:none;border-radius:0;border:0}.as-ai-chat-head{padding-top:max(12px,env(safe-area-inset-top))}.as-ai-chat-messages{padding:12px}.as-ai-bubble{max-width:88%}.as-ai-hero-robot{left:-5px}.as-ai-hero-copy{right:12px;width:59%}}
 </style></head>
 <body><main class="wrap">
 <!-- ===== APPLE SEED FULL MEMBER / COMMUNITY / CHAT RESTORE ===== -->
@@ -926,7 +881,15 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
     <button data-prompt="Giải thích panic log này theo kiến thức Brain.">🧠 Panic</button>
     <button data-prompt="Tôi muốn tìm hiểu sâu về lỗi này, hãy dạy tôi từng bước.">📚 Học sửa</button>
   </div>
-  <div id="asAiChatMessages" class="as-ai-chat-messages"></div>
+ 
+  <div class="as-ai-chat-hero">
+    <div class="as-ai-hero-grid"></div>
+    <div class="as-ai-hero-robot">
+      <div class="head"><div class="visor"></div><div class="ear l"></div><div class="ear r"></div></div>
+      <div class="body"><div class="core">AI</div></div>
+    </div>
+    <div class="as-ai-hero-copy"><b>Xin chào! 👋</b><span>Tôi là <strong>Apple Seed AI Robot</strong>.<br>Sẵn sàng hỗ trợ bạn sửa chữa iPhone.</span></div>
+  </div> <div id="asAiChatMessages" class="as-ai-chat-messages"></div>
   <div id="asAiChatImage" class="as-ai-image-preview"><button id="asAiChatImageClear" type="button">×</button><img id="asAiChatImagePreview" alt="Ảnh đính kèm"></div>
   <div class="as-ai-chat-compose">
     <div class="as-ai-chat-input-wrap">
