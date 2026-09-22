@@ -1956,6 +1956,184 @@ load();
   }
 }
 </style>
+
+<style id="apple-seed-hero-vertical-sharp-v1">
+/* =========================================================
+   APPLE SEED AI HERO — FINAL
+   - Full hero UI visible
+   - Text stays ABOVE robot
+   - Robot is centered BELOW the text
+   - Robot keeps full aspect ratio (no crop)
+   - Smooth floating / glow animation
+   ========================================================= */
+
+@media(min-width:701px){
+  .as-ai-chat-hero.as-ai-hero-3d{
+    position:relative!important;
+    flex:0 0 520px!important;
+    height:520px!important;
+    min-height:520px!important;
+    max-height:520px!important;
+    overflow:hidden!important;
+    padding:0!important;
+    box-sizing:border-box!important;
+    background:
+      radial-gradient(circle at 50% 55%,rgba(31,255,201,.12),transparent 32%),
+      linear-gradient(135deg,#031313 0%,#061d1e 52%,#041314 100%)!important;
+  }
+
+  /* Brand + online status */
+  .as-ai-3d-topline{
+    left:26px!important;
+    right:26px!important;
+    top:18px!important;
+    z-index:20!important;
+  }
+
+  /* TEXT FIRST — full width, above robot */
+  .as-ai-3d-copy{
+    position:absolute!important;
+    left:50%!important;
+    right:auto!important;
+    top:58px!important;
+    transform:translateX(-50%)!important;
+    width:min(760px,86%)!important;
+    text-align:center!important;
+    z-index:18!important;
+  }
+  .as-ai-3d-copy .kicker{
+    margin-bottom:8px!important;
+  }
+  .as-ai-3d-copy h3{
+    margin:0 0 8px!important;
+    font-size:38px!important;
+    line-height:1.02!important;
+  }
+  .as-ai-3d-copy p{
+    font-size:14px!important;
+    line-height:1.4!important;
+  }
+  .as-ai-3d-copy .quote{
+    margin-top:8px!important;
+    padding:7px 12px!important;
+    font-size:10px!important;
+    line-height:1.35!important;
+  }
+
+  /* ROBOT BELOW TEXT — complete image, no crop */
+  .as-ai-3d-visual{
+    position:absolute!important;
+    left:50%!important;
+    right:auto!important;
+    top:172px!important;
+    bottom:auto!important;
+    transform:translateX(-50%)!important;
+    width:min(560px,54%)!important;
+    height:275px!important;
+    z-index:7!important;
+    display:flex!important;
+    align-items:flex-end!important;
+    justify-content:center!important;
+    overflow:visible!important;
+    background:transparent!important;
+  }
+  .as-ai-real-robot-image{
+    display:block!important;
+    width:100%!important;
+    height:100%!important;
+    max-width:560px!important;
+    max-height:275px!important;
+    object-fit:contain!important;
+    object-position:center bottom!important;
+    overflow:visible!important;
+    image-rendering:auto!important;
+    filter:drop-shadow(0 18px 28px rgba(0,255,190,.20))!important;
+    transform-origin:50% 90%!important;
+    animation:appleSeedHeroRobotFloat 4.8s ease-in-out infinite,
+              appleSeedHeroRobotGlow 3.4s ease-in-out infinite!important;
+    will-change:transform,filter!important;
+  }
+
+  /* Toolbar is fully visible below the robot */
+  .as-ai-3d .as-ai-ref-toolbar{
+    position:absolute!important;
+    left:50%!important;
+    right:auto!important;
+    bottom:12px!important;
+    transform:translateX(-50%)!important;
+    width:min(760px,86%)!important;
+    grid-template-columns:repeat(4,1fr)!important;
+    gap:8px!important;
+    z-index:25!important;
+  }
+  .as-ai-3d .as-ai-ref-action{
+    min-height:54px!important;
+    height:54px!important;
+    border-radius:13px!important;
+  }
+}
+
+@keyframes appleSeedHeroRobotFloat{
+  0%,100%{transform:translate3d(0,2px,0) rotate(-.4deg) scale(1)}
+  50%{transform:translate3d(0,-9px,0) rotate(.4deg) scale(1.012)}
+}
+@keyframes appleSeedHeroRobotGlow{
+  0%,100%{filter:drop-shadow(0 16px 26px rgba(0,255,190,.16))}
+  50%{filter:drop-shadow(0 20px 38px rgba(0,255,190,.36))}
+}
+
+/* Mobile: keep the same hierarchy but compact */
+@media(max-width:700px){
+  .as-ai-chat-hero.as-ai-hero-3d{
+    flex:0 0 360px!important;
+    height:360px!important;
+    min-height:360px!important;
+    max-height:360px!important;
+  }
+  .as-ai-3d-topline{
+    left:12px!important;
+    right:12px!important;
+    top:12px!important;
+  }
+  .as-ai-3d-copy{
+    left:50%!important;
+    right:auto!important;
+    top:50px!important;
+    transform:translateX(-50%)!important;
+    width:88%!important;
+    text-align:center!important;
+  }
+  .as-ai-3d-copy h3{font-size:25px!important}
+  .as-ai-3d-copy p{font-size:10px!important}
+  .as-ai-3d-copy .quote{font-size:8px!important}
+  .as-ai-3d-visual{
+    left:50%!important;
+    top:142px!important;
+    width:76%!important;
+    height:150px!important;
+    transform:translateX(-50%)!important;
+  }
+  .as-ai-real-robot-image{
+    width:100%!important;
+    height:100%!important;
+    max-width:none!important;
+    max-height:none!important;
+    object-fit:contain!important;
+  }
+  .as-ai-3d .as-ai-ref-toolbar{
+    left:50%!important;
+    right:auto!important;
+    bottom:8px!important;
+    width:92%!important;
+    transform:translateX(-50%)!important;
+    gap:4px!important;
+  }
+  .as-ai-3d .as-ai-ref-action{
+    min-height:48px!important;
+    height:48px!important;
+  }
+}
+</style>
 </body></html>
 
 <style id="apple-seed-chat-readability-fix-v1">
