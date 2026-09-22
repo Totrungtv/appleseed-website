@@ -27,10 +27,10 @@
 /* ROBOT — LARGE LIVE LAYER + VISIBLE MOTION */
 .as-ai-chat-hero.as-ai-hero-3d>.as-ai-3d-visual{
   position:absolute!important;
-  left:2%!important;
-  top:48px!important;
-  width:47%!important;
-  height:300px!important;
+  left:-2%!important;
+  top:18px!important;
+  width:54%!important;
+  height:365px!important;
   margin:0!important;
   padding:0!important;
   display:flex!important;
@@ -47,12 +47,14 @@
 
 .as-ai-chat-hero.as-ai-hero-3d .as-ai-real-robot-image{
   display:block!important;
-  width:100%!important;
-  height:100%!important;
+  width:118%!important;
+  height:118%!important;
   max-width:none!important;
   max-height:none!important;
-  object-fit:contain!important;
+  object-fit:cover!important;
   object-position:center center!important;
+  -webkit-mask-image:radial-gradient(ellipse 67% 72% at 50% 50%,#000 52%,rgba(0,0,0,.92) 64%,transparent 84%)!important;
+  mask-image:radial-gradient(ellipse 67% 72% at 50% 50%,#000 52%,rgba(0,0,0,.92) 64%,transparent 84%)!important;
   image-rendering:auto!important;
   transform-origin:50% 78%!important;
   filter:drop-shadow(0 20px 36px rgba(0,255,190,.25)) saturate(1.08)!important;
@@ -124,14 +126,14 @@
     background-size:100% 100%!important;
   }
   .as-ai-chat-hero.as-ai-hero-3d>.as-ai-3d-visual{
-    left:0!important;
-    top:48px!important;
-    width:55%!important;
-    height:230px!important;
+    left:-5%!important;
+    top:22px!important;
+    width:62%!important;
+    height:285px!important;
   }
   .as-ai-chat-hero.as-ai-hero-3d .as-ai-real-robot-image{
-    width:100%!important;
-    height:100%!important;
+    width:112%!important;
+    height:112%!important;
   }
   .as-ai-chat-hero.as-ai-hero-3d>.as-ai-ref-toolbar{
     left:4%!important;
