@@ -1889,7 +1889,74 @@ load();
   refreshRuntime();
   setInterval(refreshRuntime,60000);
 })();
-</script></body></html>
+</script>
+<style id="apple-seed-chat-controls-final-fix">
+/* ===== AI CHAT CONTROLS — CLOSE / MINIMIZE MUST WORK ===== */
+/* A later composer rule forced display:flex!important, so removing .open no longer hid the window. */
+.as-ai-chat-window:not(.open){
+  display:none!important;
+}
+.as-ai-chat-window.open{
+  display:flex!important;
+}
+
+/* Minimize must override every later desktop min-height/height rule. */
+.as-ai-chat-window.minimized{
+  height:68px!important;
+  min-height:68px!important;
+  max-height:68px!important;
+  overflow:hidden!important;
+}
+.as-ai-chat-window.minimized > *:not(.as-ai-chat-head){
+  display:none!important;
+}
+
+/* Keep the header buttons clickable above all decorative layers. */
+.as-ai-chat-head,
+.as-ai-chat-head-actions,
+.as-ai-chat-head-actions button{
+  position:relative!important;
+  z-index:30!important;
+  pointer-events:auto!important;
+}
+
+/* Desktop readable frame */
+@media(min-width:701px){
+  .as-ai-chat-window.open:not(.minimized){
+    right:18px!important;
+    left:auto!important;
+    top:auto!important;
+    bottom:86px!important;
+    transform:none!important;
+    width:min(900px,calc(100vw - 36px))!important;
+    height:min(820px,calc(100vh - 120px))!important;
+    min-height:560px!important;
+    max-height:calc(100vh - 120px)!important;
+  }
+  .as-ai-chat-hero.as-ai-hero-3d{
+    flex:0 0 270px!important;
+    height:270px!important;
+    min-height:270px!important;
+  }
+}
+
+/* Mobile stays full-screen when open, but close still works. */
+@media(max-width:700px){
+  .as-ai-chat-window.open:not(.minimized){
+    left:0!important;
+    right:0!important;
+    top:0!important;
+    bottom:0!important;
+    width:100vw!important;
+    height:100dvh!important;
+    min-height:0!important;
+    max-height:none!important;
+    transform:none!important;
+    border-radius:0!important;
+  }
+}
+</style>
+</body></html>
 
 <style id="apple-seed-chat-readability-fix-v1">
 /* ===== AI CHAT — READABLE, KHÔNG CHE GẦN HẾT TRANG ===== */
