@@ -1890,3 +1890,112 @@ load();
   setInterval(refreshRuntime,60000);
 })();
 </script></body></html>
+
+<style id="apple-seed-chat-readability-fix-v1">
+/* ===== AI CHAT — READABLE, KHÔNG CHE GẦN HẾT TRANG ===== */
+.as-ai-chat-window{
+  left:auto!important;
+  right:18px!important;
+  top:auto!important;
+  bottom:86px!important;
+  transform:none!important;
+  width:min(900px,calc(100vw - 36px))!important;
+  height:min(820px,calc(100vh - 120px))!important;
+  min-height:620px!important;
+  max-height:calc(100vh - 120px)!important;
+  border-radius:24px!important;
+}
+
+/* Thu gọn phần robot để nhường diện tích đọc chat */
+.as-ai-chat-hero.as-ai-hero-3d{
+  flex:0 0 270px!important;
+  height:270px!important;
+  min-height:270px!important;
+}
+
+/* Khung tin nhắn được ưu tiên diện tích */
+.as-ai-chat-messages{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  overflow:auto!important;
+  padding:18px 24px!important;
+  font-size:15px!important;
+  line-height:1.6!important;
+}
+.as-ai-bubble{
+  max-width:82%!important;
+  font-size:15px!important;
+  line-height:1.6!important;
+}
+
+/* Nút mở/đóng luôn nằm BÊN DƯỚI khung chat, không bị khung chat đè */
+.as-ai-chat-launch{
+  z-index:210010!important;
+  right:24px!important;
+  bottom:14px!important;
+}
+
+/* Header gọn để tăng vùng đọc */
+.as-ai-chat-head{
+  flex:0 0 58px!important;
+  min-height:58px!important;
+  box-sizing:border-box!important;
+}
+
+/* Desktop: robot vẫn đẹp nhưng không chiếm quá nhiều chiều cao */
+.as-ai-3d-visual{
+  height:270px!important;
+}
+.as-ai-3d-copy{
+  top:48px!important;
+}
+.as-ai-3d-copy h3{
+  font-size:34px!important;
+}
+.as-ai-3d .as-ai-ref-toolbar{
+  bottom:10px!important;
+}
+
+/* Màn hình thấp: ưu tiên chat text */
+@media (max-height:820px) and (min-width:701px){
+  .as-ai-chat-window{
+    height:calc(100vh - 105px)!important;
+    min-height:560px!important;
+  }
+  .as-ai-chat-hero.as-ai-hero-3d{
+    flex-basis:235px!important;
+    height:235px!important;
+    min-height:235px!important;
+  }
+  .as-ai-3d-visual{height:235px!important}
+  .as-ai-chat-messages{
+    padding:14px 20px!important;
+  }
+}
+
+/* Mobile giữ nguyên kiểu full-screen */
+@media(max-width:700px){
+  .as-ai-chat-window{
+    left:0!important;
+    right:0!important;
+    top:0!important;
+    bottom:0!important;
+    width:100vw!important;
+    height:100dvh!important;
+    max-height:none!important;
+    min-height:0!important;
+    transform:none!important;
+    border-radius:0!important;
+  }
+  .as-ai-chat-launch{
+    right:18px!important;
+    bottom:18px!important;
+  }
+  .as-ai-chat-hero.as-ai-hero-3d{
+    flex-basis:300px!important;
+    height:300px!important;
+    min-height:300px!important;
+  }
+  .as-ai-3d-visual{height:300px!important}
+}
+</style>
