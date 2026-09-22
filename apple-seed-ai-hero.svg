@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="680" viewBox="0 0 1600 680">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#031313"/><stop offset=".52" stop-color="#062022"/><stop offset="1" stop-color="#041416"/></linearGradient>
+<radialGradient id="glow" cx=".72" cy=".28" r=".55"><stop stop-color="#19e5b0" stop-opacity=".16"/><stop offset="1" stop-color="#19e5b0" stop-opacity="0"/></radialGradient>
+<linearGradient id="card" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#eafaf6"/></linearGradient>
+<filter id="shadow"><feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#000" flood-opacity=".25"/></filter>
+<filter id="soft"><feGaussianBlur stdDeviation="24"/></filter>
+<pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#4effd9" stroke-opacity=".13"/></pattern>
+</defs>
+<rect width="1600" height="680" fill="url(#bg)"/><rect width="1600" height="680" fill="url(#glow)"/><rect x="760" width="840" height="680" fill="url(#grid)"/>
+<ellipse cx="1160" cy="240" rx="330" ry="210" fill="#0ce8b1" opacity=".07" filter="url(#soft)"/>
+<text x="42" y="54" fill="#8db8b1" font-family="Arial,Inter,sans-serif" font-size="14" font-weight="800" letter-spacing="5">APPLE SEED • ELECTRONIC BRAIN</text>
+<rect x="1320" y="25" width="235" height="44" rx="22" fill="#062322" stroke="#55ffdf" stroke-opacity=".3"/><circle cx="1348" cy="47" r="7" fill="#34efb5"/><text x="1365" y="53" fill="#c7fff1" font-family="Arial,Inter,sans-serif" font-size="14" font-weight="800">Online • Evolution</text>
+<text x="900" y="154" fill="#8db8b1" font-family="Arial,Inter,sans-serif" font-size="14" font-weight="800" letter-spacing="6">APPLE SEED</text>
+<text x="900" y="226" fill="#fff" font-family="Arial,Inter,sans-serif" font-size="64" font-weight="900">Xin chào! 👋</text>
+<text x="900" y="278" fill="#edf9f6" font-family="Arial,Inter,sans-serif" font-size="25" font-weight="600">Tôi là <tspan font-weight="900">Apple Seed AI Robot.</tspan></text>
+<text x="900" y="316" fill="#edf9f6" font-family="Arial,Inter,sans-serif" font-size="25" font-weight="600">Sẵn sàng hỗ trợ bạn sửa chữa iPhone.</text>
+<rect x="900" y="346" width="360" height="74" rx="18" fill="#082827" stroke="#55ffdf" stroke-opacity=".28"/>
+<text x="926" y="378" fill="#c7ebe4" font-family="Arial,Inter,sans-serif" font-size="17" font-weight="700">“Phân tích chính xác hơn</text><text x="926" y="402" fill="#c7ebe4" font-family="Arial,Inter,sans-serif" font-size="17" font-weight="700">Sửa chữa hiệu quả hơn”</text>
+<g filter="url(#shadow)"><rect x="730" y="535" width="194" height="88" rx="18" fill="url(#card)"/><rect x="938" y="535" width="194" height="88" rx="18" fill="url(#card)"/><rect x="1146" y="535" width="194" height="88" rx="18" fill="url(#card)"/><rect x="1354" y="535" width="194" height="88" rx="18" fill="url(#card)"/></g>
+<text x="827" y="572" text-anchor="middle" fill="#123b38" font-family="Arial,Inter,sans-serif" font-size="27">⌁</text><text x="827" y="602" text-anchor="middle" fill="#123b38" font-family="Arial,Inter,sans-serif" font-size="15" font-weight="900">Phân tích ca</text>
+<text x="1035" y="572" text-anchor="middle" font-size="27">⚡</text><text x="1035" y="602" text-anchor="middle" fill="#123b38" font-family="Arial,Inter,sans-serif" font-size="15" font-weight="900">Power sequence</text>
+<text x="1243" y="572" text-anchor="middle" font-size="27">🧠</text><text x="1243" y="602" text-anchor="middle" fill="#123b38" font-family="Arial,Inter,sans-serif" font-size="15" font-weight="900">Panic log</text>
+<text x="1451" y="572" text-anchor="middle" font-size="27">📖</text><text x="1451" y="602" text-anchor="middle" fill="#123b38" font-family="Arial,Inter,sans-serif" font-size="15" font-weight="900">Học sửa</text>
+<text x="1050" y="658" text-anchor="middle" fill="#78bdb0" font-family="Arial,Inter,sans-serif" font-size="12" font-weight="800" letter-spacing="4">KNOWLEDGE × EXPERIENCE × COMMUNITY = BETTER REPAIRS</text>
+</svg>
