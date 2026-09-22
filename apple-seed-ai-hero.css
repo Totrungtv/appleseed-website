@@ -24,13 +24,13 @@
   display:none!important;
 }
 
-/* Robot = the only live visual layer. */
+/* ROBOT — LARGE LIVE LAYER + VISIBLE MOTION */
 .as-ai-chat-hero.as-ai-hero-3d>.as-ai-3d-visual{
   position:absolute!important;
-  left:1%!important;
-  top:42px!important;
-  width:49%!important;
-  height:320px!important;
+  left:-1%!important;
+  top:20px!important;
+  width:58%!important;
+  height:350px!important;
   margin:0!important;
   padding:0!important;
   display:flex!important;
@@ -41,22 +41,41 @@
   transform:none!important;
   z-index:10!important;
   pointer-events:none!important;
+  animation:appleSeedRobotStageFloat 4.8s ease-in-out infinite!important;
+  will-change:transform!important;
 }
 
 .as-ai-chat-hero.as-ai-hero-3d .as-ai-real-robot-image{
   display:block!important;
-  width:175%!important;
-  height:175%!important;
+  width:250%!important;
+  height:250%!important;
   max-width:none!important;
   max-height:none!important;
   object-fit:contain!important;
   object-position:center center!important;
   image-rendering:auto!important;
   transform-origin:50% 78%!important;
-  filter:drop-shadow(0 18px 34px rgba(0,255,190,.22)) saturate(1.05)!important;
-  animation:appleSeedHeroRobotFloatClean 4.6s ease-in-out infinite,
-             appleSeedHeroRobotGlowClean 3.2s ease-in-out infinite!important;
+  filter:drop-shadow(0 20px 36px rgba(0,255,190,.25)) saturate(1.08)!important;
+  animation:appleSeedRobotBodyMotion 3.8s ease-in-out infinite!important;
   will-change:transform,filter!important;
+}
+
+/* The wrapper floats; the robot itself has a separate breathing/lean motion. */
+@keyframes appleSeedRobotStageFloat{
+  0%,100%{transform:translate3d(0,5px,0)}
+  50%{transform:translate3d(0,-9px,0)}
+}
+@keyframes appleSeedRobotBodyMotion{
+  0%,100%{
+    transform:rotate(-1deg) scale(1);
+    filter:drop-shadow(0 18px 32px rgba(0,255,190,.18)) saturate(1.04);
+  }
+  25%{transform:rotate(.2deg) scale(1.025)}
+  50%{
+    transform:rotate(1deg) scale(1.045);
+    filter:drop-shadow(0 26px 48px rgba(0,255,190,.42)) saturate(1.12);
+  }
+  75%{transform:rotate(.2deg) scale(1.025)}
 }
 
 /* Real buttons sit invisibly above the baked cards. */
@@ -95,16 +114,7 @@
   visibility:hidden!important;
 }
 
-/* Keep hero visually calm; only robot moves. */
-@keyframes appleSeedHeroRobotFloatClean{
-  0%,100%{transform:translate3d(0,5px,0) rotate(-.35deg) scale(1.00)}
-  50%{transform:translate3d(0,-10px,0) rotate(.35deg) scale(1.025)}
-}
-@keyframes appleSeedHeroRobotGlowClean{
-  0%,100%{filter:drop-shadow(0 16px 28px rgba(0,255,190,.16)) saturate(1.02)}
-  50%{filter:drop-shadow(0 22px 42px rgba(0,255,190,.38)) saturate(1.08)}
-}
-
+/* Mobile robot sizing */
 @media(max-width:700px){
   .as-ai-chat-hero.as-ai-hero-3d{
     flex-basis:320px!important;
@@ -114,14 +124,14 @@
     background-size:100% 100%!important;
   }
   .as-ai-chat-hero.as-ai-hero-3d>.as-ai-3d-visual{
-    left:-3%!important;
-    top:50px!important;
-    width:57%!important;
-    height:245px!important;
+    left:-8%!important;
+    top:35px!important;
+    width:64%!important;
+    height:275px!important;
   }
   .as-ai-chat-hero.as-ai-hero-3d .as-ai-real-robot-image{
-    width:165%!important;
-    height:165%!important;
+    width:235%!important;
+    height:235%!important;
   }
   .as-ai-chat-hero.as-ai-hero-3d>.as-ai-ref-toolbar{
     left:4%!important;
@@ -138,6 +148,7 @@
 }
 
 @media(prefers-reduced-motion:reduce){
+  .as-ai-chat-hero.as-ai-hero-3d>.as-ai-3d-visual,
   .as-ai-chat-hero.as-ai-hero-3d .as-ai-real-robot-image{
     animation:none!important;
   }
