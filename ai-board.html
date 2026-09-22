@@ -2134,6 +2134,132 @@ load();
   }
 }
 </style>
+
+<style id="apple-seed-hero-premium-baked-v2">
+/* =========================================================
+   APPLE SEED HERO — BAKED ART + ANIMATED ROBOT
+   Text/UI is one sharp SVG artwork; robot remains a live layer.
+   ========================================================= */
+.as-ai-chat-hero.as-ai-hero-3d{
+  position:relative!important;
+  flex:0 0 560px!important;
+  height:560px!important;
+  min-height:560px!important;
+  max-height:560px!important;
+  overflow:hidden!important;
+  isolation:isolate!important;
+  background:#031313 url("apple-seed-ai-hero.svg?v=1") center/100% 100% no-repeat!important;
+}
+
+/* Hide the old text/background layers so they cannot overlap the artwork. */
+.as-ai-chat-hero.as-ai-hero-3d > .as-ai-3d-bg,
+.as-ai-chat-hero.as-ai-hero-3d > .as-ai-3d-grid,
+.as-ai-chat-hero.as-ai-hero-3d > .as-ai-3d-topline,
+.as-ai-chat-hero.as-ai-hero-3d > .as-ai-3d-copy{
+  display:none!important;
+}
+
+/* Robot occupies the complete left artwork zone. */
+.as-ai-chat-hero.as-ai-hero-3d .as-ai-3d-visual{
+  position:absolute!important;
+  left:0!important;
+  top:82px!important;
+  bottom:42px!important;
+  width:52%!important;
+  height:auto!important;
+  transform:none!important;
+  z-index:8!important;
+  display:flex!important;
+  align-items:flex-end!important;
+  justify-content:center!important;
+  overflow:visible!important;
+  background:transparent!important;
+}
+.as-ai-chat-hero.as-ai-hero-3d .as-ai-real-robot-image{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:760px!important;
+  max-height:none!important;
+  object-fit:contain!important;
+  object-position:center bottom!important;
+  image-rendering:auto!important;
+  filter:drop-shadow(0 22px 38px rgba(0,255,190,.22))!important;
+  transform-origin:50% 90%!important;
+  animation:appleSeedRobotPremiumFloat 4.8s ease-in-out infinite,
+             appleSeedRobotPremiumGlow 3.2s ease-in-out infinite!important;
+  will-change:transform,filter!important;
+}
+
+/* Keep the real buttons clickable on top of the baked cards, but don't duplicate text. */
+.as-ai-chat-hero.as-ai-hero-3d .as-ai-ref-toolbar{
+  position:absolute!important;
+  left:45.6%!important;
+  right:0!important;
+  bottom:42px!important;
+  width:52.8%!important;
+  height:88px!important;
+  transform:none!important;
+  display:grid!important;
+  grid-template-columns:repeat(4,1fr)!important;
+  gap:14px!important;
+  z-index:30!important;
+  padding:0!important;
+}
+.as-ai-chat-hero.as-ai-hero-3d .as-ai-ref-action{
+  width:100%!important;
+  height:88px!important;
+  min-height:88px!important;
+  opacity:.01!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  color:transparent!important;
+  cursor:pointer!important;
+}
+.as-ai-chat-hero.as-ai-hero-3d .as-ai-ref-action *{
+  opacity:0!important;
+}
+
+/* Premium subtle motion: robot only, not the text/artwork. */
+@keyframes appleSeedRobotPremiumFloat{
+  0%,100%{transform:translate3d(0,3px,0) rotate(-.45deg) scale(1)}
+  50%{transform:translate3d(0,-11px,0) rotate(.45deg) scale(1.012)}
+}
+@keyframes appleSeedRobotPremiumGlow{
+  0%,100%{filter:drop-shadow(0 18px 30px rgba(0,255,190,.16))}
+  50%{filter:drop-shadow(0 22px 42px rgba(0,255,190,.38))}
+}
+
+/* Mobile */
+@media(max-width:700px){
+  .as-ai-chat-hero.as-ai-hero-3d{
+    flex-basis:390px!important;
+    height:390px!important;
+    min-height:390px!important;
+    max-height:390px!important;
+    background-size:100% 100%!important;
+  }
+  .as-ai-chat-hero.as-ai-hero-3d .as-ai-3d-visual{
+    top:86px!important;
+    bottom:72px!important;
+    left:0!important;
+    width:57%!important;
+  }
+  .as-ai-chat-hero.as-ai-hero-3d .as-ai-ref-toolbar{
+    left:4%!important;
+    right:4%!important;
+    bottom:8px!important;
+    width:92%!important;
+    height:58px!important;
+    gap:4px!important;
+  }
+  .as-ai-chat-hero.as-ai-hero-3d .as-ai-ref-action{
+    height:58px!important;
+    min-height:58px!important;
+  }
+}
+</style>
 </body></html>
 
 <style id="apple-seed-chat-readability-fix-v1">
