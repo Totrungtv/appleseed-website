@@ -24,20 +24,15 @@
   display:none!important;
 }
 
-/* ROBOT — artwork is now baked directly into the SVG.
-   No external photo layer: no crop, no square, no scaling glitches. */
-.as-ai-chat-hero.as-ai-hero-3d>.as-ai-3d-visual{
-  display:none!important;
-}
-
-/* REAL ROBOT — exact user-provided robot image */
+/* ROBOT — exact Apple Seed full-body robot asset */
 .as-ai-chat-hero.as-ai-hero-3d>.as-ai-3d-visual{
   display:flex!important;
   position:absolute!important;
-  left:1%!important;
-  top:10px!important;
-  width:48%!important;
-  height:370px!important;
+  left:2%!important;
+  bottom:0!important;
+  top:0!important;
+  width:46%!important;
+  height:100%!important;
   align-items:flex-end!important;
   justify-content:center!important;
   z-index:20!important;
@@ -46,20 +41,31 @@
 }
 .as-ai-chat-hero.as-ai-hero-3d .as-ai-real-robot-image{
   display:block!important;
-  width:92%!important;
+  width:100%!important;
   height:100%!important;
   max-width:none!important;
   max-height:none!important;
   object-fit:contain!important;
   object-position:center bottom!important;
-  filter:drop-shadow(0 18px 32px rgba(0,255,190,.25))!important;
-  animation:appleSeedRobotBodyMotion 4.2s ease-in-out infinite!important;
+  transform-origin:50% 90%!important;
+  filter:drop-shadow(0 18px 30px rgba(0,255,190,.34)) contrast(1.03) saturate(1.08)!important;
+  animation:appleSeedRobotHeroMotion 4.6s ease-in-out infinite!important;
+  will-change:transform,filter!important;
 }
-@keyframes appleSeedRobotBodyMotion{
-  0%,100%{transform:translateY(2px) rotate(-.4deg)}
-  50%{transform:translateY(-7px) rotate(.4deg)}
+@keyframes appleSeedRobotHeroMotion{
+  0%,100%{transform:translate3d(0,2px,0) rotate(-.35deg)}
+  25%{transform:translate3d(2px,-2px,0) rotate(.15deg)}
+  50%{transform:translate3d(0,-8px,0) rotate(.35deg)}
+  75%{transform:translate3d(-2px,-2px,0) rotate(.1deg)}
 }
-\n/* Real buttons sit invisibly above the baked cards. */
+.as-ai-chat-hero.as-ai-hero-3d>.as-ai-3d-visual::after{
+  content:"";position:absolute;left:22%;bottom:5px;width:56%;height:18px;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(28,255,199,.38),rgba(28,255,199,0) 72%);
+  filter:blur(7px);animation:appleSeedRobotGroundGlow 4.6s ease-in-out infinite;pointer-events:none;
+}
+@keyframes appleSeedRobotGroundGlow{0%,100%{opacity:.5;transform:scaleX(.92)}50%{opacity:1;transform:scaleX(1.08)}}
+
+/* Real buttons sit invisibly above the baked cards. */
 .as-ai-chat-hero.as-ai-hero-3d>.as-ai-ref-toolbar{
   position:absolute!important;
   left:45.4%!important;
@@ -142,29 +148,14 @@
   .as-ai-chat-hero.as-ai-hero-3d .as-ai-real-robot-image{image-rendering:auto!important;filter:drop-shadow(0 18px 30px rgba(0,255,190,.28)) contrast(1.03) saturate(1.06)!important;}
 }
 
-
-/* PREMIUM ROBOT MOTION — use repository hero asset at native resolution */
-.as-ai-chat-hero.as-ai-hero-3d .as-ai-real-robot-image{
-  width:94%!important;
-  height:112%!important;
-  max-width:none!important;
-  object-fit:contain!important;
-  object-position:center bottom!important;
-  transform-origin:50% 85%!important;
-  animation:appleSeedRobotHeroMotion 4.6s ease-in-out infinite!important;
-  will-change:transform,filter!important;
-  filter:drop-shadow(0 18px 34px rgba(0,255,190,.32)) contrast(1.04) saturate(1.08)!important;
+@media(min-width:701px){
+  .as-ai-chat-hero.as-ai-hero-3d{flex-basis:420px!important;height:420px!important;min-height:420px!important;max-height:420px!important;}
 }
-@keyframes appleSeedRobotHeroMotion{
-  0%,100%{transform:translate3d(0,3px,0) rotate(-.45deg) scale(1)}
-  25%{transform:translate3d(2px,-3px,0) rotate(.2deg) scale(1.008)}
-  50%{transform:translate3d(0,-9px,0) rotate(.5deg) scale(1.015)}
-  75%{transform:translate3d(-2px,-3px,0) rotate(.15deg) scale(1.008)}
+@media(max-width:700px){
+  .as-ai-chat-hero.as-ai-hero-3d{flex-basis:330px!important;height:330px!important;min-height:330px!important;max-height:330px!important;}
+  .as-ai-chat-hero.as-ai-hero-3d>.as-ai-3d-visual{left:-4%!important;width:62%!important;height:100%!important;}
 }
-.as-ai-chat-hero.as-ai-hero-3d>.as-ai-3d-visual::after{
-  content:"";position:absolute;left:24%;bottom:4px;width:52%;height:22px;border-radius:50%;
-  background:radial-gradient(ellipse,rgba(28,255,199,.42),rgba(28,255,199,0) 72%);
-  filter:blur(7px);animation:appleSeedRobotGroundGlow 4.6s ease-in-out infinite;pointer-events:none;
+@media(prefers-reduced-motion:reduce){
+  .as-ai-chat-hero.as-ai-hero-3d .as-ai-real-robot-image,
+  .as-ai-chat-hero.as-ai-hero-3d>.as-ai-3d-visual::after{animation:none!important;}
 }
-@keyframes appleSeedRobotGroundGlow{0%,100%{opacity:.55;transform:scaleX(.9)}50%{opacity:1;transform:scaleX(1.08)}}
-@media(max-width:700px){.as-ai-chat-hero.as-ai-hero-3d .as-ai-real-robot-image{width:118%!important;height:118%!important;}}
