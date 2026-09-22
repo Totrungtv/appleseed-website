@@ -12,7 +12,7 @@
   overflow:hidden!important;
   isolation:isolate!important;
   box-sizing:border-box!important;
-  background:#031515 url("apple-seed-ai-hero.svg?v=4") center center/100% 100% no-repeat!important;
+  background:#031515 url("apple-seed-ai-hero.svg?v=6") center center/100% 100% no-repeat!important;
   border:0!important;
 }
 
@@ -133,4 +133,11 @@
   .as-ai-chat-hero.as-ai-hero-3d .as-ai-real-robot-image{
     animation:none!important;
   }
+}
+
+
+/* FINAL HERO READABILITY */
+@media(min-width:701px){
+  .as-ai-chat-hero.as-ai-hero-3d{flex-basis:390px!important;height:390px!important;min-height:390px!important;max-height:390px!important;}
+  .as-ai-chat-hero.as-ai-hero-3d .as-ai-real-robot-image{image-rendering:auto!important;filter:drop-shadow(0 18px 30px rgba(0,255,190,.28)) contrast(1.03) saturate(1.06)!important;}
 }
