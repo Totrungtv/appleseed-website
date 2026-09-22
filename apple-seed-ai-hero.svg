@@ -10,27 +10,7 @@
 </defs>
 <rect width="1600" height="680" fill="url(#bg)"/><rect width="1600" height="680" fill="url(#glow)"/><rect x="760" width="840" height="680" fill="url(#grid)"/>
 <ellipse cx="1160" cy="240" rx="330" ry="210" fill="#0ce8b1" opacity=".07" filter="url(#soft)"/>
-<g id="apple-seed-vector-robot" transform="translate(70 80)">
-  <circle cx="390" cy="270" r="245" fill="#0ce8b1" opacity=".045"/>
-  <circle cx="390" cy="270" r="205" fill="none" stroke="#39f5c7" stroke-opacity=".16" stroke-width="2"/>
-  <circle cx="390" cy="270" r="175" fill="none" stroke="#39f5c7" stroke-opacity=".08" stroke-width="18"/>
-  <path d="M245 505 Q390 425 535 505 L575 650 H205Z" fill="#071a1b" stroke="#38efc2" stroke-opacity=".35" stroke-width="5"/>
-  <path d="M300 470 Q390 430 480 470 L505 610 H275Z" fill="#0b2526" stroke="#bceee5" stroke-opacity=".22" stroke-width="3"/>
-  <rect x="344" y="500" width="92" height="70" rx="18" fill="#061718" stroke="#42f4c8" stroke-opacity=".7" stroke-width="3"/>
-  <circle cx="390" cy="535" r="18" fill="#29e8b3" opacity=".22"/>
-  <path d="M265 495 Q195 525 165 610 L225 640 L305 535Z" fill="#dce9e7" stroke="#7bd5c5" stroke-opacity=".3" stroke-width="4"/>
-  <path d="M515 495 Q585 525 615 610 L555 640 L475 535Z" fill="#dce9e7" stroke="#7bd5c5" stroke-opacity=".3" stroke-width="4"/>
-  <rect x="285" y="125" width="210" height="245" rx="78" fill="#0a191a" stroke="#d7ebe8" stroke-opacity=".65" stroke-width="7"/>
-  <path d="M295 205 Q390 130 485 205 L470 315 Q390 360 310 315Z" fill="#031314"/>
-  <path d="M318 150 Q390 98 462 150 L485 208 Q390 165 295 208Z" fill="#e6efed" stroke="#83d8c8" stroke-opacity=".35" stroke-width="4"/>
-  <circle cx="350" cy="245" r="14" fill="#39f5c7"/><circle cx="430" cy="245" r="14" fill="#39f5c7"/>
-  <circle cx="350" cy="245" r="30" fill="#2cf0bd" opacity=".08"/><circle cx="430" cy="245" r="30" fill="#2cf0bd" opacity=".08"/>
-  <path d="M365 295 Q390 310 415 295" fill="none" stroke="#49f5cb" stroke-width="5" stroke-linecap="round"/>
-  <rect x="190" y="220" width="55" height="115" rx="27" fill="#e1ecea" stroke="#78d1c1" stroke-opacity=".35" stroke-width="4"/>
-  <circle cx="218" cy="278" r="18" fill="#31efbd" opacity=".7"/>
-  <path d="M215 278 l12 -10" stroke="#dffff7" stroke-width="4" stroke-linecap="round"/>
-  <text x="218" y="332" text-anchor="middle" fill="#123b38" font-family="Arial,Inter,sans-serif" font-size="12" font-weight="900">AI</text>
-</g><text x="42" y="54" fill="#8db8b1" font-family="Arial,Inter,sans-serif" font-size="14" font-weight="800" letter-spacing="5">APPLE SEED • ELECTRONIC BRAIN</text>
+<text x="42" y="54" fill="#8db8b1" font-family="Arial,Inter,sans-serif" font-size="14" font-weight="800" letter-spacing="5">APPLE SEED • ELECTRONIC BRAIN</text>
 <rect x="1320" y="25" width="235" height="44" rx="22" fill="#062322" stroke="#55ffdf" stroke-opacity=".3"/><circle cx="1348" cy="47" r="7" fill="#34efb5"/><text x="1365" y="53" fill="#c7fff1" font-family="Arial,Inter,sans-serif" font-size="14" font-weight="800">Online • Evolution</text>
 <text x="900" y="154" fill="#8db8b1" font-family="Arial,Inter,sans-serif" font-size="14" font-weight="800" letter-spacing="6">APPLE SEED</text>
 <text x="900" y="226" fill="#fff" font-family="Arial,Inter,sans-serif" font-size="64" font-weight="900">Xin chào! 👋</text>
