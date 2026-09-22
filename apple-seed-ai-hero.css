@@ -24,60 +24,10 @@
   display:none!important;
 }
 
-/* ROBOT — LARGE LIVE LAYER + VISIBLE MOTION */
+/* ROBOT — artwork is now baked directly into the SVG.
+   No external photo layer: no crop, no square, no scaling glitches. */
 .as-ai-chat-hero.as-ai-hero-3d>.as-ai-3d-visual{
-  position:absolute!important;
-  left:-2%!important;
-  top:18px!important;
-  width:54%!important;
-  height:365px!important;
-  margin:0!important;
-  padding:0!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  overflow:visible!important;
-  background:transparent!important;
-  transform:none!important;
-  z-index:10!important;
-  pointer-events:none!important;
-  animation:appleSeedRobotStageFloat 4.8s ease-in-out infinite!important;
-  will-change:transform!important;
-}
-
-.as-ai-chat-hero.as-ai-hero-3d .as-ai-real-robot-image{
-  display:block!important;
-  width:118%!important;
-  height:118%!important;
-  max-width:none!important;
-  max-height:none!important;
-  object-fit:cover!important;
-  object-position:center center!important;
-  -webkit-mask-image:radial-gradient(ellipse 67% 72% at 50% 50%,#000 52%,rgba(0,0,0,.92) 64%,transparent 84%)!important;
-  mask-image:radial-gradient(ellipse 67% 72% at 50% 50%,#000 52%,rgba(0,0,0,.92) 64%,transparent 84%)!important;
-  image-rendering:auto!important;
-  transform-origin:50% 78%!important;
-  filter:drop-shadow(0 20px 36px rgba(0,255,190,.25)) saturate(1.08)!important;
-  animation:appleSeedRobotBodyMotion 3.8s ease-in-out infinite!important;
-  will-change:transform,filter!important;
-}
-
-/* The wrapper floats; the robot itself has a separate breathing/lean motion. */
-@keyframes appleSeedRobotStageFloat{
-  0%,100%{transform:translate3d(0,5px,0)}
-  50%{transform:translate3d(0,-9px,0)}
-}
-@keyframes appleSeedRobotBodyMotion{
-  0%,100%{
-    transform:rotate(-1deg) scale(1);
-    filter:drop-shadow(0 18px 32px rgba(0,255,190,.18)) saturate(1.04);
-  }
-  25%{transform:rotate(.2deg) scale(1.025)}
-  50%{
-    transform:rotate(1deg) scale(1.045);
-    filter:drop-shadow(0 26px 48px rgba(0,255,190,.42)) saturate(1.12);
-  }
-  75%{transform:rotate(.2deg) scale(1.025)}
+  display:none!important;
 }
 
 /* Real buttons sit invisibly above the baked cards. */
