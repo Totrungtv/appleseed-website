@@ -1,0 +1,144 @@
+/* APPLE SEED AI HERO — CLEAN SINGLE SOURCE OF TRUTH */
+.as-ai-chat-hero.as-ai-hero-3d{
+  position:relative!important;
+  display:block!important;
+  flex:0 0 390px!important;
+  width:100%!important;
+  height:390px!important;
+  min-height:390px!important;
+  max-height:390px!important;
+  padding:0!important;
+  margin:0!important;
+  overflow:hidden!important;
+  isolation:isolate!important;
+  box-sizing:border-box!important;
+  background:#031515 url("apple-seed-ai-hero.svg?v=2") center center/100% 100% no-repeat!important;
+  border:0!important;
+}
+
+/* The SVG already contains the complete artwork/text. */
+.as-ai-chat-hero.as-ai-hero-3d>.as-ai-3d-bg,
+.as-ai-chat-hero.as-ai-hero-3d>.as-ai-3d-grid,
+.as-ai-chat-hero.as-ai-hero-3d>.as-ai-3d-topline,
+.as-ai-chat-hero.as-ai-hero-3d>.as-ai-3d-copy{
+  display:none!important;
+}
+
+/* Robot = the only live visual layer. */
+.as-ai-chat-hero.as-ai-hero-3d>.as-ai-3d-visual{
+  position:absolute!important;
+  left:1%!important;
+  top:42px!important;
+  width:49%!important;
+  height:320px!important;
+  margin:0!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:visible!important;
+  background:transparent!important;
+  transform:none!important;
+  z-index:10!important;
+  pointer-events:none!important;
+}
+
+.as-ai-chat-hero.as-ai-hero-3d .as-ai-real-robot-image{
+  display:block!important;
+  width:175%!important;
+  height:175%!important;
+  max-width:none!important;
+  max-height:none!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+  image-rendering:auto!important;
+  transform-origin:50% 78%!important;
+  filter:drop-shadow(0 18px 34px rgba(0,255,190,.22)) saturate(1.05)!important;
+  animation:appleSeedHeroRobotFloatClean 4.6s ease-in-out infinite,
+             appleSeedHeroRobotGlowClean 3.2s ease-in-out infinite!important;
+  will-change:transform,filter!important;
+}
+
+/* Real buttons sit invisibly above the baked cards. */
+.as-ai-chat-hero.as-ai-hero-3d>.as-ai-ref-toolbar{
+  position:absolute!important;
+  left:45.4%!important;
+  right:2.3%!important;
+  bottom:25px!important;
+  width:auto!important;
+  height:66px!important;
+  margin:0!important;
+  padding:0!important;
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:10px!important;
+  z-index:40!important;
+}
+
+.as-ai-chat-hero.as-ai-hero-3d .as-ai-ref-action{
+  width:100%!important;
+  height:66px!important;
+  min-height:66px!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:14px!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:transparent!important;
+  opacity:.01!important;
+  cursor:pointer!important;
+}
+
+.as-ai-chat-hero.as-ai-hero-3d .as-ai-ref-action>*{
+  opacity:0!important;
+  visibility:hidden!important;
+}
+
+/* Keep hero visually calm; only robot moves. */
+@keyframes appleSeedHeroRobotFloatClean{
+  0%,100%{transform:translate3d(0,5px,0) rotate(-.35deg) scale(1.00)}
+  50%{transform:translate3d(0,-10px,0) rotate(.35deg) scale(1.025)}
+}
+@keyframes appleSeedHeroRobotGlowClean{
+  0%,100%{filter:drop-shadow(0 16px 28px rgba(0,255,190,.16)) saturate(1.02)}
+  50%{filter:drop-shadow(0 22px 42px rgba(0,255,190,.38)) saturate(1.08)}
+}
+
+@media(max-width:700px){
+  .as-ai-chat-hero.as-ai-hero-3d{
+    flex-basis:320px!important;
+    height:320px!important;
+    min-height:320px!important;
+    max-height:320px!important;
+    background-size:100% 100%!important;
+  }
+  .as-ai-chat-hero.as-ai-hero-3d>.as-ai-3d-visual{
+    left:-3%!important;
+    top:50px!important;
+    width:57%!important;
+    height:245px!important;
+  }
+  .as-ai-chat-hero.as-ai-hero-3d .as-ai-real-robot-image{
+    width:165%!important;
+    height:165%!important;
+  }
+  .as-ai-chat-hero.as-ai-hero-3d>.as-ai-ref-toolbar{
+    left:4%!important;
+    right:4%!important;
+    bottom:8px!important;
+    height:50px!important;
+    gap:4px!important;
+  }
+  .as-ai-chat-hero.as-ai-hero-3d .as-ai-ref-action{
+    height:50px!important;
+    min-height:50px!important;
+    border-radius:10px!important;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .as-ai-chat-hero.as-ai-hero-3d .as-ai-real-robot-image{
+    animation:none!important;
+  }
+}
