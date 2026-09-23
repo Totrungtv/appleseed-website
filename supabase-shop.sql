@@ -21,6 +21,7 @@ create table if not exists public.repair_orders (
   technician text,
   estimated_total numeric(14,2) not null default 0,
   paid_amount numeric(14,2) not null default 0,
+  parts_cost numeric(14,2) not null default 0,
   status text not null default 'pending'
     check (status in ('pending','repairing','done','delivered','failed')),
   note text,
@@ -56,6 +57,7 @@ create table if not exists public.store_transactions (
   description text not null,
   payment_method text,
   repair_order_id bigint references public.repair_orders(id) on delete set null,
+  transaction_source text not null default 'manual',
   created_at timestamptz not null default now()
 );
 
@@ -64,6 +66,7 @@ create index if not exists idx_repair_orders_customer on public.repair_orders(cu
 create index if not exists idx_repair_orders_created on public.repair_orders(created_at desc);
 create index if not exists idx_inventory_sku on public.inventory_items(sku);
 create index if not exists idx_transactions_created on public.store_transactions(created_at desc);
+create index if not exists idx_transactions_repair_order on public.store_transactions(repair_order_id);
 
 alter table public.customers enable row level security;
 alter table public.repair_orders enable row level security;
