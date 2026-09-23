@@ -264,7 +264,9 @@ function printRepairTicket(x={}){
  "<tr><td style=\"padding:7px;border:1px solid #ddd\"><b>Model máy</b></td><td style=\"padding:7px;border:1px solid #ddd\"><b>"+esc(x.device_model||"")+"</b></td></tr>"+
  "<tr><td style=\"padding:7px;border:1px solid #ddd\"><b>Lỗi khách báo</b></td><td style=\"padding:7px;border:1px solid #ddd;white-space:pre-wrap\">"+esc(x.customer_issue||"")+"</td></tr>"+
  "<tr><td style=\"padding:7px;border:1px solid #ddd\"><b>Tình trạng máy</b></td><td style=\"padding:7px;border:1px solid #ddd;white-space:pre-wrap\">"+esc(x.device_condition||"")+"</td></tr>"+
- "<tr><td style=\"padding:7px;border:1px solid #ddd\"><b>Thợ nhận máy</b></td><td style=\"padding:7px;border:1px solid #ddd\">"+esc(x.technician||"")+"</td></tr></table>"+
+ "<tr><td style=\"padding:7px;border:1px solid #ddd\"><b>Thợ nhận máy</b></td><td style=\"padding:7px;border:1px solid #ddd\">"+esc(x.technician||"")+"</td></tr>"+
+ "<tr><td style=\"padding:7px;border:1px solid #ddd\"><b>Ngày nhận máy</b></td><td style=\"padding:7px;border:1px solid #ddd\">"+esc(x.received_date||String(x.created_at||'').slice(0,10)||"")+"</td></tr>"+
+ "<tr><td style=\"padding:7px;border:1px solid #ddd\"><b>Ngày giao máy</b></td><td style=\"padding:7px;border:1px solid #ddd\">"+esc(x.delivered_date||"Chưa giao")+"</td></tr></table>"+
  "<div style=\"font-weight:800;margin:16px 0 6px\">GHI CHÚ / YÊU CẦU SỬA</div><div style=\"border:1px solid #ddd;min-height:90px;padding:10px;white-space:pre-wrap\">"+esc(x.note||"")+"</div>"+
  "<div style=\"margin-top:18px;font-size:13px\">Dự kiến giá sửa: <b>"+money(x.estimated_total)+"</b></div>"+
  "<div style=\"margin-top:22px;border-top:2px solid #111;padding-top:12px;font-size:12px\"><b>XÁC NHẬN GIAO MÁY</b><br>Phiếu này được lập để xác nhận tình trạng máy và nội dung công việc tại thời điểm giao máy cho kỹ thuật viên.</div>"+
@@ -283,6 +285,7 @@ async function openRepairForm(x={}){
  <label class="full">Lỗi khách báo<textarea id="rIssue">${esc(x.customer_issue||"")}</textarea></label>
  <label>Tình trạng máy<textarea id="rCondition">${esc(x.device_condition||"")}</textarea></label><label>Kỹ thuật viên<input id="rTech" value="${esc(x.technician||"")}"></label>
  <label>Dự kiến giá sửa (VNĐ)<input id="rEstimate" type="number" min="0" value="${x.estimated_total||0}"></label><label>Chi linh kiện thay thế (VNĐ)<input id="rPartsCost" type="number" min="0" value="${x.parts_cost||0}"></label><label>Số tiền thu về (VNĐ)<input id="rPaid" type="number" min="0" value="${x.paid_amount||0}"></label><label>Lợi nhuận (VNĐ)<input id="rProfit" type="number" value="${Number(x.paid_amount||0)-Number(x.parts_cost||0)}" readonly></label>
+ <label>Ngày nhận máy<input id="rReceivedDate" type="date" value="${x.received_date||String(x.created_at||'').slice(0,10)||new Date().toISOString().slice(0,10)}" required></label><label>Ngày giao máy<input id="rDeliveredDate" type="date" value="${x.delivered_date||''}"></label>
  <label>Trạng thái<select id="rStatus"><option value="pending">Chờ kiểm tra</option><option value="repairing">Đang sửa</option><option value="done">Đã sửa xong</option><option value="delivered">Đã giao</option><option value="failed">Không sửa được</option></select></label>
  <label class="full">Ghi chú<textarea id="rNote">${esc(x.note||"")}</textarea></label><div class="full notice">📊 <b>Doanh thu</b> = Số tiền thu về · <b>Chi phí</b> = Chi linh kiện · <b>Lợi nhuận</b> = Thu về − Chi linh kiện. Khi lưu phiếu, hệ thống tự ghi giao dịch vào Thu chi.</div><div class="full" style="border:1px dashed #98a2b3;border-radius:10px;padding:12px;margin-top:2px"><b>✍️ XÁC NHẬN KHI IN PHIẾU</b><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px;text-align:center"><div style="border:1px solid #d0d5dd;border-radius:8px;padding:14px 8px;min-height:70px"><b>CHỦ CỬA HÀNG / NGƯỜI DUYỆT</b><br><small>Ký trực tiếp trên bản in</small></div><div style="border:1px solid #d0d5dd;border-radius:8px;padding:14px 8px;min-height:70px"><b>KỸ THUẬT VIÊN NHẬN MÁY</b><br><small>Ký trực tiếp trên bản in</small></div></div></div><div class="full right"><button class="btn" type="submit">💾 Lưu phiếu</button> <button class="btn primary" type="submit" data-print="1">💾🖨️ Lưu & In phiếu</button></div></form>`);
  let cr=await sb.from("customers").select("id,name,phone").order("id",{ascending:false});
@@ -290,10 +293,14 @@ async function openRepairForm(x={}){
  $("rCustomer").innerHTML='<option value="">-- Chọn khách hàng --</option>'+(cr.data||[]).map(c=>`<option value="${c.id}">#${c.id} · ${esc(c.name)} · ${esc(c.phone)}</option>`).join("");
  if(x.customer_id) $("rCustomer").value=String(x.customer_id);
  if(x.status)$("rStatus").value=x.status;
+ const todayRepair=new Date().toISOString().slice(0,10);
+ const syncDeliveredDate=()=>{ if($("rStatus").value==="delivered" && !$("rDeliveredDate").value) $("rDeliveredDate").value=todayRepair; };
+ $("rStatus").onchange=syncDeliveredDate;
+ syncDeliveredDate();
  const calcRepairProfit=()=>{$("rProfit").value=Number($("rPaid").value||0)-Number($("rPartsCost").value||0)}; $("rPaid").oninput=calcRepairProfit; $("rPartsCost").oninput=calcRepairProfit;
  $("repairForm").onsubmit=async e=>{
    e.preventDefault();
-   let income=Number($("rPaid").value||0), partsCost=Number($("rPartsCost").value||0); let p={customer_id:Number($("rCustomer").value),device_model:$("rModel").value.trim(),imei:$("rImei").value.trim(),customer_issue:$("rIssue").value.trim(),device_condition:$("rCondition").value.trim(),technician:$("rTech").value.trim(),estimated_total:Number($("rEstimate").value||0),paid_amount:income,parts_cost:partsCost,status:$("rStatus").value,note:$("rNote").value.trim()};
+   let income=Number($("rPaid").value||0), partsCost=Number($("rPartsCost").value||0); let p={customer_id:Number($("rCustomer").value),device_model:$("rModel").value.trim(),imei:$("rImei").value.trim(),customer_issue:$("rIssue").value.trim(),device_condition:$("rCondition").value.trim(),technician:$("rTech").value.trim(),estimated_total:Number($("rEstimate").value||0),paid_amount:income,parts_cost:partsCost,received_date:$("rReceivedDate").value||null,delivered_date:$("rDeliveredDate").value||null,status:$("rStatus").value,note:$("rNote").value.trim()};
    let q=x.id?sb.from("repair_orders").update(p).eq("id",x.id).select("id,device_model,paid_amount,parts_cost").single():sb.from("repair_orders").insert(p).select("id,device_model,paid_amount,parts_cost").single();
    let z=await q;
    if(z.error){
@@ -302,7 +309,7 @@ async function openRepairForm(x={}){
      return;
    }
    const finance=await syncRepairFinance(z.data.id,z.data.device_model,income,partsCost); if(finance.error){alert("Phiếu đã lưu nhưng chưa ghi được Thu/Chi: "+finance.error.message);return}
-   const printAfterSave=!!e.submitter?.dataset?.print; const printData={...z.data,customer_name:$("rCustomer").selectedOptions[0]?.textContent||"",technician:$("rTech").value,customer_issue:$("rIssue").value,device_condition:$("rCondition").value,note:$("rNote").value,imei:$("rImei").value,estimated_total:Number($("rEstimate").value||0),paid_amount:income,parts_cost:partsCost}; closeModal();await Promise.all([loadRepairs(),loadDashboard(),loadFinance(),loadRevenue()]); if(printAfterSave) printRepairTicket(printData);
+   const printAfterSave=!!e.submitter?.dataset?.print; const printData={...z.data,customer_name:$("rCustomer").selectedOptions[0]?.textContent||"",technician:$("rTech").value,customer_issue:$("rIssue").value,device_condition:$("rCondition").value,note:$("rNote").value,imei:$("rImei").value,estimated_total:Number($("rEstimate").value||0),paid_amount:income,parts_cost:partsCost,received_date:$("rReceivedDate").value||null,delivered_date:$("rDeliveredDate").value||null}; closeModal();await Promise.all([loadRepairs(),loadDashboard(),loadFinance(),loadRevenue()]); if(printAfterSave) printRepairTicket(printData);
  }
 }
 async function loadCustomers(){let r=await sb.from("customers").select("*").order("id",{ascending:false});if(r.error){$("customersList").innerHTML="<div class='notice'>Chưa có bảng customers. Hãy chạy <b>supabase-shop.sql</b>.</div>";return}let d=r.data||[];$("customersList").innerHTML=`<div class="table-wrap"><table><tr><th>ID</th><th>Khách hàng</th><th>Điện thoại</th><th>Địa chỉ</th><th>Ghi chú</th><th></th></tr>${d.map(x=>`<tr><td>#${x.id}</td><td>${esc(x.name)}</td><td>${esc(x.phone)}</td><td>${esc(x.address||"")}</td><td>${esc(x.note||"")}</td><td><button class="btn" onclick='editCustomer(${JSON.stringify(x).replace(/'/g,"&#39;")})'>Sửa</button> <button class="btn danger" onclick="deleteCustomer(${x.id})">🗑️ Xóa</button></td></tr>`).join("")}</table></div>`}
