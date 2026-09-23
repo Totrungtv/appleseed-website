@@ -268,6 +268,7 @@ async function openRepairForm(x={}){
  $("rCustomer").innerHTML='<option value="">-- Chọn khách hàng --</option>'+(cr.data||[]).map(c=>`<option value="${c.id}">#${c.id} · ${esc(c.name)} · ${esc(c.phone)}</option>`).join("");
  if(x.customer_id) $("rCustomer").value=String(x.customer_id);
  if(x.status)$("rStatus").value=x.status;
+ const calcRepairProfit=()=>{$("rProfit").value=Number($("rPaid").value||0)-Number($("rPartsCost").value||0)}; $("rPaid").oninput=calcRepairProfit; $("rPartsCost").oninput=calcRepairProfit;
  $("repairForm").onsubmit=async e=>{
    e.preventDefault();
    let income=Number($("rPaid").value||0), partsCost=Number($("rPartsCost").value||0); let p={customer_id:Number($("rCustomer").value),device_model:$("rModel").value.trim(),imei:$("rImei").value.trim(),customer_issue:$("rIssue").value.trim(),device_condition:$("rCondition").value.trim(),technician:$("rTech").value.trim(),estimated_total:Number($("rEstimate").value||0),paid_amount:income,parts_cost:partsCost,status:$("rStatus").value,note:$("rNote").value.trim()};
