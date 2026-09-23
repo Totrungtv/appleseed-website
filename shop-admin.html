@@ -247,13 +247,13 @@ async function loadRepairs(){
 window.editRepair=x=>openRepairForm(x);
 window.deleteRepair=async id=>{
   if(!confirm("XÓA phiếu sửa chữa #"+id+"?\n\nHành động này sẽ xóa phiếu khỏi database.")) return;
-  const tx=await sb.from("store_transactions").delete().eq("repair_order_id",id); if(tx.error){alert("Không xóa được giao dịch liên kết: "+tx.error.message);return}
+  const tx=await sb.from("store_transactions").delete().eq("repair_order_id",id).eq("transaction_source","repair"); if(tx.error){alert("Không xóa được giao dịch liên kết: "+tx.error.message);return}
   let r=await sb.from("repair_orders").delete().eq("id",id);
   if(r.error){alert("Không xóa được: "+r.error.message);return}
   closeModal(); loadRepairs(); loadDashboard(); loadWarranty(); loadFinance(); loadRevenue();
 };
 $("newRepair").onclick=()=>openRepairForm();
-async function syncRepairFinance(repairId,model,income,partsCost){ const del=await sb.from("store_transactions").delete().eq("repair_order_id",repairId); if(del.error)return del; const rows=[]; if(income>0)rows.push({type:"income",amount:income,description:"Thu sửa chữa #"+repairId+" · "+model,payment_method:"Tiền mặt",repair_order_id:repairId,transaction_source:"repair"}); if(partsCost>0)rows.push({type:"expense",amount:partsCost,description:"Chi linh kiện #"+repairId+" · "+model,payment_method:"Nội bộ",repair_order_id:repairId,transaction_source:"repair"}); if(!rows.length)return {error:null}; return await sb.from("store_transactions").insert(rows); }
+async function syncRepairFinance(repairId,model,income,partsCost){ const del=await sb.from("store_transactions").delete().eq("repair_order_id",repairId).eq("transaction_source","repair"); if(del.error)return del; const rows=[]; if(income>0)rows.push({type:"income",amount:income,description:"Thu sửa chữa #"+repairId+" · "+model,payment_method:"Tiền mặt",repair_order_id:repairId,transaction_source:"repair"}); if(partsCost>0)rows.push({type:"expense",amount:partsCost,description:"Chi linh kiện #"+repairId+" · "+model,payment_method:"Nội bộ",repair_order_id:repairId,transaction_source:"repair"}); if(!rows.length)return {error:null}; return await sb.from("store_transactions").insert(rows); }
 async function openRepairForm(x={}){
  openModal(x.id?"Sửa phiếu #"+x.id:"Tạo phiếu sửa chữa",`<form id="repairForm" class="formgrid">
  <label class="full">Khách hàng<select id="rCustomer" required><option value="">Đang tải khách hàng...</option></select></label>
