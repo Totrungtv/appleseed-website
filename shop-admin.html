@@ -465,7 +465,26 @@ function openStockForm(x={}){
   openModal(x.id?"Sửa hàng trong kho":"Nhập hàng",`<form id="stockForm" class="formgrid">
     <label>Tên hàng / sản phẩm<input id="iName" value="${esc(x.name||"")}" required></label>
     <label>Mã SKU<input id="iSku" value="${esc(x.sku||"")}"></label>
-    <label>Nhóm<select id="iCategory"><option>Màn hình</option><option>Pin</option><option>Mặt kính / lưng</option><option>Camera</option><option>Cổng sạc</option><option>Loa / Mic</option><option>Face ID</option><option>Máy</option><option>Phụ kiện</option><option>Linh kiện khác</option></select></label>
+    <label>Nhóm hàng<select id="iCategory">
+      <option>Điện thoại</option>
+      <option>Ốp lưng</option>
+      <option>Tai nghe</option>
+      <option>Sạc</option>
+      <option>Sạc dự phòng</option>
+      <option>Cáp sạc</option>
+      <option>Kính cường lực</option>
+      <option>Phụ kiện</option>
+      <option>Linh kiện</option>
+      <option>Màn hình</option>
+      <option>Pin</option>
+      <option>Camera</option>
+      <option>Cổng sạc</option>
+      <option>Loa / Mic</option>
+      <option>Face ID</option>
+      <option>Máy</option>
+      <option>Mặt kính / lưng</option>
+      <option>Linh kiện khác</option>
+    </select></label>
     <label>Số lượng tồn<input id="iQty" type="number" min="0" value="${x.quantity||0}"></label>
     <label>Mức cảnh báo sắp hết<input id="iLow" type="number" min="0" value="${x.low_stock_threshold??2}"></label>
     <label>Giá nhập<input id="iCost" type="number" min="0" value="${x.cost_price||0}"></label>
