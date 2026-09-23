@@ -87,10 +87,6 @@ h1,h2,h3,p{margin-top:0}.top h1{margin-bottom:5px}.muted{color:#667085;font-size
 </div>
 
 <div id="app" class="wrap hidden">
-<div class="stable-guard" id="stableGuard">
-  <div><strong>🛡️ Stable Guard</strong><small id="stableGuardText">Bản quản lý hiện tại được bảo vệ. Trước thay đổi cấu hình linh kiện, hệ thống sẽ lưu mốc ổn định của trang.</small></div>
-  <div class="guard-actions"><span id="stableGuardStatus" class="stable-ok">✅ Stable</span><button class="btn" id="commitPartsStable" type="button">✅ Chốt Stable hiện tại</button><button class="btn" id="restorePartsStable" type="button">↩️ Khôi phục bản Stable</button><button class="btn" id="stableHistory" type="button">🕘 Lịch sử Stable</button></div>
-</div>
 <div class="top">
 <div><h1>🏪 Quản lý cửa hàng Apple Seed</h1><div class="muted" id="user"></div></div>
 <div class="actions"><a class="btn" href="admin.html">⚙️ Quản trị</a><a class="btn" href="index.html">🌐 Website</a><button class="btn" id="logout">Đăng xuất</button></div>
@@ -192,7 +188,10 @@ h1,h2,h3,p{margin-top:0}.top h1{margin-bottom:5px}.muted{color:#667085;font-size
 <script src="supabase-config.js"></script>
 <script>
 const sb=window.supabaseClient,$=id=>document.getElementById(id);let session=null;
+const TZ="Asia/Ho_Chi_Minh";
 const money=n=>Number(n||0).toLocaleString("vi-VN")+"đ";
+const localDateKey=v=>new Date(v||Date.now()).toLocaleDateString("en-CA",{timeZone:TZ});
+const localDateTime=v=>new Date(v||Date.now()).toLocaleString("vi-VN",{timeZone:TZ});
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
 function statusBadge(s){let m={pending:["Chờ kiểm tra","pending"],repairing:["Đang sửa","repair"],done:["Đã sửa xong","done"],delivered:["Đã giao","delivered"],failed:["Không sửa được","failed"]};let x=m[s]||m.pending;return `<span class="badge ${x[1]}">${x[0]}</span>`}
 function openModal(title,body){$("modalTitle").textContent=title;$("modalBody").innerHTML=body;$("modal").classList.remove("hidden")}
@@ -214,7 +213,7 @@ async function loadDashboard(){
   sb.from("inventory_items").select("quantity"),
   sb.from("store_transactions").select("type,amount,created_at")
  ]);
- let repairs=r.data||[], inv=i.data||[], tx=f.data||[], today=new Date().toISOString().slice(0,10);
+ let repairs=r.data||[], inv=i.data||[], tx=f.data||[], today=localDateKey();
  let ym=today.slice(0,7);let monthIncome=tx.filter(x=>x.type==="income"&&String(x.created_at).slice(0,7)===ym).reduce((a,x)=>a+Number(x.amount||0),0);let monthExpense=tx.filter(x=>x.type==="expense"&&String(x.created_at).slice(0,7)===ym).reduce((a,x)=>a+Number(x.amount||0),0);
  $("sRepair").textContent=repairs.filter(x=>["pending","repairing"].includes(x.status)).length;
  $("sDone").textContent=repairs.filter(x=>x.status==="done").length;
@@ -277,7 +276,7 @@ async function openRepairForm(x={}){
  $("rCustomer").innerHTML='<option value="">-- Chọn khách hàng --</option>'+(cr.data||[]).map(c=>`<option value="${c.id}">#${c.id} · ${esc(c.name)} · ${esc(c.phone)}</option>`).join("");
  if(x.customer_id) $("rCustomer").value=String(x.customer_id);
  if(x.status)$("rStatus").value=x.status;
- const todayRepair=new Date().toISOString().slice(0,10);
+ const todayRepair=localDateKey();
  const syncDeliveredDate=()=>{ if($("rStatus").value==="delivered" && !$("rDeliveredDate").value) $("rDeliveredDate").value=todayRepair; };
  $("rStatus").onchange=syncDeliveredDate;
  syncDeliveredDate();
@@ -521,7 +520,7 @@ window.deleteSale=async id=>{
 async function loadSales(){
   let r=await sb.from("sale_orders").select("*,inventory_items(name,quantity,low_stock_threshold,category)").order("created_at",{ascending:false}).limit(500);
   if(r.error){$("salesList").innerHTML="<div class='notice'>Chưa có bảng <b>sale_orders</b>. Hãy chạy migration bán hàng.</div>";return}
-  const d=r.data||[], today=new Date().toISOString().slice(0,10), ym=today.slice(0,7);
+  const d=r.data||[], today=localDateKey(), ym=today.slice(0,7);
   const sum=(arr,key)=>arr.reduce((a,x)=>a+Number(x[key]||0),0);
   const td=d.filter(x=>String(x.created_at).slice(0,10)===today), mo=d.filter(x=>String(x.created_at).slice(0,7)===ym);
   const tr=sum(td,"sale_total"),tc=sum(td,"cost_total"),mr=sum(mo,"sale_total"),mc=sum(mo,"cost_total");
@@ -593,7 +592,9 @@ async function openSaleForm(x={}){
     }
     const q=Math.max(1,Number($("sQty").value||1));
     const stock=Number(item.quantity||0);
-    const left=stock-q;
+    const oldBack=(x.id&&Number(x.inventory_item_id)===Number(item.id))?Number(x.quantity||0):0;
+    const available=stock+oldBack;
+    const left=available-q;
 
     $("sCost").value=Number(item.cost_price||0)*q;
     if(!x.id) $("sSale").value=Number(item.sale_price||0)*q;
@@ -656,7 +657,9 @@ async function openSaleForm(x={}){
     const item=items.find(i=>Number(i.id)===inventory_item_id);
     const qty=Math.max(1,Number($("sQty").value||1));
     if(!item){alert("Không tìm thấy sản phẩm trong kho.");return}
-    if(Number(item.quantity||0)<qty){alert("❌ Không đủ hàng. Tồn hiện tại: "+item.quantity);return}
+    const oldBack=(x.id&&Number(x.inventory_item_id)===Number(item.id))?Number(x.quantity||0):0;
+    const availableStock=Number(item.quantity||0)+oldBack;
+    if(availableStock<qty){alert("❌ Không đủ hàng. Tồn khả dụng cho đơn này: "+availableStock);return}
 
     const cost=Number($("sCost").value||0),sale=Number($("sSale").value||0),profit=sale-cost;
     if(sale<0||cost<0){alert("Giá không hợp lệ.");return}
@@ -726,7 +729,7 @@ function openMoneyForm(){
 async function loadRevenue(){
  let r=await sb.from("store_transactions").select("type,amount,description,payment_method,created_at").order("created_at",{ascending:false}).limit(500);
  if(r.error){$("revenueList").innerHTML="<div class='notice'>Chưa có bảng store_transactions. Hãy chạy <b>supabase-shop.sql</b>.</div>";return}
- let d=r.data||[],today=new Date().toISOString().slice(0,10),ym=today.slice(0,7);
+ let d=r.data||[],today=localDateKey(),ym=today.slice(0,7);
  let ti=d.filter(x=>x.type==="income"&&String(x.created_at).slice(0,10)===today).reduce((a,x)=>a+Number(x.amount||0),0);
  let mi=d.filter(x=>x.type==="income"&&String(x.created_at).slice(0,7)===ym).reduce((a,x)=>a+Number(x.amount||0),0);
  let me=d.filter(x=>x.type==="expense"&&String(x.created_at).slice(0,7)===ym).reduce((a,x)=>a+Number(x.amount||0),0);
@@ -749,7 +752,7 @@ window.deleteWarranty=async id=>{
 };
 $("newWarranty").onclick=()=>openWarrantyForm();window.editWarranty=x=>openWarrantyForm(x);
 function openWarrantyForm(x={}){
- let today=x.start_date||new Date().toISOString().slice(0,10),end=x.end_date||new Date(Date.now()+30*86400000).toISOString().slice(0,10);
+ let today=x.start_date||localDateKey(),end=x.end_date||localDateKey(Date.now()+30*86400000);
  openModal(x.id?"Sửa phiếu bảo hành #"+x.id:"Tạo phiếu bảo hành",`<form id="warrantyForm" class="formgrid">
  <label>Khách hàng ID<input id="wCustomer" type="number" value="${x.customer_id||''}" required></label><label>Phiếu sửa ID<input id="wRepair" type="number" value="${x.repair_order_id||''}"></label>
  <label>Model máy<input id="wModel" value="${esc(x.device_model||'')}" required></label><div class="code-row"><label>Mã bảo hành<input id="wCode" value="${esc(x.warranty_code||'')}" placeholder="BH-2026-0001"></label><button type="button" class="btn code-gen" id="genWarrantyCode">🎲 Tạo mã</button></div>
@@ -984,7 +987,7 @@ const GLOBAL_SEARCH_TYPES=[
   {key:'parts',title:'🧩 Linh kiện',tab:'parts',table:'shop_parts',fields:['name','sku','category','note'],label:r=>`${r.name||''}${r.sku?' · '+r.sku:''}`,meta:r=>`${r.category||''} · Tồn ${r.quantity??0} · Nhập ${money(r.cost_price)} · Bán ${money(r.sale_price)} · Thay thế ${money(r.replacement_price)}`,edit:r=>`editPart(${JSON.stringify(r).replace(/</g,'\\u003c').replace(/'/g,'&#39;')})`}
 ];
 window.__globalSearchResults=[];
-function gsClean(v){return String(v??'').replace(/[\\%_*]/g,' ').trim();}
+function gsClean(v){return String(v??'').replace(/[\\%_*,()]/g,' ').replace(/\s+/g,' ').trim();}
 function gsEscapeHtml(v){return esc(v);}
 function gsHighlight(text,term){const raw=String(text??''); if(!term)return gsEscapeHtml(raw); const safeTerm=term.replace(/[.*+?^${}()|[\\]\\]/g,'\\$&'); return gsEscapeHtml(raw).replace(new RegExp(safeTerm,'ig'),m=>`<mark class="search-hit">${gsEscapeHtml(m)}</mark>`)}
 function gsOr(fields,term){const t=gsClean(term).replace(/'/g,"''");return fields.map(f=>`${f}.ilike.*${t}*`).join(',')}
