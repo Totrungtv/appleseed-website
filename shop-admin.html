@@ -103,6 +103,7 @@ h1,h2,h3,p{margin-top:0}.top h1{margin-bottom:5px}.muted{color:#667085;font-size
 <button class="tab" data-tab="webLeads">🌐 Khách từ website</button>
 <button class="tab" data-tab="inventory">📦 Kho</button>
 <button class="tab" data-tab="finance">💰 Thu chi</button>
+<button class="tab" data-tab="sales">🛒 Bán hàng</button>
 <button class="tab" data-tab="revenue">📈 Doanh thu</button>
 <button class="tab" data-tab="warranty">🛡️ Bảo hành</button>
 <button class="tab" data-tab="pans">🛠️ Pan thực tế</button>
@@ -160,6 +161,17 @@ h1,h2,h3,p{margin-top:0}.top h1{margin-bottom:5px}.muted{color:#667085;font-size
 <section id="inventory" class="view hidden"><div class="panel"><div class="top"><div><h2>📦 Kho linh kiện</h2><div class="muted">Theo dõi tồn kho và giá nhập.</div></div><button class="btn primary" id="newStock">＋ Nhập linh kiện</button></div><div id="inventoryList"></div></div></section>
 
 <section id="finance" class="view hidden"><div class="panel"><div class="top"><div><h2>💰 Thu chi</h2><div class="muted">Ghi nhận tiền sửa chữa, bán hàng và chi phí.</div></div><button class="btn primary" id="newMoney">＋ Ghi giao dịch</button></div><div id="financeList"></div></div></section>
+<section id="sales" class="view hidden">
+<div class="panel">
+<div class="top"><div><h2>🛒 Khu vực bán hàng</h2><div class="muted">Ghi nhận từng lần bán máy / phụ kiện và tự tính doanh thu, giá vốn, lợi nhuận.</div></div><button class="btn primary" id="newSale">＋ Tạo đơn bán</button></div>
+<div class="cards">
+<div class="card"><div class="muted">Bán hôm nay</div><div class="num" id="salesTodayRevenue">0đ</div></div>
+<div class="card"><div class="muted">Giá vốn hôm nay</div><div class="num" id="salesTodayCost">0đ</div></div>
+<div class="card"><div class="muted">Lợi nhuận hôm nay</div><div class="num" id="salesTodayProfit">0đ</div></div>
+<div class="card"><div class="muted">Doanh thu tháng</div><div class="num" id="salesMonthRevenue">0đ</div></div>
+<div class="card"><div class="muted">Giá vốn tháng</div><div class="num" id="salesMonthCost">0đ</div></div>
+<div class="card"><div class="muted">Lợi nhuận tháng</div><div class="num" id="salesMonthProfit">0đ</div></div>
+</div><br><div id="salesList"></div></div></section>
 <section id="revenue" class="view hidden"><div class="panel"><div class="top"><div><h2>📈 Doanh thu</h2><div class="muted">Theo dõi doanh thu, chi phí và lợi nhuận theo thời gian.</div></div></div><div class="cards"><div class="card"><div class="muted">Doanh thu hôm nay</div><div class="num" id="revToday">0đ</div></div><div class="card"><div class="muted">Doanh thu tháng</div><div class="num" id="revMonth">0đ</div></div><div class="card"><div class="muted">Chi tháng</div><div class="num" id="expMonth">0đ</div></div><div class="card"><div class="muted">Lợi nhuận tháng</div><div class="num" id="profitMonth">0đ</div></div></div><br><div id="revenueList"></div></div></section>
 <section id="warranty" class="view hidden"><div class="panel"><div class="top"><div><h2>🛡️ Bảo hành</h2><div class="muted">Quản lý phiếu bảo hành, thời hạn và lịch sử xử lý.</div></div><button class="btn primary" id="newWarranty">＋ Tạo phiếu bảo hành</button></div><div id="warrantyList"></div></div></section>
 
@@ -220,9 +232,9 @@ async function auth(){
 }
 $("loginBtn").onclick=async()=>{let r=await sb.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(r.error){$("loginMsg").textContent=r.error.message;return}auth()};
 $("logout").onclick=async()=>{await sb.auth.signOut();location.reload()};
-document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".view").forEach(x=>x.classList.add("hidden"));$(b.dataset.tab).classList.remove("hidden");if(b.dataset.tab==="repairs")loadRepairs();if(b.dataset.tab==="customers")loadCustomers();if(b.dataset.tab==="webLeads")loadWebLeads();if(b.dataset.tab==="inventory")loadInventory();if(b.dataset.tab==="finance")loadFinance();if(b.dataset.tab==="revenue")loadRevenue();if(b.dataset.tab==="warranty")loadWarranty();if(b.dataset.tab==="pans")loadPans();if(b.dataset.tab==="parts")loadParts()});
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".view").forEach(x=>x.classList.add("hidden"));$(b.dataset.tab).classList.remove("hidden");if(b.dataset.tab==="repairs")loadRepairs();if(b.dataset.tab==="customers")loadCustomers();if(b.dataset.tab==="webLeads")loadWebLeads();if(b.dataset.tab==="inventory")loadInventory();if(b.dataset.tab==="finance")loadFinance();if(b.dataset.tab==="sales")loadSales();if(b.dataset.tab==="revenue")loadRevenue();if(b.dataset.tab==="warranty")loadWarranty();if(b.dataset.tab==="pans")loadPans();if(b.dataset.tab==="parts")loadParts()});
 
-async function loadAll(){loadDashboard();loadRepairs();loadCustomers();loadWebLeads();loadInventory();loadFinance();loadRevenue();loadWarranty();loadPans();loadParts()}
+async function loadAll(){loadDashboard();loadRepairs();loadCustomers();loadWebLeads();loadInventory();loadFinance();loadSales();loadRevenue();loadWarranty();loadPans();loadParts()}
 async function loadDashboard(){
  let [r,c,i,f]=await Promise.all([
   sb.from("repair_orders").select("id,status,device_model,customer_id,estimated_total").order("created_at",{ascending:false}).limit(100),
@@ -535,6 +547,47 @@ window.deleteTransaction=async id=>{
   loadDashboard();
   loadRevenue();
 };
+window.deleteSale=async id=>{
+  if(!confirm("XÓA đơn bán #"+id+"?\\n\\nCác giao dịch Thu/Chi liên kết của đơn này cũng sẽ được xóa.")) return;
+  const tx=await sb.from("store_transactions").delete().eq("sale_order_id",id).eq("transaction_source","sale");
+  if(tx.error){alert("Không xóa được giao dịch liên kết: "+tx.error.message);return}
+  const r=await sb.from("sale_orders").delete().eq("id",id);
+  if(r.error){alert("Không xóa được đơn bán: "+r.error.message);return}
+  closeModal();await Promise.all([loadSales(),loadFinance(),loadRevenue(),loadDashboard()]);
+};
+async function loadSales(){
+  let r=await sb.from("sale_orders").select("*").order("created_at",{ascending:false}).limit(500);
+  if(r.error){$("salesList").innerHTML="<div class='notice'>Chưa có bảng <b>sale_orders</b>. Hãy chạy migration bán hàng.</div>";return}
+  const d=r.data||[], today=new Date().toISOString().slice(0,10), ym=today.slice(0,7);
+  const sum=(arr,key)=>arr.reduce((a,x)=>a+Number(x[key]||0),0);
+  const td=d.filter(x=>String(x.created_at).slice(0,10)===today), mo=d.filter(x=>String(x.created_at).slice(0,7)===ym);
+  const tr=sum(td,"sale_total"),tc=sum(td,"cost_total"),mr=sum(mo,"sale_total"),mc=sum(mo,"cost_total");
+  $("salesTodayRevenue").textContent=money(tr);$("salesTodayCost").textContent=money(tc);$("salesTodayProfit").textContent=money(tr-tc);
+  $("salesMonthRevenue").textContent=money(mr);$("salesMonthCost").textContent=money(mc);$("salesMonthProfit").textContent=money(mr-mc);
+  $("salesList").innerHTML=d.length?`<div class="table-wrap"><table><tr><th>Ngày</th><th>Sản phẩm</th><th>SL</th><th>Giá vốn</th><th>Tiền bán</th><th>Lợi nhuận</th><th>Thanh toán</th><th></th></tr>${d.map(x=>`<tr><td>${new Date(x.created_at).toLocaleString("vi-VN")}</td><td><b>${esc(x.product_name)}</b>${x.customer_name?"<br><small>"+esc(x.customer_name)+"</small>":""}</td><td>${x.quantity}</td><td>${money(x.cost_total)}</td><td>${money(x.sale_total)}</td><td class="${Number(x.profit)>=0?'success':'danger'}"><b>${money(x.profit)}</b></td><td>${esc(x.payment_method||"")}</td><td><button class="btn" onclick='editSale(${JSON.stringify(x).replace(/'/g,"&#39;")})'>Sửa</button> <button class="btn danger" onclick="deleteSale(${x.id})">🗑️ Xóa</button></td></tr>`).join("")}</table></div>`:"<div class='notice'>Chưa có đơn bán nào.</div>";
+}
+window.editSale=x=>openSaleForm(x);
+$("newSale").onclick=()=>openSaleForm();
+function openSaleForm(x={}){
+ openModal(x.id?"Sửa đơn bán #"+x.id:"Tạo đơn bán",`<form id="saleForm" class="formgrid"><label>Tên sản phẩm / máy<input id="sProduct" value="${esc(x.product_name||"")}" placeholder="iPhone 12 Pro Max 256GB" required></label><label>Số lượng<input id="sQty" type="number" min="1" step="1" value="${x.quantity||1}" required></label><label>Giá vốn tổng (VNĐ)<input id="sCost" type="number" min="0" value="${x.cost_total||0}" required></label><label>Tiền bán tổng (VNĐ)<input id="sSale" type="number" min="0" value="${x.sale_total||0}" required></label><label>Khách hàng<input id="sCustomer" value="${esc(x.customer_name||"")}" placeholder="Không bắt buộc"></label><label>Phương thức<select id="sMethod"><option>Tiền mặt</option><option>Chuyển khoản</option><option>Ví điện tử</option></select></label><label class="full">Ghi chú<textarea id="sNote">${esc(x.note||"")}</textarea></label><div class="full notice">📊 <b>Doanh thu</b> = tiền bán · <b>Giá vốn</b> = chi phí nhập máy/hàng · <b>Lợi nhuận</b> = tiền bán − giá vốn.</div><div class="full" style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div style="border:1px solid #e4e7ec;border-radius:10px;padding:12px"><div class="muted">Lợi nhuận đơn</div><div id="sProfit" style="font-size:24px;font-weight:900;margin-top:5px">0đ</div></div><div style="border:1px solid #e4e7ec;border-radius:10px;padding:12px"><div class="muted">Lãi / sản phẩm</div><div id="sUnitProfit" style="font-size:24px;font-weight:900;margin-top:5px">0đ</div></div></div><div class="full right"><button class="btn" type="submit">💾 Lưu đơn</button></div></form>`);
+ if(x.payment_method) $("sMethod").value=x.payment_method;
+ const calc=()=>{const q=Math.max(1,Number($("sQty").value||1)),c=Number($("sCost").value||0),s=Number($("sSale").value||0),p=s-c;$("sProfit").textContent=money(p);$("sUnitProfit").textContent=money(p/q)}; $("sQty").oninput=calc;$("sCost").oninput=calc;$("sSale").oninput=calc;calc();
+ $("saleForm").onsubmit=async e=>{
+  e.preventDefault();
+  const qty=Math.max(1,Number($("sQty").value||1)),cost=Number($("sCost").value||0),sale=Number($("sSale").value||0),profit=sale-cost;
+  if(sale<0||cost<0){alert("Giá không hợp lệ.");return}
+  const p={product_name:$("sProduct").value.trim(),quantity:qty,cost_total:cost,sale_total:sale,profit,customer_name:$("sCustomer").value.trim(),payment_method:$("sMethod").value,note:$("sNote").value.trim()};
+  const q=x.id?sb.from("sale_orders").update(p).eq("id",x.id).select("*").single():sb.from("sale_orders").insert(p).select("*").single();
+  const z=await q;if(z.error){alert("Không lưu được đơn bán: "+z.error.message);return}
+  const del=await sb.from("store_transactions").delete().eq("sale_order_id",z.data.id).eq("transaction_source","sale");
+  if(del.error){alert("Đơn đã lưu nhưng chưa đồng bộ Thu/Chi: "+del.error.message);return}
+  const rows=[];
+  if(sale>0)rows.push({type:"income",amount:sale,description:"Bán hàng #"+z.data.id+" · "+p.product_name,payment_method:p.payment_method,sale_order_id:z.data.id,transaction_source:"sale"});
+  if(cost>0)rows.push({type:"expense",amount:cost,description:"Giá vốn bán hàng #"+z.data.id+" · "+p.product_name,payment_method:"Nội bộ",sale_order_id:z.data.id,transaction_source:"sale"});
+  if(rows.length){const tx=await sb.from("store_transactions").insert(rows);if(tx.error){alert("Đơn đã lưu nhưng chưa ghi đủ Thu/Chi: "+tx.error.message);return}}
+  closeModal();await Promise.all([loadSales(),loadFinance(),loadRevenue(),loadDashboard()]);
+ };
+}
 $("newMoney").onclick=()=>openMoneyForm();
 function openMoneyForm(){
   openModal("Ghi giao dịch",`<form id="moneyForm" class="formgrid">
