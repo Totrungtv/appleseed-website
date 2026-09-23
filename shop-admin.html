@@ -83,7 +83,7 @@ h1,h2,h3,p{margin-top:0}.top h1{margin-bottom:5px}.muted{color:#667085;font-size
 <div id="login" class="panel" style="max-width:460px;margin:90px auto">
 <h1>🔐 Apple Seed</h1><p>Đăng nhập để quản lý cửa hàng.</p>
 <div class="formgrid"><label>Email<input id="email" type="email"></label><label>Mật khẩu<input id="password" type="password"></label></div>
-<br><button class="btn primary" id="loginBtn">Đăng nhập</button><p id="loginMsg" class="muted"></p>
+<br><button class="btn primary" id="loginBtn" type="button">Đăng nhập</button><button class="btn" id="forgotPasswordBtn" type="button" style="margin-left:8px">🔑 Quên mật khẩu</button><p id="loginMsg" class="muted"></p>
 </div>
 
 <div id="app" class="wrap hidden">
@@ -198,11 +198,104 @@ function openModal(title,body){$("modalTitle").textContent=title;$("modalBody").
 function closeModal(){$("modal").classList.add("hidden")}
 window.closeModal=closeModal;
 async function auth(){
- if(!sb){$("loginMsg").textContent="Thiếu supabase-config.js";return}
- let r=await sb.auth.getSession(); if(r.data.session){session=r.data.session;$("login").classList.add("hidden");$("app").classList.remove("hidden");$("user").textContent=session.user.email||"";loadAll()}
+ if(!sb){$("loginMsg").textContent="Không tải được Supabase. Kiểm tra supabase-config.js.";return}
+ const r=await sb.auth.getSession();
+ if(r.data?.session){
+   session=r.data.session;
+   $("login").classList.add("hidden");
+   $("app").classList.remove("hidden");
+   $("user").textContent=session.user.email||"";
+   loadAll();
+ }
 }
-$("loginBtn").onclick=async()=>{let r=await sb.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(r.error){$("loginMsg").textContent=r.error.message;return}auth()};
+function loginMsg(text,error=false){
+ const el=$("loginMsg");
+ el.textContent=text||"";
+ el.style.color=error?"#b42318":"#175cd3";
+}
+async function loginShop(){
+ const email=$("email").value.trim().toLowerCase();
+ const password=$("password").value;
+ if(!email||!password){loginMsg("Vui lòng nhập email và mật khẩu.",true);return}
+ const btn=$("loginBtn");
+ btn.disabled=true;btn.textContent="Đang đăng nhập…";loginMsg("");
+ try{
+   const r=await sb.auth.signInWithPassword({email,password});
+   if(r.error) throw r.error;
+   await auth();
+ }catch(err){
+   console.error("Apple Seed Shop login:",err);
+   const msg=String(err?.message||"").toLowerCase();
+   if(msg.includes("invalid login credentials")){
+     loginMsg("Email hoặc mật khẩu không đúng. Nếu pa quên mật khẩu, bấm “Quên mật khẩu” bên dưới để đặt lại.",true);
+   }else if(msg.includes("email not confirmed")){
+     loginMsg("Email này chưa được xác nhận. Hãy kiểm tra email xác nhận tài khoản.",true);
+   }else{
+     loginMsg("Đăng nhập lỗi: "+(err?.message||"Không xác định"),true);
+   }
+ }finally{
+   btn.disabled=false;btn.textContent="Đăng nhập";
+ }
+}
+async function resetShopPassword(){
+ const email=$("email").value.trim().toLowerCase();
+ if(!email){loginMsg("Nhập email trước rồi bấm “Quên mật khẩu”.",true);$("email").focus();return}
+ const btn=$("forgotPasswordBtn");
+ btn.disabled=true;btn.textContent="Đang gửi email…";loginMsg("");
+ try{
+   const redirectTo=location.origin+location.pathname;
+   const r=await sb.auth.resetPasswordForEmail(email,{redirectTo});
+   if(r.error) throw r.error;
+   loginMsg("Đã gửi email đặt lại mật khẩu. Mở email và bấm liên kết để đặt mật khẩu mới.");
+ }catch(err){
+   console.error("Apple Seed Shop password recovery:",err);
+   loginMsg("Không gửi được email đặt lại mật khẩu: "+(err?.message||"Lỗi không xác định"),true);
+ }finally{
+   btn.disabled=false;btn.textContent="🔑 Quên mật khẩu";
+ }
+}
+async function handleShopRecovery(){
+ const hash=String(location.hash||"");
+ if(!/type=recovery/i.test(hash)) return;
+ const form=document.querySelector("#login .formgrid");
+ if(!form) return;
+ const passLabel=$("password")?.parentElement;
+ if(passLabel) passLabel.style.display="none";
+ $("loginBtn").style.display="none";
+ $("forgotPasswordBtn").style.display="none";
+ let wrap=document.getElementById("newShopPasswordWrap");
+ if(!wrap){
+   wrap=document.createElement("label");
+   wrap.id="newShopPasswordWrap";
+   wrap.innerHTML='Mật khẩu mới<input id="newShopPassword" type="password" minlength="8" autocomplete="new-password" placeholder="Tối thiểu 8 ký tự">';
+   form.appendChild(wrap);
+ }
+ let save=document.getElementById("saveShopPassword");
+ if(!save){
+   save=document.createElement("button");
+   save.id="saveShopPassword";save.type="button";save.className="btn primary";save.textContent="💾 Lưu mật khẩu mới";
+   $("forgotPasswordBtn").insertAdjacentElement("afterend",save);
+   save.onclick=async()=>{
+     const value=String($("newShopPassword").value||"");
+     if(value.length<8){loginMsg("Mật khẩu mới phải có ít nhất 8 ký tự.",true);return}
+     save.disabled=true;save.textContent="Đang lưu…";
+     try{
+       const r=await sb.auth.updateUser({password:value});
+       if(r.error) throw r.error;
+       await sb.auth.signOut();
+       location.replace(location.origin+location.pathname);
+     }catch(err){
+       loginMsg("Không đổi được mật khẩu: "+(err?.message||"Lỗi không xác định"),true);
+       save.disabled=false;save.textContent="💾 Lưu mật khẩu mới";
+     }
+   };
+ }
+ loginMsg("Chế độ đặt lại mật khẩu. Nhập mật khẩu mới rồi lưu.");
+}
+$("loginBtn").onclick=loginShop;
+$("forgotPasswordBtn").onclick=resetShopPassword;
 $("logout").onclick=async()=>{await sb.auth.signOut();location.reload()};
+sb?.auth?.onAuthStateChange((event)=>{if(event==="PASSWORD_RECOVERY")handleShopRecovery()});
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".view").forEach(x=>x.classList.add("hidden"));$(b.dataset.tab).classList.remove("hidden");if(b.dataset.tab==="repairs")loadRepairs();if(b.dataset.tab==="customers")loadCustomers();if(b.dataset.tab==="webLeads")loadWebLeads();if(b.dataset.tab==="inventory")loadInventory();if(b.dataset.tab==="lowStock")loadLowStock();if(b.dataset.tab==="finance")loadFinance();if(b.dataset.tab==="sales")loadSales();if(b.dataset.tab==="revenue")loadRevenue();if(b.dataset.tab==="warranty")loadWarranty();if(b.dataset.tab==="pans")loadPans();});
 
 async function loadAll(){loadDashboard();loadRepairs();loadCustomers();loadWebLeads();loadInventory();loadLowStock();loadFinance();loadSales();loadRevenue();loadWarranty();loadPans()}
@@ -1023,6 +1116,7 @@ $('globalSearch').addEventListener('keydown',e=>{if(e.key==='Enter')runGlobalSea
 $('globalSearchClear').onclick=()=>{$('globalSearch').value='';$('globalSearchStatus').textContent='';$('globalSearchResults').innerHTML='';window.__globalSearchResults=[];$('globalSearch').focus()};
 
 auth();
+handleShopRecovery();
 </script>
 </body>
 </html>
