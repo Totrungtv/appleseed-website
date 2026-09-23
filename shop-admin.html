@@ -572,7 +572,7 @@ window.deleteSale=async id=>{
   closeModal();await Promise.all([loadSales(),loadFinance(),loadRevenue(),loadDashboard()]);
 };
 async function loadSales(){
-  let r=await sb.from("sale_orders").select("*,inventory_items(name,quantity,low_stock_threshold)").order("created_at",{ascending:false}).limit(500);
+  let r=await sb.from("sale_orders").select("*,inventory_items(name,quantity,low_stock_threshold,category)").order("created_at",{ascending:false}).limit(500);
   if(r.error){$("salesList").innerHTML="<div class='notice'>Chưa có bảng <b>sale_orders</b>. Hãy chạy migration bán hàng.</div>";return}
   const d=r.data||[], today=new Date().toISOString().slice(0,10), ym=today.slice(0,7);
   const sum=(arr,key)=>arr.reduce((a,x)=>a+Number(x[key]||0),0);
@@ -580,53 +580,87 @@ async function loadSales(){
   const tr=sum(td,"sale_total"),tc=sum(td,"cost_total"),mr=sum(mo,"sale_total"),mc=sum(mo,"cost_total");
   $("salesTodayRevenue").textContent=money(tr);$("salesTodayCost").textContent=money(tc);$("salesTodayProfit").textContent=money(tr-tc);
   $("salesMonthRevenue").textContent=money(mr);$("salesMonthCost").textContent=money(mc);$("salesMonthProfit").textContent=money(mr-mc);
-  $("salesList").innerHTML=d.length?`<div class="table-wrap"><table><tr><th>Ngày</th><th>Sản phẩm</th><th>SL</th><th>Giá vốn</th><th>Tiền bán</th><th>Lợi nhuận</th><th>Tồn kho</th><th>Thanh toán</th><th></th></tr>${d.map(x=>{
+  $("salesList").innerHTML=d.length?`<div class="table-wrap"><table><tr><th>Ngày</th><th>Nhóm / Sản phẩm</th><th>SL</th><th>Giá vốn</th><th>Tiền bán</th><th>Lợi nhuận</th><th>Tồn kho</th><th>Thanh toán</th><th></th></tr>${d.map(x=>{
     const stock=x.inventory_items, sq=stock?Number(stock.quantity||0):null;
-    return `<tr><td>${new Date(x.created_at).toLocaleString("vi-VN")}</td><td><b>${esc(x.product_name)}</b>${stock?"<br><small>🔗 "+esc(stock.name)+"</small>":""}</td><td>${x.quantity}</td><td>${money(x.cost_total)}</td><td>${money(x.sale_total)}</td><td class="${Number(x.profit)>=0?'success':'danger'}"><b>${money(x.profit)}</b></td><td>${stock?(sq<=0?'<span class="badge failed">HẾT</span>':(sq<=Number(stock.low_stock_threshold||0)?'<span class="badge pending">SẮP HẾT · '+sq+'</span>':'<span class="badge done">CÒN '+sq+'</span>')):'—'}</td><td>${esc(x.payment_method||"")}</td><td><button class="btn" onclick='editSale(${JSON.stringify(x).replace(/'/g,"&#39;")})'>Sửa</button> <button class="btn danger" onclick="deleteSale(${x.id})">🗑️ Xóa</button></td></tr>`;
+    return `<tr><td>${new Date(x.created_at).toLocaleString("vi-VN")}</td><td><b>${esc(stock?.category||"")}</b><br>${esc(x.product_name)}</td><td>${x.quantity}</td><td>${money(x.cost_total)}</td><td>${money(x.sale_total)}</td><td class="${Number(x.profit)>=0?'success':'danger'}"><b>${money(x.profit)}</b></td><td>${stock?(sq<=0?'<span class="badge failed">HẾT</span>':(sq<=Number(stock.low_stock_threshold||0)?'<span class="badge pending">SẮP HẾT · '+sq+'</span>':'<span class="badge done">CÒN '+sq+'</span>')):'—'}</td><td>${esc(x.payment_method||"")}</td><td><button class="btn" onclick='editSale(${JSON.stringify(x).replace(/'/g,"&#39;")})'>Sửa</button> <button class="btn danger" onclick="deleteSale(${x.id})">🗑️ Xóa</button></td></tr>`;
   }).join("")}</table></div>`:"<div class='notice'>Chưa có đơn bán nào.</div>";
 }
 window.editSale=x=>openSaleForm(x);
 $("newSale").onclick=()=>openSaleForm();
+
 async function openSaleForm(x={}){
-  let inv=await sb.from("inventory_items").select("*").order("name",{ascending:true});
+  let inv=await sb.from("inventory_items").select("*").order("category",{ascending:true}).order("name",{ascending:true});
   if(inv.error){alert("Không tải được kho: "+inv.error.message);return}
   const items=inv.data||[];
+  const groups=[...new Set(items.map(i=>(i.category||"Khác").trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"vi"));
   openModal(x.id?"Sửa đơn bán #"+x.id:"Tạo đơn bán",`<form id="saleForm" class="formgrid">
-    <label class="full">Hàng trong kho<select id="sInventory" required><option value="">-- Chọn hàng cần bán --</option>${items.map(i=>`<option value="${i.id}">${esc(i.name)} · Tồn: ${i.quantity} · Giá vốn: ${money(i.cost_price)} · Giá bán: ${money(i.sale_price)}</option>`).join("")}</select></label>
-    <label>Tên sản phẩm / máy<input id="sProduct" value="${esc(x.product_name||"")}" required></label>
+    <label>Nhóm hàng<select id="sGroup" required><option value="">-- Chọn nhóm hàng --</option>${groups.map(g=>`<option value="${esc(g)}">${esc(g)}</option>`).join("")}</select></label>
+    <label>Sản phẩm / máy<select id="sInventory" required><option value="">-- Chọn sản phẩm --</option></select></label>
     <label>Số lượng<input id="sQty" type="number" min="1" step="1" value="${x.quantity||1}" required></label>
-    <label>Giá vốn tổng (VNĐ)<input id="sCost" type="number" min="0" value="${x.cost_total||0}" required></label>
+    <label>Giá vốn tổng (VNĐ)<input id="sCost" type="number" min="0" value="${x.cost_total||0}" readonly></label>
     <label>Tiền bán tổng (VNĐ)<input id="sSale" type="number" min="0" value="${x.sale_total||0}" required></label>
     <label>Khách hàng<input id="sCustomer" value="${esc(x.customer_name||"")}" placeholder="Không bắt buộc"></label>
     <label>Phương thức<select id="sMethod"><option>Tiền mặt</option><option>Chuyển khoản</option><option>Ví điện tử</option></select></label>
     <label class="full">Ghi chú<textarea id="sNote">${esc(x.note||"")}</textarea></label>
-    <div id="sStockNotice" class="full notice">📦 Chọn hàng trong kho để xem tồn.</div>
-    <div class="full notice">📊 <b>Doanh thu</b> = tiền bán · <b>Giá vốn</b> = chi phí nhập hàng · <b>Lợi nhuận</b> = tiền bán − giá vốn. Lưu đơn sẽ tự trừ kho.</div>
+    <div id="sStockNotice" class="full notice">📦 Chọn nhóm hàng — hệ thống sẽ dò sản phẩm và tồn kho.</div>
+    <div class="full notice">📊 Giá vốn lấy tự động từ Kho · Giá bán lấy tự động từ Kho · Lợi nhuận = Tiền bán − Giá vốn. Lưu đơn sẽ tự trừ kho.</div>
     <div class="full" style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div style="border:1px solid #e4e7ec;border-radius:10px;padding:12px"><div class="muted">Lợi nhuận đơn</div><div id="sProfit" style="font-size:24px;font-weight:900;margin-top:5px">0đ</div></div><div style="border:1px solid #e4e7ec;border-radius:10px;padding:12px"><div class="muted">Lãi / sản phẩm</div><div id="sUnitProfit" style="font-size:24px;font-weight:900;margin-top:5px">0đ</div></div></div>
     <div class="full right"><button class="btn" type="submit">💾 Lưu đơn & Trừ kho</button></div>
   </form>`);
-  if(x.inventory_item_id) $("sInventory").value=String(x.inventory_item_id);
+
   if(x.payment_method) $("sMethod").value=x.payment_method;
+
+  const groupItems=()=>items.filter(i=>(i.category||"Khác").trim()===$("sGroup").value);
+  const renderProducts=()=>{
+    const list=groupItems();
+    $("sInventory").innerHTML='<option value="">-- Chọn sản phẩm --</option>'+list.map(i=>{
+      const q=Number(i.quantity||0), min=Number(i.low_stock_threshold||0);
+      const status=q<=0?"HẾT":q<=min?"SẮP HẾT":"CÒN "+q;
+      return '<option value="'+i.id+'">'+esc(i.name)+' · '+status+'</option>';
+    }).join("");
+    if(list.length===1) $("sInventory").value=String(list[0].id);
+    syncFromInventory();
+  };
+
+  window._saleItems=items;
   const syncFromInventory=()=>{
     const item=items.find(i=>String(i.id)===$("sInventory").value);
     if(item){
-      $("sProduct").value=item.name;
-      if(!x.id || Number($("sCost").value||0)===0) $("sCost").value=Number(item.cost_price||0)*Math.max(1,Number($("sQty").value||1));
-      if(!x.id || Number($("sSale").value||0)===0) $("sSale").value=Number(item.sale_price||0)*Math.max(1,Number($("sQty").value||1));
-      const q=Math.max(1,Number($("sQty").value||1)), left=Number(item.quantity||0)-q;
-      $("sStockNotice").innerHTML=left<0?'<b style="color:#b42318">❌ Không đủ tồn kho.</b>':left===0?'<b style="color:#b42318">⚠️ Bán đơn này sẽ HẾT HÀNG.</b>':left<=Number(item.low_stock_threshold||0)?'<b style="color:#b54708">⚠️ Sau khi bán còn '+left+' — SẮP HẾT.</b>':'✅ Sau khi bán còn '+left+' sản phẩm.';
-    }else $("sStockNotice").textContent="📦 Chọn hàng trong kho để xem tồn.";
+      const q=Math.max(1,Number($("sQty").value||1)), stock=Number(item.quantity||0), left=stock-q;
+      $("sCost").value=Number(item.cost_price||0)*q;
+      if(!x.id) $("sSale").value=Number(item.sale_price||0)*q;
+      $("sStockNotice").innerHTML=left<0?'<b style="color:#b42318">❌ HẾT / KHÔNG ĐỦ HÀNG — tồn hiện tại: '+stock+'</b>':left===0?'<b style="color:#b42318">⚠️ Bán '+q+' sẽ HẾT HÀNG.</b>':left<=Number(item.low_stock_threshold||0)?'<b style="color:#b54708">⚠️ Sau khi bán còn '+left+' — SẮP HẾT.</b>':'✅ '+item.name+' · Đang còn '+stock+' · Sau khi bán còn '+left;
+    }else $("sStockNotice").textContent="📦 Chọn sản phẩm để xem tồn kho.";
+    calcProfit();
   };
-  const calc=()=>{const q=Math.max(1,Number($("sQty").value||1)),c=Number($("sCost").value||0),s=Number($("sSale").value||0),p=s-c;$("sProfit").textContent=money(p);$("sUnitProfit").textContent=money(p/q);syncFromInventory()};
-  $("sInventory").onchange=syncFromInventory;$("sQty").oninput=()=>{calc()};$("sCost").oninput=calc;$("sSale").oninput=calc;calc();
+
+  const calcProfit=()=>{
+    const q=Math.max(1,Number($("sQty").value||1)),c=Number($("sCost").value||0),s=Number($("sSale").value||0),p=s-c;
+    $("sProfit").textContent=money(p);$("sUnitProfit").textContent=money(p/q);
+  };
+
+  $("sGroup").onchange=renderProducts;
+  $("sInventory").onchange=syncFromInventory;
+  $("sQty").oninput=syncFromInventory;
+  $("sSale").oninput=calcProfit;
+
+  if(x.inventory_item_id){
+    const oldItem=items.find(i=>Number(i.id)===Number(x.inventory_item_id));
+    if(oldItem){$("sGroup").value=(oldItem.category||"Khác").trim();renderProducts();$("sInventory").value=String(x.inventory_item_id);syncFromInventory();}
+  }
+  calcProfit();
+
   $("saleForm").onsubmit=async e=>{
     e.preventDefault();
     const inventory_item_id=Number($("sInventory").value||0);
-    if(!inventory_item_id){alert("Phải chọn hàng trong kho để hệ thống tự trừ tồn.");return}
-    const qty=Math.max(1,Number($("sQty").value||1)),cost=Number($("sCost").value||0),sale=Number($("sSale").value||0),profit=sale-cost;
+    if(!inventory_item_id){alert("Chọn nhóm rồi chọn sản phẩm cần bán.");return}
+    const item=items.find(i=>Number(i.id)===inventory_item_id), qty=Math.max(1,Number($("sQty").value||1));
+    if(!item){alert("Không tìm thấy sản phẩm trong kho.");return}
+    if(Number(item.quantity||0)<qty){alert("Không đủ hàng. Tồn hiện tại: "+item.quantity);return}
+    const cost=Number($("sCost").value||0),sale=Number($("sSale").value||0),profit=sale-cost;
     if(sale<0||cost<0){alert("Giá không hợp lệ.");return}
-    const p={inventory_item_id,product_name:$("sProduct").value.trim(),quantity:qty,cost_total:cost,sale_total:sale,profit,customer_name:$("sCustomer").value.trim(),payment_method:$("sMethod").value,note:$("sNote").value.trim()};
-    const q=x.id?sb.from("sale_orders").update(p).eq("id",x.id).select("*,inventory_items(name,quantity,low_stock_threshold)").single():sb.from("sale_orders").insert(p).select("*,inventory_items(name,quantity,low_stock_threshold)").single();
+    const p={inventory_item_id,product_name:item.name,quantity:qty,cost_total:cost,sale_total:sale,profit,customer_name:$("sCustomer").value.trim(),payment_method:$("sMethod").value,note:$("sNote").value.trim()};
+    const q=x.id?sb.from("sale_orders").update(p).eq("id",x.id).select("*,inventory_items(name,quantity,low_stock_threshold,category)").single():sb.from("sale_orders").insert(p).select("*,inventory_items(name,quantity,low_stock_threshold,category)").single();
     const z=await q;
     if(z.error){alert("Không lưu được đơn bán: "+z.error.message);return}
     const del=await sb.from("store_transactions").delete().eq("sale_order_id",z.data.id).eq("transaction_source","sale");
