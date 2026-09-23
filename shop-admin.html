@@ -267,8 +267,12 @@ function printRepairTicket(x={}){
  "<tr><td style=\"padding:7px;border:1px solid #ddd\"><b>Thợ nhận máy</b></td><td style=\"padding:7px;border:1px solid #ddd\">"+esc(x.technician||"")+"</td></tr></table>"+
  "<div style=\"font-weight:800;margin:16px 0 6px\">GHI CHÚ / YÊU CẦU SỬA</div><div style=\"border:1px solid #ddd;min-height:90px;padding:10px;white-space:pre-wrap\">"+esc(x.note||"")+"</div>"+
  "<div style=\"margin-top:18px;font-size:13px\">Dự kiến giá sửa: <b>"+money(x.estimated_total)+"</b></div>"+
- "<div style=\"margin-top:30px;display:grid;grid-template-columns:1fr 1fr;text-align:center;font-size:13px\"><div><b>NGƯỜI GIAO MÁY</b><br><br><br>________________</div><div><b>THỢ NHẬN MÁY</b><br><br><br>________________</div></div>"+
- "<div style=\"margin-top:22px;text-align:center;font-size:11px;color:#666\">Phiếu nội bộ Apple Seed</div></div>";
+ "<div style=\"margin-top:22px;border-top:2px solid #111;padding-top:12px;font-size:12px\"><b>XÁC NHẬN GIAO MÁY</b><br>Phiếu này được lập để xác nhận tình trạng máy và nội dung công việc tại thời điểm giao máy cho kỹ thuật viên.</div>"+
+ "<div style=\"margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:28px;text-align:center;font-size:13px\">"+
+ "<div style=\"border:1px solid #ccc;min-height:145px;padding:12px\"><b>CHỦ CỬA HÀNG / NGƯỜI DUYỆT</b><div style=\"height:88px\"></div><div>________________________</div><div style=\"font-size:11px;margin-top:4px\">Ký và ghi rõ họ tên</div></div>"+
+ "<div style=\"border:1px solid #ccc;min-height:145px;padding:12px\"><b>KỸ THUẬT VIÊN NHẬN MÁY</b><div style=\"height:88px\"></div><div>________________________</div><div style=\"font-size:11px;margin-top:4px\">Ký và ghi rõ họ tên</div></div>"+
+ "</div>"+
+ "<div style=\"margin-top:18px;text-align:center;font-size:11px;color:#666\">Phiếu nội bộ Apple Seed · Ký trực tiếp trên bản in khi giao máy.</div></div>";
  document.body.appendChild(sheet); window.print(); setTimeout(()=>sheet.remove(),1000);
 }
 async function syncRepairFinance(repairId,model,income,partsCost){ const del=await sb.from("store_transactions").delete().eq("repair_order_id",repairId).eq("transaction_source","repair"); if(del.error)return del; const rows=[]; if(income>0)rows.push({type:"income",amount:income,description:"Thu sửa chữa #"+repairId+" · "+model,payment_method:"Tiền mặt",repair_order_id:repairId,transaction_source:"repair"}); if(partsCost>0)rows.push({type:"expense",amount:partsCost,description:"Chi linh kiện #"+repairId+" · "+model,payment_method:"Nội bộ",repair_order_id:repairId,transaction_source:"repair"}); if(!rows.length)return {error:null}; return await sb.from("store_transactions").insert(rows); }
