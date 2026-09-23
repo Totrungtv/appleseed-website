@@ -102,6 +102,7 @@ h1,h2,h3,p{margin-top:0}.top h1{margin-bottom:5px}.muted{color:#667085;font-size
 <button class="tab" data-tab="customers">👤 Khách hàng</button>
 <button class="tab" data-tab="webLeads">🌐 Khách từ website</button>
 <button class="tab" data-tab="inventory">📦 Kho</button>
+<button class="tab" data-tab="lowStock">📥 Cần nhập</button>
 <button class="tab" data-tab="finance">💰 Thu chi</button>
 <button class="tab" data-tab="sales">🛒 Bán hàng</button>
 <button class="tab" data-tab="revenue">📈 Doanh thu</button>
@@ -158,8 +159,9 @@ h1,h2,h3,p{margin-top:0}.top h1{margin-bottom:5px}.muted{color:#667085;font-size
 </div>
 </section>
 
-<section id="inventory" class="view hidden"><div class="panel"><div class="top"><div><h2>📦 Kho linh kiện</h2><div class="muted">Theo dõi tồn kho và giá nhập.</div></div><button class="btn primary" id="newStock">＋ Nhập linh kiện</button></div><div id="inventoryList"></div></div></section>
+<section id="inventory" class="view hidden"><div class="panel"><div class="top"><div><h2>📦 Kho linh kiện</h2><div class="muted">Theo dõi tồn kho, hàng sắp hết và hàng đã hết. Khi bán hàng có liên kết, tồn kho tự trừ.</div></div><div class="actions"><button class="btn" id="openLowStockFromInventory">📥 Cần nhập</button><button class="btn primary" id="newStock">＋ Nhập linh kiện</button></div></div><div id="inventoryList"></div></div></section>
 
+<section id="lowStock" class="view hidden"><div class="panel"><div class="top"><div><h2>📥 Hàng cần nhập thêm</h2><div class="muted">Danh sách tự động dựa trên tồn kho và mức cảnh báo của từng mặt hàng.</div></div><button class="btn" id="refreshLowStock">↻ Làm mới</button></div><div id="lowStockList"></div></div></section>
 <section id="finance" class="view hidden"><div class="panel"><div class="top"><div><h2>💰 Thu chi</h2><div class="muted">Ghi nhận tiền sửa chữa, bán hàng và chi phí.</div></div><button class="btn primary" id="newMoney">＋ Ghi giao dịch</button></div><div id="financeList"></div></div></section>
 <section id="sales" class="view hidden">
 <div class="panel">
@@ -232,9 +234,9 @@ async function auth(){
 }
 $("loginBtn").onclick=async()=>{let r=await sb.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(r.error){$("loginMsg").textContent=r.error.message;return}auth()};
 $("logout").onclick=async()=>{await sb.auth.signOut();location.reload()};
-document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".view").forEach(x=>x.classList.add("hidden"));$(b.dataset.tab).classList.remove("hidden");if(b.dataset.tab==="repairs")loadRepairs();if(b.dataset.tab==="customers")loadCustomers();if(b.dataset.tab==="webLeads")loadWebLeads();if(b.dataset.tab==="inventory")loadInventory();if(b.dataset.tab==="finance")loadFinance();if(b.dataset.tab==="sales")loadSales();if(b.dataset.tab==="revenue")loadRevenue();if(b.dataset.tab==="warranty")loadWarranty();if(b.dataset.tab==="pans")loadPans();if(b.dataset.tab==="parts")loadParts()});
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".view").forEach(x=>x.classList.add("hidden"));$(b.dataset.tab).classList.remove("hidden");if(b.dataset.tab==="repairs")loadRepairs();if(b.dataset.tab==="customers")loadCustomers();if(b.dataset.tab==="webLeads")loadWebLeads();if(b.dataset.tab==="inventory")loadInventory();if(b.dataset.tab==="lowStock")loadLowStock();if(b.dataset.tab==="finance")loadFinance();if(b.dataset.tab==="sales")loadSales();if(b.dataset.tab==="revenue")loadRevenue();if(b.dataset.tab==="warranty")loadWarranty();if(b.dataset.tab==="pans")loadPans();if(b.dataset.tab==="parts")loadParts()});
 
-async function loadAll(){loadDashboard();loadRepairs();loadCustomers();loadWebLeads();loadInventory();loadFinance();loadSales();loadRevenue();loadWarranty();loadPans();loadParts()}
+async function loadAll(){loadDashboard();loadRepairs();loadCustomers();loadWebLeads();loadInventory();loadLowStock();loadFinance();loadSales();loadRevenue();loadWarranty();loadPans();loadParts()}
 async function loadDashboard(){
  let [r,c,i,f]=await Promise.all([
   sb.from("repair_orders").select("id,status,device_model,customer_id,estimated_total").order("created_at",{ascending:false}).limit(100),
@@ -429,43 +431,57 @@ $("refreshWebLeads").onclick=()=>loadWebLeads();
 $("webLeadSearch").oninput=renderWebLeads;
 $("webLeadStatus").onchange=renderWebLeads;
 
-async function loadInventory(){let r=await sb.from("inventory_items").select("*").order("id",{ascending:false});if(r.error){$("inventoryList").innerHTML="<div class='notice'>Chưa có bảng inventory_items. Hãy chạy <b>supabase-shop.sql</b>.</div>";return}let d=r.data||[];$("inventoryList").innerHTML=`<div class="table-wrap"><table><tr><th>ID</th><th>Linh kiện</th><th>Nhóm</th><th>Mã</th><th>Tồn</th><th>Giá nhập</th><th>Giá bán</th><th>Giá thay thế</th><th></th></tr>${d.map(x=>`<tr><td>#${x.id}</td><td>${esc(x.name)}</td><td>${esc(x.category||"Linh kiện khác")}</td><td>${esc(x.sku||"")}</td><td>${x.quantity}</td><td><span class="price-cost">${money(x.cost_price)}</span></td><td><span class="price-sale">${money(x.sale_price)}</span></td><td><span class="price-replacement">${money(x.replacement_price)}</span></td><td><button class="btn" onclick='editStock(${JSON.stringify(x).replace(/'/g,"&#39;")})'>Sửa</button> <button class="btn danger" onclick="deleteStock(${x.id})">🗑️ Xóa</button></td></tr>`).join("")}</table></div>`}
+async function loadLowStock(){
+  let r=await sb.from("inventory_items").select("*").order("quantity",{ascending:true}).order("id",{ascending:false});
+  if(r.error){$("lowStockList").innerHTML="<div class='notice'>Không tải được danh sách cần nhập: "+esc(r.error.message)+"</div>";return}
+  const d=(r.data||[]).filter(x=>Number(x.quantity||0)<=Number(x.low_stock_threshold||0));
+  if(!d.length){$("lowStockList").innerHTML="<div class='notice'>✅ Hiện chưa có mặt hàng nào cần nhập thêm.</div>";return}
+  $("lowStockList").innerHTML=`<div class="table-wrap"><table><tr><th>Sản phẩm</th><th>SKU</th><th>Tồn</th><th>Mức cảnh báo</th><th>Trạng thái</th><th></th></tr>${d.map(x=>{
+    const qty=Number(x.quantity||0), min=Number(x.low_stock_threshold||0), out=qty<=0;
+    return `<tr><td><b>${esc(x.name)}</b></td><td>${esc(x.sku||"")}</td><td><b>${qty}</b></td><td>${min}</td><td>${out?'<span class="badge failed">HẾT HÀNG</span>':'<span class="badge pending">SẮP HẾT</span>'}</td><td><button class="btn primary" onclick='editStock(${JSON.stringify(x).replace(/'/g,"&#39;")})'>📦 Nhập thêm</button></td></tr>`;
+  }).join("")}</table></div>`;
+}
+async function loadInventory(){
+  let r=await sb.from("inventory_items").select("*").order("id",{ascending:false});
+  if(r.error){$("inventoryList").innerHTML="<div class='notice'>Chưa có bảng inventory_items. Hãy chạy <b>supabase-shop.sql</b>.</div>";return}
+  let d=r.data||[];
+  $("inventoryList").innerHTML=`<div class="table-wrap"><table><tr><th>ID</th><th>Hàng hóa</th><th>Nhóm</th><th>Mã</th><th>Tồn</th><th>Cảnh báo</th><th>Giá nhập</th><th>Giá bán</th><th></th></tr>${d.map(x=>{
+    const qty=Number(x.quantity||0), min=Number(x.low_stock_threshold||0);
+    const status=qty<=0?'<span class="badge failed">HẾT</span>':(qty<=min?'<span class="badge pending">SẮP HẾT</span>':'<span class="badge done">CÒN HÀNG</span>');
+    return `<tr><td>#${x.id}</td><td><b>${esc(x.name)}</b></td><td>${esc(x.category||"Linh kiện khác")}</td><td>${esc(x.sku||"")}</td><td><b>${qty}</b></td><td>${min}</td><td><span class="price-cost">${money(x.cost_price)}</span></td><td><span class="price-sale">${money(x.sale_price)}</span></td><td><button class="btn" onclick='editStock(${JSON.stringify(x).replace(/'/g,"&#39;")})'>Sửa</button> <button class="btn danger" onclick="deleteStock(${x.id})">🗑️ Xóa</button></td></tr>`;
+  }).join("")}</table></div>`;
+}
 window.deleteStock=async id=>{
-  if(!confirm("XÓA linh kiện kho #"+id+"?")) return;
+  if(!confirm("XÓA hàng trong kho #"+id+"?")) return;
   let r=await sb.from("inventory_items").delete().eq("id",id);
   if(r.error){alert("Không xóa được: "+r.error.message);return}
-  closeModal(); loadInventory(); loadDashboard();
+  closeModal();await Promise.all([loadInventory(),loadLowStock(),loadSales(),loadDashboard()]);
 };
-$("newStock").onclick=()=>openStockForm();window.editStock=x=>openStockForm(x);
+$("newStock").onclick=()=>openStockForm();
+$("openLowStockFromInventory").onclick=()=>{document.querySelector('.tab[data-tab="lowStock"]').click()};
+$("refreshLowStock").onclick=loadLowStock;
+window.editStock=x=>openStockForm(x);
 function openStockForm(x={}){
-  openModal(x.id?"Sửa linh kiện":"Nhập linh kiện",`<form id="stockForm" class="formgrid">
-    <label>Tên linh kiện<input id="iName" value="${esc(x.name||"")}" required></label>
+  openModal(x.id?"Sửa hàng trong kho":"Nhập hàng",`<form id="stockForm" class="formgrid">
+    <label>Tên hàng / sản phẩm<input id="iName" value="${esc(x.name||"")}" required></label>
     <label>Mã SKU<input id="iSku" value="${esc(x.sku||"")}"></label>
-    <label>Nhóm linh kiện<select id="iCategory"><option>Màn hình</option><option>Pin</option><option>Mặt kính / lưng</option><option>Camera</option><option>Cổng sạc</option><option>Loa / Mic</option><option>Face ID</option><option>Linh kiện khác</option></select></label>
-    <label>Số lượng<input id="iQty" type="number" min="0" value="${x.quantity||0}"></label>
+    <label>Nhóm<select id="iCategory"><option>Màn hình</option><option>Pin</option><option>Mặt kính / lưng</option><option>Camera</option><option>Cổng sạc</option><option>Loa / Mic</option><option>Face ID</option><option>Máy</option><option>Phụ kiện</option><option>Linh kiện khác</option></select></label>
+    <label>Số lượng tồn<input id="iQty" type="number" min="0" value="${x.quantity||0}"></label>
+    <label>Mức cảnh báo sắp hết<input id="iLow" type="number" min="0" value="${x.low_stock_threshold??2}"></label>
     <label>Giá nhập<input id="iCost" type="number" min="0" value="${x.cost_price||0}"></label>
     <label>Giá bán<input id="iSale" type="number" min="0" value="${x.sale_price||0}"></label>
     <label>Giá thay thế<input id="iReplacement" type="number" min="0" value="${x.replacement_price||0}"></label>
     <label class="full">Ghi chú<input id="iNote" value="${esc(x.note||"")}"></label>
+    <div class="full notice">📦 Khi bán hàng chọn đúng mặt hàng này, hệ thống sẽ tự trừ tồn kho. Nếu tồn ≤ mức cảnh báo, hàng sẽ xuất hiện trong mục <b>📥 Cần nhập</b>.</div>
     <div class="full right"><button class="btn primary" type="submit">💾 Lưu</button></div>
   </form>`);
   $("iCategory").value=x.category||"Linh kiện khác";
   $("stockForm").onsubmit=async e=>{
     e.preventDefault();
-    const p={
-      name:$("iName").value.trim(),
-      sku:$("iSku").value.trim(),
-      category:$("iCategory").value,
-      quantity:Number($("iQty").value||0),
-      cost_price:Number($("iCost").value||0),
-      sale_price:Number($("iSale").value||0),
-      replacement_price:Number($("iReplacement").value||0),
-      note:$("iNote").value.trim()
-    };
+    const p={name:$("iName").value.trim(),sku:$("iSku").value.trim(),category:$("iCategory").value,quantity:Number($("iQty").value||0),low_stock_threshold:Number($("iLow").value||0),cost_price:Number($("iCost").value||0),sale_price:Number($("iSale").value||0),replacement_price:Number($("iReplacement").value||0),note:$("iNote").value.trim()};
     const z=await(x.id?sb.from("inventory_items").update(p).eq("id",x.id):sb.from("inventory_items").insert(p));
-    if(z.error){alert("Không lưu được linh kiện: "+z.error.message);return}
-    closeModal();
-    await Promise.all([loadInventory(),loadDashboard()]);
+    if(z.error){alert("Không lưu được hàng: "+z.error.message);return}
+    closeModal();await Promise.all([loadInventory(),loadLowStock(),loadSales(),loadDashboard()]);
   };
 }
 async function deleteTransaction(id){
@@ -556,7 +572,7 @@ window.deleteSale=async id=>{
   closeModal();await Promise.all([loadSales(),loadFinance(),loadRevenue(),loadDashboard()]);
 };
 async function loadSales(){
-  let r=await sb.from("sale_orders").select("*").order("created_at",{ascending:false}).limit(500);
+  let r=await sb.from("sale_orders").select("*,inventory_items(name,quantity,low_stock_threshold)").order("created_at",{ascending:false}).limit(500);
   if(r.error){$("salesList").innerHTML="<div class='notice'>Chưa có bảng <b>sale_orders</b>. Hãy chạy migration bán hàng.</div>";return}
   const d=r.data||[], today=new Date().toISOString().slice(0,10), ym=today.slice(0,7);
   const sum=(arr,key)=>arr.reduce((a,x)=>a+Number(x[key]||0),0);
@@ -564,29 +580,63 @@ async function loadSales(){
   const tr=sum(td,"sale_total"),tc=sum(td,"cost_total"),mr=sum(mo,"sale_total"),mc=sum(mo,"cost_total");
   $("salesTodayRevenue").textContent=money(tr);$("salesTodayCost").textContent=money(tc);$("salesTodayProfit").textContent=money(tr-tc);
   $("salesMonthRevenue").textContent=money(mr);$("salesMonthCost").textContent=money(mc);$("salesMonthProfit").textContent=money(mr-mc);
-  $("salesList").innerHTML=d.length?`<div class="table-wrap"><table><tr><th>Ngày</th><th>Sản phẩm</th><th>SL</th><th>Giá vốn</th><th>Tiền bán</th><th>Lợi nhuận</th><th>Thanh toán</th><th></th></tr>${d.map(x=>`<tr><td>${new Date(x.created_at).toLocaleString("vi-VN")}</td><td><b>${esc(x.product_name)}</b>${x.customer_name?"<br><small>"+esc(x.customer_name)+"</small>":""}</td><td>${x.quantity}</td><td>${money(x.cost_total)}</td><td>${money(x.sale_total)}</td><td class="${Number(x.profit)>=0?'success':'danger'}"><b>${money(x.profit)}</b></td><td>${esc(x.payment_method||"")}</td><td><button class="btn" onclick='editSale(${JSON.stringify(x).replace(/'/g,"&#39;")})'>Sửa</button> <button class="btn danger" onclick="deleteSale(${x.id})">🗑️ Xóa</button></td></tr>`).join("")}</table></div>`:"<div class='notice'>Chưa có đơn bán nào.</div>";
+  $("salesList").innerHTML=d.length?`<div class="table-wrap"><table><tr><th>Ngày</th><th>Sản phẩm</th><th>SL</th><th>Giá vốn</th><th>Tiền bán</th><th>Lợi nhuận</th><th>Tồn kho</th><th>Thanh toán</th><th></th></tr>${d.map(x=>{
+    const stock=x.inventory_items, sq=stock?Number(stock.quantity||0):null;
+    return `<tr><td>${new Date(x.created_at).toLocaleString("vi-VN")}</td><td><b>${esc(x.product_name)}</b>${stock?"<br><small>🔗 "+esc(stock.name)+"</small>":""}</td><td>${x.quantity}</td><td>${money(x.cost_total)}</td><td>${money(x.sale_total)}</td><td class="${Number(x.profit)>=0?'success':'danger'}"><b>${money(x.profit)}</b></td><td>${stock?(sq<=0?'<span class="badge failed">HẾT</span>':(sq<=Number(stock.low_stock_threshold||0)?'<span class="badge pending">SẮP HẾT · '+sq+'</span>':'<span class="badge done">CÒN '+sq+'</span>')):'—'}</td><td>${esc(x.payment_method||"")}</td><td><button class="btn" onclick='editSale(${JSON.stringify(x).replace(/'/g,"&#39;")})'>Sửa</button> <button class="btn danger" onclick="deleteSale(${x.id})">🗑️ Xóa</button></td></tr>`;
+  }).join("")}</table></div>`:"<div class='notice'>Chưa có đơn bán nào.</div>";
 }
 window.editSale=x=>openSaleForm(x);
 $("newSale").onclick=()=>openSaleForm();
-function openSaleForm(x={}){
- openModal(x.id?"Sửa đơn bán #"+x.id:"Tạo đơn bán",`<form id="saleForm" class="formgrid"><label>Tên sản phẩm / máy<input id="sProduct" value="${esc(x.product_name||"")}" placeholder="iPhone 12 Pro Max 256GB" required></label><label>Số lượng<input id="sQty" type="number" min="1" step="1" value="${x.quantity||1}" required></label><label>Giá vốn tổng (VNĐ)<input id="sCost" type="number" min="0" value="${x.cost_total||0}" required></label><label>Tiền bán tổng (VNĐ)<input id="sSale" type="number" min="0" value="${x.sale_total||0}" required></label><label>Khách hàng<input id="sCustomer" value="${esc(x.customer_name||"")}" placeholder="Không bắt buộc"></label><label>Phương thức<select id="sMethod"><option>Tiền mặt</option><option>Chuyển khoản</option><option>Ví điện tử</option></select></label><label class="full">Ghi chú<textarea id="sNote">${esc(x.note||"")}</textarea></label><div class="full notice">📊 <b>Doanh thu</b> = tiền bán · <b>Giá vốn</b> = chi phí nhập máy/hàng · <b>Lợi nhuận</b> = tiền bán − giá vốn.</div><div class="full" style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div style="border:1px solid #e4e7ec;border-radius:10px;padding:12px"><div class="muted">Lợi nhuận đơn</div><div id="sProfit" style="font-size:24px;font-weight:900;margin-top:5px">0đ</div></div><div style="border:1px solid #e4e7ec;border-radius:10px;padding:12px"><div class="muted">Lãi / sản phẩm</div><div id="sUnitProfit" style="font-size:24px;font-weight:900;margin-top:5px">0đ</div></div></div><div class="full right"><button class="btn" type="submit">💾 Lưu đơn</button></div></form>`);
- if(x.payment_method) $("sMethod").value=x.payment_method;
- const calc=()=>{const q=Math.max(1,Number($("sQty").value||1)),c=Number($("sCost").value||0),s=Number($("sSale").value||0),p=s-c;$("sProfit").textContent=money(p);$("sUnitProfit").textContent=money(p/q)}; $("sQty").oninput=calc;$("sCost").oninput=calc;$("sSale").oninput=calc;calc();
- $("saleForm").onsubmit=async e=>{
-  e.preventDefault();
-  const qty=Math.max(1,Number($("sQty").value||1)),cost=Number($("sCost").value||0),sale=Number($("sSale").value||0),profit=sale-cost;
-  if(sale<0||cost<0){alert("Giá không hợp lệ.");return}
-  const p={product_name:$("sProduct").value.trim(),quantity:qty,cost_total:cost,sale_total:sale,profit,customer_name:$("sCustomer").value.trim(),payment_method:$("sMethod").value,note:$("sNote").value.trim()};
-  const q=x.id?sb.from("sale_orders").update(p).eq("id",x.id).select("*").single():sb.from("sale_orders").insert(p).select("*").single();
-  const z=await q;if(z.error){alert("Không lưu được đơn bán: "+z.error.message);return}
-  const del=await sb.from("store_transactions").delete().eq("sale_order_id",z.data.id).eq("transaction_source","sale");
-  if(del.error){alert("Đơn đã lưu nhưng chưa đồng bộ Thu/Chi: "+del.error.message);return}
-  const rows=[];
-  if(sale>0)rows.push({type:"income",amount:sale,description:"Bán hàng #"+z.data.id+" · "+p.product_name,payment_method:p.payment_method,sale_order_id:z.data.id,transaction_source:"sale"});
-  if(cost>0)rows.push({type:"expense",amount:cost,description:"Giá vốn bán hàng #"+z.data.id+" · "+p.product_name,payment_method:"Nội bộ",sale_order_id:z.data.id,transaction_source:"sale"});
-  if(rows.length){const tx=await sb.from("store_transactions").insert(rows);if(tx.error){alert("Đơn đã lưu nhưng chưa ghi đủ Thu/Chi: "+tx.error.message);return}}
-  closeModal();await Promise.all([loadSales(),loadFinance(),loadRevenue(),loadDashboard()]);
- };
+async function openSaleForm(x={}){
+  let inv=await sb.from("inventory_items").select("*").order("name",{ascending:true});
+  if(inv.error){alert("Không tải được kho: "+inv.error.message);return}
+  const items=inv.data||[];
+  openModal(x.id?"Sửa đơn bán #"+x.id:"Tạo đơn bán",`<form id="saleForm" class="formgrid">
+    <label class="full">Hàng trong kho<select id="sInventory" required><option value="">-- Chọn hàng cần bán --</option>${items.map(i=>`<option value="${i.id}">${esc(i.name)} · Tồn: ${i.quantity} · Giá vốn: ${money(i.cost_price)} · Giá bán: ${money(i.sale_price)}</option>`).join("")}</select></label>
+    <label>Tên sản phẩm / máy<input id="sProduct" value="${esc(x.product_name||"")}" required></label>
+    <label>Số lượng<input id="sQty" type="number" min="1" step="1" value="${x.quantity||1}" required></label>
+    <label>Giá vốn tổng (VNĐ)<input id="sCost" type="number" min="0" value="${x.cost_total||0}" required></label>
+    <label>Tiền bán tổng (VNĐ)<input id="sSale" type="number" min="0" value="${x.sale_total||0}" required></label>
+    <label>Khách hàng<input id="sCustomer" value="${esc(x.customer_name||"")}" placeholder="Không bắt buộc"></label>
+    <label>Phương thức<select id="sMethod"><option>Tiền mặt</option><option>Chuyển khoản</option><option>Ví điện tử</option></select></label>
+    <label class="full">Ghi chú<textarea id="sNote">${esc(x.note||"")}</textarea></label>
+    <div id="sStockNotice" class="full notice">📦 Chọn hàng trong kho để xem tồn.</div>
+    <div class="full notice">📊 <b>Doanh thu</b> = tiền bán · <b>Giá vốn</b> = chi phí nhập hàng · <b>Lợi nhuận</b> = tiền bán − giá vốn. Lưu đơn sẽ tự trừ kho.</div>
+    <div class="full" style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div style="border:1px solid #e4e7ec;border-radius:10px;padding:12px"><div class="muted">Lợi nhuận đơn</div><div id="sProfit" style="font-size:24px;font-weight:900;margin-top:5px">0đ</div></div><div style="border:1px solid #e4e7ec;border-radius:10px;padding:12px"><div class="muted">Lãi / sản phẩm</div><div id="sUnitProfit" style="font-size:24px;font-weight:900;margin-top:5px">0đ</div></div></div>
+    <div class="full right"><button class="btn" type="submit">💾 Lưu đơn & Trừ kho</button></div>
+  </form>`);
+  if(x.inventory_item_id) $("sInventory").value=String(x.inventory_item_id);
+  if(x.payment_method) $("sMethod").value=x.payment_method;
+  const syncFromInventory=()=>{
+    const item=items.find(i=>String(i.id)===$("sInventory").value);
+    if(item){
+      $("sProduct").value=item.name;
+      if(!x.id || Number($("sCost").value||0)===0) $("sCost").value=Number(item.cost_price||0)*Math.max(1,Number($("sQty").value||1));
+      if(!x.id || Number($("sSale").value||0)===0) $("sSale").value=Number(item.sale_price||0)*Math.max(1,Number($("sQty").value||1));
+      const q=Math.max(1,Number($("sQty").value||1)), left=Number(item.quantity||0)-q;
+      $("sStockNotice").innerHTML=left<0?'<b style="color:#b42318">❌ Không đủ tồn kho.</b>':left===0?'<b style="color:#b42318">⚠️ Bán đơn này sẽ HẾT HÀNG.</b>':left<=Number(item.low_stock_threshold||0)?'<b style="color:#b54708">⚠️ Sau khi bán còn '+left+' — SẮP HẾT.</b>':'✅ Sau khi bán còn '+left+' sản phẩm.';
+    }else $("sStockNotice").textContent="📦 Chọn hàng trong kho để xem tồn.";
+  };
+  const calc=()=>{const q=Math.max(1,Number($("sQty").value||1)),c=Number($("sCost").value||0),s=Number($("sSale").value||0),p=s-c;$("sProfit").textContent=money(p);$("sUnitProfit").textContent=money(p/q);syncFromInventory()};
+  $("sInventory").onchange=syncFromInventory;$("sQty").oninput=()=>{calc()};$("sCost").oninput=calc;$("sSale").oninput=calc;calc();
+  $("saleForm").onsubmit=async e=>{
+    e.preventDefault();
+    const inventory_item_id=Number($("sInventory").value||0);
+    if(!inventory_item_id){alert("Phải chọn hàng trong kho để hệ thống tự trừ tồn.");return}
+    const qty=Math.max(1,Number($("sQty").value||1)),cost=Number($("sCost").value||0),sale=Number($("sSale").value||0),profit=sale-cost;
+    if(sale<0||cost<0){alert("Giá không hợp lệ.");return}
+    const p={inventory_item_id,product_name:$("sProduct").value.trim(),quantity:qty,cost_total:cost,sale_total:sale,profit,customer_name:$("sCustomer").value.trim(),payment_method:$("sMethod").value,note:$("sNote").value.trim()};
+    const q=x.id?sb.from("sale_orders").update(p).eq("id",x.id).select("*,inventory_items(name,quantity,low_stock_threshold)").single():sb.from("sale_orders").insert(p).select("*,inventory_items(name,quantity,low_stock_threshold)").single();
+    const z=await q;
+    if(z.error){alert("Không lưu được đơn bán: "+z.error.message);return}
+    const del=await sb.from("store_transactions").delete().eq("sale_order_id",z.data.id).eq("transaction_source","sale");
+    if(del.error){alert("Đơn đã lưu nhưng chưa đồng bộ Thu/Chi: "+del.error.message);return}
+    const rows=[];
+    if(sale>0)rows.push({type:"income",amount:sale,description:"Bán hàng #"+z.data.id+" · "+p.product_name,payment_method:p.payment_method,sale_order_id:z.data.id,transaction_source:"sale"});
+    if(cost>0)rows.push({type:"expense",amount:cost,description:"Giá vốn bán hàng #"+z.data.id+" · "+p.product_name,payment_method:"Nội bộ",sale_order_id:z.data.id,transaction_source:"sale"});
+    if(rows.length){const tx=await sb.from("store_transactions").insert(rows);if(tx.error){alert("Đơn đã lưu nhưng chưa ghi đủ Thu/Chi: "+tx.error.message);return}}
+    closeModal();await Promise.all([loadSales(),loadInventory(),loadLowStock(),loadFinance(),loadRevenue(),loadDashboard()]);
+  };
 }
 $("newMoney").onclick=()=>openMoneyForm();
 function openMoneyForm(){
