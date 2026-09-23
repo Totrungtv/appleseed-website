@@ -480,15 +480,6 @@ function playYoutube(id,title){
 }
 function playYoutubeEntry(v){playYoutube(v.id,v.title);}
 
-document.addEventListener('error',e=>{
- const img=e.target;if(!(img instanceof HTMLImageElement))return;
- let candidates=[];try{candidates=JSON.parse(decodeURIComponent(img.dataset.imageCandidates||'[]'));}catch(_){}
- if(!candidates.length)return;
- let idx=Number(img.dataset.imageIndex||0),variant=Number(img.dataset.imageVariant||0);
- if(variant<3){variant++;img.dataset.imageVariant=String(variant);img.src=imageProxyUrl(candidates[idx],variant);return;}
- if(idx+1<candidates.length){idx++;img.dataset.imageIndex=String(idx);img.dataset.imageVariant='0';img.src=imageProxyUrl(candidates[idx],0);return;}
- img.removeAttribute('src');img.style.display='none';
-},{capture:true});
 document.addEventListener('click',e=>{
  const n=e.target.closest('.news, .news-mini');
  if(n){
