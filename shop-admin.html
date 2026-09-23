@@ -108,12 +108,11 @@ h1,h2,h3,p{margin-top:0}.top h1{margin-bottom:5px}.muted{color:#667085;font-size
 <button class="tab" data-tab="revenue">📈 Doanh thu</button>
 <button class="tab" data-tab="warranty">🛡️ Bảo hành</button>
 <button class="tab" data-tab="pans">🛠️ Pan thực tế</button>
-<button class="tab" data-tab="parts">🧩 Linh kiện</button>
 </div>
 
 <div class="panel global-search-panel">
   <div class="global-search-head">
-    <div><h2 style="margin:0">🔎 Tìm kiếm toàn cửa hàng</h2><div class="muted">Tìm trong khách hàng, sửa chữa, khách website, kho, thu chi, bảo hành, pan và linh kiện.</div></div>
+    <div><h2 style="margin:0">🔎 Tìm kiếm toàn cửa hàng</h2><div class="muted">Tìm trong khách hàng, sửa chữa, khách website, kho, thu chi, bảo hành và pan.</div></div>
     <div class="global-search-box"><input id="globalSearch" type="search" placeholder="Tên, SĐT, IMEI, mã SKU, model, mã bảo hành..." autocomplete="off"><button class="btn primary" id="globalSearchBtn" type="button">🔎 Tìm</button><button class="btn" id="globalSearchClear" type="button">✕ Xóa</button></div>
   </div>
   <div id="globalSearchStatus" class="muted" style="margin-top:10px"></div>
@@ -159,7 +158,7 @@ h1,h2,h3,p{margin-top:0}.top h1{margin-bottom:5px}.muted{color:#667085;font-size
 </div>
 </section>
 
-<section id="inventory" class="view hidden"><div class="panel"><div class="top"><div><h2>📦 Kho linh kiện</h2><div class="muted">Theo dõi tồn kho, hàng sắp hết và hàng đã hết. Khi bán hàng có liên kết, tồn kho tự trừ.</div></div><div class="actions"><button class="btn" id="openLowStockFromInventory">📥 Cần nhập</button><button class="btn primary" id="newStock">＋ Nhập linh kiện</button></div></div><div id="inventoryList"></div></div></section>
+<section id="inventory" class="view hidden"><div class="panel"><div class="parts-toolbar"><div><h2>📦 Kho hàng</h2><div class="muted">Quản lý theo <b>nhóm → hãng → sản phẩm</b>. Bán hàng liên kết trực tiếp để tự trừ tồn.</div></div><div class="actions"><button class="btn" id="openLowStockFromInventory">📥 Cần nhập</button><button class="btn" id="manageInventoryBrands">🏷️ Thêm hãng</button><button class="btn primary" id="newStock">＋ Thêm sản phẩm</button></div></div><div class="notice" style="margin-top:10px">📌 Chọn nhóm hàng → hãng → sản phẩm. Không nhập tên sản phẩm khi bán.</div><div id="inventoryGroups" class="parts-pages" style="margin-top:12px"></div><div id="inventoryBrands" class="parts-hierarchy" style="margin-top:10px"></div><div class="iphone-model-panel" style="margin-top:10px"><div class="iphone-model-head"><div><div class="iphone-model-title">📦 Sản phẩm trong kho</div><div class="iphone-model-sub" id="inventoryFilterStatus">Tất cả sản phẩm</div></div><input id="inventorySearch" class="iphone-model-search" placeholder="Tìm tên sản phẩm, SKU..." /></div></div><div id="inventoryList"></div></div></section>
 
 <section id="lowStock" class="view hidden"><div class="panel"><div class="top"><div><h2>📥 Hàng cần nhập thêm</h2><div class="muted">Danh sách tự động dựa trên tồn kho và mức cảnh báo của từng mặt hàng.</div></div><button class="btn" id="refreshLowStock">↻ Làm mới</button></div><div id="lowStockList"></div></div></section>
 <section id="finance" class="view hidden"><div class="panel"><div class="top"><div><h2>💰 Thu chi</h2><div class="muted">Ghi nhận tiền sửa chữa, bán hàng và chi phí.</div></div><button class="btn primary" id="newMoney">＋ Ghi giao dịch</button></div><div id="financeList"></div></div></section>
@@ -184,36 +183,7 @@ h1,h2,h3,p{margin-top:0}.top h1{margin-bottom:5px}.muted{color:#667085;font-size
 </div>
 </section>
 
-<section id="parts" class="view hidden">
-<div class="panel">
-  <div class="parts-toolbar">
-    <div><h2>🧩 Linh kiện</h2><div class="muted">📱 Bấm "Điện thoại" → chọn hãng → chọn nhóm linh kiện → chọn model nếu cần. Các hãng khác như Samsung, Xiaomi, OPPO, Vivo có thể thêm sau.</div></div>
-    <div class="actions"><button class="btn" id="manageDeviceFamilies">📱 Quản lý dòng máy</button><button class="btn" id="managePartPages">⚙️ Quản lý trang</button><button class="btn primary" id="newPart" type="button" onclick="openPartForm()">＋ Thêm linh kiện</button></div>
-  </div>
-  <div id="partsPages" class="parts-pages"></div>
-  <div id="partsHierarchy" class="parts-hierarchy"></div>
-  <div class="iphone-model-panel" id="iphoneModelPanel">
-    <div class="iphone-model-head">
-      <div><div class="iphone-model-title" id="deviceFamilyTitle">📱 iPhone</div><div class="iphone-model-sub" id="iphoneModelMapStatus">Tất cả iPhone</div></div>
-      <div class="actions">
-        <button class="btn" id="iphoneModelManage" type="button">⚙️ Quản lý mẫu</button>
-        <button class="btn primary" id="iphoneModelAdd" type="button">＋ Thêm mẫu mới</button>
-      </div>
-    </div>
-    <div class="iphone-model-compact">
-      <button class="iphone-all-btn" id="iphoneAllToggle" type="button">📱 Tất cả iPhone</button>
-      <span class="muted" id="iphoneCompactCount">0 linh kiện</span>
-      <button class="btn" id="iphoneModelClear" type="button">✕ Bỏ lọc</button>
-    </div>
-    <div id="iphoneModelExpanded" class="hidden">
-      <div class="iphone-model-tools"><input id="iphoneModelSearch" class="iphone-model-search" placeholder="Tìm model: 14 Pro Max, 15 Pro..." /><button class="btn" id="iphoneModelClose" type="button">▲ Thu gọn</button></div>
-      <div id="iphoneModelMap" class="iphone-model-map"></div>
-    </div>
-    <div class="notice" style="margin-top:10px">💡 Chỉ mở danh sách model khi cần: bấm <b>Tất cả dòng máy</b>. Chọn model để lọc đúng model; đổi bộ lọc không xóa dữ liệu.</div>
-  </div>
-  <div id="partsList"></div>
-</div>
-</section>
+
 </div>
 
 <div id="modal" class="modal hidden"><div class="modalbox"><div class="top"><h2 id="modalTitle"></h2><button class="btn" onclick="closeModal()">✕</button></div><div id="modalBody"></div></div></div>
@@ -234,9 +204,9 @@ async function auth(){
 }
 $("loginBtn").onclick=async()=>{let r=await sb.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(r.error){$("loginMsg").textContent=r.error.message;return}auth()};
 $("logout").onclick=async()=>{await sb.auth.signOut();location.reload()};
-document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".view").forEach(x=>x.classList.add("hidden"));$(b.dataset.tab).classList.remove("hidden");if(b.dataset.tab==="repairs")loadRepairs();if(b.dataset.tab==="customers")loadCustomers();if(b.dataset.tab==="webLeads")loadWebLeads();if(b.dataset.tab==="inventory")loadInventory();if(b.dataset.tab==="lowStock")loadLowStock();if(b.dataset.tab==="finance")loadFinance();if(b.dataset.tab==="sales")loadSales();if(b.dataset.tab==="revenue")loadRevenue();if(b.dataset.tab==="warranty")loadWarranty();if(b.dataset.tab==="pans")loadPans();if(b.dataset.tab==="parts")loadParts()});
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".view").forEach(x=>x.classList.add("hidden"));$(b.dataset.tab).classList.remove("hidden");if(b.dataset.tab==="repairs")loadRepairs();if(b.dataset.tab==="customers")loadCustomers();if(b.dataset.tab==="webLeads")loadWebLeads();if(b.dataset.tab==="inventory")loadInventory();if(b.dataset.tab==="lowStock")loadLowStock();if(b.dataset.tab==="finance")loadFinance();if(b.dataset.tab==="sales")loadSales();if(b.dataset.tab==="revenue")loadRevenue();if(b.dataset.tab==="warranty")loadWarranty();if(b.dataset.tab==="pans")loadPans();if(b.dataset.tab==="parts")});
 
-async function loadAll(){loadDashboard();loadRepairs();loadCustomers();loadWebLeads();loadInventory();loadLowStock();loadFinance();loadSales();loadRevenue();loadWarranty();loadPans();loadParts()}
+async function loadAll(){loadDashboard();loadRepairs();loadCustomers();loadWebLeads();loadInventory();loadLowStock();loadFinance();loadSales();loadRevenue();loadWarranty();loadPans()}
 async function loadDashboard(){
  let [r,c,i,f]=await Promise.all([
   sb.from("repair_orders").select("id,status,device_model,customer_id,estimated_total").order("created_at",{ascending:false}).limit(100),
@@ -441,67 +411,49 @@ async function loadLowStock(){
     return `<tr><td><b>${esc(x.name)}</b></td><td>${esc(x.sku||"")}</td><td><b>${qty}</b></td><td>${min}</td><td>${out?'<span class="badge failed">HẾT HÀNG</span>':'<span class="badge pending">SẮP HẾT</span>'}</td><td><button class="btn primary" onclick='editStock(${JSON.stringify(x).replace(/'/g,"&#39;")})'>📦 Nhập thêm</button></td></tr>`;
   }).join("")}</table></div>`;
 }
-async function loadInventory(){
-  let r=await sb.from("inventory_items").select("*").order("id",{ascending:false});
-  if(r.error){$("inventoryList").innerHTML="<div class='notice'>Chưa có bảng inventory_items. Hãy chạy <b>supabase-shop.sql</b>.</div>";return}
-  let d=r.data||[];
-  $("inventoryList").innerHTML=`<div class="table-wrap"><table><tr><th>ID</th><th>Hàng hóa</th><th>Nhóm</th><th>Mã</th><th>Tồn</th><th>Cảnh báo</th><th>Giá nhập</th><th>Giá bán</th><th></th></tr>${d.map(x=>{
-    const qty=Number(x.quantity||0), min=Number(x.low_stock_threshold||0);
-    const status=qty<=0?'<span class="badge failed">HẾT</span>':(qty<=min?'<span class="badge pending">SẮP HẾT</span>':'<span class="badge done">CÒN HÀNG</span>');
-    return `<tr><td>#${x.id}</td><td><b>${esc(x.name)}</b></td><td>${esc(x.category||"Linh kiện khác")}</td><td>${esc(x.sku||"")}</td><td><b>${qty}</b></td><td>${min}</td><td><span class="price-cost">${money(x.cost_price)}</span></td><td><span class="price-sale">${money(x.sale_price)}</span></td><td><button class="btn" onclick='editStock(${JSON.stringify(x).replace(/'/g,"&#39;")})'>Sửa</button> <button class="btn danger" onclick="deleteStock(${x.id})">🗑️ Xóa</button></td></tr>`;
-  }).join("")}</table></div>`;
+
+let inventoryFilterGroup="",inventoryFilterBrand="",inventorySearchText="";
+const defaultInventoryGroups=["Điện thoại","Ốp lưng","Tai nghe","Sạc","Sạc dự phòng","Cáp sạc","Kính cường lực","Phụ kiện","Máy cũ","Linh kiện","Màn hình","Pin","Camera","Cổng sạc","Loa / Mic","Face ID","Mặt kính / lưng","Linh kiện khác"];
+
+async function getInventoryData(){
+  const r=await sb.from("inventory_items").select("*,inventory_brands(id,name)").order("category",{ascending:true}).order("name",{ascending:true});
+  return r;
 }
-window.deleteStock=async id=>{
-  if(!confirm("XÓA hàng trong kho #"+id+"?")) return;
-  let r=await sb.from("inventory_items").delete().eq("id",id);
-  if(r.error){alert("Không xóa được: "+r.error.message);return}
-  closeModal();await Promise.all([loadInventory(),loadLowStock(),loadSales(),loadDashboard()]);
-};
+async function loadInventory(){
+  const r=await getInventoryData();
+  if(r.error){$("inventoryList").innerHTML="<div class='notice'>Không tải được kho: "+esc(r.error.message)+"</div>";return}
+  renderInventory(r.data||[]);
+}
+function renderInventory(d){
+  const groups=[...new Set([...defaultInventoryGroups,...d.map(x=>(x.category||"").trim()).filter(Boolean)])];
+  $("inventoryGroups").innerHTML='<button class="btn '+(!inventoryFilterGroup?'primary':'')+'" onclick="setInventoryGroup(\'\')">📦 Tất cả</button> '+groups.map(g=>'<button class="btn '+(inventoryFilterGroup===g?'primary':'')+'" onclick="setInventoryGroup('+JSON.stringify(g)+')">'+esc(g)+'</button>').join(" ");
+  const brands=[...new Set(d.map(x=>String(x.inventory_brands?.name||x.brand||"").trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"vi"));
+  $("inventoryBrands").innerHTML='<div style="font-weight:800;margin-bottom:7px">🏷️ Hãng</div><button class="btn '+(!inventoryFilterBrand?'primary':'')+'" onclick="setInventoryBrand(\'\')">Tất cả hãng</button> '+brands.map(b=>'<button class="btn '+(inventoryFilterBrand===b?'primary':'')+'" onclick="setInventoryBrand('+JSON.stringify(b)+')">'+esc(b)+'</button>').join(" ");
+  const q=inventorySearchText.toLowerCase();
+  const list=d.filter(x=>(!inventoryFilterGroup||String(x.category||"").trim()===inventoryFilterGroup)&&(!inventoryFilterBrand||String(x.inventory_brands?.name||x.brand||"").trim()===inventoryFilterBrand)&&(!q||String(x.name||"").toLowerCase().includes(q)||String(x.sku||"").toLowerCase().includes(q)));
+  $("inventoryFilterStatus").textContent=(inventoryFilterGroup||"Tất cả nhóm")+" · "+(inventoryFilterBrand||"Tất cả hãng")+" · "+list.length+" sản phẩm";
+  $("inventoryList").innerHTML=list.length?'<div class="table-wrap"><table><tr><th>Sản phẩm</th><th>Hãng</th><th>Nhóm</th><th>SKU</th><th>Tồn</th><th>Trạng thái</th><th>Giá nhập</th><th>Giá bán</th><th></th></tr>'+list.map(x=>{const q=Number(x.quantity||0),m=Number(x.low_stock_threshold||0),b=String(x.inventory_brands?.name||x.brand||"");const st=q<=0?'<span class="badge failed">🔴 HẾT</span>':q<=m?'<span class="badge pending">🟠 SẮP HẾT</span>':'<span class="badge done">🟢 CÒN '+q+'</span>';return '<tr><td><b>'+esc(x.name)+'</b></td><td>'+esc(b||"—")+'</td><td>'+esc(x.category||"")+'</td><td>'+esc(x.sku||"")+'</td><td><b>'+q+'</b></td><td>'+st+'</td><td>'+money(x.cost_price)+'</td><td>'+money(x.sale_price)+'</td><td><button class="btn" onclick=\'editStock('+JSON.stringify(x).replace(/'/g,"&#39;")+')\'>Sửa</button> <button class="btn danger" onclick="deleteStock('+x.id+')">🗑️ Xóa</button></td></tr>'}).join("")+'</table></div>':'<div class="notice">Không có sản phẩm phù hợp.</div>';
+}
+window.setInventoryGroup=g=>{inventoryFilterGroup=g;refreshInventory()};
+window.setInventoryBrand=b=>{inventoryFilterBrand=b;refreshInventory()};
+async function refreshInventory(){const r=await getInventoryData();if(!r.error)renderInventory(r.data||[])}
+window.deleteStock=async id=>{if(!confirm("XÓA sản phẩm trong kho #"+id+"?"))return;const r=await sb.from("inventory_items").delete().eq("id",id);if(r.error){alert("Không xóa được: "+r.error.message);return}await Promise.all([loadInventory(),loadLowStock(),loadSales(),loadDashboard()])};
 $("newStock").onclick=()=>openStockForm();
-$("openLowStockFromInventory").onclick=()=>{document.querySelector('.tab[data-tab="lowStock"]').click()};
+$("openLowStockFromInventory").onclick=()=>document.querySelector('.tab[data-tab="lowStock"]').click();
+$("inventorySearch").oninput=e=>{inventorySearchText=e.target.value;refreshInventory()};
 $("refreshLowStock").onclick=loadLowStock;
 window.editStock=x=>openStockForm(x);
+async function loadInventoryBrands(){const r=await sb.from("inventory_brands").select("*").order("name");return r.data||[]}
+$("manageInventoryBrands").onclick=async()=>{
+ const brands=await loadInventoryBrands();
+ openModal("🏷️ Quản lý hãng",'<div class="notice">Thêm hãng để dùng chung trong Kho và Bán hàng.</div><form id="brandForm" class="formgrid"><label class="full">Tên hãng<input id="brandName" placeholder="Apple, Samsung, Xiaomi..." required></label><div class="full right"><button class="btn primary" type="submit">＋ Thêm hãng</button></div></form><div style="margin-top:14px"><b>Hãng hiện có</b><div style="margin-top:8px">'+(brands.map(b=>'<span class="btn" style="margin:3px">'+esc(b.name)+'</span>').join("")||'<span class="muted">Chưa có hãng.</span>')+'</div></div>');
+ $("brandForm").onsubmit=async e=>{e.preventDefault();const name=$("brandName").value.trim();if(!name)return;const z=await sb.from("inventory_brands").insert({name});if(z.error){alert("Không thêm được hãng: "+z.error.message);return}closeModal();loadInventory()};
+};
 function openStockForm(x={}){
-  openModal(x.id?"Sửa hàng trong kho":"Nhập hàng",`<form id="stockForm" class="formgrid">
-    <label>Tên hàng / sản phẩm<input id="iName" value="${esc(x.name||"")}" required></label>
-    <label>Mã SKU<input id="iSku" value="${esc(x.sku||"")}"></label>
-    <label>Nhóm hàng<select id="iCategory">
-      <option>Điện thoại</option>
-      <option>Ốp lưng</option>
-      <option>Tai nghe</option>
-      <option>Sạc</option>
-      <option>Sạc dự phòng</option>
-      <option>Cáp sạc</option>
-      <option>Kính cường lực</option>
-      <option>Phụ kiện</option>
-      <option>Linh kiện</option>
-      <option>Màn hình</option>
-      <option>Pin</option>
-      <option>Camera</option>
-      <option>Cổng sạc</option>
-      <option>Loa / Mic</option>
-      <option>Face ID</option>
-      <option>Máy</option>
-      <option>Mặt kính / lưng</option>
-      <option>Linh kiện khác</option>
-    </select></label>
-    <label>Số lượng tồn<input id="iQty" type="number" min="0" value="${x.quantity||0}"></label>
-    <label>Mức cảnh báo sắp hết<input id="iLow" type="number" min="0" value="${x.low_stock_threshold??2}"></label>
-    <label>Giá nhập<input id="iCost" type="number" min="0" value="${x.cost_price||0}"></label>
-    <label>Giá bán<input id="iSale" type="number" min="0" value="${x.sale_price||0}"></label>
-    <label>Giá thay thế<input id="iReplacement" type="number" min="0" value="${x.replacement_price||0}"></label>
-    <label class="full">Ghi chú<input id="iNote" value="${esc(x.note||"")}"></label>
-    <div class="full notice">📦 Khi bán hàng chọn đúng mặt hàng này, hệ thống sẽ tự trừ tồn kho. Nếu tồn ≤ mức cảnh báo, hàng sẽ xuất hiện trong mục <b>📥 Cần nhập</b>.</div>
-    <div class="full right"><button class="btn primary" type="submit">💾 Lưu</button></div>
-  </form>`);
-  $("iCategory").value=x.category||"Linh kiện khác";
-  $("stockForm").onsubmit=async e=>{
-    e.preventDefault();
-    const p={name:$("iName").value.trim(),sku:$("iSku").value.trim(),category:$("iCategory").value,quantity:Number($("iQty").value||0),low_stock_threshold:Number($("iLow").value||0),cost_price:Number($("iCost").value||0),sale_price:Number($("iSale").value||0),replacement_price:Number($("iReplacement").value||0),note:$("iNote").value.trim()};
-    const z=await(x.id?sb.from("inventory_items").update(p).eq("id",x.id):sb.from("inventory_items").insert(p));
-    if(z.error){alert("Không lưu được hàng: "+z.error.message);return}
-    closeModal();await Promise.all([loadInventory(),loadLowStock(),loadSales(),loadDashboard()]);
-  };
+ openModal(x.id?"Sửa sản phẩm trong kho":"＋ Thêm sản phẩm",'<form id="stockForm" class="formgrid"><label>Tên sản phẩm<input id="iName" value="'+esc(x.name||"")+'" placeholder="iPhone 13 128GB, Ốp lưng..." required></label><label>SKU / Mã hàng<input id="iSku" value="'+esc(x.sku||"")+'"></label><label>Nhóm hàng<select id="iCategory" required>'+defaultInventoryGroups.map(g=>'<option>'+esc(g)+'</option>').join("")+'</select></label><label>Hãng<select id="iBrand"><option value="">-- Chọn hãng --</option></select></label><label>Số lượng tồn<input id="iQty" type="number" min="0" value="'+(x.quantity||0)+'" required></label><label>Mức cảnh báo sắp hết<input id="iLow" type="number" min="0" value="'+(x.low_stock_threshold??2)+'" required></label><label>Giá nhập<input id="iCost" type="number" min="0" value="'+(x.cost_price||0)+'" required></label><label>Giá bán<input id="iSale" type="number" min="0" value="'+(x.sale_price||0)+'" required></label><label class="full">Ghi chú<input id="iNote" value="'+esc(x.note||"")+'"></label><div class="full notice">📦 Lưu sản phẩm tại đây để Bán hàng tự nhận diện và trừ tồn.</div><div class="full right"><button class="btn primary" type="submit">💾 Lưu sản phẩm</button></div></form>');
+ const brands=await loadInventoryBrands();$("iBrand").innerHTML='<option value="">-- Chọn hãng --</option>'+brands.map(b=>'<option value="'+b.id+'">'+esc(b.name)+'</option>').join("");
+ $("iCategory").value=x.category||defaultInventoryGroups[0];if(x.brand_id)$("iBrand").value=String(x.brand_id);else if(x.inventory_brands?.id)$("iBrand").value=String(x.inventory_brands.id);
+ $("stockForm").onsubmit=async e=>{e.preventDefault();const p={name:$("iName").value.trim(),sku:$("iSku").value.trim(),category:$("iCategory").value,brand_id:Number($("iBrand").value||0)||null,quantity:Number($("iQty").value||0),low_stock_threshold:Number($("iLow").value||0),cost_price:Number($("iCost").value||0),sale_price:Number($("iSale").value||0),note:$("iNote").value.trim()};const z=await(x.id?sb.from("inventory_items").update(p).eq("id",x.id):sb.from("inventory_items").insert(p));if(z.error){alert("Không lưu được sản phẩm: "+z.error.message);return}closeModal();await Promise.all([loadInventory(),loadLowStock(),loadSales(),loadDashboard()])};
 }
 async function deleteTransaction(id){
   if(!confirm("Xóa giao dịch này?")) return;
@@ -1133,15 +1085,15 @@ window.togglePhonePicker=()=>{
   renderPartPages();
   if(phoneWorkspaceOpen){
     // Tải dữ liệu ở nền nhưng không đóng/re-render dropdown.
-    Promise.resolve().then(()=>loadParts()).catch(err=>console.error('Phone workspace load error:',err));
+    Promise.resolve().then(()=>).catch(err=>console.error('Phone workspace load error:',err));
   }
 };
 window.closePhonePicker=()=>{phoneWorkspaceOpen=false;renderPartPages();};
 
-window.openPhoneWorkspace=async()=>{phoneWorkspaceOpen=true;activeDeviceFamily=activeDeviceFamily||'iPhone';activePartPage=activeDeviceFamily;activePartCategory='Tất cả';activeDeviceModel='';iphoneModelsExpanded=false;renderPartPages();await loadParts();};
-window.selectDeviceFamily=async name=>{phoneWorkspaceOpen=true;activeDeviceFamily=name;activePartPage=name;activePartCategory='Tất cả';activeDeviceModel='';iphoneModelsExpanded=false;renderPartPages();await loadParts();};
-window.selectPartCategory=async name=>{phoneWorkspaceOpen=true;activePartCategory=name;activePartPage=activeDeviceFamily;activeDeviceModel='';iphoneModelsExpanded=false;renderPartPages();await loadParts();};
-window.selectPartPage=async name=>{phoneWorkspaceOpen=false;activePartPage=name;activePartCategory=name;activeDeviceModel='';iphoneModelsExpanded=false;renderPartPages();await loadParts();};
+window.openPhoneWorkspace=async()=>{phoneWorkspaceOpen=true;activeDeviceFamily=activeDeviceFamily||'iPhone';activePartPage=activeDeviceFamily;activePartCategory='Tất cả';activeDeviceModel='';iphoneModelsExpanded=false;renderPartPages();await };
+window.selectDeviceFamily=async name=>{phoneWorkspaceOpen=true;activeDeviceFamily=name;activePartPage=name;activePartCategory='Tất cả';activeDeviceModel='';iphoneModelsExpanded=false;renderPartPages();await };
+window.selectPartCategory=async name=>{phoneWorkspaceOpen=true;activePartCategory=name;activePartPage=activeDeviceFamily;activeDeviceModel='';iphoneModelsExpanded=false;renderPartPages();await };
+window.selectPartPage=async name=>{phoneWorkspaceOpen=false;activePartPage=name;activePartCategory=name;activeDeviceModel='';iphoneModelsExpanded=false;renderPartPages();await };
 function normalizePartPageNames(){return partPages.filter(p=>p&&p.name).map(p=>p.name);}
 async function getFamilyPartRows(){
   const models=await loadDeviceModels();
@@ -1150,7 +1102,7 @@ async function getFamilyPartRows(){
   let q=sb.from('shop_parts').select('*').in('device_model',names).order('created_at',{ascending:false}).limit(5000);
   const r=await q; if(r.error)throw r.error; return r.data||[];
 }
-async function loadParts(){
+async function {
   await loadDeviceFamilies();
   await loadPartPages();
   renderPartPages();
@@ -1196,7 +1148,7 @@ async function renderDeviceModelMap(){
   rows.forEach(x=>{const m=String(x.device_model||'').trim();if(m&&known.has(m))count[m]=(count[m]||0)+1;});
   const allCount=rows.filter(x=>{const m=String(x.device_model||'').trim();return m&&known.has(m);}).length; const visible=models.filter(x=>!search||x.name.toLowerCase().includes(search));
   root.innerHTML=`<div class="iphone-model-btn ${activeDeviceModel===''?'active':''}" data-model="">📱 ${esc(allLabel)}<small>${allCount} linh kiện</small></div>`+visible.map(x=>`<div class="iphone-model-btn ${activeDeviceModel===x.name?'active':''}" data-model="${esc(x.name)}">${esc(x.name)}<small>${count[x.name]||0} linh kiện</small></div>`).join('')+`<div class="iphone-model-btn ${activeDeviceModel===UNKNOWN_MODEL_LABEL?'active':''}" data-model="${esc(UNKNOWN_MODEL_LABEL)}">🧩 ${UNKNOWN_MODEL_LABEL}<small>${count[UNKNOWN_MODEL_LABEL]||0} linh kiện</small></div>`;
-  root.querySelectorAll('.iphone-model-btn').forEach(btn=>btn.onclick=async()=>{activeDeviceModel=btn.dataset.model||'';iphoneModelsExpanded=true;await renderDeviceModelMap();await loadParts();});
+  root.querySelectorAll('.iphone-model-btn').forEach(btn=>btn.onclick=async()=>{activeDeviceModel=btn.dataset.model||'';iphoneModelsExpanded=true;await renderDeviceModelMap();await });
   const t=$('iphoneModelMapStatus');if(t)t.textContent=`${activeDeviceModel||allLabel} · ${activeDeviceModel?count[activeDeviceModel]||0:allCount} linh kiện`;
   const c=$('iphoneCompactCount');if(c)c.textContent=`${allCount} linh kiện ${fam.name}`; const title=$('deviceFamilyTitle'); if(title)title.textContent=`${fam.icon||'📱'} ${fam.name}`;
   const add=$('iphoneModelAdd'); if(add)add.textContent=`＋ Thêm mẫu ${fam.name}`; const manage=$('iphoneModelManage'); if(manage)manage.textContent=`⚙️ Quản lý mẫu ${fam.name}`; const toggle=$('iphoneAllToggle'); if(toggle){toggle.classList.toggle('active',iphoneModelsExpanded);toggle.textContent=iphoneModelsExpanded?`📱 Đang xem model ${fam.name}`:`📱 Tất cả ${fam.name}`;}
@@ -1204,14 +1156,14 @@ async function renderDeviceModelMap(){
 async function openIphoneModelForm(){
   const fam=getActiveFamily(); const label=fam.name==='iPhone'?'mẫu iPhone':`mẫu ${fam.name}`;
   openModal(`＋ Thêm ${label}`,`<form id="iphoneModelForm" class="formgrid"><label class="full">Tên mẫu ${esc(fam.name)}<input id="iphoneModelName" placeholder="Ví dụ: ${fam.name} S / ${fam.name} Pro" required></label><div class="full notice">Mẫu mới thêm vào dòng máy <b>${esc(fam.name)}</b>. Không tự tạo linh kiện.</div><div class="full right"><button class="btn primary">💾 Thêm mẫu</button></div></form>`);
-  $('iphoneModelForm').onsubmit=async e=>{e.preventDefault();const name=$('iphoneModelName').value.trim();if(!name)return;const all=await loadDeviceModels();if(all.some(x=>x.name.toLowerCase()===name.toLowerCase())){alert('Mẫu này đã có trong danh sách.');return;}const sort=Math.max(0,...all.map(x=>Number(x.sort_order)||0))+10;const r=await sb.from('shop_part_models').insert({name,sort_order:sort,active:true,is_builtin:false,family_name:activeDeviceFamily}).select().single();if(r.error){alert(`Không thêm được mẫu ${fam.name}: `+r.error.message);return;}activeDeviceModel=name;closeModal();await renderDeviceModelMap();await loadParts();};
+  $('iphoneModelForm').onsubmit=async e=>{e.preventDefault();const name=$('iphoneModelName').value.trim();if(!name)return;const all=await loadDeviceModels();if(all.some(x=>x.name.toLowerCase()===name.toLowerCase())){alert('Mẫu này đã có trong danh sách.');return;}const sort=Math.max(0,...all.map(x=>Number(x.sort_order)||0))+10;const r=await sb.from('shop_part_models').insert({name,sort_order:sort,active:true,is_builtin:false,family_name:activeDeviceFamily}).select().single();if(r.error){alert(`Không thêm được mẫu ${fam.name}: `+r.error.message);return;}activeDeviceModel=name;closeModal();await renderDeviceModelMap();await };
 }
 async function openIphoneModelManager(){
   const fam=getActiveFamily(); const models=await loadDeviceModels(); const rows=models.map(m=>`<div class="listitem" style="display:flex;align-items:center;justify-content:space-between;gap:12px"><div><b>${esc(fam.icon||'📱')} ${esc(m.name)}</b><div class="small muted">${m.is_builtin?'Mẫu mặc định':'Mẫu tự thêm'} · ${countModelParts(m.name)} linh kiện</div></div><button class="btn danger" onclick="deleteIphoneModel('${String(m.id||'').replace(/'/g,"&#039;")}','${esc(m.name).replace(/'/g,"&#039;")}')">🗑️ Xóa</button></div>`).join('');
   openModal(`⚙️ Quản lý mẫu ${fam.name}`,`<div class="notice">Xóa mẫu chỉ xóa mẫu khỏi bản đồ <b>${esc(fam.name)}</b>. <b>Không xóa linh kiện</b>; linh kiện sẽ chuyển về “${UNKNOWN_MODEL_LABEL}”.</div><div class="actions" style="margin-bottom:14px"><button class="btn primary" onclick="openIphoneModelForm()">＋ Thêm mẫu mới</button></div><div class="listbox">${rows||'<div class="listitem muted">Chưa có mẫu.</div>'}</div>`);
 }
 function countModelParts(name){try{return (window.__iphonePartCounts&&window.__iphonePartCounts[name])||0;}catch(e){return 0}}
-window.deleteIphoneModel=async(id,name)=>{const fam=getActiveFamily();if(!confirm(`XÓA mẫu “${name}” trong ${fam.name}?\n\nLinh kiện của mẫu này KHÔNG bị xóa; chúng sẽ chuyển về “${UNKNOWN_MODEL_LABEL}”.`))return;await saveStablePartSnapshot(`Stable trước khi xóa mẫu ${fam.name}`);if(id){const up=await sb.from('shop_parts').update({device_model:UNKNOWN_MODEL_LABEL}).eq('device_model',name);if(up.error){alert('Không chuyển được linh kiện về model chưa gán: '+up.error.message);return}const r=await sb.from('shop_part_models').delete().eq('id',id);if(r.error){alert('Không xóa được mẫu: '+r.error.message);return}}else{IPHONE_MODELS=IPHONE_MODELS.filter(x=>x!==name);localStorage.setItem('appleSeedModels_'+activeDeviceFamily,JSON.stringify(IPHONE_MODELS));}activeDeviceModel='';closeModal();await renderDeviceModelMap();await loadParts();};
+window.deleteIphoneModel=async(id,name)=>{const fam=getActiveFamily();if(!confirm(`XÓA mẫu “${name}” trong ${fam.name}?\n\nLinh kiện của mẫu này KHÔNG bị xóa; chúng sẽ chuyển về “${UNKNOWN_MODEL_LABEL}”.`))return;await saveStablePartSnapshot(`Stable trước khi xóa mẫu ${fam.name}`);if(id){const up=await sb.from('shop_parts').update({device_model:UNKNOWN_MODEL_LABEL}).eq('device_model',name);if(up.error){alert('Không chuyển được linh kiện về model chưa gán: '+up.error.message);return}const r=await sb.from('shop_part_models').delete().eq('id',id);if(r.error){alert('Không xóa được mẫu: '+r.error.message);return}}else{IPHONE_MODELS=IPHONE_MODELS.filter(x=>x!==name);localStorage.setItem('appleSeedModels_'+activeDeviceFamily,JSON.stringify(IPHONE_MODELS));}activeDeviceModel='';closeModal();await renderDeviceModelMap();await };
 async function openDeviceFamilyManager(){
   await loadDeviceFamilies();
   const rows=DEVICE_FAMILIES.map(f=>`<div class="listitem" style="display:flex;align-items:center;justify-content:space-between;gap:12px"><div><b>${esc(f.icon||'📱')} ${esc(f.name)}</b><div class="small muted">${f.is_builtin?'Dòng mặc định':'Dòng tự thêm'}</div></div><div class="actions">${f.name==='iPhone'?'':`<button class="btn danger" onclick="deleteDeviceFamily('${String(f.id||'').replace(/'/g,"&#039;")}','${esc(f.name).replace(/'/g,"&#039;")}')">🗑️ Xóa dòng</button>`}</div></div>`).join('');
@@ -1219,20 +1171,20 @@ async function openDeviceFamilyManager(){
 }
 async function openDeviceFamilyForm(){
   openModal('＋ Thêm dòng máy',`<form id="deviceFamilyForm" class="formgrid"><label>Tên dòng máy<input id="deviceFamilyName" placeholder="Samsung / Xiaomi / OPPO / Vivo" required></label><label>Biểu tượng<input id="deviceFamilyIcon" value="📱" maxlength="4"></label><div class="full notice">Sau khi tạo, dòng máy mới sẽ xuất hiện cạnh <b>iPhone</b>. Bấm vào dòng mới rồi thêm các model bên trong.</div><div class="full right"><button class="btn primary">💾 Tạo dòng máy</button></div></form>`);
-  $('deviceFamilyForm').onsubmit=async e=>{e.preventDefault();const name=$('deviceFamilyName').value.trim(),icon=$('deviceFamilyIcon').value.trim()||'📱';if(!name)return;if(DEVICE_FAMILIES.some(f=>f.name.toLowerCase()===name.toLowerCase())){alert('Dòng máy này đã tồn tại.');return;}const sort=Math.max(0,...DEVICE_FAMILIES.map(f=>Number(f.sort_order)||0))+10;const r=await sb.from('shop_part_device_families').insert({name,icon,sort_order:sort,active:true,is_builtin:false}).select().single();if(r.error){alert('Không tạo được dòng máy: '+r.error.message);return;}activeDeviceFamily=name;activePartPage=name;activeDeviceModel='';closeModal();await loadDeviceFamilies();renderPartPages();await loadParts();};
+  $('deviceFamilyForm').onsubmit=async e=>{e.preventDefault();const name=$('deviceFamilyName').value.trim(),icon=$('deviceFamilyIcon').value.trim()||'📱';if(!name)return;if(DEVICE_FAMILIES.some(f=>f.name.toLowerCase()===name.toLowerCase())){alert('Dòng máy này đã tồn tại.');return;}const sort=Math.max(0,...DEVICE_FAMILIES.map(f=>Number(f.sort_order)||0))+10;const r=await sb.from('shop_part_device_families').insert({name,icon,sort_order:sort,active:true,is_builtin:false}).select().single();if(r.error){alert('Không tạo được dòng máy: '+r.error.message);return;}activeDeviceFamily=name;activePartPage=name;activeDeviceModel='';closeModal();await loadDeviceFamilies();renderPartPages();await };
 }
-window.deleteDeviceFamily=async(id,name)=>{if(!confirm(`Ẩn dòng máy “${name}”?\n\nModel của dòng này sẽ được ẩn, nhưng linh kiện trong database KHÔNG bị xóa.`))return;if(id){const r=await sb.from('shop_part_device_families').update({active:false}).eq('id',id);if(r.error){alert('Không ẩn được dòng máy: '+r.error.message);return}const r2=await sb.from('shop_part_models').update({active:false}).eq('family_name',name);if(r2.error){alert('Không ẩn được model: '+r2.error.message);return}}else{DEVICE_FAMILIES=DEVICE_FAMILIES.filter(f=>f.name!==name);localStorage.setItem('appleSeedDeviceFamilies',JSON.stringify(DEVICE_FAMILIES));}activeDeviceFamily='iPhone';activePartPage='iPhone';activeDeviceModel='';closeModal();await loadDeviceFamilies();renderPartPages();await loadParts();};
+window.deleteDeviceFamily=async(id,name)=>{if(!confirm(`Ẩn dòng máy “${name}”?\n\nModel của dòng này sẽ được ẩn, nhưng linh kiện trong database KHÔNG bị xóa.`))return;if(id){const r=await sb.from('shop_part_device_families').update({active:false}).eq('id',id);if(r.error){alert('Không ẩn được dòng máy: '+r.error.message);return}const r2=await sb.from('shop_part_models').update({active:false}).eq('family_name',name);if(r2.error){alert('Không ẩn được model: '+r2.error.message);return}}else{DEVICE_FAMILIES=DEVICE_FAMILIES.filter(f=>f.name!==name);localStorage.setItem('appleSeedDeviceFamilies',JSON.stringify(DEVICE_FAMILIES));}activeDeviceFamily='iPhone';activePartPage='iPhone';activeDeviceModel='';closeModal();await loadDeviceFamilies();renderPartPages();await };
 $('iphoneModelSearch')?.addEventListener('input',()=>renderDeviceModelMap());
-$('iphoneAllToggle')?.addEventListener('click',async()=>{iphoneModelsExpanded=!iphoneModelsExpanded;activeDeviceModel='';if($('iphoneModelSearch'))$('iphoneModelSearch').value='';await renderDeviceModelMap();await loadParts();});
+$('iphoneAllToggle')?.addEventListener('click',async()=>{iphoneModelsExpanded=!iphoneModelsExpanded;activeDeviceModel='';if($('iphoneModelSearch'))$('iphoneModelSearch').value='';await renderDeviceModelMap();await });
 $('iphoneModelClose')?.addEventListener('click',async()=>{iphoneModelsExpanded=false;await renderDeviceModelMap();});
-$('iphoneModelClear')?.addEventListener('click',()=>{if($('iphoneModelSearch'))$('iphoneModelSearch').value='';activeDeviceModel='';renderDeviceModelMap();loadParts();});
+$('iphoneModelClear')?.addEventListener('click',()=>{if($('iphoneModelSearch'))$('iphoneModelSearch').value='';activeDeviceModel='';renderDeviceModelMap();});
 $('iphoneModelAdd')?.addEventListener('click',openIphoneModelForm);
 $('iphoneModelManage')?.addEventListener('click',openIphoneModelManager);
 $('manageDeviceFamilies')?.addEventListener('click',openDeviceFamilyManager);
 $("newPart").onclick=()=>openPartForm(); window.openNewPart=()=>openPartForm();
 $("managePartPages").onclick=()=>openPartPageManager();
 window.editPart=x=>openPartForm(x);
-window.deletePart=async id=>{if(!confirm("XÓA linh kiện #"+id+"?\n\nBản Stable hiện tại sẽ giữ dữ liệu trước khi xóa để có thể khôi phục nếu bấm nhầm."))return;await saveStablePartSnapshot('Stable trước khi xóa linh kiện');let r=await sb.from("shop_parts").delete().eq("id",id);if(r.error){alert("Không xóa được: "+r.error.message);return}closeModal();await loadParts();loadDashboard();setStableStatus('Đang giữ bản Stable trước lần xóa','warn');document.getElementById('stableGuardText').textContent='Linh kiện vừa xóa chưa được chốt thành Stable mới. Có thể bấm Khôi phục bản Stable để hoàn tác.';};
+window.deletePart=async id=>{if(!confirm("XÓA linh kiện #"+id+"?\n\nBản Stable hiện tại sẽ giữ dữ liệu trước khi xóa để có thể khôi phục nếu bấm nhầm."))return;await saveStablePartSnapshot('Stable trước khi xóa linh kiện');let r=await sb.from("shop_parts").delete().eq("id",id);if(r.error){alert("Không xóa được: "+r.error.message);return}closeModal();await loadDashboard();setStableStatus('Đang giữ bản Stable trước lần xóa','warn');document.getElementById('stableGuardText').textContent='Linh kiện vừa xóa chưa được chốt thành Stable mới. Có thể bấm Khôi phục bản Stable để hoàn tác.';};
 const STABLE_PART_KEY='appleSeedStablePartPages_v2';
 function setStableStatus(text, kind='ok'){
   const el=document.getElementById('stableGuardStatus');
@@ -1474,13 +1426,13 @@ window.openNewPartPageForm=()=>{
       partPages.push({id:"local-"+Date.now(),name,icon,sort_order:sort,active:true});
       localStorage.setItem("appleSeedPartPages",JSON.stringify(partPages));
       activePartPage=name;
-      closeModal(); await loadParts();
+      closeModal(); await 
       await saveStablePartSnapshot('Stable sau khi tạo trang');
       alert("Đã tạo trang trên trình duyệt này. Muốn đồng bộ trang giữa các thiết bị, chạy apple-seed-shop-part-pages.sql trong Supabase.");
       return;
     }
     activePartPage=name;
-    closeModal(); await loadParts();
+    closeModal(); await 
     await saveStablePartSnapshot('Stable sau khi tạo trang');
   };
 };
@@ -1513,7 +1465,7 @@ window.renamePartPage=async p=>{
       localStorage.setItem("appleSeedPartPages",JSON.stringify(partPages));
     }
     activePartPage=newName;
-    closeModal(); await loadParts();
+    closeModal(); await 
     await saveStablePartSnapshot('Stable sau khi đổi tên trang');
   };
 };
@@ -1532,7 +1484,7 @@ window.deletePartPage=async(id,name)=>{
     localStorage.setItem("appleSeedPartPages",JSON.stringify(partPages));
   }
   activePartPage=fallback.name;
-  closeModal(); await loadParts();
+  closeModal(); await 
   setStableStatus('Đang giữ bản Stable trước lần xóa trang','warn');
   document.getElementById('stableGuardText').textContent='Trang vừa xóa chưa được chốt thành Stable mới. Có thể bấm Khôi phục bản Stable để hoàn tác.';
 };
@@ -1569,7 +1521,7 @@ function openPartForm(x={}){
     let z=await(x.id?sb.from('shop_parts').update(q).eq('id',x.id):sb.from('shop_parts').insert(q));
     if(z.error){alert('Không lưu được linh kiện: '+z.error.message);return}
     if(phoneWorkspaceOpen){activePartPage=activeDeviceFamily;activePartCategory=q.category||'Tất cả';activeDeviceModel=q.device_model===UNKNOWN_MODEL_LABEL?'':q.device_model;}else{activePartPage=q.category;activePartCategory=q.category;activeDeviceModel=q.device_model===UNKNOWN_MODEL_LABEL?'':q.device_model;}
-    closeModal();await loadParts();loadDashboard();
+    closeModal();await loadDashboard();
     await saveStablePartSnapshot(x.id?'Stable sau khi sửa linh kiện':'Stable sau khi thêm linh kiện');
     updateStableGuard();
   };
