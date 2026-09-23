@@ -392,7 +392,37 @@ window.deleteStock=async id=>{
   closeModal(); loadInventory(); loadDashboard();
 };
 $("newStock").onclick=()=>openStockForm();window.editStock=x=>openStockForm(x);
-function openStockForm(x={}){openModal(x.id?"Sửa linh kiện":"Nhập linh kiện",`<form id="stockForm" class="formgrid"><label>Tên linh kiện<input id="iName" value="${esc(x.name||"")}" required></label><label>Mã SKU<input id="iSku" value="${esc(x.sku||"")}"></label><label>Nhóm linh kiện<select id="iCategory"><option>Màn hình</option><option>Pin</option><option>Mặt kính / lưng</option><option>Camera</option><option>Cổng sạc</option><option>Loa / Mic</option><option>Face ID</option><option>Linh kiện khác</option></select></label><label>Số lượng<input id="iQty" type="number" value="${x.quantity||0}"></label><label>Giá nhập<input id="iCost" type="number" value="${x.cost_price||0}"></label><label>Giá bán<input id="iSale" type="number" value="${x.sale_price||0}"></label><label class="full">Ghi chú<input id="iNote" value="${esc(x.note||"")}"></label><div class="full right"><button class="btn primary">💾 Lưu</button></div></form>`);$("iCategory").value=x.category||"Linh kiện khác";$("stockForm").onsubmit=async e=>{e.preventDefault();let p={name:$("iName").value.trim(),sku:$("iSku").value.trim(),category:$("iCategory").value,quantity:Number($("iQty").value||0),cost_price:Number($("iCost").value||0),sale_price:Number($("iSale").value||0),replacement_price:Number($("iReplacement").value||0),note:$("iNote").value.trim()};let z=await(x.id?sb.from("inventory_items").update(p).eq("id",x.id):sb.from("inventory_items").insert(p));if(z.error){alert(z.error.message);return}closeModal();loadInventory();loadDashboard()}}
+function openStockForm(x={}){
+  openModal(x.id?"Sửa linh kiện":"Nhập linh kiện",`<form id="stockForm" class="formgrid">
+    <label>Tên linh kiện<input id="iName" value="${esc(x.name||"")}" required></label>
+    <label>Mã SKU<input id="iSku" value="${esc(x.sku||"")}"></label>
+    <label>Nhóm linh kiện<select id="iCategory"><option>Màn hình</option><option>Pin</option><option>Mặt kính / lưng</option><option>Camera</option><option>Cổng sạc</option><option>Loa / Mic</option><option>Face ID</option><option>Linh kiện khác</option></select></label>
+    <label>Số lượng<input id="iQty" type="number" min="0" value="${x.quantity||0}"></label>
+    <label>Giá nhập<input id="iCost" type="number" min="0" value="${x.cost_price||0}"></label>
+    <label>Giá bán<input id="iSale" type="number" min="0" value="${x.sale_price||0}"></label>
+    <label>Giá thay thế<input id="iReplacement" type="number" min="0" value="${x.replacement_price||0}"></label>
+    <label class="full">Ghi chú<input id="iNote" value="${esc(x.note||"")}"></label>
+    <div class="full right"><button class="btn primary" type="submit">💾 Lưu</button></div>
+  </form>`);
+  $("iCategory").value=x.category||"Linh kiện khác";
+  $("stockForm").onsubmit=async e=>{
+    e.preventDefault();
+    const p={
+      name:$("iName").value.trim(),
+      sku:$("iSku").value.trim(),
+      category:$("iCategory").value,
+      quantity:Number($("iQty").value||0),
+      cost_price:Number($("iCost").value||0),
+      sale_price:Number($("iSale").value||0),
+      replacement_price:Number($("iReplacement").value||0),
+      note:$("iNote").value.trim()
+    };
+    const z=await(x.id?sb.from("inventory_items").update(p).eq("id",x.id):sb.from("inventory_items").insert(p));
+    if(z.error){alert("Không lưu được linh kiện: "+z.error.message);return}
+    closeModal();
+    await Promise.all([loadInventory(),loadDashboard()]);
+  };
+}
 async function deleteTransaction(id){
   if(!confirm("Xóa giao dịch này?")) return;
 
@@ -472,7 +502,32 @@ window.deleteTransaction=async id=>{
   loadDashboard();
   loadRevenue();
 };
-function openMoneyForm(){openModal("Ghi giao dịch",`<form id="moneyForm" class="formgrid"><label>Loại<select id="mType"><option value="income">Thu</option><option value="expense">Chi</option></select></label><label>Số tiền<input id="mAmount" type="number" required></label><label>Nội dung<input id="mDesc" required></label><label>Phương thức<select id="mMethod"><option>Tiền mặt</option><option>Chuyển khoản</option><option>Ví điện tử</option></select></label><div class="full right"><button class="btn primary">💾 Lưu giao dịch</button></div></form>`);$("moneyForm").onsubmit=async e=>{e.preventDefault();let z=await sb.from("store_transactions").insert({type:$("mType").value,amount:Number($("mAmount").value),description:$("mDesc").value.trim(),payment_method:$("mMethod").value});if(z.error){alert(z.error.message);return}closeModal();loadFinance();loadDashboard()}}
+$("newMoney").onclick=()=>openMoneyForm();
+function openMoneyForm(){
+  openModal("Ghi giao dịch",`<form id="moneyForm" class="formgrid">
+    <label>Loại<select id="mType"><option value="income">Thu</option><option value="expense">Chi</option></select></label>
+    <label>Số tiền<input id="mAmount" type="number" min="1" step="1" required></label>
+    <label>Nội dung<input id="mDesc" required></label>
+    <label>Phương thức<select id="mMethod"><option>Tiền mặt</option><option>Chuyển khoản</option><option>Ví điện tử</option></select></label>
+    <div class="full right"><button class="btn primary" type="submit">💾 Lưu giao dịch</button></div>
+  </form>`);
+  $("moneyForm").onsubmit=async e=>{
+    e.preventDefault();
+    const amount=Number($("mAmount").value);
+    const description=$("mDesc").value.trim();
+    if(!Number.isFinite(amount)||amount<=0){alert("Số tiền phải lớn hơn 0.");return}
+    if(!description){alert("Vui lòng nhập nội dung giao dịch.");return}
+    const z=await sb.from("store_transactions").insert({
+      type:$("mType").value,
+      amount,
+      description,
+      payment_method:$("mMethod").value
+    });
+    if(z.error){alert("Không lưu được giao dịch: "+z.error.message);return}
+    closeModal();
+    await Promise.all([loadFinance(),loadDashboard(),loadRevenue()]);
+  };
+}
 
 async function loadRevenue(){
  let r=await sb.from("store_transactions").select("type,amount,description,payment_method,created_at").order("created_at",{ascending:false}).limit(500);
@@ -509,7 +564,12 @@ function openWarrantyForm(x={}){
  <label>Trạng thái<select id="wStatus"><option value="active">Đang bảo hành</option><option value="closed">Đã đóng</option></select></label>
  <label class="full">Ghi chú<textarea id="wNote">${esc(x.note||'')}</textarea></label><div class="full right"><button class="btn primary">💾 Lưu phiếu</button></div></form>`);
  if(x.status)$('wStatus').value=x.status;
- $("warrantyForm").onsubmit=async e=>{e.preventDefault();let p={customer_id:Number($("wCustomer").value),repair_order_id:Number($("wRepair").value||0)||null,device_model:$("wModel").value.trim(),warranty_code:$("wCode").value.trim(),start_date:$("wStart").value,end_date:$("wEnd").value,coverage:$("wCoverage").value.trim(),status:$("wStatus").value,note:$("wNote").value.trim()};let z=await(x.id?sb.from("warranty_orders").update(p).eq("id",x.id):sb.from("warranty_orders").insert(p));if(z.error){alert(z.error.message);return}closeModal();loadWarranty();loadDashboard()}
+ $("genWarrantyCode").onclick=()=>{
+   const y=new Date().getFullYear();
+   const tail=String(Date.now()).slice(-6);
+   $("wCode").value="BH-"+y+"-"+tail;
+ };
+ $("warrantyForm").onsubmit=async e=>{e.preventDefault();let p={customer_id:Number($("wCustomer").value),repair_order_id:Number($("wRepair").value||0)||null,device_model:$("wModel").value.trim(),warranty_code:$("wCode").value.trim(),start_date:$("wStart").value,end_date:$("wEnd").value,coverage:$("wCoverage").value.trim(),status:$("wStatus").value,note:$("wNote").value.trim()};let z=await(x.id?sb.from("warranty_orders").update(p).eq("id",x.id):sb.from("warranty_orders").insert(p));if(z.error){alert("Không lưu được phiếu bảo hành: "+z.error.message);return}closeModal();await Promise.all([loadWarranty(),loadDashboard()])}
 }
 
 async function loadPans(){
