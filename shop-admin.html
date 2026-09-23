@@ -472,50 +472,26 @@ async function deleteTransaction(id){
   loadDashboard();
   loadRevenue();
 }
-  async function loadFinance(){
-  let r=await sb.from("store_transactions")
-    .select("*")
-    .order("created_at",{ascending:false})
-    .limit(150);
-
-  if(r.error){
-    $("financeList").innerHTML="<div class='notice'>Chưa có bảng store_transactions. Hãy chạy <b>supabase-shop.sql</b> trong Supabase.</div>";
-    return;
-  }
-
-  let d=r.data||[];
-
-  $("financeList").innerHTML=`
-    <div class="table-wrap">
-      <table>
-        <tr>
-          <th>Ngày</th>
-          <th>Loại</th>
-          <th>Nội dung</th>
-          <th>Số tiền</th>
-          <th>Phương thức</th>
-          <th>Xóa</th>
-        </tr>
-        ${d.map(x=>`
-          <tr>
-            <td>${new Date(x.created_at).toLocaleString("vi-VN")}</td>
-            <td>${x.type==="income"
-              ? '<span class="success">THU</span>'
-              : '<span class="danger">CHI</span>'}</td>
-            <td>${esc(x.description||"")}</td>
-            <td>${money(x.amount)}</td>
-            <td>${esc(x.payment_method||"")}</td>
-            <td>
-              <button class="btn" style="color:#b42318"
-                onclick="deleteTransaction(${x.id})">
-                🗑️ Xóa
-              </button>
-            </td>
-          </tr>
-        `).join("")}
-      </table>
-    </div>`;
+  let financeSelectedDate=new Date().toLocaleDateString("en-CA",{timeZone:"Asia/Ho_Chi_Minh"});
+function financeVNDate(v){return new Date(v).toLocaleDateString("en-CA",{timeZone:"Asia/Ho_Chi_Minh"})}
+function financeDisplayDate(v){return new Date(v).toLocaleString("vi-VN",{timeZone:"Asia/Ho_Chi_Minh"})}
+async function loadFinance(){
+ let r=await sb.from("store_transactions").select("*").order("created_at",{ascending:false}).limit(500);
+ if(r.error){$("financeList").innerHTML="<div class='notice'>Chưa có bảng store_transactions. Hãy chạy <b>supabase-shop.sql</b> trong Supabase.</div>";return}
+ const all=r.data||[],selected=financeSelectedDate,d=selected==="all"?all:all.filter(x=>financeVNDate(x.created_at)===selected);
+ const income=d.filter(x=>x.type==="income").reduce((a,x)=>a+Number(x.amount||0),0),expense=d.filter(x=>x.type==="expense").reduce((a,x)=>a+Number(x.amount||0),0),balance=income-expense;
+ const label=selected==="all"?"Tất cả ngày":"Ngày "+selected.split("-").reverse().join("/");
+ let html='<div style="display:flex;gap:10px;align-items:end;flex-wrap:wrap;margin-bottom:14px"><div><div class="muted" style="font-weight:700;margin-bottom:5px">📅 Dò theo ngày</div><input id="financeDate" type="date" value="'+(selected==="all"?"":selected)+'" style="min-width:180px"></div><button class="btn '+(selected==="all"?"primary":"")+'" id="financeAllDates">📋 Tất cả ngày</button><button class="btn" id="financeToday">📅 Hôm nay</button></div>';
+ html+='<div class="cards" style="margin-bottom:14px"><div class="card"><div class="muted">📅 '+label+'</div><div class="num">'+d.length+' giao dịch</div></div><div class="card"><div class="muted">🟢 Tổng THU</div><div class="num">'+money(income)+'</div></div><div class="card"><div class="muted">🔴 Tổng CHI</div><div class="num">'+money(expense)+'</div></div><div class="card"><div class="muted">💰 Còn lại</div><div class="num">'+money(balance)+'</div></div></div>';
+ html+='<div class="table-wrap"><table><tr><th>Ngày / Giờ</th><th>Loại</th><th>Nội dung</th><th>Số tiền</th><th>Phương thức</th><th>Xóa</th></tr>';
+ html+=d.length?d.map(x=>'<tr><td><button class="btn" title="Bấm để lọc ngày này" onclick="financePickDate(\''+financeVNDate(x.created_at)+'\')">📅 '+financeDisplayDate(x.created_at)+'</button></td><td>'+(x.type==="income"?'<span class="success">THU</span>':'<span class="danger">CHI</span>')+'</td><td>'+esc(x.description||"")+'</td><td><b>'+money(x.amount)+'</b></td><td>'+esc(x.payment_method||"")+'</td><td><button class="btn" style="color:#b42318" onclick="deleteTransaction('+x.id+')">🗑️ Xóa</button></td></tr>').join(""):'<tr><td colspan="6"><div class="notice">Không có giao dịch trong ngày này.</div></td></tr>';
+ html+='</table></div>';
+ $("financeList").innerHTML=html;
+ $("financeDate").onchange=e=>{financeSelectedDate=e.target.value||"all";loadFinance()};
+ $("financeAllDates").onclick=()=>{financeSelectedDate="all";loadFinance()};
+ $("financeToday").onclick=()=>{financeSelectedDate=new Date().toLocaleDateString("en-CA",{timeZone:"Asia/Ho_Chi_Minh"});loadFinance()};
 }
+window.financePickDate=date=>{financeSelectedDate=date;loadFinance()};
 
 window.deleteTransaction=async id=>{
   if(!confirm("Xóa giao dịch này?")) return;
