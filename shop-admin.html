@@ -592,17 +592,19 @@ async function openSaleForm(x={}){
   let inv=await sb.from("inventory_items").select("*").order("category",{ascending:true}).order("name",{ascending:true});
   if(inv.error){alert("Không tải được kho: "+inv.error.message);return}
   const items=inv.data||[];
-  const groups=[...new Set(items.map(i=>(i.category||"Khác").trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"vi"));
+  const fixedGroups=["Ốp lưng","Điện thoại","Tai nghe","Sạc","Sạc dự phòng","Cáp sạc","Kính cường lực","Phụ kiện","Máy cũ","Linh kiện"];
+  const inventoryGroups=items.map(i=>(i.category||"").trim()).filter(Boolean);
+  const groups=[...new Set([...fixedGroups,...inventoryGroups])].sort((a,b)=>a.localeCompare(b,"vi"));
 
   openModal(x.id?"Sửa đơn bán #"+x.id:"Tạo đơn bán",`<form id="saleForm" class="formgrid">
-    <label class="full">📂 Nhóm hàng
+    <label class="full">📂 Nhóm hàng bán
       <select id="sGroup" required>
-        <option value="">-- Bấm chọn nhóm hàng --</option>
+        <option value="">-- Chọn nhóm hàng --</option>
         ${groups.map(g=>`<option value="${esc(g)}">${esc(g)}</option>`).join("")}
       </select>
     </label>
 
-    <label class="full">📦 Sản phẩm trong nhóm
+    <label class="full">📦 Sản phẩm
       <select id="sInventory" required disabled>
         <option value="">-- Chọn nhóm trước --</option>
       </select>
@@ -615,7 +617,7 @@ async function openSaleForm(x={}){
     <label>Phương thức<select id="sMethod"><option>Tiền mặt</option><option>Chuyển khoản</option><option>Ví điện tử</option></select></label>
     <label class="full">Ghi chú<textarea id="sNote">${esc(x.note||"")}</textarea></label>
 
-    <div id="sStockNotice" class="full notice">📂 Bấm vào <b>Nhóm hàng</b> → chọn nhóm → hệ thống chỉ hiện sản phẩm thuộc nhóm đó.</div>
+    <div id="sStockNotice" class="full notice">📂 Chọn <b>nhóm hàng</b> → hệ thống tự lấy <b>sản phẩm có trong Kho</b>. Không được gõ tên sản phẩm bằng tay.</div>
     <div class="full notice">📊 Giá vốn và giá bán lấy từ Kho · Lợi nhuận = Tiền bán − Giá vốn · Lưu đơn sẽ tự trừ kho.</div>
 
     <div class="full" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
@@ -662,7 +664,7 @@ async function openSaleForm(x={}){
 
   const renderProducts=()=>{
     const group=$("sGroup").value;
-    const list=items.filter(i=>(i.category||"Khác").trim()===group);
+    const list=items.filter(i=>(i.category||"").trim()===group);
     $("sInventory").disabled=!group;
     $("sInventory").innerHTML='<option value="">-- Chọn sản phẩm trong '+(group?esc(group):'nhóm')+' --</option>'+
       list.map(i=>{
