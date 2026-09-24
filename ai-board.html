@@ -1053,13 +1053,20 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
      const call=await sb.functions.invoke('analyze-schematic',{body:{analysis_id:analysisId,action,file_path:path,device_model:model,board_code:boardCode,notes:n,mime_type:file.type}});
      if(call.error)throw call.error;
      if(call.data?.error)throw new Error(call.data.error);
-     const text=call.data?.analysis||'AI không trả về kết quả.';
+     const text=String(call.data?.analysis??call.data?.ai_analysis??'').trim();
+     if(!text)throw new Error('AI đã phản hồi nhưng không có nội dung phân tích. Coin sẽ được hoàn nếu giao dịch đã trừ.');
      out.innerHTML='<strong>'+esc(mode==='schematic'?'📐 Schematic Intelligence':'🧠 AI Board Diagnosis')+'</strong><pre style="white-space:pre-wrap;font:inherit;margin:10px 0 0">'+esc(text)+'</pre>';
-     const chargedCost=Number(call.data?.coin_cost||0);
-     status.innerHTML='✅ <strong>Phân tích hoàn tất · đã trừ '+chargedCost+' Coin.</strong>';
+     const chargedCost=Number(call.data?.coin_cost??call.data?.cost??0);
+     status.innerHTML=chargedCost>0?'✅ <strong>Phân tích hoàn tất · đã trừ '+chargedCost+' Coin.</strong>':'✅ <strong>Phân tích hoàn tất · tài khoản Admin sử dụng miễn phí.</strong>';
      try{ if(typeof refreshAccount==='function') await refreshAccount(); }catch(_){ }
      out.scrollIntoView({behavior:'smooth',block:'nearest'});
-   }catch(e){console.error('Apple Seed AI Board:',e);status.innerHTML='❌ <strong>Phân tích lỗi:</strong> '+esc(e?.message||String(e));}
+   }catch(e){
+     console.error('Apple Seed AI Board:',e);
+     const msg=e?.message||String(e);
+     out.innerHTML='<strong>❌ Phân tích chưa hoàn tất</strong><p style="margin:8px 0 0;white-space:pre-wrap">'+esc(msg)+'</p><small>Không có kết quả được lưu ở khung này. Nếu Coin đã bị trừ, kiểm tra lịch sử giao dịch/hoàn Coin trước khi bấm phân tích lại.</small>';
+     status.innerHTML='❌ <strong>Phân tích lỗi:</strong> '+esc(msg);
+     out.scrollIntoView({behavior:'smooth',block:'nearest'});
+   }
    finally{if(analyzeBtn){analyzeBtn.disabled=false;analyzeBtn.classList.remove('is-analyzing');analyzeBtn.innerHTML=originalBtnText;}}
  }
  $('analyze').onclick=()=>run(mainFile,'panic');
