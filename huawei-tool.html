@@ -19,7 +19,7 @@
 .apps{margin-top:14px;padding-top:15px;border-top:1px solid var(--line)}.appactions{display:flex;gap:8px;flex-wrap:wrap}.appinput{flex:1;min-width:190px;background:#050d08;border:1px solid #234a35;color:var(--text);border-radius:10px;padding:10px 11px;outline:none}.appinput:focus{border-color:var(--green)}.appnote{font-size:10px;color:var(--dim);margin-top:8px}
 .shell{margin-top:14px;padding-top:15px;border-top:1px solid var(--line)}.shellrow{display:flex;gap:8px}.shellrow input{flex:1;min-width:0;background:#050d08;border:1px solid #234a35;color:var(--text);border-radius:10px;padding:11px 12px;outline:none}.shellrow input:focus{border-color:var(--green)}.hint{color:var(--muted);font-size:10px;margin:8px 0 0}
 .log{margin:0;background:#030805;border:1px solid #14291e;border-radius:12px;padding:13px;height:455px;overflow:auto;color:#bfead2;font:11px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap}.empty{color:#536e60}.loghead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.badge{font-size:9px;color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:4px 7px}
-.footer{padding:14px 2px 0;color:#4d6559;font-size:10px;text-align:center}
+.screen-panel{margin-bottom:12px}.screen-wrap{margin-top:12px;min-height:360px;max-height:70vh;background:#020603;border:1px solid #1c3929;border-radius:16px;display:flex;align-items:center;justify-content:center;overflow:auto;padding:12px}.screen-wrap img{display:none;max-width:100%;max-height:65vh;width:auto;height:auto;object-fit:contain;border-radius:10px;background:#000;box-shadow:0 16px 45px rgba(0,0,0,.35);user-select:none}.screen-wrap.is-live img{display:block}.screen-wrap.is-live .screen-placeholder{display:none}.screen-placeholder{color:#5c7666;text-align:center;font-size:30px;line-height:1.7}.screen-placeholder span{display:inline-block;font-size:11px;color:#718c7b}.screen-panel .actions{justify-content:flex-end}.screen-panel .btn{min-height:38px}@media(max-width:620px){.screen-wrap{min-height:280px;max-height:60vh;padding:8px}.screen-wrap img{max-height:55vh}.screen-panel .loghead{align-items:flex-start}.screen-panel .actions{width:100%;justify-content:flex-start}.screen-panel .btn{flex:1}}.footer{padding:14px 2px 0;color:#4d6559;font-size:10px;text-align:center}
 @media(max-width:900px){.main{grid-template-columns:1fr}.log{height:300px}.hero{grid-template-columns:1fr}.devicebar{grid-template-columns:repeat(2,1fr)}}@media(max-width:620px){.wrap{width:calc(100% - 18px);padding-top:14px}.top{align-items:flex-start}.brand h1{font-size:18px}.status{font-size:10px}.hero{padding:17px}.hero h2{font-size:21px}.devicebar{gap:7px}.stat{padding:12px}.toolgrid{grid-template-columns:repeat(2,1fr)}.installbox{grid-template-columns:1fr}.shellrow{flex-direction:column}.shellrow .btn{width:100%}}
 </style>
 <style>
@@ -91,6 +91,24 @@
   </div>
 </section>
 
+
+<section class="panel screen-panel" id="screenPanel">
+  <div class="loghead">
+    <div>
+      <h3>📱 Màn hình điện thoại</h3>
+      <div class="sub">Hiển thị ảnh chụp màn hình trực tiếp từ thiết bị qua ADB. Không cần cài app phụ.</div>
+    </div>
+    <div class="actions">
+      <button id="screenStart" class="btn primary" disabled>▶ Hiện màn hình</button>
+      <button id="screenStop" class="btn danger" disabled>⏹ Dừng</button>
+    </div>
+  </div>
+  <div id="screenStatus" class="appnote">Kết nối thiết bị rồi bấm <b>▶ Hiện màn hình</b>.</div>
+  <div class="screen-wrap" id="screenWrap">
+    <div class="screen-placeholder" id="screenPlaceholder">📱<br><span>Màn hình thiết bị sẽ hiện ở đây</span></div>
+    <img id="deviceScreen" alt="Màn hình Android" draggable="false">
+  </div>
+</section>
 
 <section class="devicebar">
   <div class="stat"><small>Hãng</small><strong id="brand">—</strong></div>
@@ -247,6 +265,7 @@ window.addEventListener("error",e=>{
 <script>
 let Adb,AdbDaemonTransport,AdbWebCredentialStore,AdbDaemonWebUsbDeviceManager,PackageManager;
 let libsPromise=null,adb=null,device=null,selectedFile=null;
+let screenTimer=null,screenBusy=false,screenRunning=false;
 
 const $=id=>document.getElementById(id);
 function log(msg){
@@ -395,6 +414,8 @@ async function connectDevice(){
     $("install").disabled=false;
     $("appleSeedOpen").disabled=false;
     $("volteVerify").disabled=false;
+    $("screenStart").disabled=false;
+    $("screenStop").disabled=true;
     log("✓ THIẾT BỊ ĐÃ KẾT NỐI: "+brand+" "+model+" · Android "+android+" · "+serial);
   }catch(e){
     adb=null;device=null;setStatus("Lỗi kết nối",false);
@@ -407,13 +428,64 @@ async function connectDevice(){
     setTimeout(()=>globalProgress(false),500);
   }
 }
+async function captureDeviceScreen(){
+  if(!adb) throw new Error("Chưa kết nối thiết bị");
+  if(screenBusy) return;
+  screenBusy=true;
+  try{
+    // Use ADB's shell screencap and base64 so no native helper is required.
+    const out=await shell("screencap -p | base64 | tr -d '\\r\\n'");
+    const b64=String(out||"").trim().replace(/^base64\s*$/i,"");
+    if(!b64 || b64.length<100) throw new Error("Không lấy được ảnh màn hình từ thiết bị.");
+    const img=$("deviceScreen");
+    img.src="data:image/png;base64,"+b64;
+    $("screenWrap").classList.add("is-live");
+    $("screenStatus").textContent="🟢 Đang hiển thị màn hình · cập nhật tự động khoảng 0,8 giây/lần.";
+  }finally{
+    screenBusy=false;
+  }
+}
+function stopDeviceScreen(){
+  if(screenTimer){clearInterval(screenTimer);screenTimer=null}
+  screenRunning=false;
+  $("screenStart").disabled=!adb;
+  $("screenStop").disabled=true;
+  $("screenStatus").textContent=adb?"Đã dừng hiển thị màn hình.":"Kết nối thiết bị rồi bấm Hiện màn hình.";
+  log("✓ Đã dừng hiển thị màn hình.");
+}
+async function startDeviceScreen(){
+  if(!adb) throw new Error("Chưa kết nối thiết bị");
+  if(screenRunning) return;
+  screenRunning=true;
+  $("screenStart").disabled=true;
+  $("screenStop").disabled=false;
+  $("screenStatus").textContent="⏳ Đang lấy màn hình thiết bị…";
+  try{
+    await captureDeviceScreen();
+  }catch(e){
+    stopDeviceScreen();
+    throw e;
+  }
+  screenTimer=setInterval(async()=>{
+    if(!adb || !screenRunning){stopDeviceScreen();return}
+    try{await captureDeviceScreen()}
+    catch(e){log("⚠ Màn hình: "+(e?.message||e));}
+  },800);
+  log("✓ Đã bật hiển thị màn hình điện thoại.");
+}
+
 async function disconnectDevice(){
   globalProgress(true,"Đang ngắt kết nối…",20,true);
   try{
     if(adb){try{await adb.close()}catch{}}
     if(device?.raw?.opened){try{await device.raw.close()}catch{}}
   }finally{
+    stopDeviceScreen();
     adb=null;device=null;selectedFile=null;
+    $("screenStart").disabled=true;
+    $("screenStop").disabled=true;
+    $("screenWrap").classList.remove("is-live");
+    $("deviceScreen").removeAttribute("src");
     $("install").disabled=true;
     $("appleSeedOpen").disabled=true;
     $("volteVerify").disabled=true;
@@ -889,6 +961,8 @@ function bind(){
     connectDevice().catch(e=>log("✕ Kết nối: "+(e?.message||e)));
   };
   $("disconnect").onclick=()=>uiAction("NGẮT KẾT NỐI",disconnectDevice);
+  $("screenStart").onclick=()=>uiAction("HIỆN MÀN HÌNH",startDeviceScreen);
+  $("screenStop").onclick=stopDeviceScreen;
   $("logClear").onclick=clearLog;
   $("apk").onchange=()=>{
     selectedFile=$("apk").files?.[0]||null;
