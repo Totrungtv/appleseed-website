@@ -464,7 +464,7 @@ async function readBinaryProcess(command){
   for(const chunk of chunks){data.set(chunk,offset);offset+=chunk.length;}
   return data;
 }
-const SCRCPY_SERVER_B64_URL=new URL("assets/scrcpy-server-v2.5.b64.js?v=2.5-1",window.location.href).href;
+const SCRCPY_SERVER_B64="__APPLESEED_SCRCPY_SERVER_B64__";
 const SCRCPY_SERVER_PATH="/data/local/tmp/scrcpy-server.jar";
 
 function screenButtonState(connected,running){
@@ -481,16 +481,15 @@ function base64ToBytes(base64){
   return out;
 }
 async function pushScrcpyServer(){
-  const response=await fetch(SCRCPY_SERVER_B64_URL,{cache:"no-store"});
-  if(!response.ok) throw new Error("Không tải được Scrcpy server nhúng: HTTP "+response.status);
-  const js=await response.text();
-  const match=js.match(/window\.APPLESEED_SCRCPY_SERVER_B64="([^"]+)"/);
-  if(!match?.[1]) throw new Error("Không tìm thấy Scrcpy server nhúng trên Pages. Có thể deployment chưa hoàn tất.");
-  const data=base64ToBytes(match[1]);
+  const encoded=String(SCRCPY_SERVER_B64||"").trim();
+  if(!encoded || encoded.includes("__APPLESEED_SCRCPY_SERVER_B64__")){
+    throw new Error("Scrcpy server chưa được nhúng vào bản deploy của Apple Seed.");
+  }
+  const data=base64ToBytes(encoded);
   if(!data.length) throw new Error("Scrcpy server nhúng rỗng.");
 
   $("screenStatus").textContent="⏳ Đang truyền Scrcpy server vào điện thoại…";
-  log("→ Scrcpy server: "+data.length.toLocaleString()+" bytes");
+  log("→ Scrcpy server nhúng: "+data.length.toLocaleString()+" bytes");
 
   const readable=new ReadableStream({
     start(controller){
