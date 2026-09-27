@@ -155,7 +155,7 @@
 </section>
 
 <section class="panel">
-  <div class="loghead"><h3>🧾 Nhật ký hoạt động</h3><span class="badge">LIVE</span></div>
+  <div class="loghead"><h3>🧾 Nhật ký hoạt động</h3><div style="display:flex;align-items:center;gap:7px"><button id="logClear" type="button" class="btn small">🗑 Xóa log</button><span class="badge">GIỮ LỊCH SỬ</span></div></div>
   <pre id="log"><span class="empty">Apple Seed WebADB sẵn sàng.
 Kết nối thiết bị để bắt đầu.</span></pre>
 </section>
@@ -229,8 +229,14 @@ const $=id=>document.getElementById(id);
 function log(msg){
   const el=$("log");
   if(el.querySelector(".empty")) el.textContent="";
-  el.textContent+=(el.textContent?"\n":"")+String(msg);
+  const stamp=new Date().toLocaleTimeString("vi-VN",{hour12:false});
+  const line=String(msg);
+  el.textContent+=(el.textContent?"\n":"")+"["+stamp+"] "+line;
   el.scrollTop=el.scrollHeight;
+}
+function clearLog(){
+  const el=$("log");
+  el.innerHTML='<span class="empty">Đã xóa nhật ký. Các thao tác tiếp theo sẽ được ghi liên tục tại đây.</span>';
 }
 function setStatus(text,on=false){$("status").textContent=text;$("dot").classList.toggle("on",on)}
 function setBusy(b){$("connect").disabled=b}
@@ -596,6 +602,7 @@ function bind(){
     connectDevice().catch(e=>log("✕ Kết nối: "+(e?.message||e)));
   };
   $("disconnect").onclick=()=>uiAction("NGẮT KẾT NỐI",disconnectDevice);
+  $("logClear").onclick=clearLog;
   $("apk").onchange=()=>{
     selectedFile=$("apk").files?.[0]||null;
     $("filename").textContent=selectedFile?.name||"Chọn file APK";
