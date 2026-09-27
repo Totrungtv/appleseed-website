@@ -82,6 +82,7 @@
         <tr><td class="guide-letter">W</td><td class="guide-step">Nếu cài APK lỗi</td><td class="guide-action">Giữ máy mở khóa, kết nối ADB lại rồi thử cài lần nữa. Tool có streaming install và fallback <span class="guide-code">pm install</span>.</td><td class="guide-ok">Install Success</td></tr>
         <tr><td class="guide-letter">X</td><td class="guide-step">Nếu app không thấy</td><td class="guide-action">Dùng ô <b>Quản lý ứng dụng</b>, nhập <span class="guide-code">vn.appleseed.volte</span> rồi bấm <b>▶ Mở app</b>. Có thể kiểm tra bằng ADB Shell.</td><td class="guide-ok">Package tồn tại</td></tr>
         <tr><td class="guide-letter">Y</td><td class="guide-step">Gỡ / cài lại</td><td class="guide-action">Chỉ khi cần, nhập package name trong <b>Quản lý ứng dụng</b> → <b>🗑 Gỡ app</b>, sau đó kết nối lại và cài bản mới.</td><td class="guide-ok">Cài lại sạch</td></tr>
+        <tr><td class="guide-letter">Y</td><td class="guide-step">Vào Recovery</td><td class="guide-action">Trong Service Center bấm <b>🛠️ Vào Recovery</b> → xác nhận. Thiết bị sẽ reboot vào Recovery; kết nối ADB trên trang sẽ mất trong lúc reboot.</td><td class="guide-warn">Cần kết nối lại khi thiết bị hỗ trợ ADB</td></tr>
         <tr><td class="guide-letter">Z</td><td class="guide-step">Hoàn tất</td><td class="guide-action">Kết quả chuẩn: thiết bị đã kết nối → Apple Seed VoLTE đã cài → VoLTE được bật nếu có hỗ trợ → <b>IMS REGISTERED</b> → test cuộc gọi thực tế.</td><td class="guide-ok">✅ HOÀN TẤT</td></tr>
       </tbody>
     </table>
@@ -112,6 +113,7 @@
     <button class="tool" data-cmd="pm list packages -3"><span class="ico">📦</span><b>Ứng dụng</b><span>List user apps</span></button>
     <button class="tool" data-cmd="df -h /data"><span class="ico">💾</span><b>Bộ nhớ</b><span>/data storage</span></button>
     <button class="tool" data-cmd="getprop ro.boot.verifiedbootstate"><span class="ico">🛡️</span><b>Verified Boot</b><span>Boot state</span></button>
+    <button class="tool" id="recoveryBtn"><span class="ico">🛠️</span><b>Vào Recovery</b><span>Reboot Recovery</span></button>
   </div>
 
   <div class="install">
@@ -602,6 +604,13 @@ function bind(){
   };
   $("install").onclick=()=>uiAction("CÀI APK",installSelected);
   document.querySelectorAll(".tool[data-cmd]").forEach(b=>b.onclick=()=>uiAction(b.querySelector("b")?.textContent||"ADB",()=>run(b.dataset.cmd)));
+  $("recoveryBtn").onclick=()=>uiAction("VÀO RECOVERY",async()=>{
+    if(!adb) throw new Error("Chưa kết nối thiết bị.");
+    if(!confirm("Thiết bị sẽ khởi động lại vào RECOVERY và kết nối ADB của trang sẽ bị ngắt. Tiếp tục?")) return;
+    log("→ Gửi lệnh khởi động vào Recovery…");
+    await shell("reboot recovery");
+    log("✓ Đã gửi lệnh reboot recovery. Thiết bị sẽ ngắt kết nối khi bắt đầu khởi động lại.");
+  });
   $("run").onclick=()=>uiAction("ADB SHELL",()=>run($("cmd").value.trim()));
   $("volteScan").onclick=()=>uiAction("QUÉT VOLTE / IMS",scanVolte);
   $("volteFix").onclick=()=>uiAction("FIX VOLTE",fixVolte);
