@@ -53,7 +53,8 @@
     <button class="tool" data-cmd="getprop ro.product.model"><span class="ico">📱</span><b>Model</b><span>Device model</span></button>
     <button class="tool" data-cmd="getprop ro.build.version.release"><span class="ico">🤖</span><b>Android</b><span>OS version</span></button>
     <button class="tool" data-cmd="getprop gsm.version.baseband"><span class="ico">📡</span><b>Baseband</b><span>Modem version</span></button>
-    <button class="tool" data-cmd="settings get global volte_vt_enabled"><span class="ico">📶</span><b>VoLTE / VT</b><span>System setting</span></button>
+    <button class="tool" id="volteScan"><span class="ico">📶</span><b>Quét VoLTE / IMS</b><span>Kiểm tra thật</span></button>
+    <button class="tool" id="volteFix"><span class="ico">⚡</span><b>FIX VoLTE</b><span>Fix + Verify</span></button>
     <button class="tool" data-cmd="getprop ro.build.display.id"><span class="ico">🧩</span><b>Build</b><span>Firmware build</span></button>
     <button class="tool" data-cmd="pm list packages -3"><span class="ico">📦</span><b>Ứng dụng</b><span>List user apps</span></button>
     <button class="tool" data-cmd="df -h /data"><span class="ico">💾</span><b>Bộ nhớ</b><span>/data storage</span></button>
@@ -154,6 +155,94 @@ $("connect").onclick=async()=>{
 $("disconnect").onclick=async()=>{try{await adb?.close()}catch{}adb=null;device=null;$("brand").textContent=$("model").textContent=$("android").textContent=$("serial").textContent="—";setStatus("Chưa kết nối");$("install").disabled=true;log("Đã ngắt kết nối.")};
 $("apk").onchange=e=>{selectedFile=e.target.files?.[0]||null;if(selectedFile){$("filename").textContent=selectedFile.name;$("filesize").textContent=fmt(selectedFile.size);$("install").disabled=!adb}else{$("filename").textContent="Chọn file APK";$("filesize").textContent="APK sẽ được cài trực tiếp vào thiết bị đã kết nối";$("install").disabled=true}};
 $("install").onclick=()=>installApk(selectedFile);
+
+async function scanVolte(){
+  if(!adb) throw new Error("Chưa kết nối thiết bị");
+  log("===== VOLTE / IMS REAL SCAN =====");
+  const cmds=[
+    ["Device","getprop ro.product.brand; getprop ro.product.model; getprop ro.build.version.release; getprop ro.boot.sales_code; getprop gsm.version.baseband"],
+    ["SIM","getprop gsm.sim.operator.numeric; getprop gsm.sim.operator.alpha; getprop gsm.operator.numeric; getprop gsm.operator.alpha"],
+    ["Global","settings list global"],
+    ["System","settings list system"],
+    ["Secure","settings list secure"],
+    ["IMS","dumpsys ims"],
+    ["Packages","pm list packages"]
+  ];
+  const data={};
+  for(const [name,cmd] of cmds){
+    try{
+      const out=await shell(cmd);
+      data[name]=out;
+      if(name==="Global"||name==="System"||name==="Secure"){
+        const hits=out.split(/\r?\n/).filter(x=>/(volte|ims|vt_ims|wfc|enhanced_4g)/i.test(x));
+        log(name+" VoLTE/IMS keys:\n"+(hits.join("\n")||"(không thấy key VoLTE/IMS)"));
+      }else if(name==="IMS"){
+        const lines=out.split(/\r?\n/).filter(x=>/(registration|registered|unregistered|volte|ims|mmtel|feature)/i.test(x)).slice(0,80);
+        log("IMS status:\n"+(lines.join("\n")||"(dumpsys ims không có dữ liệu phù hợp)"));
+      }else{
+        log(name+":\n"+(out||"(trống)"));
+      }
+    }catch(e){log("✕ "+name+": "+(e?.message||e))}
+  }
+  log("===== SCAN KẾT THÚC =====");
+  return data;
+}
+async function fixVolte(){
+  if(!adb) throw new Error("Chưa kết nối thiết bị");
+  log("===== APPLE SEED REAL VOLTE FIX =====");
+  const global=await shell("settings list global");
+  const system=await shell("settings list system");
+  const secure=await shell("settings list secure");
+  const all=global+"\n"+system+"\n"+secure;
+  const candidates=[
+    ["global","volte_vt_enabled"],
+    ["global","enhanced_4g_mode_enabled"],
+    ["global","vt_ims_enabled"],
+    ["global","ims_volte_enable"],
+    ["system","volte_vt_enabled"],
+    ["system","enhanced_4g_mode_enabled"],
+    ["system","vt_ims_enabled"],
+    ["secure","volte_vt_enabled"],
+    ["secure","enhanced_4g_mode_enabled"],
+    ["secure","vt_ims_enabled"]
+  ];
+  let changed=0;
+  for(const [ns,key] of candidates){
+    const src=ns==="global"?global:ns==="system"?system:secure;
+    const line=src.split(/\r?\n/).find(x=>x.startsWith(key+"="));
+    if(!line) continue;
+    log("→ "+ns+"."+key+" = 1");
+    try{
+      const out=await shell("settings put "+ns+" "+key+" 1");
+      log(out||"  OK");
+      changed++;
+    }catch(e){log("  ✕ "+(e?.message||e))}
+  }
+  if(!changed){
+    log("⚠ Không có key VoLTE chuẩn để ghi trên firmware này.");
+    log("Không giả báo thành công: máy cần CarrierConfig/vendor IMS hoặc quyền hệ thống.");
+  }else{
+    log("→ Phát tín hiệu CarrierConfig changed...");
+    try{log(await shell("am broadcast -a android.telephony.action.CARRIER_CONFIG_CHANGED")||"broadcast sent");}catch(e){log("  ⚠ Broadcast bị firmware chặn: "+(e?.message||e))}
+  }
+  await new Promise(r=>setTimeout(r,1500));
+  const verify=[];
+  for(const [ns,key] of candidates){
+    const src=ns==="global"?global:ns==="system"?system:secure;
+    if(src.includes(key+"=")){
+      try{verify.push(ns+"."+key+"="+await shell("settings get "+ns+" "+key));}catch{}
+    }
+  }
+  log("VERIFY:\n"+(verify.join("\n")||"(không có key để verify)"));
+  try{
+    const ims=await shell("dumpsys ims");
+    const lines=ims.split(/\r?\n/).filter(x=>/(registered|unregistered|registration|mmtel)/i.test(x)).slice(0,60);
+    log("IMS SAU FIX:\n"+(lines.join("\n")||"(không đọc được trạng thái IMS)"));
+  }catch(e){log("IMS verify lỗi: "+(e?.message||e))}
+  log("===== REAL FIX KẾT THÚC =====");
+}
+$("volteScan").onclick=()=>scanVolte().catch(e=>log("✕ VOLTE SCAN: "+(e?.message||e)));
+$("volteFix").onclick=()=>fixVolte().catch(e=>log("✕ VOLTE FIX: "+(e?.message||e)));
 $("run").onclick=()=>run($("cmd").value).catch(()=>{});
 $("cmd").addEventListener("keydown",e=>{if(e.key==="Enter")run($("cmd").value).catch(()=>{})});
 document.querySelectorAll("[data-cmd]").forEach(b=>b.onclick=()=>run(b.dataset.cmd).catch(()=>{}));
