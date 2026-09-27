@@ -154,19 +154,48 @@ const SHIZUKU_URL="https://github.com/RikkaApps/Shizuku/releases/download/v13.5.
 const SHIZUKU_PACKAGE="moe.shizuku.privileged.api";
 let imsInstalled=false,shizukuInstalled=false,shizukuRunning=false;
 
+async function installViaPush(file){
+  const path="/sdcard/Download/.appleseed-"+Date.now()+".apk";
+  log("→ Fallback ADB Push: "+path);
+  const sync=await adb.sync();
+  try{
+    await sync.write({filename:path,file:file.stream()});
+  }finally{
+    try{await sync.dispose()}catch{}
+  }
+  log("→ Chạy package manager trực tiếp…");
+  const out=await shell("pm install -r -g -d --bypass-low-target-sdk-block --skip-verification \\\""+path+"\\\"");
+  log("pm install: "+(out||"(không có output)"));
+  try{await shell("rm -f \\\""+path+"\\\"")}catch{}
+  if(!/success/i.test(out||"")) throw new Error(out||"pm install không trả về Success");
+}
 async function installApk(file){
   if(!adb)throw new Error("Hãy kết nối thiết bị trước.");
   if(!file)throw new Error("Chưa chọn APK.");
   if(!file.name.toLowerCase().endsWith(".apk"))throw new Error("Chỉ hỗ trợ file .apk.");
   try{
-    $("install").disabled=true;progress(2,"Đang truyền APK…");log("📦 Cài APK: "+file.name+" ("+fmt(file.size)+")");
-    const pm=new PackageManager(adb);
-    await pm.installStream(file.size,file.stream(),{bypassLowTargetSdkBlock:true});
+    $("install").disabled=true;
+    progress(2,"Đang cài APK…");
+    log("📦 Cài APK: "+file.name+" ("+fmt(file.size)+")");
+    try{
+      const pm=new PackageManager(adb);
+      await pm.installStream(file.size,file.stream(),{
+        bypassLowTargetSdkBlock:true,
+        skipVerification:true,
+        grantRuntimePermissions:true
+      });
+      log("✓ PackageManager streaming install OK");
+    }catch(e){
+      log("⚠ Streaming install thất bại: "+(e?.message||e));
+      log("→ Chuyển sang ADB Push + pm install để lấy lỗi Android thật.");
+      await installViaPush(file);
+    }
     progress(100,"Cài đặt hoàn tất");
     log("✓ CÀI APK THÀNH CÔNG: "+file.name);
   }catch(e){
     progress(100,"Cài đặt thất bại");
     log("✕ CÀI APK LỖI: "+(e?.message||e));
+    log("→ Nếu log có INSTALL_FAILED_..., đó là lỗi từ Android Package Manager chứ không phải giao diện web.");
   }finally{$("install").disabled=!selectedFile||!adb}
 }
 $("connect").onclick=async()=>{
@@ -213,10 +242,20 @@ async function installRemoteApk(url,name,packageName){
   log("→ Tải "+name+"…");
   const file=await downloadApk(url,name);
   log("→ APK tải xong: "+fmt(file.size));
-  const pm=new PackageManager(adb);
-  await pm.installStream(file.size,file.stream(),{bypassLowTargetSdkBlock:true});
+  try{
+    const pm=new PackageManager(adb);
+    await pm.installStream(file.size,file.stream(),{
+      bypassLowTargetSdkBlock:true,
+      skipVerification:true,
+      grantRuntimePermissions:true
+    });
+  }catch(e){
+    log("⚠ Streaming install "+name+" lỗi: "+(e?.message||e));
+    log("→ Fallback ADB Push + pm install…");
+    await installViaPush(file);
+  }
   const pkgs=await shell("pm list packages "+packageName);
-  if(!pkgs.includes(packageName)) throw new Error("Package chưa xuất hiện: "+pkgs);
+  if(!pkgs.includes(packageName)) throw new Error("Package chưa xuất hiện sau khi cài: "+pkgs);
   log("✓ ĐÃ CÀI: "+packageName);
 }
 async function installImsEngine(){
