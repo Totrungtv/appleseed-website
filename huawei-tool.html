@@ -62,6 +62,17 @@
   </div>
 
   <div class="install">
+    <h3>📡 Apple Seed IMS Engine</h3>
+    <p class="sub">Cài engine IMS vào điện thoại, sau đó chạy CarrierConfig override + reset IMS + kiểm tra IMS Registration.</p>
+    <div class="appactions">
+      <button id="imsInstall" class="btn primary">⚡ Cài IMS Engine</button>
+      <button id="imsActivate" class="btn" disabled>📶 Kích hoạt VoLTE</button>
+      <button id="imsRestore" class="btn danger" disabled>↩ Khôi phục</button>
+    </div>
+    <div class="appnote">Engine là APK mã nguồn mở; cơ chế này được thiết kế cho Pixel/Android tương thích. Với Samsung/OPPO, kết quả phụ thuộc vendor IMS và firmware.</div>
+  </div>
+
+  <div class="install">
     <h3>📦 Cài APK — One Click</h3><p class="sub">Chọn APK trên máy tính, công cụ sẽ truyền và cài thẳng qua ADB, không cần mở trình cài APK trên điện thoại.</p>
     <div class="installbox">
       <label class="drop" for="apk"><div class="fileicon">⬆️</div><div><strong id="filename">Chọn file APK</strong><span id="filesize">APK sẽ được cài trực tiếp vào thiết bị đã kết nối</span></div><input id="apk" type="file" accept=".apk,application/vnd.android.package-archive"></label>
@@ -218,9 +229,9 @@ async function runIms(clear=false){
   }catch(e){log("Telephony verify lỗi: "+(e?.message||e))}
   log("===== KẾT THÚC =====");
 }
-$("imsInstall").onclick=()=>installImsEngine().catch(e=>log("✕ IMS ENGINE: "+(e?.message||e)));
-$("imsActivate").onclick=()=>runIms(false).catch(e=>log("✕ ACTIVATE IMS: "+(e?.message||e)));
-$("imsRestore").onclick=()=>runIms(true).catch(e=>log("✕ RESTORE IMS: "+(e?.message||e)));
+if($("imsInstall")) $("imsInstall").onclick=()=>installImsEngine().catch(e=>log("✕ IMS ENGINE: "+(e?.message||e)));
+if($("imsActivate")) $("imsActivate").onclick=()=>runIms(false).catch(e=>log("✕ ACTIVATE IMS: "+(e?.message||e)));
+if($("imsRestore")) $("imsRestore").onclick=()=>runIms(true).catch(e=>log("✕ RESTORE IMS: "+(e?.message||e)));
 
 async function scanVolte(){
   if(!adb) throw new Error("Chưa kết nối thiết bị");
