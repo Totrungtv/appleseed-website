@@ -465,7 +465,7 @@ async function readBinaryProcess(command){
   for(const chunk of chunks){data.set(chunk,offset);offset+=chunk.length;}
   return data;
 }
-const SCRCPY_SERVER_URL="https://api.github.com/repos/Genymobile/scrcpy/releases/assets/474612860";
+const SCRCPY_SERVER_URL=new URL("scrcpy-server-v4.1",window.location.href).href;
 const SCRCPY_SERVER_PATH="/data/local/tmp/scrcpy-server.jar";
 
 function screenButtonState(connected,running){
