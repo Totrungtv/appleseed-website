@@ -492,12 +492,28 @@ async function pushScrcpyServer(){
   $("screenStatus").textContent="⏳ Đang truyền server vào điện thoại…";
   log("→ Server: "+data.length.toLocaleString()+" bytes");
 
-  // WebADB 0.0.24 expects a ReadableStream of Uint8Array chunks.
-  const readable=ReadableStream.from([data]);
-  await window.AppleSeedScrcpy.AdbScrcpyClient.pushServer(adb,readable,SCRCPY_SERVER_PATH);
+  // Truyền binary qua stdin của ADB shell, tránh kẹt ở SyncService trên một số Chrome/Android.
+  const process=await adb.subprocess.noneProtocol.spawn([
+    "sh","-c","cat > "+SCRCPY_SERVER_PATH
+  ]);
+  const writer=process.stdin.getWriter();
+  try{
+    const chunkSize=256*1024;
+    for(let offset=0;offset<data.length;offset+=chunkSize){
+      await writer.write(data.subarray(offset,Math.min(offset+chunkSize,data.length)));
+    }
+    await writer.close();
+    await process.exited;
+  }catch(e){
+    try{await writer.abort(e)}catch{}
+    try{await process.kill()}catch{}
+    throw e;
+  }finally{
+    try{writer.releaseLock()}catch{}
+  }
 
-  log("✓ Đã truyền xong Scrcpy server.");
-  try{log("✓ Kiểm tra file: "+await shell("ls -l "+SCRCPY_SERVER_PATH));}catch{}
+  const stat=await shell("ls -l "+SCRCPY_SERVER_PATH);
+  log("✓ Scrcpy server đã truyền xong: "+stat);
 }
 
 function screenPoint(ev){
