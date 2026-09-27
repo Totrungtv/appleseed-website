@@ -207,18 +207,21 @@ uiAction.running="";
 async function connectDevice(){
   if(!window.isSecureContext) throw new Error("Trang này chưa chạy HTTPS nên Chrome chặn WebUSB.");
   if(!navigator.usb) throw new Error("Chrome/Edge không cung cấp WebUSB.");
-  if(!AdbDaemonWebUsbDeviceManager) throw new Error("WebADB chưa nạp xong. Hãy Ctrl+F5 và chờ trang báo sẵn sàng.");
   setBusy(true);
   globalProgress(true,"Mở hộp chọn USB…",10,false);
   try{
     log("→ WebUSB: yêu cầu chọn thiết bị ADB…");
-    // Gọi native WebUSB trực tiếp từ click để Chrome chắc chắn nhận user gesture.
+    // QUAN TRỌNG: requestDevice phải được gọi trực tiếp từ thao tác click.
+    // Không phụ thuộc WebADB/CDN đã tải xong hay chưa.
     const raw=await navigator.usb.requestDevice({
       filters:[{classCode:0xff,subclassCode:0x42,protocolCode:0x01}]
     });
     if(!raw) throw new Error("Không chọn thiết bị.");
-    log("✓ Chrome đã cấp quyền USB: "+(raw.productName||raw.serialNumber||"Android"));
-    globalProgress(true,"Khởi tạo kênh ADB…",35,true);
+    log("✓ Chrome đã cấp quyền USB: "+(raw.productName||raw.manufacturerName||raw.serialNumber||"Android"));
+    globalProgress(true,"Đang nạp WebADB…",25,true);
+    await loadAdbLibraries();
+    if(!AdbDaemonWebUsbDeviceManager) throw new Error("Không khởi tạo được WebADB sau khi Chrome đã cấp quyền USB.");
+    globalProgress(true,"Khởi tạo kênh ADB…",40,true);
 
     // Sau khi Chrome cấp quyền, lấy backend ADB tương ứng từ WebADB manager.
     const manager=new AdbDaemonWebUsbDeviceManager(navigator.usb);
@@ -507,18 +510,17 @@ function bind(){
 }
 const APPLESEED_VOLTE_URL="https://raw.githubusercontent.com/Totrungtv/AppleSeed-IMS/main/apps/AppleSeed_VoLTE.apk";
 const APPLESEED_VOLTE_PACKAGE="vn.appleseed.volte";
-$("connect").disabled=true;
-$("status").textContent="Đang nạp WebADB…";
+$("connect").disabled=false;
+$("status").textContent=window.isSecureContext && navigator.usb ? "Sẵn sàng kết nối" : "Kiểm tra WebUSB";
+if(!window.isSecureContext) log("⚠ Trang không chạy HTTPS — WebUSB sẽ bị Chrome chặn.");
+else if(!navigator.usb) log("⚠ Trình duyệt hiện tại không có WebUSB. Hãy dùng Chrome/Edge trên Windows.");
+else log("✓ WebUSB sẵn sàng. Bấm Kết nối thiết bị — hộp chọn USB phải xuất hiện ngay.");
 loadAdbLibraries().then(()=>{
-  $("connect").disabled=false;
-  $("status").textContent="Sẵn sàng kết nối";
-  log("✓ WebADB đã nạp. Bấm Kết nối thiết bị để mở hộp chọn USB.");
+  log("✓ WebADB đã nạp sẵn cho bước ADB.");
 }).catch(e=>{
-  $("status").textContent="Lỗi WebADB";
-  log("✕ Không nạp được WebADB: "+(e?.message||e));
+  log("⚠ WebADB CDN chưa nạp được; WebUSB chooser vẫn hoạt động để chẩn đoán: "+(e?.message||e));
 });
 bind();
-log("✓ Apple Seed WebADB đang khởi tạo. Vui lòng chờ WebADB sẵn sàng.");
 </script>
 <div id="fixOverlay" class="fix-overlay" role="dialog" aria-modal="true" aria-labelledby="fixTitle">
 <div class="fix-modal"><div class="fix-head"><div class="fix-icon">!</div><div style="flex:1"><h3 id="fixTitle">Lỗi kết nối thiết bị</h3><div id="fixError" class="fix-error">Connection closed unexpectedly</div>
