@@ -214,10 +214,13 @@ async function connectDevice(){
     // QUAN TRỌNG: requestDevice phải được gọi trực tiếp từ thao tác click.
     // Không phụ thuộc WebADB/CDN đã tải xong hay chưa.
     const raw=await navigator.usb.requestDevice({
-      filters:[{classCode:0xff,subclassCode:0x42,protocolCode:0x01}]
+      // Không khóa cứng subclass/protocol vì một số Android/Huawei
+      // quảng bá ADB khác nhau tùy firmware. Lọc vendor-specific trước,
+      // sau đó WebADB sẽ tự tìm interface ADB.
+      filters:[{classCode:0xff}]
     });
     if(!raw) throw new Error("Không chọn thiết bị.");
-    log("✓ Chrome đã cấp quyền USB: "+(raw.productName||raw.manufacturerName||raw.serialNumber||"Android"));
+    log("✓ Chrome đã cấp quyền USB: "+(raw.manufacturerName||"")+" "+(raw.productName||"Android")+" · VID "+raw.vendorId.toString(16).padStart(4,"0")+" · PID "+raw.productId.toString(16).padStart(4,"0"));
     globalProgress(true,"Đang nạp WebADB…",25,true);
     await loadAdbLibraries();
     if(!AdbDaemonWebUsbDeviceManager) throw new Error("Không khởi tạo được WebADB sau khi Chrome đã cấp quyền USB.");
