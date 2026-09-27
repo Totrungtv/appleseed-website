@@ -205,19 +205,27 @@ async function uiAction(title,fn){
 uiAction.running="";
 
 async function connectDevice(){
-  globalProgress(true,"Đang kết nối WebADB…",5,true);
   if(!navigator.usb) throw new Error("Trình duyệt không hỗ trợ WebUSB. Dùng Chrome hoặc Edge.");
+  if(!AdbDaemonWebUsbDeviceManager?.BROWSER) throw new Error("WebADB chưa nạp xong. Hãy chờ trạng thái WebADB sẵn sàng rồi bấm lại.");
   setBusy(true);
+  globalProgress(true,"Chọn thiết bị USB / ADB…",12,false);
   try{
-    log("→ Nạp thư viện WebADB…");
-    await loadAdbLibraries();
-    if(!AdbDaemonWebUsbDeviceManager?.BROWSER) throw new Error("WebUSB không khả dụng trong trình duyệt này.");
+    /*
+      QUAN TRỌNG: requestDevice() bắt buộc phải được gọi trực tiếp trong
+      user gesture (click). Không được await load thư viện trước dòng này,
+      nếu không Chrome sẽ không mở hộp chọn USB.
+    */
+    log("→ Mở hộp chọn thiết bị USB…");
+    if(navigator.userActivation && !navigator.userActivation.isActive){
+      log("⚠ Chrome không còn user activation cho lần bấm này.");
+    }
     const manager=AdbDaemonWebUsbDeviceManager.BROWSER;
-    log("→ Chọn thiết bị USB có ADB…");
-    const d=await manager.requestDevice();
+    const devicePromise=manager.requestDevice();
+    const d=await devicePromise;
     if(!d){log("Đã hủy chọn thiết bị.");return}
     device=d;
-    log("→ Mở kênh ADB: "+(d.name||"Android")+" / "+(d.serial||"unknown"));
+    log("→ Đã chọn: "+(d.name||"Android")+" / "+(d.serial||"unknown"));
+    globalProgress(true,"Đang mở kênh ADB…",35,true);
     const connection=await d.connect();
     const store=new AdbWebCredentialStore("AppleSeed");
     const transport=await AdbDaemonTransport.authenticate({
@@ -229,6 +237,7 @@ async function connectDevice(){
     adb=new Adb(transport);
     setStatus("Đã kết nối",true);
     log("✓ WebADB sẵn sàng.");
+    globalProgress(true,"Đọc thông tin thiết bị…",70,true);
     const brand=safeText(await shell("getprop ro.product.brand"));
     const model=safeText(await shell("getprop ro.product.model"));
     const android=safeText(await shell("getprop ro.build.version.release"));
@@ -247,7 +256,6 @@ async function connectDevice(){
     throw e;
   }finally{setBusy(false)}
 }
-
 async function disconnectDevice(){
   globalProgress(true,"Đang ngắt kết nối…",20,true);
   try{
@@ -491,8 +499,18 @@ function bind(){
 }
 const APPLESEED_VOLTE_URL="https://raw.githubusercontent.com/Totrungtv/AppleSeed-IMS/main/apps/AppleSeed_VoLTE.apk";
 const APPLESEED_VOLTE_PACKAGE="vn.appleseed.volte";
+$("connect").disabled=true;
+$("status").textContent="Đang nạp WebADB…";
+loadAdbLibraries().then(()=>{
+  $("connect").disabled=false;
+  $("status").textContent="Sẵn sàng kết nối";
+  log("✓ WebADB đã nạp. Bấm Kết nối thiết bị để mở hộp chọn USB.");
+}).catch(e=>{
+  $("status").textContent="Lỗi WebADB";
+  log("✕ Không nạp được WebADB: "+(e?.message||e));
+});
 bind();
-log("✓ Apple Seed WebADB đã nạp đầy đủ chức năng. Bấm Kết nối thiết bị để bắt đầu.");
+log("✓ Apple Seed WebADB đang khởi tạo. Vui lòng chờ WebADB sẵn sàng.");
 </script>
 <div id="fixOverlay" class="fix-overlay" role="dialog" aria-modal="true" aria-labelledby="fixTitle">
 <div class="fix-modal"><div class="fix-head"><div class="fix-icon">!</div><div style="flex:1"><h3 id="fixTitle">Lỗi kết nối thiết bị</h3><div id="fixError" class="fix-error">Connection closed unexpectedly</div>
