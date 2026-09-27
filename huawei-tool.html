@@ -465,7 +465,7 @@ async function readBinaryProcess(command){
   for(const chunk of chunks){data.set(chunk,offset);offset+=chunk.length;}
   return data;
 }
-const SCRCPY_SERVER_URL=new URL("scrcpy-server-v4.1",window.location.href).href;
+const SCRCPY_SERVER_B64_URL=new URL("assets/scrcpy-server-v4.1.b64.js?v=4.1-1",window.location.href).href;
 const SCRCPY_SERVER_PATH="/data/local/tmp/scrcpy-server.jar";
 
 function screenButtonState(connected,running){
@@ -474,19 +474,24 @@ function screenButtonState(connected,running){
   ["screenBack","screenHome","screenRecent","screenPower"].forEach(id=>$(id).disabled=!connected||!running);
 }
 
+function base64ToBytes(base64){
+  const clean=String(base64||"").replace(/\s+/g,"");
+  const bin=atob(clean);
+  const out=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) out[i]=bin.charCodeAt(i);
+  return out;
+}
 async function pushScrcpyServer(){
-  const response=await fetch(SCRCPY_SERVER_URL,{
-    cache:"no-store",
-    headers:{
-      "Accept":"application/octet-stream"
-    }
-  });
-  if(!response.ok||!response.body) throw new Error("Không tải được Scrcpy server v4.1: HTTP "+response.status);
-  const contentType=(response.headers.get("content-type")||"").toLowerCase();
-  if(contentType.includes("application/json")) throw new Error("GitHub trả metadata thay vì file Scrcpy. Không thể tải server binary.");
+  const response=await fetch(SCRCPY_SERVER_B64_URL,{cache:"no-store"});
+  if(!response.ok) throw new Error("Không tải được Scrcpy server nhúng: HTTP "+response.status);
+  const js=await response.text();
+  const match=js.match(/window\.APPLESEED_SCRCPY_SERVER_B64="([^"]+)"/);
+  if(!match?.[1]) throw new Error("Không tìm thấy Scrcpy server nhúng trên Pages. Có thể deployment chưa hoàn tất.");
+  const data=base64ToBytes(match[1]);
+  if(!data.length) throw new Error("Scrcpy server nhúng rỗng.");
   const sync=await adb.sync();
   try{
-    await sync.write({filename:SCRCPY_SERVER_PATH,file:response.body});
+    await sync.write({filename:SCRCPY_SERVER_PATH,file:new Blob([data]).stream()});
   }finally{
     try{await sync.dispose()}catch{}
   }
