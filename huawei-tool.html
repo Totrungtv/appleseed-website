@@ -39,6 +39,52 @@
   <div><div class="eyebrow">Professional Web Service Tool</div><h2>Huawei / Android Service Tool</h2><p>WebADB trực tiếp qua USB. Đọc thông tin, cài APK, quản lý app và chạy ADB Shell ngay trên Chrome / Edge.</p></div>
   <div class="actions"><button id="connect" class="btn primary" type="button" onclick="window.__appleSeedConnectFallback()">🔌 Kết nối thiết bị</button><button id="disconnect" class="btn danger">Ngắt kết nối</button></div>
 </section>
+<style>
+.guide{margin-top:12px}.guide h3{font-size:18px}.guide-intro{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;background:#07150e;border:1px solid #1d402d;border-radius:12px;color:#b8d7c5;font-size:11px;margin-bottom:12px}.guide-intro b{color:#effaf4}.guide-table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}.guide-table{width:100%;border-collapse:collapse;min-width:760px;font-size:11px}.guide-table th{padding:10px;text-align:left;background:#0d2117;color:#7ef0ae;font-size:10px;text-transform:uppercase;letter-spacing:.7px;white-space:nowrap}.guide-table td{padding:10px;border-top:1px solid #183425;vertical-align:top}.guide-table tr:hover td{background:#091a11}.guide-letter{width:42px;text-align:center;font-size:15px;font-weight:950;color:#20dc7d}.guide-step{width:145px;font-weight:850;color:#e5f8ec}.guide-action{color:#b9d7c6}.guide-note{color:#788f82}.guide-ok{color:#65e9a1;font-weight:800}.guide-warn{color:#f5c45b}.guide-code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:#c7f5d9;background:#041009;padding:2px 5px;border-radius:5px}.guide-links{margin-top:10px;color:#667f70;font-size:10px}.guide-links a{color:#65e9a1;text-decoration:none}.guide-links a:hover{text-decoration:underline}@media(max-width:620px){.guide{padding:13px}.guide-table{min-width:700px}}
+</style>
+<section class="panel guide">
+  <h3>📘 Hướng dẫn A → Z · Apple Seed Android / VoLTE</h3>
+  <p class="sub">Làm theo đúng thứ tự dưới đây. Người mới chỉ cần đi từ A đến Z; kỹ thuật viên có thể bỏ qua các bước đã quen.</p>
+  <div class="guide-intro">
+    <div>💡</div>
+    <div><b>Quy trình chuẩn:</b> chuẩn bị điện thoại → bật Developer options + USB debugging → kết nối USB → cấp quyền ADB → kiểm tra máy → cài Apple Seed VoLTE → mở cài đặt VoLTE → kiểm tra IMS. Tên menu có thể khác nhau tùy hãng/phiên bản Android.</div>
+  </div>
+  <div class="guide-table-wrap">
+    <table class="guide-table">
+      <thead><tr><th>STT</th><th>Bước</th><th>Thực hiện</th><th>Kết quả cần thấy</th></tr></thead>
+      <tbody>
+        <tr><td class="guide-letter">A</td><td class="guide-step">Chuẩn bị</td><td class="guide-action">Dùng máy Android có SIM hoạt động, cáp USB tốt và máy tính Windows. Mở Chrome hoặc Edge.</td><td class="guide-ok">Sẵn sàng</td></tr>
+        <tr><td class="guide-letter">B</td><td class="guide-step">Mở Cài đặt</td><td class="guide-action">Vào <span class="guide-code">Cài đặt → Giới thiệu điện thoại</span>. Tìm <b>Số bản dựng / Build number</b>.</td><td class="guide-ok">Thấy Build number</td></tr>
+        <tr><td class="guide-letter">C</td><td class="guide-step">Bật nhà phát triển</td><td class="guide-action">Nhấn <b>Số bản dựng 7 lần</b> đến khi Android báo đã bật Tuỳ chọn cho nhà phát triển.</td><td class="guide-ok">Developer options xuất hiện</td></tr>
+        <tr><td class="guide-letter">D</td><td class="guide-step">USB debugging</td><td class="guide-action">Vào <span class="guide-code">Tuỳ chọn cho nhà phát triển → Gỡ lỗi qua USB</span> và bật.</td><td class="guide-ok">USB debugging = ON</td></tr>
+        <tr><td class="guide-letter">E</td><td class="guide-step">Kết nối USB</td><td class="guide-action">Cắm cáp USB trực tiếp vào máy tính. Nếu điện thoại hỏi chế độ USB, chọn chế độ phù hợp và giữ màn hình mở khóa.</td><td class="guide-ok">Máy tính nhận thiết bị</td></tr>
+        <tr><td class="guide-letter">F</td><td class="guide-step">Cho phép ADB</td><td class="guide-action">Khi hiện hộp thoại <b>Cho phép gỡ lỗi USB?</b>, xác nhận và có thể chọn <b>Luôn cho phép từ máy tính này</b>.</td><td class="guide-ok">ADB được cấp quyền</td></tr>
+        <tr><td class="guide-letter">G</td><td class="guide-step">Kết nối Apple Seed</td><td class="guide-action">Bấm <b>🔌 Kết nối thiết bị</b> trên trang này → chọn điện thoại trong hộp USB của Chrome/Edge.</td><td class="guide-ok">Trạng thái: Đã kết nối</td></tr>
+        <tr><td class="guide-letter">H</td><td class="guide-step">Kiểm tra thông tin</td><td class="guide-action">Kiểm tra 4 ô <b>Hãng / Model / Android / Serial</b>. Có thể bấm các ô Hãng, Model, Android, Baseband để đọc chi tiết.</td><td class="guide-ok">Thông tin máy hiện đầy đủ</td></tr>
+        <tr><td class="guide-letter">I</td><td class="guide-step">Kiểm tra SIM</td><td class="guide-action">Dùng <b>Quét VoLTE / IMS</b> để đọc trạng thái SIM, nhà mạng, cờ VoLTE và dịch vụ IMS.</td><td class="guide-ok">Có log kiểm tra thực tế</td></tr>
+        <tr><td class="guide-letter">J</td><td class="guide-step">Kiểm tra VoLTE</td><td class="guide-action">Đọc các cờ <span class="guide-code">volte_vt_enabled</span> và <span class="guide-code">enhanced_4g_mode_enabled</span>. Đây là cờ hệ thống, chưa phải bằng chứng IMS đã đăng ký.</td><td class="guide-warn">Không kết luận chỉ từ cờ</td></tr>
+        <tr><td class="guide-letter">K</td><td class="guide-step">FIX VoLTE</td><td class="guide-action">Nếu phù hợp thiết bị, bấm <b>⚡ FIX VoLTE</b>. Tool áp dụng các cờ Android phổ biến rồi yêu cầu refresh carrier/IMS và kiểm tra lại.</td><td class="guide-ok">Có kết quả Verify</td></tr>
+        <tr><td class="guide-letter">L</td><td class="guide-step">Cài Apple Seed</td><td class="guide-action">Bấm <b>🍏 Cài Apple Seed VoLTE</b>. Tool tự tải APK Apple Seed từ GitHub và cài trực tiếp qua ADB.</td><td class="guide-ok">APP APPLE SEED ĐÃ CÀI</td></tr>
+        <tr><td class="guide-letter">M</td><td class="guide-step">Kiểm tra icon</td><td class="guide-action">Sau khi cài, tìm ứng dụng <b>Apple Seed VoLTE</b> trong danh sách ứng dụng. Bản APK mới có icon Apple Seed.</td><td class="guide-ok">Có icon Apple Seed</td></tr>
+        <tr><td class="guide-letter">N</td><td class="guide-step">Mở app</td><td class="guide-action">Bấm <b>▶ Mở app Apple Seed</b> để mở app trực tiếp trên điện thoại.</td><td class="guide-ok">App mở được</td></tr>
+        <tr><td class="guide-letter">O</td><td class="guide-step">Mở VoLTE</td><td class="guide-action">Bấm <b>📶 Mở cài đặt VoLTE</b>. Samsung sẽ được thử các màn hình mạng phù hợp; firmware khác có thể mở màn hình mạng tổng quát.</td><td class="guide-ok">Mở Cài đặt mạng</td></tr>
+        <tr><td class="guide-letter">P</td><td class="guide-step">Bật VoLTE</td><td class="guide-action">Trong Cài đặt mạng/SIM, bật <b>VoLTE / Cuộc gọi 4G / Enhanced 4G LTE</b> nếu firmware và nhà mạng cung cấp tùy chọn này.</td><td class="guide-ok">VoLTE = ON nếu có</td></tr>
+        <tr><td class="guide-letter">Q</td><td class="guide-step">Để SIM hoạt động</td><td class="guide-action">Đảm bảo SIM có sóng, đăng ký mạng và gói/thuê bao được nhà mạng hỗ trợ VoLTE. Một số máy không hiển thị công tắc VoLTE dù IMS vẫn phụ thuộc carrier config.</td><td class="guide-warn">Phụ thuộc nhà mạng</td></tr>
+        <tr><td class="guide-letter">R</td><td class="guide-step">Kiểm tra IMS</td><td class="guide-action">Quay lại web và bấm <b>🔍 Kiểm tra IMS</b>. Tool đọc <span class="guide-code">dumpsys ims</span> và telephony registry.</td><td class="guide-ok">Có log IMS</td></tr>
+        <tr><td class="guide-letter">S</td><td class="guide-step">Xác nhận REGISTERED</td><td class="guide-action">Tìm dòng thể hiện <b>IMS REGISTERED</b>. Nếu chỉ thấy flag = 1 nhưng chưa REGISTERED thì chưa nên kết luận VoLTE đã hoạt động.</td><td class="guide-ok">IMS REGISTERED</td></tr>
+        <tr><td class="guide-letter">T</td><td class="guide-step">Test cuộc gọi</td><td class="guide-action">Thực hiện cuộc gọi khi máy đang ở LTE/4G và quan sát trạng thái mạng. Kết quả còn phụ thuộc SIM, carrier và modem.</td><td class="guide-ok">Test thực tế</td></tr>
+        <tr><td class="guide-letter">U</td><td class="guide-step">Nếu không đăng ký IMS</td><td class="guide-action">Bấm <b>Quét VoLTE / IMS</b> và đọc các mục SIM, CarrierConfig, Services, IMS. Không tự suy đoán từ một flag duy nhất.</td><td class="guide-warn">Thu thập log</td></tr>
+        <tr><td class="guide-letter">V</td><td class="guide-step">Nếu không kết nối USB</td><td class="guide-action">Kiểm tra USB debugging, xác nhận RSA trên điện thoại, đổi cáp/cổng USB. Nếu tool báo lỗi ADB, dùng nút <b>Fix-ADB</b> trong hộp lỗi.</td><td class="guide-ok">Kết nối lại</td></tr>
+        <tr><td class="guide-letter">W</td><td class="guide-step">Nếu cài APK lỗi</td><td class="guide-action">Giữ máy mở khóa, kết nối ADB lại rồi thử cài lần nữa. Tool có streaming install và fallback <span class="guide-code">pm install</span>.</td><td class="guide-ok">Install Success</td></tr>
+        <tr><td class="guide-letter">X</td><td class="guide-step">Nếu app không thấy</td><td class="guide-action">Dùng ô <b>Quản lý ứng dụng</b>, nhập <span class="guide-code">vn.appleseed.volte</span> rồi bấm <b>▶ Mở app</b>. Có thể kiểm tra bằng ADB Shell.</td><td class="guide-ok">Package tồn tại</td></tr>
+        <tr><td class="guide-letter">Y</td><td class="guide-step">Gỡ / cài lại</td><td class="guide-action">Chỉ khi cần, nhập package name trong <b>Quản lý ứng dụng</b> → <b>🗑 Gỡ app</b>, sau đó kết nối lại và cài bản mới.</td><td class="guide-ok">Cài lại sạch</td></tr>
+        <tr><td class="guide-letter">Z</td><td class="guide-step">Hoàn tất</td><td class="guide-action">Kết quả chuẩn: thiết bị đã kết nối → Apple Seed VoLTE đã cài → VoLTE được bật nếu có hỗ trợ → <b>IMS REGISTERED</b> → test cuộc gọi thực tế.</td><td class="guide-ok">✅ HOÀN TẤT</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="guide-links">Tài liệu Android chính thức: <a href="https://developer.android.com/studio/debug/dev-options" target="_blank" rel="noopener">Developer options / USB debugging</a> · <a href="https://developer.android.com/tools/adb" target="_blank" rel="noopener">ADB</a>. Vị trí menu có thể khác theo hãng và phiên bản Android.</div>
+</section>
+
 
 <section class="devicebar">
   <div class="stat"><small>Hãng</small><strong id="brand">—</strong></div>
@@ -107,9 +153,7 @@
 Kết nối thiết bị để bắt đầu.</span></pre>
 </section>
 </div>
-<style>
-.guide{margin-top:12px}.guide h3{font-size:18px}.guide-intro{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;background:#07150e;border:1px solid #1d402d;border-radius:12px;color:#b8d7c5;font-size:11px;margin-bottom:12px}.guide-intro b{color:#effaf4}.guide-table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}.guide-table{width:100%;border-collapse:collapse;min-width:760px;font-size:11px}.guide-table th{padding:10px;text-align:left;background:#0d2117;color:#7ef0ae;font-size:10px;text-transform:uppercase;letter-spacing:.7px;white-space:nowrap}.guide-table td{padding:10px;border-top:1px solid #183425;vertical-align:top}.guide-table tr:hover td{background:#091a11}.guide-letter{width:42px;text-align:center;font-size:15px;font-weight:950;color:#20dc7d}.guide-step{width:145px;font-weight:850;color:#e5f8ec}.guide-action{color:#b9d7c6}.guide-note{color:#788f82}.guide-ok{color:#65e9a1;font-weight:800}.guide-warn{color:#f5c45b}.guide-code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:#c7f5d9;background:#041009;padding:2px 5px;border-radius:5px}.guide-links{margin-top:10px;color:#667f70;font-size:10px}.guide-links a{color:#65e9a1;text-decoration:none}.guide-links a:hover{text-decoration:underline}@media(max-width:620px){.guide{padding:13px}.guide-table{min-width:700px}}
-</style>
+
 <section class="panel guide">
   <h3>📘 Hướng dẫn A → Z · Apple Seed Android / VoLTE</h3>
   <p class="sub">Làm theo đúng thứ tự dưới đây. Người mới chỉ cần đi từ A đến Z; kỹ thuật viên có thể bỏ qua các bước đã quen.</p>
