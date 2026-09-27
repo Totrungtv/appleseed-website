@@ -142,9 +142,10 @@
     <p class="sub">Quét ứng dụng bên thứ ba có dấu hiệu dùng cửa sổ nổi, Accessibility hoặc tự chạy cùng hệ thống. Tool <b>không tự xóa</b>; pa chọn app rồi mới gỡ.</p>
     <div class="appactions">
       <button id="adwareScan" class="btn primary">🔍 Quét app quảng cáo</button>
+      <button id="adwareClean" class="btn danger">🧹 DỌN QUẢNG CÁO 1-CLICK</button>
       <button id="adwareRemove" class="btn danger" disabled>🗑 Gỡ app đã chọn</button>
     </div>
-    <div id="adwareStatus" class="appnote">Chưa quét. Nên chạy quét trước khi gỡ.</div>
+    <div id="adwareStatus" class="appnote">Dọn 1-click chỉ gỡ ứng dụng bên thứ ba có mức nghi ngờ cao; app không đủ bằng chứng sẽ không tự xóa.</div>
     <div id="adwareResults" style="margin-top:10px"></div>
   </div>
 
@@ -486,61 +487,149 @@ async function installSelected(){
 }
 
 let adwareCandidates=[];
-function adwareScore(info,pkg){
+function parseAdwareEvidence(info,pkg,activeAccessibility,activeNotif,deviceAdmin){
   const text=String(info||"");
   const low=(pkg+" "+text).toLowerCase();
   const reasons=[];
   let score=0;
-  if(/android\.permission\.system_alert_window/.test(text)){score+=4;reasons.push("Có quyền SYSTEM_ALERT_WINDOW / cửa sổ nổi");}
-  if(/bind_accessibility_service|android\.accessibilityservice\.accessibilityservice/i.test(text)){score+=3;reasons.push("Khai báo Accessibility Service");}
-  if(/android\.permission\.receive_boot_completed/.test(text)){score+=1;reasons.push("Tự khởi chạy sau khi bật máy");}
-  if(/adservice|adsdk|\.ad[sx]?\b|advert|admob|appsflyer|ironsource|applovin|unityads/i.test(low)){score+=2;reasons.push("Tên/package có dấu hiệu liên quan quảng cáo");}
-  return {score,reasons};
+  const overlay=/android\.permission\.system_alert_window/i.test(text);
+  const accessibility=/bind_accessibility_service|android\.accessibilityservice\.accessibilityservice/i.test(text);
+  const boot=/android\.permission\.receive_boot_completed/i.test(text);
+  const suspiciousName=/adservice|adsdk|\.ad[sx]?\b|advert|admob|ironsource|applovin|unityads|\.popup|\.overlay|\.inject/i.test(low);
+  const accActive=activeAccessibility.includes(pkg);
+  const notifActive=activeNotif.includes(pkg);
+  const adminActive=deviceAdmin.includes(pkg);
+
+  if(overlay){score+=3;reasons.push("Có SYSTEM_ALERT_WINDOW");}
+  if(accessibility){score+=2;reasons.push("Có Accessibility Service");}
+  if(boot){score+=1;reasons.push("Tự chạy sau khởi động");}
+  if(suspiciousName){score+=2;reasons.push("Tên/package có dấu hiệu quảng cáo");}
+  if(accActive){score+=3;reasons.push("Accessibility đang được bật");}
+  if(notifActive){score+=1;reasons.push("Notification listener đang hoạt động");}
+  if(adminActive){score+=4;reasons.push("Đang là Device Admin");}
+
+  // High-confidence: intrusive-control combination, not a single generic ad SDK.
+  const highConfidence =
+    (overlay && accessibility && (accActive || boot)) ||
+    (overlay && accActive && (suspiciousName || boot)) ||
+    (adminActive && overlay && suspiciousName);
+
+  return {score,reasons,highConfidence};
+}
+
+async function getSecurityOwners(){
+  let acc="",notif="",admin="";
+  try{acc=await shell("settings get secure enabled_accessibility_services");}catch{}
+  try{notif=await shell("settings get secure enabled_notification_listeners");}catch{}
+  try{admin=await shell("dumpsys device_policy 2>&1");}catch{}
+  return {
+    accessibility:String(acc||""),
+    notifications:String(notif||""),
+    admins:String(admin||"")
+  };
+}
+
+async function collectAdwareCandidates(){
+  if(!adb) throw new Error("Chưa kết nối thiết bị");
+  const raw=await shell("pm list packages -3");
+  const packages=[...new Set(String(raw).split(/\r?\n/).map(x=>x.trim().replace(/^package:/,"")).filter(x=>/^[A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)+$/.test(x)))];
+  const owners=await getSecurityOwners();
+  const found=[];
+
+  for(let i=0;i<packages.length;i++){
+    const pkg=packages[i];
+    $("adwareStatus").textContent="Đang kiểm tra "+(i+1)+"/"+packages.length+": "+pkg;
+    try{
+      const info=await shell("dumpsys package "+pkg+" 2>&1");
+      const evidence=parseAdwareEvidence(info,pkg,owners.accessibility,owners.notifications,owners.admins);
+      if(evidence.score>=4 || evidence.highConfidence){
+        found.push({pkg,score:evidence.score,reasons:evidence.reasons,highConfidence:evidence.highConfidence});
+      }
+    }catch(e){
+      log("⚠ Không đọc được "+pkg+": "+(e?.message||e));
+    }
+  }
+  return {packages,found};
+}
+
+function renderAdwareResults(){
+  const box=$("adwareResults");
+  if(!box)return;
+  $("adwareRemove").disabled=true;
+  if(!adwareCandidates.length){
+    box.innerHTML='<div class="appnote">✅ Chưa phát hiện app bên thứ ba đạt ngưỡng nghi ngờ. Một app hợp lệ vẫn có thể dùng overlay/Accessibility.</div>';
+    return;
+  }
+  box.innerHTML=adwareCandidates.sort((a,b)=>b.score-a.score).map((x,i)=>{
+    const mark=x.highConfidence?'🚨':'⚠️';
+    return '<label style="display:flex;gap:10px;align-items:flex-start;padding:10px 11px;margin:6px 0;background:#07130d;border:1px solid #1c3929;border-radius:10px;cursor:pointer">'+
+      '<input type="checkbox" data-adware-index="'+i+'" style="margin-top:3px;accent-color:#20dc7d">'+
+      '<span style="min-width:0;flex:1"><b style="display:block;color:#effaf4;word-break:break-all">'+mark+' '+x.pkg+'</b>'+
+      '<span style="display:block;color:#f5c45b;font-size:10px;margin-top:3px">'+(x.highConfidence?'Mức cao':'Cần xem xét')+' · điểm '+x.score+'</span>'+
+      '<span style="display:block;color:#9ab5a5;font-size:10px;margin-top:3px">'+x.reasons.join(" · ")+'</span></span></label>';
+  }).join("");
+  box.querySelectorAll("[data-adware-index]").forEach(cb=>{
+    cb.addEventListener("change",()=>{$("adwareRemove").disabled=!box.querySelector("[data-adware-index]:checked");});
+  });
 }
 
 async function scanAdware(){
   if(!adb) throw new Error("Chưa kết nối thiết bị");
   const box=$("adwareResults"), status=$("adwareStatus");
   if(!box||!status) return;
-  box.innerHTML='<div class="appnote">⏳ Đang lấy danh sách ứng dụng bên thứ ba…</div>';
+  box.innerHTML='<div class="appnote">⏳ Đang quét…</div>';
   $("adwareRemove").disabled=true;
   adwareCandidates=[];
-  const raw=await shell("pm list packages -3");
-  const packages=[...new Set(String(raw).split(/\r?\n/).map(x=>x.trim().replace(/^package:/,"")).filter(x=>/^[A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)+$/.test(x)))];
-  if(!packages.length){
-    status.textContent="Không tìm thấy ứng dụng bên thứ ba.";
-    box.innerHTML='<div class="appnote">Không có package user app để quét.</div>';
-    return;
-  }
-  for(let i=0;i<packages.length;i++){
-    const pkg=packages[i];
-    status.textContent="Đang quét "+(i+1)+"/"+packages.length+": "+pkg;
-    try{
-      const info=await shell("dumpsys package "+pkg+" 2>&1");
-      const hit=adwareScore(info,pkg);
-      if(hit.score>=3) adwareCandidates.push({pkg,score:hit.score,reasons:hit.reasons});
-    }catch(e){log("⚠ Không đọc được "+pkg+": "+(e?.message||e));}
-  }
-  adwareCandidates.sort((a,b)=>b.score-a.score);
-  if(!adwareCandidates.length){
-    status.textContent="Đã quét "+packages.length+" app: chưa thấy ứng dụng có nhiều dấu hiệu đáng ngờ.";
-    box.innerHTML='<div class="appnote">✅ Không phát hiện ứng dụng bên thứ ba đạt ngưỡng cảnh báo. Một app hợp lệ vẫn có thể dùng overlay/Accessibility.</div>';
-    return;
-  }
-  status.textContent="Đã quét "+packages.length+" app · phát hiện "+adwareCandidates.length+" app cần xem xét.";
-  box.innerHTML=adwareCandidates.map((x,i)=>{
-    return '<label style="display:flex;gap:10px;align-items:flex-start;padding:10px 11px;margin:6px 0;background:#07130d;border:1px solid #1c3929;border-radius:10px;cursor:pointer">'+
-      '<input type="checkbox" data-adware-index="'+i+'" style="margin-top:3px;accent-color:#20dc7d">'+
-      '<span style="min-width:0;flex:1"><b style="display:block;color:#effaf4;word-break:break-all">'+x.pkg+'</b>'+
-      '<span style="display:block;color:#f5c45b;font-size:10px;margin-top:3px">Mức cảnh báo: '+x.score+'/10</span>'+
-      '<span style="display:block;color:#9ab5a5;font-size:10px;margin-top:3px">'+x.reasons.join(" · ")+'</span></span></label>';
-  }).join("");
-  box.querySelectorAll("[data-adware-index]").forEach(cb=>{
-    cb.addEventListener("change",()=>{$("adwareRemove").disabled=!box.querySelector("[data-adware-index]:checked");});
-  });
+  const result=await collectAdwareCandidates();
+  adwareCandidates=result.found;
+  status.textContent="Đã quét "+result.packages.length+" app · phát hiện "+adwareCandidates.length+" app cần xem xét.";
+  renderAdwareResults();
   log("===== ADWARE SCAN =====");
-  adwareCandidates.forEach(x=>log("⚠ "+x.pkg+" · "+x.reasons.join(" · ")));
+  adwareCandidates.forEach(x=>log((x.highConfidence?"🚨 ":"⚠ ") + x.pkg+" · "+x.reasons.join(" · ")));
   log("===== ADWARE SCAN KẾT THÚC =====");
+}
+
+async function cleanAdwareOneClick(){
+  if(!adb) throw new Error("Chưa kết nối thiết bị");
+  const status=$("adwareStatus");
+  if(status) status.textContent="Đang quét sâu để chỉ chọn app có bằng chứng nghi ngờ cao…";
+  const result=await collectAdwareCandidates();
+  const high=result.found.filter(x=>x.highConfidence);
+  adwareCandidates=result.found;
+  renderAdwareResults();
+
+  if(!high.length){
+    if(status) status.textContent="✅ Không có app nào đạt ngưỡng đủ cao để tự động gỡ.";
+    log("🟢 DỌN 1-CLICK: không có app đạt ngưỡng gỡ tự động.");
+    return;
+  }
+
+  if(!confirm("Apple Seed phát hiện "+high.length+" ứng dụng bên thứ ba có dấu hiệu mạnh liên quan quảng cáo/xâm lấn. Gỡ chúng khỏi user hiện tại?\n\n"+high.map(x=>x.pkg).join("\n"))){
+    if(status) status.textContent="Đã hủy. Không app nào bị gỡ.";
+    return;
+  }
+
+  log("===== DỌN QUẢNG CÁO 1-CLICK =====");
+  let ok=0;
+  for(const item of high){
+    try{
+      const out=await shell("pm uninstall --user 0 "+item.pkg);
+      if(/success/i.test(out)){
+        ok++;
+        log("✓ Đã gỡ app nghi ngờ: "+item.pkg);
+      }else{
+        log("⚠ Không gỡ được "+item.pkg+": "+(out||"Không trả Success"));
+      }
+    }catch(e){
+      log("✕ "+item.pkg+": "+(e?.message||e));
+    }
+  }
+  if(status) status.textContent="✅ Dọn xong: "+ok+"/"+high.length+" app được gỡ. Đang quét lại…";
+  const again=await collectAdwareCandidates();
+  adwareCandidates=again.found;
+  renderAdwareResults();
+  if(status) status.textContent+=" Còn "+adwareCandidates.length+" app cần xem xét.";
+  log("===== DỌN 1-CLICK KẾT THÚC =====");
 }
 
 async function removeSelectedAdware(){
@@ -699,6 +788,7 @@ function bind(){
   };
   $("install").onclick=()=>uiAction("CÀI APK",installSelected);
   $("adwareScan").onclick=()=>uiAction("QUÉT APP QUẢNG CÁO",scanAdware);
+  $("adwareClean").onclick=()=>uiAction("DỌN QUẢNG CÁO 1-CLICK",cleanAdwareOneClick);
   $("adwareRemove").onclick=()=>uiAction("GỠ APP QUẢNG CÁO",removeSelectedAdware);
   document.querySelectorAll(".tool[data-cmd]").forEach(b=>b.onclick=()=>uiAction(b.querySelector("b")?.textContent||"ADB",()=>run(b.dataset.cmd)));
   $("recoveryBtn").onclick=()=>uiAction("VÀO RECOVERY",async()=>{
