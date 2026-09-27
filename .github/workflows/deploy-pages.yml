@@ -29,12 +29,12 @@ jobs:
         run: |
           set -e
           curl -L --fail --retry 3 -o /tmp/scrcpy-server-v2.5 https://github.com/Genymobile/scrcpy/releases/download/v2.5/scrcpy-server-v2.5
-          echo "9f96b05e15567658c910e121ca875cd5  /tmp/scrcpy-server-v2.5" | sha256sum -c -
+          test "$(sha256sum /tmp/scrcpy-server-v2.5 | cut -d" " -f1)" = "9f96b05e15567658c910e121ca875cd5"
           mkdir -p assets
           base64 -w0 /tmp/scrcpy-server-v2.5 > /tmp/scrcpy-server-v2.5.b64
           printf 'window.APPLESEED_SCRCPY_SERVER_B64="' > assets/scrcpy-server-v2.5.b64.js
           cat /tmp/scrcpy-server-v2.5.b64 >> assets/scrcpy-server-v2.5.b64.js
-          printf '";\nwindow.APPLESEED_SCRCPY_SERVER_VERSION="4.1";\n' >> assets/scrcpy-server-v2.5.b64.js
+          printf '";\nwindow.APPLESEED_SCRCPY_SERVER_VERSION="2.5";\n' >> assets/scrcpy-server-v2.5.b64.js
           test -s assets/scrcpy-server-v2.5.b64.js
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
