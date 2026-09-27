@@ -19,7 +19,7 @@
 .apps{margin-top:14px;padding-top:15px;border-top:1px solid var(--line)}.appactions{display:flex;gap:8px;flex-wrap:wrap}.appinput{flex:1;min-width:190px;background:#050d08;border:1px solid #234a35;color:var(--text);border-radius:10px;padding:10px 11px;outline:none}.appinput:focus{border-color:var(--green)}.appnote{font-size:10px;color:var(--dim);margin-top:8px}
 .shell{margin-top:14px;padding-top:15px;border-top:1px solid var(--line)}.shellrow{display:flex;gap:8px}.shellrow input{flex:1;min-width:0;background:#050d08;border:1px solid #234a35;color:var(--text);border-radius:10px;padding:11px 12px;outline:none}.shellrow input:focus{border-color:var(--green)}.hint{color:var(--muted);font-size:10px;margin:8px 0 0}
 .log{margin:0;background:#030805;border:1px solid #14291e;border-radius:12px;padding:13px;height:455px;overflow:auto;color:#bfead2;font:11px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap}.empty{color:#536e60}.loghead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.badge{font-size:9px;color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:4px 7px}
-.screen-panel{margin-bottom:12px}.screen-toolbar{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}.screen-toolbar .btn{min-height:36px}.screen-wrap{cursor:crosshair}.screen-wrap.is-live{cursor:default}.screen-wrap img{pointer-events:auto;touch-action:none}.screen-wrap{margin-top:12px;min-height:360px;max-height:70vh;background:#020603;border:1px solid #1c3929;border-radius:16px;display:flex;align-items:center;justify-content:center;overflow:auto;padding:12px}.screen-wrap img{display:none;max-width:100%;max-height:65vh;width:auto;height:auto;object-fit:contain;border-radius:10px;background:#000;box-shadow:0 16px 45px rgba(0,0,0,.35);user-select:none}.screen-wrap.is-live img{display:block}.screen-wrap.is-live .screen-placeholder{display:none}.screen-placeholder{color:#5c7666;text-align:center;font-size:30px;line-height:1.7}.screen-placeholder span{display:inline-block;font-size:11px;color:#718c7b}.screen-panel .actions{justify-content:flex-end}.screen-panel .btn{min-height:38px}@media(max-width:620px){.screen-wrap{min-height:280px;max-height:60vh;padding:8px}.screen-wrap img{max-height:55vh}.screen-panel .loghead{align-items:flex-start}.screen-panel .actions{width:100%;justify-content:flex-start}.screen-panel .btn{flex:1}}.footer{padding:14px 2px 0;color:#4d6559;font-size:10px;text-align:center}
+.screen-panel{margin-bottom:12px}.screen-toolbar{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}.screen-toolbar .btn{min-height:36px}.screen-wrap{min-height:380px;max-height:72vh;background:#020603;border:1px solid #1c3929;border-radius:16px;display:flex;align-items:center;justify-content:center;overflow:auto;padding:12px;position:relative;outline:none;cursor:crosshair}.screen-wrap.is-live{cursor:default}.screen-wrap canvas{display:none;max-width:100%;max-height:68vh;width:auto;height:auto;background:#000;border-radius:10px;box-shadow:0 16px 45px rgba(0,0,0,.35);touch-action:none;user-select:none}.screen-wrap.is-live canvas{display:block}.screen-wrap.is-live .screen-placeholder{display:none}.screen-placeholder{color:#5c7666;text-align:center;font-size:30px;line-height:1.7}.screen-placeholder span{display:inline-block;font-size:11px;color:#718c7b}.screen-panel .actions{justify-content:flex-end}.screen-panel .btn{min-height:38px}@media(max-width:620px){.screen-wrap{min-height:280px;max-height:62vh;padding:8px}.screen-wrap canvas{max-height:57vh}.screen-panel .loghead{align-items:flex-start}.screen-panel .actions{width:100%;justify-content:flex-start}.screen-panel .btn{flex:1}}.screen-wrap{margin-top:12px;min-height:360px;max-height:70vh;background:#020603;border:1px solid #1c3929;border-radius:16px;display:flex;align-items:center;justify-content:center;overflow:auto;padding:12px}.screen-wrap img{display:none;max-width:100%;max-height:65vh;width:auto;height:auto;object-fit:contain;border-radius:10px;background:#000;box-shadow:0 16px 45px rgba(0,0,0,.35);user-select:none}.screen-wrap.is-live img{display:block}.screen-wrap.is-live .screen-placeholder{display:none}.screen-placeholder{color:#5c7666;text-align:center;font-size:30px;line-height:1.7}.screen-placeholder span{display:inline-block;font-size:11px;color:#718c7b}.screen-panel .actions{justify-content:flex-end}.screen-panel .btn{min-height:38px}@media(max-width:620px){.screen-wrap{min-height:280px;max-height:60vh;padding:8px}.screen-wrap img{max-height:55vh}.screen-panel .loghead{align-items:flex-start}.screen-panel .actions{width:100%;justify-content:flex-start}.screen-panel .btn{flex:1}}.footer{padding:14px 2px 0;color:#4d6559;font-size:10px;text-align:center}
 @media(max-width:900px){.main{grid-template-columns:1fr}.log{height:300px}.hero{grid-template-columns:1fr}.devicebar{grid-template-columns:repeat(2,1fr)}}@media(max-width:620px){.wrap{width:calc(100% - 18px);padding-top:14px}.top{align-items:flex-start}.brand h1{font-size:18px}.status{font-size:10px}.hero{padding:17px}.hero h2{font-size:21px}.devicebar{gap:7px}.stat{padding:12px}.toolgrid{grid-template-columns:repeat(2,1fr)}.installbox{grid-template-columns:1fr}.shellrow{flex-direction:column}.shellrow .btn{width:100%}}
 </style>
 <style>
@@ -95,11 +95,11 @@
 <section class="panel screen-panel" id="screenPanel">
   <div class="loghead">
     <div>
-      <h3>📱 Màn hình điện thoại · Điều khiển chuột</h3>
-      <div class="sub">Mirror nhẹ qua ADB + thao tác tap/swipe bằng chuột. Bấm trực tiếp lên màn hình để điều khiển.</div>
+      <h3>📱 Màn hình điện thoại · Mirror + Chuột</h3>
+      <div class="sub">Scrcpy + WebCodecs: hình ảnh theo luồng video, click/kéo chuột để điều khiển trực tiếp.</div>
     </div>
     <div class="actions">
-      <button id="screenStart" class="btn primary" disabled>▶ Hiện màn hình</button>
+      <button id="screenStart" class="btn primary" disabled>▶ Bắt đầu Mirror</button>
       <button id="screenStop" class="btn danger" disabled>⏹ Dừng</button>
     </div>
   </div>
@@ -109,10 +109,10 @@
     <button id="screenRecent" class="btn small" disabled>▣ Recent</button>
     <button id="screenPower" class="btn small" disabled>⏻ Màn hình</button>
   </div>
-  <div id="screenStatus" class="appnote">Kết nối thiết bị rồi bấm <b>▶ Hiện màn hình</b>.</div>
+  <div id="screenStatus" class="appnote">Kết nối thiết bị rồi bấm <b>▶ Bắt đầu Mirror</b>.</div>
   <div class="screen-wrap" id="screenWrap" tabindex="0">
-    <div class="screen-placeholder" id="screenPlaceholder">📱<br><span>Màn hình thiết bị sẽ hiện ở đây</span></div>
-    <img id="deviceScreen" alt="Màn hình Android" draggable="false">
+    <div class="screen-placeholder" id="screenPlaceholder">📱<br><span>Màn hình video sẽ hiện ở đây</span></div>
+    <canvas id="deviceCanvas" aria-label="Màn hình Android"></canvas>
   </div>
 </section>
 
@@ -271,7 +271,7 @@ window.addEventListener("error",e=>{
 <script>
 let Adb,AdbDaemonTransport,AdbWebCredentialStore,AdbDaemonWebUsbDeviceManager,PackageManager;
 let libsPromise=null,adb=null,device=null,selectedFile=null;
-let screenTimer=null,screenBusy=false,screenRunning=false,screenObjectUrl="";
+let scrcpyClient=null,scrcpyDecoder=null,scrcpyPipe=null,scrcpyCanvas=null,screenRunning=false;
 
 const $=id=>document.getElementById(id);
 function log(msg){
@@ -307,13 +307,24 @@ async function loadAdbLibraries(){
       import("https://esm.sh/@yume-chan/adb@0.0.24?bundle"),
       import("https://esm.sh/@yume-chan/adb-credential-web@0.0.24?bundle"),
       import("https://esm.sh/@yume-chan/adb-daemon-webusb@0.0.24?bundle"),
-      import("https://esm.sh/@yume-chan/android-bin@0.0.24?bundle")
-    ]).then(([adbM,credM,usbM,binM])=>{
+      import("https://esm.sh/@yume-chan/android-bin@0.0.24?bundle"),
+      import("https://esm.sh/@yume-chan/adb-scrcpy@0.0.24?bundle"),
+      import("https://esm.sh/@yume-chan/scrcpy@0.0.24?bundle"),
+      import("https://esm.sh/@yume-chan/scrcpy-decoder-webcodecs@0.0.24?bundle")
+    ]).then(([adbM,credM,usbM,binM,scrcpyM,scrcpyCoreM,decoderM])=>{
       Adb=adbM.Adb;
       AdbDaemonTransport=adbM.AdbDaemonTransport;
       AdbWebCredentialStore=credM.default;
       AdbDaemonWebUsbDeviceManager=usbM.AdbDaemonWebUsbDeviceManager;
       PackageManager=binM.PackageManager;
+      window.AppleSeedScrcpy={
+        AdbScrcpyClient:scrcpyM.AdbScrcpyClient,
+        AdbScrcpyOptionsLatest:scrcpyM.AdbScrcpyOptionsLatest,
+        DefaultServerPath:scrcpyCoreM.DefaultServerPath,
+        AndroidMotionEventAction:scrcpyCoreM.AndroidMotionEventAction,
+        WebCodecsVideoDecoder:decoderM.WebCodecsVideoDecoder,
+        AutoCanvasRenderer:decoderM.AutoCanvasRenderer,
+      };
       return true;
     }).catch(e=>{libsPromise=null;throw e});
   }
@@ -420,9 +431,7 @@ async function connectDevice(){
     $("install").disabled=false;
     $("appleSeedOpen").disabled=false;
     $("volteVerify").disabled=false;
-    $("screenStart").disabled=false;
-    $("screenStop").disabled=true;
-    ["screenBack","screenHome","screenRecent","screenPower"].forEach(id=>$(id).disabled=false);
+    screenButtonState(true,false);
     log("✓ THIẾT BỊ ĐÃ KẾT NỐI: "+brand+" "+model+" · Android "+android+" · "+serial);
   }catch(e){
     adb=null;device=null;setStatus("Lỗi kết nối",false);
@@ -456,105 +465,154 @@ async function readBinaryProcess(command){
   for(const chunk of chunks){data.set(chunk,offset);offset+=chunk.length;}
   return data;
 }
-async function captureDeviceScreen(){
-  if(!adb) throw new Error("Chưa kết nối thiết bị");
-  if(screenBusy) return;
-  screenBusy=true;
+const SCRCPY_SERVER_URL="https://github.com/Genymobile/scrcpy/releases/download/v4.1/scrcpy-server-v4.1";
+const SCRCPY_SERVER_PATH="/data/local/tmp/scrcpy-server.jar";
+
+function screenButtonState(connected,running){
+  $("screenStart").disabled=!connected||running;
+  $("screenStop").disabled=!running;
+  ["screenBack","screenHome","screenRecent","screenPower"].forEach(id=>$(id).disabled=!connected||!running);
+}
+
+async function pushScrcpyServer(){
+  const response=await fetch(SCRCPY_SERVER_URL,{cache:"force-cache"});
+  if(!response.ok||!response.body) throw new Error("Không tải được Scrcpy server v4.1.");
+  const sync=await adb.sync();
   try{
-    const png=await readBinaryProcess(["screencap","-p"]);
-    if(!png.length || png[0]!==0x89 || png[1]!==0x50) throw new Error("Ảnh màn hình không hợp lệ.");
-    if(screenObjectUrl) URL.revokeObjectURL(screenObjectUrl);
-    screenObjectUrl=URL.createObjectURL(new Blob([png],{type:"image/png"}));
-    const img=$("deviceScreen");
-    img.src=screenObjectUrl;
-    $("screenWrap").classList.add("is-live");
-    $("screenStatus").textContent="🟢 Đang hiển thị · bấm/kéo chuột trực tiếp trên màn hình để điều khiển.";
+    await sync.write({filename:SCRCPY_SERVER_PATH,file:response.body});
   }finally{
-    screenBusy=false;
+    try{await sync.dispose()}catch{}
   }
 }
-function screenPointFromEvent(ev){
-  const img=$("deviceScreen");
-  const rect=img.getBoundingClientRect();
-  if(!rect.width||!rect.height||!img.naturalWidth||!img.naturalHeight) return null;
-  const x=Math.max(0,Math.min(img.naturalWidth,(ev.clientX-rect.left)*img.naturalWidth/rect.width));
-  const y=Math.max(0,Math.min(img.naturalHeight,(ev.clientY-rect.top)*img.naturalHeight/rect.height));
-  return {x:Math.round(x),y:Math.round(y)};
+
+function screenPoint(ev){
+  const canvas=$("deviceCanvas");
+  const rect=canvas.getBoundingClientRect();
+  const w=(scrcpyClient?.videoStream && scrcpyDecoder?.width)||canvas.width;
+  const h=(scrcpyClient?.videoStream && scrcpyDecoder?.height)||canvas.height;
+  if(!rect.width||!rect.height||!w||!h)return null;
+  return {
+    x:Math.max(0,Math.min(w,Math.round((ev.clientX-rect.left)*w/rect.width))),
+    y:Math.max(0,Math.min(h,Math.round((ev.clientY-rect.top)*h/rect.height))),
+    w,h
+  };
 }
-let screenPointerDown=null;
+let screenPointerId=1,screenPointerDown=false;
+async function sendTouch(action,ev){
+  const controller=scrcpyClient?.controller;
+  const p=screenPoint(ev);
+  if(!controller||!p)return;
+  const map=window.AppleSeedScrcpy?.AndroidMotionEventAction||{Down:0,Up:1,Move:2};
+  await controller.injectTouch({
+    action:action,
+    pointerId:BigInt(screenPointerId),
+    pointerX:p.x,
+    pointerY:p.y,
+    videoWidth:p.w,
+    videoHeight:p.h,
+    pressure:action===map.Up?0:1,
+    actionButton:0,
+    buttons:action===map.Up?0:1
+  });
+}
 function screenPointerDownHandler(ev){
-  if(!adb||!screenRunning)return;
+  if(!screenRunning)return;
   ev.preventDefault();
   $("screenWrap").focus();
-  const p=screenPointFromEvent(ev); if(!p)return;
-  screenPointerDown={p,time:performance.now()};
+  screenPointerDown=true;
+  sendTouch(window.AppleSeedScrcpy.AndroidMotionEventAction.Down,ev).catch(e=>log("⚠ Touch Down: "+(e?.message||e)));
 }
-async function screenPointerUpHandler(ev){
-  if(!adb||!screenRunning||!screenPointerDown)return;
+function screenPointerMoveHandler(ev){
+  if(!screenRunning||!screenPointerDown)return;
   ev.preventDefault();
-  const start=screenPointerDown.p;
-  const end=screenPointFromEvent(ev)||start;
-  const dt=Math.max(80,Math.min(1200,Math.round(performance.now()-screenPointerDown.time)));
-  screenPointerDown=null;
-  const dist=Math.hypot(end.x-start.x,end.y-start.y);
-  if(dist<14){
-    try{await shell("input tap "+end.x+" "+end.y)}catch(e){log("⚠ Tap: "+(e?.message||e));}
-  }else{
-    const duration=Math.max(120,Math.min(900,dt));
-    try{await shell("input swipe "+start.x+" "+start.y+" "+end.x+" "+end.y+" "+duration)}catch(e){log("⚠ Swipe: "+(e?.message||e));}
-  }
+  sendTouch(window.AppleSeedScrcpy.AndroidMotionEventAction.Move,ev).catch(e=>log("⚠ Touch Move: "+(e?.message||e)));
 }
-async function screenKey(key){
-  if(!adb) throw new Error("Chưa kết nối thiết bị");
-  const map={Escape:4,Backspace:67,Enter:66,Home:3,ArrowLeft:21,ArrowRight:22,ArrowUp:19,ArrowDown:20," ":62};
-  const code=map[key];
-  if(code===undefined)return false;
-  await shell("input keyevent "+code);
-  return true;
+function screenPointerUpHandler(ev){
+  if(!screenRunning||!screenPointerDown)return;
+  ev.preventDefault();
+  screenPointerDown=false;
+  sendTouch(window.AppleSeedScrcpy.AndroidMotionEventAction.Up,ev).catch(e=>log("⚠ Touch Up: "+(e?.message||e)));
 }
-function screenControlKeydown(ev){
-  if(!adb||!screenRunning)return;
+async function injectKeyCode(code){
+  const controller=scrcpyClient?.controller;
+  if(!controller)return;
+  await controller.injectKeyCode({action:0,keyCode:code,repeat:0,metaState:0});
+  await controller.injectKeyCode({action:1,keyCode:code,repeat:0,metaState:0});
+}
+function screenKeydown(ev){
+  if(!screenRunning)return;
   if(ev.ctrlKey||ev.altKey||ev.metaKey)return;
-  const printable=ev.key && ev.key.length===1;
-  if(printable){
+  const special={Escape:111,Backspace:67,Enter:66,Tab:61,"ArrowUp":19,"ArrowDown":20,"ArrowLeft":21,"ArrowRight":22};
+  if(Object.prototype.hasOwnProperty.call(special,ev.key)){
     ev.preventDefault();
-    const text=ev.key.replace(/([\\'"&|;<>()$])/g,"\\$1");
-    shell("input text '"+text+"'").catch(e=>log("⚠ Gửi phím: "+(e?.message||e)));
+    injectKeyCode(special[ev.key]).catch(e=>log("⚠ Key: "+(e?.message||e)));
     return;
   }
-  if(["Escape","Backspace","Enter","Home","ArrowLeft","ArrowRight","ArrowUp","ArrowDown"].includes(ev.key)){
+  if(ev.key && ev.key.length===1){
     ev.preventDefault();
-    screenKey(ev.key).catch(e=>log("⚠ Keyevent: "+(e?.message||e)));
+    scrcpyClient?.controller?.injectText(ev.key).catch(e=>log("⚠ Text: "+(e?.message||e)));
   }
 }
-function screenButtonState(on){
-  ["screenStart","screenBack","screenHome","screenRecent","screenPower"].forEach(id=>$(id).disabled=!on);
-  $("screenStop").disabled=!on;
-}
-function stopDeviceScreen(){
-  if(screenTimer){clearInterval(screenTimer);screenTimer=null}
-  screenRunning=false;
-  $("screenStart").disabled=!adb;
-  $("screenStop").disabled=true;
-  ["screenBack","screenHome","screenRecent","screenPower"].forEach(id=>$(id).disabled=!adb);
-  $("screenStatus").textContent=adb?"Đã dừng hiển thị màn hình.":"Kết nối thiết bị rồi bấm Hiện màn hình.";
-  if(screenObjectUrl){URL.revokeObjectURL(screenObjectUrl);screenObjectUrl="";}
-  $("screenWrap").classList.remove("is-live");
-  $("deviceScreen").removeAttribute("src");
-  log("✓ Đã dừng hiển thị màn hình.");
-}
 async function startDeviceScreen(){
-  if(!adb) throw new Error("Chưa kết nối thiết bị");
-  if(screenRunning) return;
+  if(!adb)throw new Error("Chưa kết nối thiết bị");
+  if(screenRunning)return;
+  if(!window.AppleSeedScrcpy?.AdbScrcpyClient) await loadAdbLibraries();
+
+  const S=window.AppleSeedScrcpy;
+  if(!S.WebCodecsVideoDecoder?.isSupported) throw new Error("Chrome/Edge hiện tại không hỗ trợ WebCodecs.");
+  $("screenStatus").textContent="⏳ Đang tải Scrcpy server và khởi động video mirror…";
+  await pushScrcpyServer();
+  log("→ Scrcpy server v4.1 đã được push lên thiết bị.");
+
+  const options=new S.AdbScrcpyOptionsLatest({
+    video:true,
+    audio:false,
+    control:true,
+    maxSize:1280,
+    maxFps:60,
+    bitRate:8000000,
+    sendFrameMeta:true,
+    tunnelForward:true
+  });
+  scrcpyClient=await S.AdbScrcpyClient.start(adb,SCRCPY_SERVER_PATH,options);
+  log("✓ Scrcpy client đã kết nối.");
+
+  const video=await scrcpyClient.videoStream;
+  if(!video)throw new Error("Scrcpy không trả video stream.");
+  scrcpyCanvas=$("deviceCanvas");
+  const renderer=new S.AutoCanvasRenderer({
+    createCanvas:()=>scrcpyCanvas,
+    canvasSize:"display"
+  });
+  scrcpyDecoder=new S.WebCodecsVideoDecoder({
+    codec:video.metadata.codec,
+    renderer,
+    hardwareAcceleration:"prefer-hardware",
+    optimizeForLatency:true
+  });
+  scrcpyPipe=video.stream.pipeTo(scrcpyDecoder.writable).catch(e=>{
+    if(screenRunning)log("✕ Scrcpy video: "+(e?.message||e));
+  });
+
   screenRunning=true;
-  screenButtonState(true);
-  $("screenStatus").textContent="⏳ Đang lấy màn hình thiết bị…";
-  try{await captureDeviceScreen()}catch(e){stopDeviceScreen();throw e}
-  screenTimer=setInterval(async()=>{
-    if(!adb||!screenRunning){stopDeviceScreen();return}
-    try{await captureDeviceScreen()}catch(e){log("⚠ Màn hình: "+(e?.message||e));}
-  },300);
-  log("✓ Đã bật mirror nhẹ + điều khiển chuột.");
+  $("screenWrap").classList.add("is-live");
+  screenButtonState(true,true);
+  $("screenStatus").textContent="🟢 Mirror trực tiếp · click/kéo chuột và bàn phím để điều khiển.";
+  log("✓ Mirror Scrcpy + WebCodecs đang chạy.");
+}
+async function stopDeviceScreen(){
+  if(!screenRunning&&!scrcpyClient)return;
+  screenRunning=false;
+  $("screenStatus").textContent="⏳ Đang dừng mirror…";
+  try{await scrcpyClient?.close()}catch(e){log("⚠ Dừng Scrcpy: "+(e?.message||e));}
+  try{await scrcpyPipe}catch{}
+  try{scrcpyDecoder?.dispose()}catch{}
+  scrcpyClient=null;scrcpyDecoder=null;scrcpyPipe=null;scrcpyCanvas=null;
+  $("screenWrap").classList.remove("is-live");
+  $("deviceCanvas").width=1;$("deviceCanvas").height=1;
+  screenButtonState(!!adb,false);
+  $("screenStatus").textContent=adb?"Đã dừng mirror.":"Kết nối thiết bị rồi bấm Bắt đầu Mirror.";
+  log("✓ Đã dừng mirror.");
 }
 async function disconnectDevice(){
   globalProgress(true,"Đang ngắt kết nối…",20,true);
@@ -562,12 +620,11 @@ async function disconnectDevice(){
     if(adb){try{await adb.close()}catch{}}
     if(device?.raw?.opened){try{await device.raw.close()}catch{}}
   }finally{
-    stopDeviceScreen();
+    await stopDeviceScreen();
     adb=null;device=null;selectedFile=null;
-    $("screenStart").disabled=true;
-    $("screenStop").disabled=true;
+    screenButtonState(false,false);
     $("screenWrap").classList.remove("is-live");
-    $("deviceScreen").removeAttribute("src");
+    $("deviceCanvas").width=1;$("deviceCanvas").height=1;
     $("install").disabled=true;
     $("appleSeedOpen").disabled=true;
     $("volteVerify").disabled=true;
@@ -1043,17 +1100,18 @@ function bind(){
     connectDevice().catch(e=>log("✕ Kết nối: "+(e?.message||e)));
   };
   $("disconnect").onclick=()=>uiAction("NGẮT KẾT NỐI",disconnectDevice);
-  $("screenStart").onclick=()=>uiAction("HIỆN MÀN HÌNH",startDeviceScreen);
-  $("screenStop").onclick=stopDeviceScreen;
+  $("screenStart").onclick=()=>uiAction("BẮT ĐẦU MIRROR",startDeviceScreen);
+  $("screenStop").onclick=()=>stopDeviceScreen();
   $("screenWrap").addEventListener("pointerdown",screenPointerDownHandler);
+  $("screenWrap").addEventListener("pointermove",screenPointerMoveHandler);
   $("screenWrap").addEventListener("pointerup",screenPointerUpHandler);
-  $("screenWrap").addEventListener("pointercancel",()=>{screenPointerDown=null});
+  $("screenWrap").addEventListener("pointercancel",screenPointerUpHandler);
   $("screenWrap").addEventListener("contextmenu",e=>e.preventDefault());
-  $("screenWrap").addEventListener("keydown",screenControlKeydown);
-  $("screenBack").onclick=()=>shell("input keyevent 4");
-  $("screenHome").onclick=()=>shell("input keyevent 3");
-  $("screenRecent").onclick=()=>shell("input keyevent 187");
-  $("screenPower").onclick=()=>shell("input keyevent 26");
+  $("screenWrap").addEventListener("keydown",screenKeydown);
+  $("screenBack").onclick=()=>injectKeyCode(4);
+  $("screenHome").onclick=()=>injectKeyCode(3);
+  $("screenRecent").onclick=()=>injectKeyCode(187);
+  $("screenPower").onclick=()=>injectKeyCode(26);
   $("logClear").onclick=clearLog;
   $("apk").onchange=()=>{
     selectedFile=$("apk").files?.[0]||null;
