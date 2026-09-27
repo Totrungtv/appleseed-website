@@ -10,7 +10,7 @@
 *{box-sizing:border-box}html{background:var(--bg)}body{margin:0;color:var(--text);font:14px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(circle at 50% -15%,#123c28 0,#07120c 32%,#050b08 72%);min-height:100vh}button,input{font:inherit}button{cursor:pointer}
 .wrap{width:min(1240px,calc(100% - 30px));margin:auto;padding:22px 0 44px}
 .top{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:16px}.brand{display:flex;align-items:center;gap:12px}.logo{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(135deg,#2aef8d,#087c47);box-shadow:0 10px 30px rgba(32,220,125,.18);font-size:23px}.brand h1{margin:0;font-size:21px;letter-spacing:-.4px}.brand p{margin:2px 0 0;color:var(--muted);font-size:11px}.status{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--line);background:#08130d;border-radius:999px;color:var(--muted);font-weight:800;font-size:12px}.dot{width:8px;height:8px;border-radius:50%;background:#607268}.dot.on{background:var(--green);box-shadow:0 0 13px rgba(32,220,125,.75)}
-.hero{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:end;padding:22px 24px;background:linear-gradient(135deg,rgba(14,34,24,.98),rgba(7,20,13,.98));border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);margin-bottom:12px}.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:var(--green);font-weight:900}.hero h2{margin:4px 0 5px;font-size:25px;letter-spacing:-.7px}.hero p{margin:0;color:var(--muted);max-width:760px}.actions{display:flex;gap:9px;flex-wrap:wrap}.btn{min-height:42px;border:1px solid #29533c;background:#0c2116;color:var(--text);padding:10px 15px;border-radius:10px;font-weight:850;transition:.15s}.btn:hover{border-color:#3d7856;background:#10291b}.btn.primary{border:0;background:linear-gradient(135deg,#24e787,#10b966);color:#04140b;box-shadow:0 8px 25px rgba(32,220,125,.16)}.btn.danger{color:#ffb5bd;border-color:#54252d}.btn.small{min-height:36px;padding:7px 11px;font-size:12px}.btn:disabled{opacity:.45;cursor:not-allowed}
+.hero{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:end;padding:22px 24px;background:linear-gradient(135deg,rgba(14,34,24,.98),rgba(7,20,13,.98));border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);margin-bottom:12px}.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:var(--green);font-weight:900}.hero h2{margin:4px 0 5px;font-size:25px;letter-spacing:-.7px}.hero p{margin:0;color:var(--muted);max-width:760px}.actions{display:flex;gap:9px;flex-wrap:wrap}.btn{min-height:42px;border:1px solid #29533c;background:#0c2116;color:var(--text);padding:10px 15px;border-radius:10px;font-weight:850;transition:.15s}.btn:hover{border-color:#3d7856;background:#10291b}.btn.primary{border:0;background:linear-gradient(135deg,#24e787,#10b966);color:#04140b;box-shadow:0 8px 25px rgba(32,220,125,.16)}.btn.danger{color:#ffb5bd;border-color:#54252d}.btn.small{min-height:36px;padding:7px 11px;font-size:12px}.btn:disabled{opacity:.45;cursor:not-allowed}.btn.busy{position:relative;pointer-events:none}.btn.busy::after{content:"";display:inline-block;width:12px;height:12px;margin-left:8px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;vertical-align:-2px;animation:spin .7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
 .devicebar{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:12px}.stat{padding:14px 15px;background:rgba(8,23,15,.96);border:1px solid var(--line);border-radius:13px;min-width:0}.stat small{display:block;color:var(--muted);font-weight:800;font-size:10px;text-transform:uppercase;letter-spacing:.8px}.stat strong{display:block;margin-top:5px;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .main{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(300px,.55fr);gap:12px}.panel{background:linear-gradient(180deg,rgba(11,27,19,.97),rgba(7,18,12,.97));border:1px solid var(--line);border-radius:17px;padding:17px;box-shadow:var(--shadow)}.panel h3{margin:0;font-size:16px}.sub{color:var(--muted);font-size:11px;margin:3px 0 14px}
 .toolgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.tool{position:relative;text-align:left;padding:13px;background:#091810;border:1px solid #1b3828;border-radius:12px;color:var(--text);min-height:76px}.tool:hover{border-color:var(--line2);background:#0d2017}.tool .ico{font-size:18px}.tool b{display:block;margin-top:5px;font-size:12px}.tool span{display:block;color:var(--muted);font-size:10px;margin-top:1px}
@@ -161,16 +161,33 @@ async function run(command){
   }catch(e){log("✕ LỖI: "+(e?.message||e));throw e}
 }
 async function uiAction(title,fn){
+  const buttons=[...document.querySelectorAll("button")];
+  const active=document.activeElement;
+  const old=active?.textContent||"";
+  if(uiAction.running){log("⚠ Đang xử lý: "+uiAction.running+". Chờ tác vụ hiện tại xong.");return}
+  uiAction.running=title;
+  buttons.forEach(b=>b.classList.add("action-lock"));
+  const own=buttons.find(b=>b===active);
+  if(own){own.classList.add("busy");own.dataset.oldText=old;own.textContent="⏳ Đang xử lý…"}
   try{
-    log("\n▶ "+title);
+    log("\n▶ "+title+" — đang xử lý, vui lòng chờ…");
     await fn();
     log("✓ "+title+" hoàn tất.");
   }catch(e){
     const msg=e?.message||String(e);
     log("✕ "+title+": "+msg);
     if(/connection|closed|network|usb|transport|authentication/i.test(msg)) showFixAdb(msg);
+  }finally{
+    buttons.forEach(b=>b.classList.remove("action-lock"));
+    if(own){
+      own.classList.remove("busy");
+      if(own.dataset.oldText) own.textContent=own.dataset.oldText;
+      delete own.dataset.oldText;
+    }
+    uiAction.running="";
   }
 }
+uiAction.running="";
 
 async function connectDevice(){
   if(!navigator.usb) throw new Error("Trình duyệt không hỗ trợ WebUSB. Dùng Chrome hoặc Edge.");
@@ -326,6 +343,7 @@ async function openAppleSeedVolte(){
 }
 
 async function verifyVolte(){
+  progress(2,"Đang kiểm tra VoLTE / IMS…");
   if(!adb) throw new Error("Chưa kết nối thiết bị.");
   log("===== APPLE SEED · IMS VERIFY =====");
   const items=[
@@ -335,7 +353,9 @@ async function verifyVolte(){
     ["Telephony","dumpsys telephony.registry 2>&1"]
   ];
   let registered=false;
-  for(const [name,cmd] of items){
+  for(let i=0;i<items.length;i++){
+    const [name,cmd]=items[i];
+    progress(5+(i*22),"Đang kiểm tra "+name+"…");
     try{
       const out=await shell(cmd);
       const lines=out.split(/\r?\n/).filter(x=>/(registered|unregistered|registration|volte|ims|mmtel|enhanced_4g)/i.test(x)).slice(0,100);
@@ -343,6 +363,7 @@ async function verifyVolte(){
       log(name+":\n"+(lines.join("\n")||out||"(không có dữ liệu)"));
     }catch(e){log("✕ "+name+": "+(e?.message||e))}
   }
+  progress(100,registered?"Đã xác nhận IMS REGISTERED":"Chưa xác nhận IMS REGISTERED");
   log(registered?"🟢 PHÁT HIỆN IMS REGISTERED":"🟡 CHƯA XÁC NHẬN IMS REGISTERED");
   log("===== VERIFY KẾT THÚC =====");
 }
@@ -353,24 +374,20 @@ async function scanVolte(){
   const cmds=[
     ["Device","getprop ro.product.brand; getprop ro.product.model; getprop ro.build.version.release; getprop ro.boot.sales_code; getprop gsm.version.baseband"],
     ["SIM","getprop gsm.sim.state; getprop gsm.sim.operator.numeric; getprop gsm.sim.operator.alpha; getprop gsm.operator.numeric; getprop gsm.operator.alpha"],
-    ["Global","settings list global"],
-    ["System","settings list system"],
-    ["Secure","settings list secure"],
-    ["Services","service list"],
-    ["IMS","dumpsys ims 2>&1"],
-    ["Telephony","dumpsys telephony.registry 2>&1"],
-    ["CarrierConfig","dumpsys carrier_config 2>&1"]
+    ["VoLTE flags","settings get global volte_vt_enabled; settings get global enhanced_4g_mode_enabled; settings get global wfc_ims_enabled; settings get global wifi_calling_enabled"],
+    ["IMS flags","settings get system volte_vt_enabled; settings get system enhanced_4g_mode_enabled; settings get secure ims_voice_available; settings get secure ims_sms_available"],
+    ["Services","service list | grep -iE 'ims|telephony|phone'"],
+    ["IMS","dumpsys ims 2>&1 | grep -iE 'ims|volte|mmtel|registration|registered|unregistered' | head -n 120"],
+    ["Telephony","dumpsys telephony.registry 2>&1 | grep -iE 'ims|volte|mmtel|registration|registered|unregistered|serviceState' | head -n 120"],
+    ["CarrierConfig","dumpsys carrier_config 2>&1 | grep -iE 'volte|ims|mmtel|carrier_volte|enhanced_4g|wfc' | head -n 120"]
   ];
-  for(const [name,cmd] of cmds){
+  const total=cmds.length;
+  for(let i=0;i<total;i++){
+    const [name,cmd]=cmds[i];
+    log("⏳ ["+(i+1)+"/"+total+"] "+name+"…");
     try{
       const out=await shell(cmd);
-      if(["Global","System","Secure"].includes(name)){
-        const hits=out.split(/\r?\n/).filter(x=>/(volte|ims|vt_ims|wfc|enhanced_4g)/i.test(x));
-        log(name+" VoLTE/IMS keys:\n"+(hits.join("\n")||"(không thấy key VoLTE/IMS)"));
-      }else if(["IMS","Telephony","CarrierConfig","Services"].includes(name)){
-        const hits=out.split(/\r?\n/).filter(x=>/(ims|volte|mmtel|registration|registered|carrier_volte|enhanced_4g|wfc)/i.test(x)).slice(0,120);
-        log(name+":\n"+(hits.join("\n")||"(không có dòng liên quan)"));
-      }else log(name+":\n"+out.split(/\r?\n/).slice(0,60).join("\n"));
+      log(name+":\n"+(out||"(không có dữ liệu)"));
     }catch(e){log("✕ "+name+": "+(e?.message||e))}
   }
   log("===== SCAN KẾT THÚC =====");
