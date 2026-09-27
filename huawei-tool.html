@@ -366,6 +366,27 @@ $("run").onclick=()=>run($("cmd").value).catch(()=>{});
 $("cmd").addEventListener("keydown",e=>{if(e.key==="Enter")run($("cmd").value).catch(()=>{})});
 document.querySelectorAll("[data-cmd]").forEach(b=>b.onclick=()=>run(b.dataset.cmd).catch(()=>{}));
 window.addEventListener("unhandledrejection",e=>log("✕ JS/ADB: "+(e?.reason?.message||e?.reason||"Lỗi không xác định")));
+async function uiAction(label,fn){
+  log("→ "+label);
+  try{await fn();log("✓ "+label+" hoàn tất.")}
+  catch(e){log("✕ "+label+": "+(e?.message||e));}
+}
+$("imsInstall").onclick=()=>uiAction("CÀI PIXEL IMS",async()=>{
+  if(!adb)throw new Error("Chưa kết nối thiết bị.");
+  $("imsInstall").disabled=true;
+  try{await installImsEngine();$("imsHint").textContent="✓ Pixel IMS đã cài. Bước kế tiếp: Cài Shizuku → Khởi động Shizuku → Mở Pixel IMS → cấp quyền Shizuku.";}
+  finally{$("imsInstall").disabled=false}
+});
+$("shizukuInstall").onclick=()=>uiAction("CÀI SHIZUKU",async()=>{
+  if(!adb)throw new Error("Chưa kết nối thiết bị.");
+  $("shizukuInstall").disabled=true;
+  try{await installShizukuEngine();$("imsHint").textContent="✓ Shizuku đã cài. Bấm 'Khởi động Shizuku'. Nếu Android 11+ chặn, mở Shizuku trên máy và bật Wireless debugging theo hướng dẫn.";}
+  finally{$("shizukuInstall").disabled=false}
+});
+$("shizukuStart").onclick=()=>uiAction("KHỞI ĐỘNG SHIZUKU",async()=>{await startShizuku();});
+$("imsOpen").onclick=()=>uiAction("MỞ PIXEL IMS",async()=>{await openPixelIms();});
+$("imsActivate").onclick=()=>uiAction("KÍCH HOẠT VoLTE + VERIFY IMS",async()=>{await runIms(false);});
+$("imsRestore").onclick=()=>uiAction("KHÔI PHỤC CẤU HÌNH IMS",async()=>{await runIms(true);});
 $("launch").onclick=async()=>{const p=$("pkg").value.trim();if(!p)return;try{await run("monkey -p "+p+" -c android.intent.category.LAUNCHER 1")}catch{}};
 $("uninstall").onclick=async()=>{const p=$("pkg").value.trim();if(!p)return;if(!confirm("Gỡ ứng dụng "+p+" khỏi thiết bị?"))return;try{await run("pm uninstall "+p)}catch{}};
 </script>
