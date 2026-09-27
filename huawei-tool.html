@@ -62,17 +62,15 @@
   </div>
 
   <div class="install">
-    <h3>📡 Apple Seed · Pixel IMS / Shizuku Engine</h3>
-    <p class="sub">Dựa trên mã nguồn Pixel IMS: CarrierConfig override qua Instrumentation + Shizuku, sau đó reset IMS và kiểm tra đăng ký thật.</p>
+    <h3>📶 Apple Seed · VoLTE Service</h3>
+    <p class="sub">Cài app Apple Seed VoLTE của bạn, mở trực tiếp màn hình VoLTE của Samsung và kiểm tra trạng thái IMS.</p>
     <div class="appactions">
-      <button id="imsInstall" class="btn primary">1️⃣ Cài Pixel IMS</button>
-      <button id="shizukuInstall" class="btn">2️⃣ Cài Shizuku</button>
-      <button id="shizukuStart" class="btn" disabled>3️⃣ Khởi động Shizuku</button>
-      <button id="imsOpen" class="btn" disabled>4️⃣ Mở Pixel IMS</button>
-      <button id="imsActivate" class="btn" disabled>5️⃣ Kích hoạt VoLTE</button>
-      <button id="imsRestore" class="btn danger" disabled>↩ Khôi phục</button>
+      <button id="volteOpen" class="btn primary">📶 Mở cài đặt VoLTE</button>
+      <button id="appleSeedInstall" class="btn">🍏 Cài Apple Seed VoLTE</button>
+      <button id="appleSeedOpen" class="btn" disabled>▶ Mở app Apple Seed</button>
+      <button id="volteVerify" class="btn" disabled>🔍 Kiểm tra IMS</button>
     </div>
-    <div id="imsHint" class="appnote">Quy trình thật cần Shizuku chạy và Pixel IMS được cấp quyền Shizuku. Tool không giả báo thành công: chỉ ghi nhận khi thiết bị báo IMS Registered.</div>
+    <div id="imsHint" class="appnote">Tool không giả báo VoLTE đã hoạt động. Sau khi mở/bật VoLTE, nút Kiểm tra IMS sẽ đọc trạng thái thực tế từ thiết bị.</div>
   </div>
 
   <div class="install">
@@ -153,180 +151,68 @@ async function run(command){
 }
 function fmt(n){if(!n)return "0 B";const u=["B","KB","MB","GB"];let i=0,x=n;while(x>=1024&&i<u.length-1){x/=1024;i++}return x.toFixed(i?1:0)+" "+u[i]}
 function progress(p,msg){$("progress").classList.add("show");$("bar").style.width=Math.max(0,Math.min(100,p))+"%";$("progpct").textContent=Math.round(p)+"%";$("progmsg").textContent=msg}
-const PIXEL_IMS_URL="https://github.com/kyujin-cho/pixel-volte-patch/releases/download/1.3.2/dev.bluehouse.enablevolte.apk";
-const PIXEL_IMS_PACKAGE="dev.bluehouse.enablevolte";
-const SHIZUKU_URL="https://github.com/RikkaApps/Shizuku/releases/download/v13.5.4/shizuku-v13.5.4.r1049.0e53409-release.apk";
-const SHIZUKU_PACKAGE="moe.shizuku.privileged.api";
-let imsInstalled=false,shizukuInstalled=false,shizukuRunning=false;
+const APPLESEED_VOLTE_URL="https://raw.githubusercontent.com/Totrungtv/AppleSeed-IMS/main/apps/AppleSeed_VoLTE.apk";
+const APPLESEED_VOLTE_PACKAGE="vn.appleseed.volte";
 
-async function installViaPush(file){
-  const path="/data/local/tmp/.appleseed-"+Date.now()+".apk";
-  log("→ Fallback ADB Push vào vùng ADB được phép: "+path);
-  const sync=await adb.sync();
-  try{
-    await sync.write({filename:path,file:file.stream()});
-  }finally{
-    try{await sync.dispose()}catch{}
-  }
-  log("→ Chạy package manager trực tiếp…");
-  const out=await shell("pm install -r -g -d "+path);
-  log("pm install: "+(out||"(không có output)"));
-  try{await shell("rm -f "+path)}catch{}
-  if(!/success/i.test(out||"")) throw new Error(out||"pm install thất bại; xem stderr/exitCode trong log.");
+async function installAppleSeedVolte(){
+  if(!adb) throw new Error("Chưa kết nối thiết bị.");
+  log("→ Tải Apple Seed VoLTE APK…");
+  const file=await downloadApk(APPLESEED_VOLTE_URL,"AppleSeed_VoLTE.apk");
+  log("→ APK Apple Seed: "+fmt(file.size));
+  await installApk(file);
+  const pkgs=await shell("pm list packages "+APPLESEED_VOLTE_PACKAGE);
+  if(!pkgs.includes(APPLESEED_VOLTE_PACKAGE)) throw new Error("Không thấy package "+APPLESEED_VOLTE_PACKAGE+" sau khi cài.");
+  $("appleSeedOpen").disabled=false;
+  $("volteVerify").disabled=false;
+  log("✓ APP APPLE SEED ĐÃ CÀI: "+APPLESEED_VOLTE_PACKAGE);
 }
-async function installApk(file){
-  if(!adb)throw new Error("Hãy kết nối thiết bị trước.");
-  if(!file)throw new Error("Chưa chọn APK.");
-  if(!file.name.toLowerCase().endsWith(".apk"))throw new Error("Chỉ hỗ trợ file .apk.");
-  try{
-    $("install").disabled=true;
-    progress(2,"Đang cài APK…");
-    log("📦 Cài APK: "+file.name+" ("+fmt(file.size)+")");
-    try{
-      const pm=new PackageManager(adb);
-      await pm.installStream(file.size,file.stream(),{
-        bypassLowTargetSdkBlock:true,
-        skipVerification:true,
-        grantRuntimePermissions:true
-      });
-      log("✓ PackageManager streaming install OK");
-    }catch(e){
-      log("⚠ Streaming install thất bại: "+(e?.message||e));
-      log("→ Chuyển sang ADB Push + pm install để lấy lỗi Android thật.");
-      await installViaPush(file);
-    }
-    progress(100,"Cài đặt hoàn tất");
-    log("✓ CÀI APK THÀNH CÔNG: "+file.name);
-  }catch(e){
-    progress(100,"Cài đặt thất bại");
-    log("✕ CÀI APK LỖI: "+(e?.message||e));
-    log("→ Nếu log có INSTALL_FAILED_..., đó là lỗi từ Android Package Manager chứ không phải giao diện web.");
-  }finally{$("install").disabled=!selectedFile||!adb}
-}
-$("connect").onclick=async()=>{
-  try{
-    setBusy(true);
-    log("→ Nạp thư viện WebADB…");
-    await loadAdbLibraries();
-    log("✓ WebADB sẵn sàng.");
-    if(!AdbDaemonWebUsbDeviceManager.BROWSER)throw new Error("Trình duyệt không hỗ trợ WebUSB. Hãy dùng Chrome/Edge.");
-    device=await AdbDaemonWebUsbDeviceManager.BROWSER.requestDevice();if(!device)return;
-    log("Đã chọn: "+(device.name||device.serial||"Android"));setStatus("Đang xác thực…");
-    const connection=await device.connect();
-    const store=new AdbWebCredentialStore("AppleSeed-Huawei-Tool");
-    const transport=await AdbDaemonTransport.authenticate({serial:device.serial,connection,credentialStore:store});
-    adb=new Adb(transport);$("serial").textContent=device.serial||"—";setStatus("Đã kết nối",true);
-    $("brand").textContent=await shell("getprop ro.product.brand")||"—";
-    $("model").textContent=await shell("getprop ro.product.model")||"—";
-    $("android").textContent=await shell("getprop ro.build.version.release")||"—";
-    log("✓ Thiết bị sẵn sàng. Có thể cài APK trực tiếp.");
-    $("install").disabled=!selectedFile;
-  }catch(e){adb=null;setStatus("Kết nối lỗi");const msg=e?.message||String(e);log("✕ KẾT NỐI LỖI: "+msg);showFixAdb(msg)}
-  finally{setBusy(false)}
-};
-$("disconnect").onclick=async()=>{try{await adb?.close()}catch{}adb=null;device=null;$("brand").textContent=$("model").textContent=$("android").textContent=$("serial").textContent="—";setStatus("Chưa kết nối");$("install").disabled=true;log("Đã ngắt kết nối.")};
-$("apk").onchange=e=>{selectedFile=e.target.files?.[0]||null;if(selectedFile){$("filename").textContent=selectedFile.name;$("filesize").textContent=fmt(selectedFile.size);$("install").disabled=!adb}else{$("filename").textContent="Chọn file APK";$("filesize").textContent="APK sẽ được cài trực tiếp vào thiết bị đã kết nối";$("install").disabled=true}};
-$("install").onclick=()=>installApk(selectedFile);
 
-async function downloadApk(url,name){
-  try{
-    const res=await fetch(url,{cache:"no-store",redirect:"follow"});
-    if(!res.ok) throw new Error("HTTP "+res.status);
-    const blob=await res.blob();
-    if(!blob.size) throw new Error("APK rỗng");
-    return new File([blob],name,{type:"application/vnd.android.package-archive"});
-  }catch(e){
-    log("⚠ Trình duyệt chặn tải APK GitHub trực tiếp (CORS/redirect).");
-    log("→ Đã mở link tải chính thức. Tải APK xuống rồi chọn nó ở mục 'Cài APK — One Click'.");
-    window.open(url,"_blank","noopener");
-    throw new Error("Failed to fetch GitHub APK. Hãy tải APK từ tab GitHub vừa mở rồi chọn file APK ở mục Cài APK.");
-  }
-}
-async function installRemoteApk(url,name,packageName){
+async function openVolteSettings(){
   if(!adb) throw new Error("Chưa kết nối thiết bị.");
-  log("→ Tải "+name+"…");
-  const file=await downloadApk(url,name);
-  log("→ APK tải xong: "+fmt(file.size));
-  try{
-    const pm=new PackageManager(adb);
-    await pm.installStream(file.size,file.stream(),{
-      bypassLowTargetSdkBlock:true,
-      skipVerification:true,
-      grantRuntimePermissions:true
-    });
-  }catch(e){
-    log("⚠ Streaming install "+name+" lỗi: "+(e?.message||e));
-    log("→ Fallback ADB Push + pm install…");
-    await installViaPush(file);
-  }
-  const pkgs=await shell("pm list packages "+packageName);
-  if(!pkgs.includes(packageName)) throw new Error("Package chưa xuất hiện sau khi cài: "+pkgs);
-  log("✓ ĐÃ CÀI: "+packageName);
-}
-async function installImsEngine(){
-  await installRemoteApk(PIXEL_IMS_URL,"Pixel-IMS-1.3.2.apk",PIXEL_IMS_PACKAGE);
-  imsInstalled=true;$("imsOpen").disabled=false;$("imsActivate").disabled=false;$("imsRestore").disabled=false;
-  $("imsHint").textContent="Pixel IMS đã cài. Tiếp theo cài/khởi động Shizuku, mở Pixel IMS và cấp quyền Shizuku khi điện thoại hỏi.";
-}
-async function installShizukuEngine(){
-  await installRemoteApk(SHIZUKU_URL,"Shizuku-13.5.4.apk",SHIZUKU_PACKAGE);
-  shizukuInstalled=true;$("shizukuStart").disabled=false;
-  try{await shell("monkey -p "+SHIZUKU_PACKAGE+" -c android.intent.category.LAUNCHER 1")}catch(e){log("⚠ Không mở được Shizuku: "+(e?.message||e))}
-}
-async function startShizuku(){
-  if(!adb) throw new Error("Chưa kết nối thiết bị.");
-  if(!shizukuInstalled){
-    const p=await shell("pm list packages "+SHIZUKU_PACKAGE);
-    if(!p.includes(SHIZUKU_PACKAGE)) await installShizukuEngine(); else shizukuInstalled=true;
-  }
-  log("===== KHỞI ĐỘNG SHIZUKU =====");
-  let out="";
-  try{out=await shell("sh /storage/emulated/0/Android/data/moe.shizuku.privileged.api/start.sh");log(out||"start.sh đã chạy.")}catch(e){log("⚠ start.sh lỗi: "+(e?.message||e))}
-  if(!out){
+  log("→ Mở màn hình cài đặt VoLTE / mạng di động…");
+  const intents=[
+    "android.settings.NETWORK_OPERATOR_SETTINGS",
+    "android.settings.MOBILE_NETWORK_SETTINGS",
+    "android.settings.WIRELESS_SETTINGS"
+  ];
+  let opened=false;
+  for(const action of intents){
     try{
-      const path=await shell("pm path "+SHIZUKU_PACKAGE);
-      const base=(path.split(/\r?\n/).find(x=>x.startsWith("package:"))||"").replace(/^package:/,"").trim();
-      if(base){
-        const root=base.substring(0,base.lastIndexOf("/"));
-        for(const lib of [root+"/lib/arm64/libshizuku.so",root+"/lib/arm/libshizuku.so",root+"/lib/x86_64/libshizuku.so",root+"/lib/x86/libshizuku.so"]){
-          try{
-            const ok=await shell("[ -x "+lib+" ] && echo YES || echo NO");
-            if(ok.includes("YES")){log("→ Fallback: "+lib);out=await shell(lib);break}
-          }catch{}
-        }
-      }
-    }catch(e){log("⚠ Không tìm được libshizuku.so: "+(e?.message||e))}
+      const out=await shell("am start -a "+action);
+      log("✓ Intent: "+action+(out?"\n"+out:""));
+      opened=true; break;
+    }catch(e){log("  ↪ "+action+" không mở được: "+(e?.message||e))}
   }
-  await new Promise(r=>setTimeout(r,1200));
-  const ps=await shell("ps -A | grep -i shizuku | grep -v grep");
-  if(!ps.trim()) throw new Error("Shizuku chưa chạy. Mở Shizuku trên điện thoại và kiểm tra trạng thái.");
-  shizukuRunning=true;$("imsOpen").disabled=!imsInstalled;$("imsActivate").disabled=!imsInstalled;
-  $("imsHint").textContent="Shizuku đang chạy. Mở Pixel IMS → cấp quyền Shizuku → chọn SIM → bật Enable VoLTE.";
-  log("✓ SHIZUKU ĐANG CHẠY");
+  if(!opened) throw new Error("Firmware không nhận các Intent cài đặt mạng chuẩn.");
 }
-async function openPixelIms(){
+
+async function openAppleSeedVolte(){
   if(!adb) throw new Error("Chưa kết nối thiết bị.");
-  if(!imsInstalled){
-    const p=await shell("pm list packages "+PIXEL_IMS_PACKAGE);
-    if(!p.includes(PIXEL_IMS_PACKAGE)) await installImsEngine(); else imsInstalled=true;
+  const p=await shell("pm list packages "+APPLESEED_VOLTE_PACKAGE);
+  if(!p.includes(APPLESEED_VOLTE_PACKAGE)) throw new Error("Chưa cài Apple Seed VoLTE.");
+  await shell("monkey -p "+APPLESEED_VOLTE_PACKAGE+" -c android.intent.category.LAUNCHER 1");
+  log("✓ Đã mở Apple Seed VoLTE.");
+}
+
+async function verifyVolte(){
+  if(!adb) throw new Error("Chưa kết nối thiết bị.");
+  log("===== APPLE SEED · IMS VERIFY =====");
+  const cmds=[
+    ["VoLTE setting","settings get global volte_vt_enabled"],
+    ["Enhanced 4G","settings get global enhanced_4g_mode_enabled"],
+    ["IMS service","dumpsys ims"],
+    ["Telephony","dumpsys telephony.registry"]
+  ];
+  for(const [name,cmd] of cmds){
+    try{
+      const out=await shell(cmd);
+      const lines=(out||"").split(/\r?\n/).filter(x=>/(registered|unregistered|registration|volte|ims|mmtel|enhanced_4g|volte_vt)/i.test(x)).slice(0,80);
+      log(name+":\n"+(lines.join("\n")||out||"(không có dữ liệu)"));
+    }catch(e){log("✕ "+name+": "+(e?.message||e))}
   }
-  await shell("monkey -p "+PIXEL_IMS_PACKAGE+" -c android.intent.category.LAUNCHER 1");
-  log("✓ Đã mở Pixel IMS. Cấp quyền Shizuku nếu điện thoại hỏi.");
+  log("===== VERIFY KẾT THÚC =====");
 }
-async function runIms(clear=false){
-  if(!adb) throw new Error("Chưa kết nối thiết bị.");
-  if(!imsInstalled) await installImsEngine();
-  if(!shizukuRunning) await startShizuku();
-  await openPixelIms();
-  if(clear){log("↩ Khôi phục: trong Pixel IMS hãy tắt cấu hình đã bật trên SIM.");return}
-  log("→ Sau khi bật Enable VoLTE trên điện thoại, tool sẽ đọc trạng thái IMS.");
-  await new Promise(r=>setTimeout(r,1500));
-  try{
-    const ims=await shell("dumpsys ims");
-    const lines=ims.split(/\r?\n/).filter(x=>/(registered|unregistered|registration|mmtel)/i.test(x)).slice(0,80);
-    log("IMS RESULT:\n"+(lines.join("\n")||"(không có trạng thái IMS)"));
-  }catch(e){log("IMS verify lỗi: "+(e?.message||e))}
-}
+
 async function scanVolte(){
   if(!adb) throw new Error("Chưa kết nối thiết bị");
   log("===== VOLTE / IMS REAL SCAN =====");
@@ -336,109 +222,42 @@ async function scanVolte(){
     ["Global","settings list global"],
     ["System","settings list system"],
     ["Secure","settings list secure"],
-    ["IMS","dumpsys ims"],
-    ["Packages","pm list packages"]
+    ["IMS","dumpsys ims"]
   ];
-  const data={};
   for(const [name,cmd] of cmds){
     try{
       const out=await shell(cmd);
-      data[name]=out;
       if(name==="Global"||name==="System"||name==="Secure"){
         const hits=out.split(/\r?\n/).filter(x=>/(volte|ims|vt_ims|wfc|enhanced_4g)/i.test(x));
         log(name+" VoLTE/IMS keys:\n"+(hits.join("\n")||"(không thấy key VoLTE/IMS)"));
-      }else if(name==="IMS"){
-        const lines=out.split(/\r?\n/).filter(x=>/(registration|registered|unregistered|volte|ims|mmtel|feature)/i.test(x)).slice(0,80);
-        log("IMS status:\n"+(lines.join("\n")||"(dumpsys ims không có dữ liệu phù hợp)"));
       }else{
-        log(name+":\n"+(out||"(trống)"));
+        const lines=name==="IMS"?out.split(/\r?\n/).filter(x=>/(registration|registered|unregistered|volte|ims|mmtel)/i.test(x)).slice(0,80):out.split(/\r?\n/).slice(0,40);
+        log(name+":\n"+(lines.join("\n")||"(trống)"));
       }
     }catch(e){log("✕ "+name+": "+(e?.message||e))}
   }
   log("===== SCAN KẾT THÚC =====");
-  return data;
 }
+
 async function fixVolte(){
   if(!adb) throw new Error("Chưa kết nối thiết bị");
-  log("===== APPLE SEED REAL VOLTE FIX =====");
-  const global=await shell("settings list global");
-  const system=await shell("settings list system");
-  const secure=await shell("settings list secure");
-  const all=global+"\n"+system+"\n"+secure;
-  const candidates=[
-    ["global","volte_vt_enabled"],
-    ["global","enhanced_4g_mode_enabled"],
-    ["global","vt_ims_enabled"],
-    ["global","ims_volte_enable"],
-    ["system","volte_vt_enabled"],
-    ["system","enhanced_4g_mode_enabled"],
-    ["system","vt_ims_enabled"],
-    ["secure","volte_vt_enabled"],
-    ["secure","enhanced_4g_mode_enabled"],
-    ["secure","vt_ims_enabled"]
-  ];
-  let changed=0;
-  for(const [ns,key] of candidates){
-    const src=ns==="global"?global:ns==="system"?system:secure;
-    const line=src.split(/\r?\n/).find(x=>x.startsWith(key+"="));
-    if(!line) continue;
-    log("→ "+ns+"."+key+" = 1");
-    try{
-      const out=await shell("settings put "+ns+" "+key+" 1");
-      log(out||"  OK");
-      changed++;
-    }catch(e){log("  ✕ "+(e?.message||e))}
-  }
-  if(!changed){
-    log("⚠ Không có key VoLTE chuẩn để ghi trên firmware này.");
-    log("Không giả báo thành công: máy cần CarrierConfig/vendor IMS hoặc quyền hệ thống.");
-  }else{
-    log("→ Phát tín hiệu CarrierConfig changed...");
-    try{log(await shell("am broadcast -a android.telephony.action.CARRIER_CONFIG_CHANGED")||"broadcast sent");}catch(e){log("  ⚠ Broadcast bị firmware chặn: "+(e?.message||e))}
-  }
-  await new Promise(r=>setTimeout(r,1500));
-  const verify=[];
-  for(const [ns,key] of candidates){
-    const src=ns==="global"?global:ns==="system"?system:secure;
-    if(src.includes(key+"=")){
-      try{verify.push(ns+"."+key+"="+await shell("settings get "+ns+" "+key));}catch{}
-    }
-  }
-  log("VERIFY:\n"+(verify.join("\n")||"(không có key để verify)"));
-  try{
-    const ims=await shell("dumpsys ims");
-    const lines=ims.split(/\r?\n/).filter(x=>/(registered|unregistered|registration|mmtel)/i.test(x)).slice(0,60);
-    log("IMS SAU FIX:\n"+(lines.join("\n")||"(không đọc được trạng thái IMS)"));
-  }catch(e){log("IMS verify lỗi: "+(e?.message||e))}
-  log("===== REAL FIX KẾT THÚC =====");
+  log("===== APPLE SEED · MỞ + KIỂM TRA VOLTE =====");
+  await openVolteSettings();
+  log("✓ Đã mở cài đặt mạng. Bật 'VoLTE / Enhanced 4G LTE' trên điện thoại nếu mục này có.");
+  log("→ Sau khi bật, bấm 'Kiểm tra IMS' để xác nhận đăng ký thật.");
 }
+
 $("volteScan").onclick=()=>scanVolte().catch(e=>log("✕ VOLTE SCAN: "+(e?.message||e)));
-$("volteFix").onclick=()=>fixVolte().catch(e=>log("✕ VOLTE FIX: "+(e?.message||e)));
-$("run").onclick=()=>run($("cmd").value).catch(()=>{});
-$("cmd").addEventListener("keydown",e=>{if(e.key==="Enter")run($("cmd").value).catch(()=>{})});
-document.querySelectorAll("[data-cmd]").forEach(b=>b.onclick=()=>run(b.dataset.cmd).catch(()=>{}));
-window.addEventListener("unhandledrejection",e=>log("✕ JS/ADB: "+(e?.reason?.message||e?.reason||"Lỗi không xác định")));
-async function uiAction(label,fn){
-  log("→ "+label);
-  try{await fn();log("✓ "+label+" hoàn tất.")}
-  catch(e){log("✕ "+label+": "+(e?.message||e));}
-}
-$("imsInstall").onclick=()=>uiAction("CÀI PIXEL IMS",async()=>{
-  if(!adb)throw new Error("Chưa kết nối thiết bị.");
-  $("imsInstall").disabled=true;
-  try{await installImsEngine();$("imsHint").textContent="✓ Pixel IMS đã cài. Bước kế tiếp: Cài Shizuku → Khởi động Shizuku → Mở Pixel IMS → cấp quyền Shizuku.";}
-  finally{$("imsInstall").disabled=false}
+$("volteFix").onclick=()=>fixVolte().catch(e=>log("✕ VOLTE: "+(e?.message||e)));
+$("volteOpen").onclick=()=>uiAction("MỞ CÀI ĐẶT VoLTE",openVolteSettings);
+$("appleSeedInstall").onclick=()=>uiAction("CÀI APP APPLE SEED VOLTE",async()=>{
+  $("appleSeedInstall").disabled=true;
+  try{await installAppleSeedVolte();}
+  finally{$("appleSeedInstall").disabled=false}
 });
-$("shizukuInstall").onclick=()=>uiAction("CÀI SHIZUKU",async()=>{
-  if(!adb)throw new Error("Chưa kết nối thiết bị.");
-  $("shizukuInstall").disabled=true;
-  try{await installShizukuEngine();$("imsHint").textContent="✓ Shizuku đã cài. Bấm 'Khởi động Shizuku'. Nếu Android 11+ chặn, mở Shizuku trên máy và bật Wireless debugging theo hướng dẫn.";}
-  finally{$("shizukuInstall").disabled=false}
-});
-$("shizukuStart").onclick=()=>uiAction("KHỞI ĐỘNG SHIZUKU",async()=>{await startShizuku();});
-$("imsOpen").onclick=()=>uiAction("MỞ PIXEL IMS",async()=>{await openPixelIms();});
-$("imsActivate").onclick=()=>uiAction("KÍCH HOẠT VoLTE + VERIFY IMS",async()=>{await runIms(false);});
-$("imsRestore").onclick=()=>uiAction("KHÔI PHỤC CẤU HÌNH IMS",async()=>{await runIms(true);});
+$("appleSeedOpen").onclick=()=>uiAction("MỞ APP APPLE SEED VOLTE",openAppleSeedVolte);
+$("volteVerify").onclick=()=>uiAction("KIỂM TRA IMS",verifyVolte);
+
 $("launch").onclick=async()=>{const p=$("pkg").value.trim();if(!p)return;try{await run("monkey -p "+p+" -c android.intent.category.LAUNCHER 1")}catch{}};
 $("uninstall").onclick=async()=>{const p=$("pkg").value.trim();if(!p)return;if(!confirm("Gỡ ứng dụng "+p+" khỏi thiết bị?"))return;try{await run("pm uninstall "+p)}catch{}};
 </script>
