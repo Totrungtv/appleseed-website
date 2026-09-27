@@ -266,15 +266,24 @@ async function disconnectDevice(){
 
 async function downloadApk(url,name){
   try{
-    const r=await fetch(url,{cache:"no-store",redirect:"follow"});
+    let downloadUrl=url;
+    if(/raw\\.githubusercontent\\.com\\/Totrungtv\\/AppleSeed-IMS\\/main\\/apps\\/AppleSeed_VoLTE\\.apk/i.test(url)){
+      log("→ Lấy link tải APK trực tiếp từ GitHub API…");
+      const meta=await fetch("https://api.github.com/repos/Totrungtv/AppleSeed-IMS/contents/apps/AppleSeed_VoLTE.apk?ref=main",{cache:"no-store"});
+      if(!meta.ok) throw new Error("GitHub API HTTP "+meta.status);
+      const j=await meta.json();
+      if(j.download_url) downloadUrl=j.download_url;
+      log("✓ GitHub đã cấp link tải APK.");
+    }
+    const r=await fetch(downloadUrl,{cache:"no-store",redirect:"follow"});
     if(!r.ok) throw new Error("HTTP "+r.status);
     const b=await r.blob();
     if(!b.size) throw new Error("APK rỗng");
     return new File([b],name,{type:"application/vnd.android.package-archive"});
   }catch(e){
     log("⚠ Không tải APK tự động được: "+(e?.message||e));
-    window.open(url,"_blank","noopener");
-    throw new Error("Trình duyệt chặn tải APK. Hãy tải APK ở tab GitHub rồi chọn file tại 'Cài APK — One Click'.");
+    window.open("https://github.com/Totrungtv/AppleSeed-IMS/blob/main/apps/AppleSeed_VoLTE.apk","_blank","noopener");
+    throw new Error("Không tải được APK tự động. GitHub đã được mở; tải APK rồi chọn file tại 'Cài APK — One Click'.");
   }
 }
 
