@@ -32,10 +32,10 @@ jobs:
           test -s /tmp/scrcpy-server-v2.5
           mkdir -p assets
           base64 -w0 /tmp/scrcpy-server-v2.5 > /tmp/scrcpy-server-v2.5.b64
-          printf 'window.APPLESEED_SCRCPY_SERVER_B64="' > assets/scrcpy-server-v2.5.b64.js
-          cat /tmp/scrcpy-server-v2.5.b64 >> assets/scrcpy-server-v2.5.b64.js
-          printf '";\nwindow.APPLESEED_SCRCPY_SERVER_VERSION="2.5";\n' >> assets/scrcpy-server-v2.5.b64.js
-          test -s assets/scrcpy-server-v2.5.b64.js
+          printf 'window.APPLESEED_SCRCPY_SERVER_B64="' > assets/apple-seed-scrcpy-v2.5.b64.js
+          cat /tmp/scrcpy-server-v2.5.b64 >> assets/apple-seed-scrcpy-v2.5.b64.js
+          printf '";\nwindow.APPLESEED_SCRCPY_SERVER_VERSION="2.5";\n' >> assets/apple-seed-scrcpy-v2.5.b64.js
+          test -s assets/apple-seed-scrcpy-v2.5.b64.js
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
