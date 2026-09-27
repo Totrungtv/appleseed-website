@@ -31,12 +31,19 @@ jobs:
           curl -L --fail --retry 3 -o /tmp/scrcpy-server-v2.5 https://github.com/Genymobile/scrcpy/releases/download/v2.5/scrcpy-server-v2.5
           test -s /tmp/scrcpy-server-v2.5
           test "$(wc -c < /tmp/scrcpy-server-v2.5)" -gt 60000
-          mkdir -p assets
           base64 -w0 /tmp/scrcpy-server-v2.5 > /tmp/scrcpy-server-v2.5.b64
-          printf 'window.APPLESEED_SCRCPY_SERVER_B64="' > assets/scrcpy-server-v2.5.b64.js
-          cat /tmp/scrcpy-server-v2.5.b64 >> assets/scrcpy-server-v2.5.b64.js
-          printf '";\nwindow.APPLESEED_SCRCPY_SERVER_VERSION="2.5";\n' >> assets/scrcpy-server-v2.5.b64.js
-          test -s assets/scrcpy-server-v2.5.b64.js
+          test -s /tmp/scrcpy-server-v2.5.b64
+          python3 - <<'PY'
+from pathlib import Path
+p = Path("huawei-tool.html")
+s = p.read_text(encoding="utf-8")
+b64 = Path("/tmp/scrcpy-server-v2.5.b64").read_text(encoding="utf-8").strip()
+marker = "__APPLESEED_SCRCPY_SERVER_B64__"
+if marker not in s:
+    raise SystemExit("Scrcpy placeholder not found in huawei-tool.html")
+p.write_text(s.replace(marker, b64, 1), encoding="utf-8")
+PY
+          ! grep -q '__APPLESEED_SCRCPY_SERVER_B64__' huawei-tool.html
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
