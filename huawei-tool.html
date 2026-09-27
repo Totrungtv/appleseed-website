@@ -324,7 +324,7 @@ async function downloadApk(url,name){
   const controller=new AbortController();
   const timer=setTimeout(()=>controller.abort(),30000);
   try{
-    const isAppleSeed=/raw\\.githubusercontent\\.com\\/Totrungtv\\/AppleSeed-IMS\\/main\\/apps\\/AppleSeed_VoLTE\\.apk/i.test(url);
+    const isAppleSeed=String(url||"").includes("raw.githubusercontent.com/Totrungtv/AppleSeed-IMS/main/apps/AppleSeed_VoLTE.apk");
     let response;
     if(isAppleSeed){
       log("→ Tải Apple Seed VoLTE qua GitHub Contents API (raw)…");
