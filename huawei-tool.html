@@ -37,7 +37,7 @@
 
 <section class="hero">
   <div><div class="eyebrow">Professional Web Service Tool</div><h2>Huawei / Android Service Tool</h2><p>WebADB trực tiếp qua USB. Đọc thông tin, cài APK, quản lý app và chạy ADB Shell ngay trên Chrome / Edge.</p></div>
-  <div class="actions"><button id="connect" class="btn primary">🔌 Kết nối thiết bị</button><button id="disconnect" class="btn danger">Ngắt kết nối</button></div>
+  <div class="actions"><button id="connect" class="btn primary" type="button" onclick="window.__appleSeedConnectFallback()">🔌 Kết nối thiết bị</button><button id="disconnect" class="btn danger">Ngắt kết nối</button></div>
 </section>
 
 <section class="devicebar">
@@ -110,6 +110,43 @@ Kết nối thiết bị để bắt đầu.</span></pre>
 <div class="footer">Apple Seed · Huawei / Android Service Center · WebUSB / ADB</div>
 </div>
 
+<script>
+window.__appleSeedConnectFallback=async function(){
+  const logEl=document.getElementById("log");
+  const add=(m)=>{
+    if(logEl){
+      if(logEl.querySelector(".empty")) logEl.textContent="";
+      logEl.textContent+=(logEl.textContent?"\n":"")+m;
+      logEl.scrollTop=logEl.scrollHeight;
+    }
+  };
+  add("→ CLICK KẾT NỐI ĐÃ NHẬN");
+  try{
+    if(!window.isSecureContext) throw new Error("Không phải HTTPS / secure context.");
+    if(!navigator.usb) throw new Error("Chrome không có navigator.usb.");
+    add("✓ WebUSB API có sẵn.");
+    if(typeof window.connectDevice==="function"){
+      await window.connectDevice();
+      return;
+    }
+    add("⚠ Hàm WebADB chưa khởi tạo — đang kiểm tra USB trực tiếp…");
+    const d=await navigator.usb.requestDevice({filters:[{classCode:0xff}]});
+    add("✓ USB được chọn: "+(d.manufacturerName||"")+" "+(d.productName||"")+" · VID "+d.vendorId.toString(16)+" PID "+d.productId.toString(16));
+    alert("Chrome đã nhận USB, nhưng mã WebADB chưa khởi tạo.");
+  }catch(e){
+    const msg=(e&&e.name?e.name+": ":"")+(e&&e.message?e.message:String(e));
+    add("✕ WEBUSB: "+msg);
+    alert("Apple Seed Kết nối:\n"+msg);
+  }
+};
+window.addEventListener("error",e=>{
+  const el=document.getElementById("log");
+  if(el){
+    if(el.querySelector(".empty")) el.textContent="";
+    el.textContent+=(el.textContent?"\n":"")+"✕ JS ERROR: "+(e.message||"Unknown error");
+  }
+});
+</script>
 <script>
 let Adb,AdbDaemonTransport,AdbWebCredentialStore,AdbDaemonWebUsbDeviceManager,PackageManager;
 let libsPromise=null,adb=null,device=null,selectedFile=null;
