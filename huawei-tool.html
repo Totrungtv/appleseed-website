@@ -1,49 +1,162 @@
 <!doctype html>
-<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Apple Seed Huawei Tool</title>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Apple Seed Android Service Center - WebADB">
+<title>Apple Seed · Android Service Center</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#07110d;color:#edf8f2;font:14px system-ui,-apple-system,Segoe UI,sans-serif}
-main{max-width:1100px;margin:auto;padding:24px}.card{background:#0d1b15;border:1px solid #214333;border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 10px 30px #0004}
-h1{margin:0 0 8px}.muted{color:#8ba99a}button{padding:11px 16px;border-radius:10px;border:1px solid #2c6548;background:#10271c;color:#fff;cursor:pointer;margin:4px}
-button.primary{background:#19d37b;color:#062013;border:0;font-weight:700}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{padding:14px;background:#091811;border:1px solid #193b2a;border-radius:10px}.stat small{display:block;color:#8ba99a}.stat b{display:block;margin-top:5px;word-break:break-word}
-.row{display:flex;gap:8px}.row input{flex:1;padding:11px;background:#06100c;color:#fff;border:1px solid #204333;border-radius:10px}
-pre{white-space:pre-wrap;background:#050b08;padding:14px;border-radius:10px;min-height:180px;max-height:400px;overflow:auto}
-@media(max-width:700px){main{padding:12px}.grid{grid-template-columns:2fr 2fr}.row{flex-direction:column}}
-</style><!-- Apple Seed WebADB static page -->
+:root{--bg:#06100c;--panel:#0b1912;--panel2:#0e2118;--line:#1d3d2b;--green:#20d47a;--green2:#12b965;--text:#edf8f2;--muted:#88a696;--danger:#ff6875;--shadow:0 18px 55px rgba(0,0,0,.28)}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;color:var(--text);font:14px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(circle at 50% -10%,#123d28 0,#07130d 34%,#06100c 70%);min-height:100vh}
+button,input{font:inherit}
+button{cursor:pointer}
+.wrap{width:min(1180px,calc(100% - 32px));margin:auto;padding:28px 0 48px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}
+.brand{display:flex;align-items:center;gap:13px}
+.logo{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,#25e889,#0b8d50);box-shadow:0 10px 30px rgba(32,212,122,.2);font-size:24px}
+.brand h1{margin:0;font-size:22px;letter-spacing:-.4px}
+.brand p{margin:3px 0 0;color:var(--muted);font-size:12px}
+.status{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--line);background:#09160f;border-radius:999px;color:var(--muted);font-weight:700}
+.dot{width:8px;height:8px;border-radius:50%;background:#66776d}
+.dot.on{background:var(--green);box-shadow:0 0 12px rgba(32,212,122,.7)}
+.hero,.panel{background:linear-gradient(180deg,rgba(14,33,24,.96),rgba(8,22,15,.96));border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+.hero{padding:24px;margin-bottom:14px}
+.hero h2{margin:0 0 6px;font-size:26px;letter-spacing:-.6px}
+.hero p{margin:0;color:var(--muted)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.btn{border:1px solid #2a5b41;background:#0c2116;color:var(--text);padding:11px 16px;border-radius:11px;font-weight:800}
+.btn:hover{border-color:#3b7d59;background:#102a1c}
+.btn.primary{border:0;background:linear-gradient(135deg,#22df82,#13b967);color:#04140b;box-shadow:0 8px 24px rgba(32,212,122,.18)}
+.btn.danger{color:#ffb2b8;border-color:#5b2730}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.stat{padding:17px;background:#09170f;border:1px solid var(--line);border-radius:15px;min-width:0}
+.stat small{display:block;color:var(--muted);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.7px}
+.stat strong{display:block;margin-top:7px;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.layout{display:grid;grid-template-columns:1.25fr .75fr;gap:14px}
+.panel{padding:20px}
+.panel h3{margin:0 0 14px;font-size:17px}
+.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.quick .btn{text-align:left;padding:12px 13px}
+.quick b{display:block;font-size:13px}
+.quick span{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.shell{display:flex;gap:9px}
+.shell input{flex:1;min-width:0;background:#050d08;border:1px solid #244b36;color:var(--text);border-radius:11px;padding:12px 13px;outline:none}
+.shell input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(32,212,122,.08)}
+.hint{color:var(--muted);font-size:12px;margin:10px 0 0}
+.log{margin:0;background:#040a07;border:1px solid #14291e;border-radius:12px;padding:14px;height:310px;overflow:auto;color:#bfead2;font:12px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap}
+.empty{color:#668071}
+.footer{padding:18px 2px 0;color:#587063;font-size:11px;text-align:center}
+@media(max-width:850px){.grid{grid-template-columns:repeat(2,1fr)}.layout{grid-template-columns:1fr}.quick{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.wrap{width:min(100% - 20px,1180px);padding-top:16px}.top{align-items:flex-start}.brand h1{font-size:19px}.status{font-size:11px;padding:7px 9px}.hero{padding:18px}.hero h2{font-size:22px}.grid{gap:8px}.stat{padding:13px}.quick{grid-template-columns:1fr}.shell{flex-direction:column}.shell .btn{width:100%}}
+</style>
 </head>
-<body><main>
-<div class="card"><h1>🍏 APPLE SEED · HUAWEI TOOL</h1><p class="muted">WebADB — kết nối Android trực tiếp bằng Chrome/Edge + USB.</p>
-<button id="connect" class="primary">🔌 Kết nối thiết bị</button><button id="disconnect">Ngắt</button><b id="status">Chưa kết nối</b></div>
-<div class="grid">
-<div class="stat"><small>Hãng</small><b id="brand">—</b></div><div class="stat"><small>Model</small><b id="model">—</b></div>
-<div class="stat"><small>Android</small><b id="android">—</b></div><div class="stat"><small>Serial</small><b id="serial">—</b></div></div>
-<div class="card"><h2>Thao tác nhanh</h2>
-<button data-cmd="getprop ro.product.brand">Hãng</button><button data-cmd="getprop ro.product.model">Model</button>
-<button data-cmd="getprop ro.build.version.release">Android</button><button data-cmd="getprop gsm.version.baseband">Baseband</button>
-<button data-cmd="settings get global volte_vt_enabled">VoLTE / VT</button><button data-cmd="getprop ro.build.display.id">Build</button>
-<h2>ADB Shell</h2><div class="row"><input id="cmd" placeholder="getprop ro.product.model"><button id="run">Chạy</button></div></div>
-<div class="card"><h2>Nhật ký</h2><pre id="log">Apple Seed Huawei Tool sẵn sàng.</pre></div>
-</main>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="logo">🍏</div>
+      <div><h1>Apple Seed</h1><p>Android Service Center · WebADB</p></div>
+    </div>
+    <div class="status"><i id="dot" class="dot"></i><span id="status">Chưa kết nối</span></div>
+  </header>
+
+  <section class="hero">
+    <h2>Huawei / Android Service Tool</h2>
+    <p>Kết nối thiết bị Android trực tiếp bằng USB trên Chrome hoặc Edge. Không cần cài ADB trên máy tính.</p>
+    <div class="actions">
+      <button id="connect" class="btn primary">🔌 Kết nối thiết bị</button>
+      <button id="disconnect" class="btn danger">Ngắt kết nối</button>
+    </div>
+  </section>
+
+  <section class="grid">
+    <div class="stat"><small>Hãng</small><strong id="brand">—</strong></div>
+    <div class="stat"><small>Model</small><strong id="model">—</strong></div>
+    <div class="stat"><small>Android</small><strong id="android">—</strong></div>
+    <div class="stat"><small>Serial</small><strong id="serial">—</strong></div>
+  </section>
+
+  <div class="layout">
+    <section class="panel">
+      <h3>⚡ Thao tác nhanh</h3>
+      <div class="quick">
+        <button class="btn" data-cmd="getprop ro.product.brand"><b>Hãng</b><span>ro.product.brand</span></button>
+        <button class="btn" data-cmd="getprop ro.product.model"><b>Model</b><span>ro.product.model</span></button>
+        <button class="btn" data-cmd="getprop ro.build.version.release"><b>Android</b><span>ro.build.version.release</span></button>
+        <button class="btn" data-cmd="getprop gsm.version.baseband"><b>Baseband</b><span>gsm.version.baseband</span></button>
+        <button class="btn" data-cmd="settings get global volte_vt_enabled"><b>VoLTE / VT</b><span>volte_vt_enabled</span></button>
+        <button class="btn" data-cmd="getprop ro.build.display.id"><b>Build</b><span>ro.build.display.id</span></button>
+      </div>
+      <h3 style="margin-top:24px">⌨ ADB Shell</h3>
+      <div class="shell">
+        <input id="cmd" value="getprop ro.product.model" spellcheck="false">
+        <button id="run" class="btn primary">Chạy lệnh</button>
+      </div>
+      <p class="hint">Ví dụ: <b>getprop ro.product.model</b> · <b>settings get global volte_vt_enabled</b></p>
+    </section>
+
+    <section class="panel">
+      <h3>🧾 Nhật ký hoạt động</h3>
+      <pre id="log"><span class="empty">Apple Seed WebADB sẵn sàng.</span></pre>
+    </section>
+  </div>
+  <div class="footer">Apple Seed · Huawei / Android Service Center</div>
+</div>
+
 <script type="module">
 import {Adb,AdbDaemonTransport} from "https://esm.sh/@yume-chan/adb@0.0.24";
 import AdbWebCredentialStore from "https://esm.sh/@yume-chan/adb-credential-web@0.0.24";
 import {AdbDaemonWebUsbDeviceManager} from "https://esm.sh/@yume-chan/adb-daemon-webusb@0.0.24";
-let adb=null,device=null;
+
+let adb=null, device=null;
 const $=id=>document.getElementById(id);
-function log(x){$("log").textContent+="\n"+x;$("log").scrollTop=$("log").scrollHeight}
-async function shell(c){if(!adb)throw Error("Chưa kết nối");const r=await adb.subprocess.noneProtocol.spawnAndWait(c);return (typeof r.stdout==="string"?r.stdout:new TextDecoder().decode(r.stdout||new Uint8Array())).trim()}
-async function run(c){try{log("$ adb shell "+c);const o=await shell(c);log(o||"(không có output)");return o}catch(e){log("LỖI: "+e.message)}}
-$("connect").onclick=async()=>{try{
-device=await AdbDaemonWebUsbDeviceManager.BROWSER.requestDevice();if(!device)return;
-log("Đã chọn "+(device.name||device.serial));const connection=await device.connect();
-const store=new AdbWebCredentialStore("AppleSeed-Huawei-Tool");
-const transport=await AdbDaemonTransport.authenticate({serial:device.serial,connection,credentialStore:store});
-adb=new Adb(transport);$("status").textContent="Đã kết nối";$("serial").textContent=device.serial||"—";
-$("brand").textContent=await shell("getprop ro.product.brand");$("model").textContent=await shell("getprop ro.product.model");
-$("android").textContent=await shell("getprop ro.build.version.release");log("Thiết bị sẵn sàng.")
-}catch(e){log("KẾT NỐI LỖI: "+e.message)}};
-$("disconnect").onclick=async()=>{try{await adb?.close()}catch{}adb=null;device=null;$("status").textContent="Chưa kết nối";log("Đã ngắt.")};
-$("run").onclick=()=>{const c=$("cmd").value.trim();if(c)run(c)};
-document.querySelectorAll("[data-cmd]").forEach(b=>b.onclick=()=>run(b.dataset.cmd));
-</script></body></html>
+function log(msg){const el=$("log"); if(el.querySelector(".empty")) el.textContent=""; el.textContent+=(el.textContent?"\n":"")+msg; el.scrollTop=el.scrollHeight}
+function setStatus(text,on=false){$("status").textContent=text;$("dot").classList.toggle("on",on)}
+async function shell(command){
+  if(!adb) throw new Error("Chưa kết nối thiết bị");
+  const result=await adb.subprocess.spawnAndWait(command);
+  return (result.stdout||"").trim();
+}
+async function run(command){
+  command=command.trim(); if(!command)return;
+  try{log("$ adb shell "+command);const out=await shell(command);log(out||"(không có output)");return out}
+  catch(e){log("✕ LỖI: "+(e?.message||e));throw e}
+}
+$("connect").onclick=async()=>{
+  try{
+    if(!AdbDaemonWebUsbDeviceManager.BROWSER) throw new Error("Trình duyệt không hỗ trợ WebUSB. Hãy dùng Chrome/Edge.");
+    device=await AdbDaemonWebUsbDeviceManager.BROWSER.requestDevice();
+    if(!device)return;
+    log("Đã chọn: "+(device.name||device.serial||"Android"));
+    setStatus("Đang xác thực…");
+    const connection=await device.connect();
+    const store=new AdbWebCredentialStore("AppleSeed-Huawei-Tool");
+    const transport=await AdbDaemonTransport.authenticate({serial:device.serial,connection,credentialStore:store});
+    adb=new Adb(transport);
+    $("serial").textContent=device.serial||"—";
+    setStatus("Đã kết nối",true);
+    $("brand").textContent=await shell("getprop ro.product.brand")||"—";
+    $("model").textContent=await shell("getprop ro.product.model")||"—";
+    $("android").textContent=await shell("getprop ro.build.version.release")||"—";
+    log("✓ Thiết bị sẵn sàng.");
+  }catch(e){
+    adb=null;
+    setStatus("Kết nối lỗi");
+    log("✕ KẾT NỐI LỖI: "+(e?.message||e));
+  }
+};
+$("disconnect").onclick=async()=>{
+  try{await adb?.close()}catch{}
+  adb=null;device=null;
+  $("brand").textContent=$("model").textContent=$("android").textContent=$("serial").textContent="—";
+  setStatus("Chưa kết nối");
+  log("Đã ngắt kết nối.");
+};
+$("run").onclick=()=>run($("cmd").value).catch(()=>{});
+$("cmd").addEventListener("keydown",e=>{if(e.key==="Enter")run($("cmd").value).catch(()=>{})});
+document.querySelectorAll("[data-cmd]").forEach(b=>b.onclick=()=>run(b.dataset.cmd).catch(()=>{}));
+</script>
+</body>
+</html>
