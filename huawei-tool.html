@@ -10,7 +10,7 @@
 *{box-sizing:border-box}html{background:var(--bg)}body{margin:0;color:var(--text);font:14px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(circle at 50% -15%,#123c28 0,#07120c 32%,#050b08 72%);min-height:100vh}button,input{font:inherit}button{cursor:pointer}
 .wrap{width:min(1240px,calc(100% - 30px));margin:auto;padding:22px 0 44px}
 .top{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:16px}.brand{display:flex;align-items:center;gap:12px}.logo{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(135deg,#2aef8d,#087c47);box-shadow:0 10px 30px rgba(32,220,125,.18);font-size:23px}.brand h1{margin:0;font-size:21px;letter-spacing:-.4px}.brand p{margin:2px 0 0;color:var(--muted);font-size:11px}.status{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--line);background:#08130d;border-radius:999px;color:var(--muted);font-weight:800;font-size:12px}.dot{width:8px;height:8px;border-radius:50%;background:#607268}.dot.on{background:var(--green);box-shadow:0 0 13px rgba(32,220,125,.75)}
-.hero{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:end;padding:22px 24px;background:linear-gradient(135deg,rgba(14,34,24,.98),rgba(7,20,13,.98));border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);margin-bottom:12px}.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:var(--green);font-weight:900}.hero h2{margin:4px 0 5px;font-size:25px;letter-spacing:-.7px}.hero p{margin:0;color:var(--muted);max-width:760px}.actions{display:flex;gap:9px;flex-wrap:wrap}.btn{min-height:42px;border:1px solid #29533c;background:#0c2116;color:var(--text);padding:10px 15px;border-radius:10px;font-weight:850;transition:.15s}.btn:hover{border-color:#3d7856;background:#10291b}.btn.primary{border:0;background:linear-gradient(135deg,#24e787,#10b966);color:#04140b;box-shadow:0 8px 25px rgba(32,220,125,.16)}.btn.danger{color:#ffb5bd;border-color:#54252d}.btn.small{min-height:36px;padding:7px 11px;font-size:12px}.btn:disabled{opacity:.45;cursor:not-allowed}.btn.busy{position:relative;pointer-events:none}.btn.busy::after{content:"";display:inline-block;width:12px;height:12px;margin-left:8px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;vertical-align:-2px;animation:spin .7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+.hero{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:end;padding:22px 24px;background:linear-gradient(135deg,rgba(14,34,24,.98),rgba(7,20,13,.98));border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);margin-bottom:12px}.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:var(--green);font-weight:900}.hero h2{margin:4px 0 5px;font-size:25px;letter-spacing:-.7px}.hero p{margin:0;color:var(--muted);max-width:760px}.actions{display:flex;gap:9px;flex-wrap:wrap}.btn{min-height:42px;border:1px solid #29533c;background:#0c2116;color:var(--text);padding:10px 15px;border-radius:10px;font-weight:850;transition:.15s}.btn:hover{border-color:#3d7856;background:#10291b}.btn.primary{border:0;background:linear-gradient(135deg,#24e787,#10b966);color:#04140b;box-shadow:0 8px 25px rgba(32,220,125,.16)}.btn.danger{color:#ffb5bd;border-color:#54252d}.btn.small{min-height:36px;padding:7px 11px;font-size:12px}.btn:disabled{opacity:.45;cursor:not-allowed}.action-lock{cursor:wait}.btn.busy{position:relative;pointer-events:none}.btn.busy::after{content:"";display:inline-block;width:12px;height:12px;margin-left:8px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;vertical-align:-2px;animation:spin .7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
 .devicebar{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:12px}.stat{padding:14px 15px;background:rgba(8,23,15,.96);border:1px solid var(--line);border-radius:13px;min-width:0}.stat small{display:block;color:var(--muted);font-weight:800;font-size:10px;text-transform:uppercase;letter-spacing:.8px}.stat strong{display:block;margin-top:5px;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .main{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(300px,.55fr);gap:12px}.panel{background:linear-gradient(180deg,rgba(11,27,19,.97),rgba(7,18,12,.97));border:1px solid var(--line);border-radius:17px;padding:17px;box-shadow:var(--shadow)}.panel h3{margin:0;font-size:16px}.sub{color:var(--muted);font-size:11px;margin:3px 0 14px}
 .toolgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.tool{position:relative;text-align:left;padding:13px;background:#091810;border:1px solid #1b3828;border-radius:12px;color:var(--text);min-height:76px}.tool:hover{border-color:var(--line2);background:#0d2017}.tool .ico{font-size:18px}.tool b{display:block;margin-top:5px;font-size:12px}.tool span{display:block;color:var(--muted);font-size:10px;margin-top:1px}
@@ -23,10 +23,12 @@
 @media(max-width:900px){.main{grid-template-columns:1fr}.log{height:300px}.hero{grid-template-columns:1fr}.devicebar{grid-template-columns:repeat(2,1fr)}}@media(max-width:620px){.wrap{width:calc(100% - 18px);padding-top:14px}.top{align-items:flex-start}.brand h1{font-size:18px}.status{font-size:10px}.hero{padding:17px}.hero h2{font-size:21px}.devicebar{gap:7px}.stat{padding:12px}.toolgrid{grid-template-columns:repeat(2,1fr)}.installbox{grid-template-columns:1fr}.shellrow{flex-direction:column}.shellrow .btn{width:100%}}
 </style>
 <style>
+.global-progress{position:fixed;top:0;left:0;right:0;z-index:10001;display:none;padding:8px 18px 9px;background:rgba(3,12,8,.97);border-bottom:1px solid #24583d;box-shadow:0 8px 30px rgba(0,0,0,.35)}.global-progress.show{display:block}.global-progress-head{max-width:1240px;margin:auto;display:flex;justify-content:space-between;gap:12px;font-size:11px;color:#d9f8e7}.global-progress-track{max-width:1240px;margin:5px auto 0;height:5px;background:#06110a;border-radius:99px;overflow:hidden}.global-progress-track i{display:block;width:8%;height:100%;background:linear-gradient(90deg,#18c972,#72f2ae);box-shadow:0 0 12px rgba(32,220,125,.45);transition:width .25s}.global-progress.indeterminate .global-progress-track i{width:35%;animation:loadslide 1.05s ease-in-out infinite}@keyframes loadslide{0%{margin-left:-35%}50%{margin-left:100%}100%{margin-left:-35%}}
 .fix-overlay{position:fixed;inset:0;background:rgba(0,0,0,.66);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:18px;z-index:9999}
 .fix-overlay.show{display:flex}.fix-modal{width:min(520px,100%);background:#fff7f7;color:#2b1719;border:1px solid #ff9ca5;border-radius:18px;box-shadow:0 24px 80px rgba(0,0,0,.45);padding:18px}.fix-head{display:flex;gap:10px;align-items:flex-start}.fix-icon{width:34px;height:34px;border-radius:50%;background:#ffe0e3;color:#e11d2e;display:grid;place-items:center;font-weight:900;flex:none}.fix-modal h3{margin:0;font-size:16px;color:#a80f1d}.fix-error{margin:10px 0;padding:10px 12px;background:#fff;border:1px solid #ffc6ca;border-radius:10px;font:12px ui-monospace,monospace;color:#a12630}.fix-box{border:1px solid #ffc0c5;border-radius:12px;padding:12px;background:#fff}.fix-box strong{display:block;font-size:12px;margin-bottom:7px}.fix-box ol{margin:0 0 10px 18px;padding:0;font-size:11px;line-height:1.65}.fix-download{width:100%;border:0;border-radius:10px;padding:12px;background:#ed101d;color:white;font-weight:900;cursor:pointer}.fix-close{margin-top:10px;width:100%;border:0;border-radius:10px;padding:10px;background:#f2dfe1;color:#74131b;font-weight:800;cursor:pointer}.fix-note{margin:9px 0 0;font-size:10px;color:#78575b}
 </style></head>
 <body>
+<div id="globalProgress" class="global-progress" aria-live="polite"><div class="global-progress-head"><b id="globalProgressTitle">Đang xử lý…</b><span id="globalProgressText">0%</span></div><div class="global-progress-track"><i id="globalProgressBar"></i></div></div>
 <div class="wrap">
 <header class="top">
   <div class="brand"><div class="logo">🍏</div><div><h1>Apple Seed</h1><p>Android Service Center · WebADB</p></div></div>
@@ -121,6 +123,15 @@ function log(msg){
 }
 function setStatus(text,on=false){$("status").textContent=text;$("dot").classList.toggle("on",on)}
 function setBusy(b){$("connect").disabled=b}
+function globalProgress(show,title="Đang xử lý…",pct=8,indeterminate=true){
+  const box=$("globalProgress"),bar=$("globalProgressBar");
+  if(!box)return;
+  box.classList.toggle("show",show);
+  box.classList.toggle("indeterminate",show&&indeterminate);
+  if(title)$("globalProgressTitle").textContent=title;
+  $("globalProgressText").textContent=Math.round(pct)+"%";
+  bar.style.width=Math.max(2,Math.min(100,pct))+"%";
+}
 function fmt(n){if(!n)return"0 B";const u=["B","KB","MB","GB"];let i=0,x=n;while(x>=1024&&i<u.length-1){x/=1024;i++}return x.toFixed(i?1:0)+" "+u[i]}
 function progress(p,msg){$("progress").classList.add("show");$("bar").style.width=Math.max(0,Math.min(100,p))+"%";$("progpct").textContent=Math.round(p)+"%";$("progmsg").textContent=msg}
 function safeText(v){return String(v??"").trim()}
@@ -153,6 +164,7 @@ async function shell(command){
   return out||err||"";
 }
 async function run(command){
+  globalProgress(true,"ADB Shell: "+command,12,true);
   log("$ adb shell "+command);
   try{
     const out=await shell(command);
@@ -166,12 +178,14 @@ async function uiAction(title,fn){
   const old=active?.textContent||"";
   if(uiAction.running){log("⚠ Đang xử lý: "+uiAction.running+". Chờ tác vụ hiện tại xong.");return}
   uiAction.running=title;
+  globalProgress(true,title,8,true);
   buttons.forEach(b=>b.classList.add("action-lock"));
   const own=buttons.find(b=>b===active);
   if(own){own.classList.add("busy");own.dataset.oldText=old;own.textContent="⏳ Đang xử lý…"}
   try{
     log("\n▶ "+title+" — đang xử lý, vui lòng chờ…");
     await fn();
+    globalProgress(true,title,100,false);
     log("✓ "+title+" hoàn tất.");
   }catch(e){
     const msg=e?.message||String(e);
@@ -185,11 +199,13 @@ async function uiAction(title,fn){
       delete own.dataset.oldText;
     }
     uiAction.running="";
+    setTimeout(()=>globalProgress(false),450);
   }
 }
 uiAction.running="";
 
 async function connectDevice(){
+  globalProgress(true,"Đang kết nối WebADB…",5,true);
   if(!navigator.usb) throw new Error("Trình duyệt không hỗ trợ WebUSB. Dùng Chrome hoặc Edge.");
   setBusy(true);
   try{
@@ -233,6 +249,7 @@ async function connectDevice(){
 }
 
 async function disconnectDevice(){
+  globalProgress(true,"Đang ngắt kết nối…",20,true);
   try{
     if(adb){try{await adb.close()}catch{}}
     if(device?.raw?.opened){try{await device.raw.close()}catch{}}
