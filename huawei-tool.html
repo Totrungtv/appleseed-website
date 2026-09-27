@@ -319,9 +319,8 @@ async function loadAdbLibraries(){
       PackageManager=binM.PackageManager;
       window.AppleSeedScrcpy={
         AdbScrcpyClient:scrcpyM.AdbScrcpyClient,
-        AdbScrcpyOptionsLatest:scrcpyM.AdbScrcpyOptionsLatest,
+        AdbScrcpyOptions2_1:scrcpyM.AdbScrcpyOptions2_1,
         DefaultServerPath:scrcpyCoreM.DefaultServerPath,
-        AndroidMotionEventAction:scrcpyCoreM.AndroidMotionEventAction,
         WebCodecsVideoDecoder:decoderM.WebCodecsVideoDecoder,
         AutoCanvasRenderer:decoderM.AutoCanvasRenderer,
       };
@@ -465,7 +464,7 @@ async function readBinaryProcess(command){
   for(const chunk of chunks){data.set(chunk,offset);offset+=chunk.length;}
   return data;
 }
-const SCRCPY_SERVER_B64_URL=new URL("assets/scrcpy-server-v4.1.b64.js?v=4.1-1",window.location.href).href;
+const SCRCPY_SERVER_B64_URL=new URL("assets/scrcpy-server-v2.5.b64.js?v=2.5-1",window.location.href).href;
 const SCRCPY_SERVER_PATH="/data/local/tmp/scrcpy-server.jar";
 
 function screenButtonState(connected,running){
@@ -493,21 +492,13 @@ async function pushScrcpyServer(){
   $("screenStatus").textContent="⏳ Đang truyền Scrcpy server vào điện thoại…";
   log("→ Scrcpy server: "+data.length.toLocaleString()+" bytes");
 
-  const sync=await adb.sync();
-  try{
-    const readable=new ReadableStream({
-      start(controller){
-        controller.enqueue(data);
-        controller.close();
-      }
-    });
-    await sync.write({
-      path:SCRCPY_SERVER_PATH,
-      readable
-    });
-  }finally{
-    try{await sync.dispose()}catch{}
-  }
+  const readable=new ReadableStream({
+    start(controller){
+      controller.enqueue(data);
+      controller.close();
+    }
+  });
+  await window.AppleSeedScrcpy.AdbScrcpyClient.pushServer(adb,readable,SCRCPY_SERVER_PATH);
 
   try{
     const stat=await shell("ls -l "+SCRCPY_SERVER_PATH);
@@ -592,9 +583,9 @@ async function startDeviceScreen(){
   if(!S.WebCodecsVideoDecoder?.isSupported) throw new Error("Chrome/Edge hiện tại không hỗ trợ WebCodecs.");
   $("screenStatus").textContent="⏳ Đang chuẩn bị Scrcpy mirror…";
   await pushScrcpyServer();
-  log("→ Scrcpy server v4.1 đã được push lên thiết bị.");
+  log("→ Scrcpy server v2.5 đã được push lên thiết bị.");
 
-  const options=new S.AdbScrcpyOptionsLatest({
+  const options=new S.AdbScrcpyOptions2_1({
     video:true,
     audio:false,
     control:true,
