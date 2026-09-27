@@ -165,17 +165,25 @@ async function installImsEngine(){
   if(!adb) throw new Error("Chưa kết nối thiết bị.");
   log("===== APPLE SEED IMS ENGINE =====");
   log("→ Tải engine IMS mã nguồn mở...");
-  const res=await fetch(IMS_ENGINE_URL,{cache:"no-store"});
-  if(!res.ok) throw new Error("Không tải được IMS Engine: HTTP "+res.status);
-  const blob=await res.blob();
-  const file=new File([blob],"ImsForPixel-v1.0.0.apk",{type:"application/vnd.android.package-archive"});
-  log("→ APK engine: "+fmt(file.size));
+  let file=null;
+  try{
+    const res=await fetch(IMS_ENGINE_URL,{cache:"no-store"});
+    if(!res.ok) throw new Error("HTTP "+res.status);
+    const blob=await res.blob();
+    file=new File([blob],"ImsForPixel-v1.0.0.apk",{type:"application/vnd.android.package-archive"});
+    log("→ APK engine tải xong: "+fmt(file.size));
+  }catch(e){
+    log("⚠ Không tự tải được engine: "+(e?.message||e));
+    log("→ Hãy tải APK từ GitHub Releases rồi chọn bằng ô Cài APK bên dưới.");
+    window.open(IMS_ENGINE_URL,"_blank","noopener");
+    throw new Error("Trình duyệt chặn tải APK tự động. APK đã được mở để tải thủ công.");
+  }
   const pm=new PackageManager(adb);
   try{
     await pm.installStream(file.size,file.stream(),{bypassLowTargetSdkBlock:true,skipExisting:true});
   }catch(e){
-    log("⚠ Cài skipExisting thất bại, thử cài lại: "+(e?.message||e));
-    await pm.installStream(file.size,file.stream(),{bypassLowTargetSdkBlock:true});
+    log("⚠ Cài lần 1 thất bại, tạo stream mới và thử lại...");
+    await pm.installStream(file.size,file.stream(),{bypassLowTargetSdkBlock:true}); 
   }
   const pkgs=await shell("pm list packages "+IMS_PACKAGE);
   if(!pkgs.includes(IMS_PACKAGE)) throw new Error("APK đã truyền nhưng package chưa xuất hiện: "+pkgs);
