@@ -108,10 +108,25 @@ Kết nối thiết bị để bắt đầu.</span></pre>
 </div>
 
 <script type="module">
-import {Adb,AdbDaemonTransport} from "https://esm.sh/@yume-chan/adb@0.0.24";
-import AdbWebCredentialStore from "https://esm.sh/@yume-chan/adb-credential-web@0.0.24";
-import {AdbDaemonWebUsbDeviceManager} from "https://esm.sh/@yume-chan/adb-daemon-webusb@0.0.24";
-import {PackageManager} from "https://esm.sh/@yume-chan/android-bin@0.0.24";
+let Adb,AdbDaemonTransport,AdbWebCredentialStore,AdbDaemonWebUsbDeviceManager,PackageManager;
+let libsPromise=null;
+async function loadAdbLibraries(){
+  if(!libsPromise){
+    libsPromise=Promise.all([
+      import("https://esm.sh/@yume-chan/adb@0.0.24?bundle"),
+      import("https://esm.sh/@yume-chan/adb-credential-web@0.0.24?bundle"),
+      import("https://esm.sh/@yume-chan/adb-daemon-webusb@0.0.24?bundle"),
+      import("https://esm.sh/@yume-chan/android-bin@0.0.24?bundle")
+    ]).then(([adbM,credM,usbM,binM])=>{
+      Adb=adbM.Adb; AdbDaemonTransport=adbM.AdbDaemonTransport;
+      AdbWebCredentialStore=credM.default;
+      AdbDaemonWebUsbDeviceManager=usbM.AdbDaemonWebUsbDeviceManager;
+      PackageManager=binM.PackageManager;
+      return true;
+    }).catch(e=>{libsPromise=null; throw e});
+  }
+  return libsPromise;
+}
 
 let adb=null,device=null,selectedFile=null;
 const $=id=>document.getElementById(id);
@@ -153,6 +168,9 @@ async function installApk(file){
 $("connect").onclick=async()=>{
   try{
     setBusy(true);
+    log("→ Nạp thư viện WebADB…");
+    await loadAdbLibraries();
+    log("✓ WebADB sẵn sàng.");
     if(!AdbDaemonWebUsbDeviceManager.BROWSER)throw new Error("Trình duyệt không hỗ trợ WebUSB. Hãy dùng Chrome/Edge.");
     device=await AdbDaemonWebUsbDeviceManager.BROWSER.requestDevice();if(!device)return;
     log("Đã chọn: "+(device.name||device.serial||"Android"));setStatus("Đang xác thực…");
@@ -323,6 +341,7 @@ $("volteFix").onclick=()=>fixVolte().catch(e=>log("✕ VOLTE FIX: "+(e?.message|
 $("run").onclick=()=>run($("cmd").value).catch(()=>{});
 $("cmd").addEventListener("keydown",e=>{if(e.key==="Enter")run($("cmd").value).catch(()=>{})});
 document.querySelectorAll("[data-cmd]").forEach(b=>b.onclick=()=>run(b.dataset.cmd).catch(()=>{}));
+window.addEventListener("unhandledrejection",e=>log("✕ JS/ADB: "+(e?.reason?.message||e?.reason||"Lỗi không xác định")));
 $("launch").onclick=async()=>{const p=$("pkg").value.trim();if(!p)return;try{await run("monkey -p "+p+" -c android.intent.category.LAUNCHER 1")}catch{}};
 $("uninstall").onclick=async()=>{const p=$("pkg").value.trim();if(!p)return;if(!confirm("Gỡ ứng dụng "+p+" khỏi thiết bị?"))return;try{await run("pm uninstall "+p)}catch{}};
 </script>
