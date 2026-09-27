@@ -491,6 +491,14 @@ async function installAppleSeedVolte(){
   await installApk(file);
   const p=await shell("pm list packages "+APPLESEED_VOLTE_PACKAGE);
   if(!p.includes(APPLESEED_VOLTE_PACKAGE)) throw new Error("Cài xong nhưng không tìm thấy "+APPLESEED_VOLTE_PACKAGE);
+  log("→ Thử cấp quyền ADB cho công tắc VoLTE của Apple Seed…");
+  try{
+    const grant=await shell("pm grant "+APPLESEED_VOLTE_PACKAGE+" android.permission.WRITE_SECURE_SETTINGS");
+    log("✓ WRITE_SECURE_SETTINGS: "+(grant||"OK"));
+  }catch(e){
+    log("⚠ Không cấp được WRITE_SECURE_SETTINGS tự động: "+(e?.message||e));
+    log("ℹ Một số firmware chặn quyền này đối với app bên thứ ba; app vẫn cài bình thường.");
+  }
   $("appleSeedOpen").disabled=false;$("volteVerify").disabled=false;
   log("✓ APP APPLE SEED ĐÃ CÀI: "+APPLESEED_VOLTE_PACKAGE);
 }
