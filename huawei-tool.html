@@ -62,14 +62,17 @@
   </div>
 
   <div class="install">
-    <h3>📡 Apple Seed IMS Engine</h3>
-    <p class="sub">Cài engine IMS vào điện thoại, sau đó chạy CarrierConfig override + reset IMS + kiểm tra IMS Registration.</p>
+    <h3>📡 Apple Seed · Pixel IMS / Shizuku Engine</h3>
+    <p class="sub">Dựa trên mã nguồn Pixel IMS: CarrierConfig override qua Instrumentation + Shizuku, sau đó reset IMS và kiểm tra đăng ký thật.</p>
     <div class="appactions">
-      <button id="imsInstall" class="btn primary">⚡ Cài IMS Engine</button>
-      <button id="imsActivate" class="btn" disabled>📶 Kích hoạt VoLTE</button>
+      <button id="imsInstall" class="btn primary">1️⃣ Cài Pixel IMS</button>
+      <button id="shizukuInstall" class="btn">2️⃣ Cài Shizuku</button>
+      <button id="shizukuStart" class="btn" disabled>3️⃣ Khởi động Shizuku</button>
+      <button id="imsOpen" class="btn" disabled>4️⃣ Mở Pixel IMS</button>
+      <button id="imsActivate" class="btn" disabled>5️⃣ Kích hoạt VoLTE</button>
       <button id="imsRestore" class="btn danger" disabled>↩ Khôi phục</button>
     </div>
-    <div class="appnote">Engine là APK mã nguồn mở; cơ chế này được thiết kế cho Pixel/Android tương thích. Với Samsung/OPPO, kết quả phụ thuộc vendor IMS và firmware.</div>
+    <div id="imsHint" class="appnote">Quy trình thật cần Shizuku chạy và Pixel IMS được cấp quyền Shizuku. Tool không giả báo thành công: chỉ ghi nhận khi thiết bị báo IMS Registered.</div>
   </div>
 
   <div class="install">
@@ -145,10 +148,11 @@ async function run(command){
 }
 function fmt(n){if(!n)return "0 B";const u=["B","KB","MB","GB"];let i=0,x=n;while(x>=1024&&i<u.length-1){x/=1024;i++}return x.toFixed(i?1:0)+" "+u[i]}
 function progress(p,msg){$("progress").classList.add("show");$("bar").style.width=Math.max(0,Math.min(100,p))+"%";$("progpct").textContent=Math.round(p)+"%";$("progmsg").textContent=msg}
-const IMS_ENGINE_URL="https://github.com/svenuks/ImsForPixel/releases/download/v1.0.0/ImsForPixel-v1.0.0.apk";
-const IMS_PACKAGE="com.svenuks.imsforpixel";
-const IMS_INSTR=IMS_PACKAGE+"/com.svenuks.imsforpixel.BrokerInstrumentation";
-let imsInstalled=false;
+const PIXEL_IMS_URL="https://github.com/kyujin-cho/pixel-volte-patch/releases/download/1.3.2/dev.bluehouse.enablevolte.apk";
+const PIXEL_IMS_PACKAGE="dev.bluehouse.enablevolte";
+const SHIZUKU_URL="https://github.com/RikkaApps/Shizuku/releases/download/v13.5.4/shizuku-v13.5.4.r1049.0e53409-release.apk";
+const SHIZUKU_PACKAGE="moe.shizuku.privileged.api";
+let imsInstalled=false,shizukuInstalled=false,shizukuRunning=false;
 
 async function installApk(file){
   if(!adb)throw new Error("Hãy kết nối thiết bị trước.");
@@ -190,67 +194,87 @@ $("disconnect").onclick=async()=>{try{await adb?.close()}catch{}adb=null;device=
 $("apk").onchange=e=>{selectedFile=e.target.files?.[0]||null;if(selectedFile){$("filename").textContent=selectedFile.name;$("filesize").textContent=fmt(selectedFile.size);$("install").disabled=!adb}else{$("filename").textContent="Chọn file APK";$("filesize").textContent="APK sẽ được cài trực tiếp vào thiết bị đã kết nối";$("install").disabled=true}};
 $("install").onclick=()=>installApk(selectedFile);
 
-async function installImsEngine(){
-  if(!adb) throw new Error("Chưa kết nối thiết bị.");
-  log("===== APPLE SEED IMS ENGINE =====");
-  log("→ Tải engine IMS mã nguồn mở...");
-  let file=null,apkBlob=null;
-  try{
-    const res=await fetch(IMS_ENGINE_URL,{cache:"no-store"});
-    if(!res.ok) throw new Error("HTTP "+res.status);
-    apkBlob=await res.blob();
-    file=new File([apkBlob],"ImsForPixel-v1.0.0.apk",{type:"application/vnd.android.package-archive"});
-    log("→ APK engine tải xong: "+fmt(file.size));
-  }catch(e){
-    log("⚠ Không tự tải được engine: "+(e?.message||e));
-    log("→ Hãy tải APK từ GitHub Releases rồi chọn bằng ô Cài APK bên dưới.");
-    window.open(IMS_ENGINE_URL,"_blank","noopener");
-    throw new Error("Trình duyệt chặn tải APK tự động. APK đã được mở để tải thủ công.");
-  }
-  const pm=new PackageManager(adb);
-  try{
-    await pm.installStream(file.size,file.stream(),{bypassLowTargetSdkBlock:true,skipExisting:true});
-  }catch(e){
-    log("⚠ Cài lần 1 thất bại, tạo stream mới và thử lại...");
-    await pm.installStream(file.size,new File([apkBlob],file.name,{type:file.type}).stream(),{bypassLowTargetSdkBlock:true}); 
-  }
-  const pkgs=await shell("pm list packages "+IMS_PACKAGE);
-  if(!pkgs.includes(IMS_PACKAGE)) throw new Error("APK đã truyền nhưng package chưa xuất hiện: "+pkgs);
-  imsInstalled=true;
-  $("imsActivate").disabled=false;$("imsRestore").disabled=false;
-  log("✓ IMS ENGINE ĐÃ CÀI: "+IMS_PACKAGE);
-  log("→ Kiểm tra instrumentation...");
-  const inst=await shell("pm list instrumentation");
-  log(inst.split(/\r?\n/).filter(x=>x.includes(IMS_PACKAGE)).join("\n")||"(không tìm thấy instrumentation)");
+async function downloadApk(url,name){
+  const res=await fetch(url,{cache:"no-store"});
+  if(!res.ok) throw new Error("HTTP "+res.status);
+  const blob=await res.blob();
+  return new File([blob],name,{type:"application/vnd.android.package-archive"});
 }
-
-async function runIms(clear=false){
+async function installRemoteApk(url,name,packageName){
+  if(!adb) throw new Error("Chưa kết nối thiết bị.");
+  log("→ Tải "+name+"…");
+  const file=await downloadApk(url,name);
+  log("→ APK tải xong: "+fmt(file.size));
+  const pm=new PackageManager(adb);
+  await pm.installStream(file.size,file.stream(),{bypassLowTargetSdkBlock:true});
+  const pkgs=await shell("pm list packages "+packageName);
+  if(!pkgs.includes(packageName)) throw new Error("Package chưa xuất hiện: "+pkgs);
+  log("✓ ĐÃ CÀI: "+packageName);
+}
+async function installImsEngine(){
+  await installRemoteApk(PIXEL_IMS_URL,"Pixel-IMS-1.3.2.apk",PIXEL_IMS_PACKAGE);
+  imsInstalled=true;$("imsOpen").disabled=false;$("imsActivate").disabled=false;$("imsRestore").disabled=false;
+  $("imsHint").textContent="Pixel IMS đã cài. Tiếp theo cài/khởi động Shizuku, mở Pixel IMS và cấp quyền Shizuku khi điện thoại hỏi.";
+}
+async function installShizukuEngine(){
+  await installRemoteApk(SHIZUKU_URL,"Shizuku-13.5.4.apk",SHIZUKU_PACKAGE);
+  shizukuInstalled=true;$("shizukuStart").disabled=false;
+  try{await shell("monkey -p "+SHIZUKU_PACKAGE+" -c android.intent.category.LAUNCHER 1")}catch(e){log("⚠ Không mở được Shizuku: "+(e?.message||e))}
+}
+async function startShizuku(){
+  if(!adb) throw new Error("Chưa kết nối thiết bị.");
+  if(!shizukuInstalled){
+    const p=await shell("pm list packages "+SHIZUKU_PACKAGE);
+    if(!p.includes(SHIZUKU_PACKAGE)) await installShizukuEngine(); else shizukuInstalled=true;
+  }
+  log("===== KHỞI ĐỘNG SHIZUKU =====");
+  let out="";
+  try{out=await shell("sh /storage/emulated/0/Android/data/moe.shizuku.privileged.api/start.sh");log(out||"start.sh đã chạy.")}catch(e){log("⚠ start.sh lỗi: "+(e?.message||e))}
+  if(!out){
+    try{
+      const path=await shell("pm path "+SHIZUKU_PACKAGE);
+      const base=(path.split(/\r?\n/).find(x=>x.startsWith("package:"))||"").replace(/^package:/,"").trim();
+      if(base){
+        const root=base.substring(0,base.lastIndexOf("/"));
+        for(const lib of [root+"/lib/arm64/libshizuku.so",root+"/lib/arm/libshizuku.so",root+"/lib/x86_64/libshizuku.so",root+"/lib/x86/libshizuku.so"]){
+          try{
+            const ok=await shell("[ -x "+lib+" ] && echo YES || echo NO");
+            if(ok.includes("YES")){log("→ Fallback: "+lib);out=await shell(lib);break}
+          }catch{}
+        }
+      }
+    }catch(e){log("⚠ Không tìm được libshizuku.so: "+(e?.message||e))}
+  }
+  await new Promise(r=>setTimeout(r,1200));
+  const ps=await shell("ps -A | grep -i shizuku | grep -v grep");
+  if(!ps.trim()) throw new Error("Shizuku chưa chạy. Mở Shizuku trên điện thoại và kiểm tra trạng thái.");
+  shizukuRunning=true;$("imsOpen").disabled=!imsInstalled;$("imsActivate").disabled=!imsInstalled;
+  $("imsHint").textContent="Shizuku đang chạy. Mở Pixel IMS → cấp quyền Shizuku → chọn SIM → bật Enable VoLTE.";
+  log("✓ SHIZUKU ĐANG CHẠY");
+}
+async function openPixelIms(){
   if(!adb) throw new Error("Chưa kết nối thiết bị.");
   if(!imsInstalled){
-    await installImsEngine();
+    const p=await shell("pm list packages "+PIXEL_IMS_PACKAGE);
+    if(!p.includes(PIXEL_IMS_PACKAGE)) await installImsEngine(); else imsInstalled=true;
   }
-  const arg=clear?" -e clear true":"";
-  log("===== "+(clear?"RESTORE IMS":"ACTIVATE VOLTE")+" =====");
-  log("$ adb shell am instrument -w"+arg+" "+IMS_INSTR);
-  const out=await shell("am instrument -w"+arg+" "+IMS_INSTR);
-  log(out||"(instrumentation không trả output)");
-  await new Promise(r=>setTimeout(r,1000));
+  await shell("monkey -p "+PIXEL_IMS_PACKAGE+" -c android.intent.category.LAUNCHER 1");
+  log("✓ Đã mở Pixel IMS. Cấp quyền Shizuku nếu điện thoại hỏi.");
+}
+async function runIms(clear=false){
+  if(!adb) throw new Error("Chưa kết nối thiết bị.");
+  if(!imsInstalled) await installImsEngine();
+  if(!shizukuRunning) await startShizuku();
+  await openPixelIms();
+  if(clear){log("↩ Khôi phục: trong Pixel IMS hãy tắt cấu hình đã bật trên SIM.");return}
+  log("→ Sau khi bật Enable VoLTE trên điện thoại, tool sẽ đọc trạng thái IMS.");
+  await new Promise(r=>setTimeout(r,1500));
   try{
     const ims=await shell("dumpsys ims");
-    const lines=ims.split(/\r?\n/).filter(x=>/(registered|unregistered|registration|mmtel)/i.test(x)).slice(0,100);
+    const lines=ims.split(/\r?\n/).filter(x=>/(registered|unregistered|registration|mmtel)/i.test(x)).slice(0,80);
     log("IMS RESULT:\n"+(lines.join("\n")||"(không có trạng thái IMS)"));
-  }catch(e){log("IMS đọc trạng thái lỗi: "+(e?.message||e))}
-  try{
-    const reg=await shell("dumpsys telephony.registry");
-    const lines=reg.split(/\r?\n/).filter(x=>/(ims|volte|mmtel|serviceState)/i.test(x)).slice(0,80);
-    log("TELEPHONY:\n"+(lines.join("\n")||"(không có dòng phù hợp)"));
-  }catch(e){log("Telephony verify lỗi: "+(e?.message||e))}
-  log("===== KẾT THÚC =====");
+  }catch(e){log("IMS verify lỗi: "+(e?.message||e))}
 }
-if($("imsInstall")) $("imsInstall").onclick=()=>installImsEngine().catch(e=>log("✕ IMS ENGINE: "+(e?.message||e)));
-if($("imsActivate")) $("imsActivate").onclick=()=>runIms(false).catch(e=>log("✕ ACTIVATE IMS: "+(e?.message||e)));
-if($("imsRestore")) $("imsRestore").onclick=()=>runIms(true).catch(e=>log("✕ RESTORE IMS: "+(e?.message||e)));
-
 async function scanVolte(){
   if(!adb) throw new Error("Chưa kết nối thiết bị");
   log("===== VOLTE / IMS REAL SCAN =====");
