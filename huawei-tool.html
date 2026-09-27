@@ -319,7 +319,7 @@ async function loadAdbLibraries(){
       PackageManager=binM.PackageManager;
       window.AppleSeedScrcpy={
         AdbScrcpyClient:scrcpyM.AdbScrcpyClient,
-        AdbScrcpyOptions2_1:scrcpyM.AdbScrcpyOptions2_1,
+        AdbScrcpyOptions2_5:scrcpyM.AdbScrcpyOptions2_5,
         DefaultServerPath:scrcpyCoreM.DefaultServerPath,
         WebCodecsVideoDecoder:decoderM.WebCodecsVideoDecoder,
         AutoCanvasRenderer:decoderM.AutoCanvasRenderer,
@@ -585,7 +585,7 @@ async function startDeviceScreen(){
   await pushScrcpyServer();
   log("→ Scrcpy server v2.5 đã được push lên thiết bị.");
 
-  const options=new S.AdbScrcpyOptions2_1({
+  const options=new S.AdbScrcpyOptions2_5({
     video:true,
     audio:false,
     control:true,
