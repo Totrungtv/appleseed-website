@@ -139,7 +139,12 @@ function setBusy(b){$("connect").disabled=b}
 async function shell(command){
   if(!adb)throw new Error("Chưa kết nối thiết bị");
   const result=await adb.subprocess.spawnAndWait(command);
-  return (result.stdout||"").trim();
+  const stdout=(result.stdout||"").trim();
+  const stderr=(result.stderr||"").trim();
+  const exitCode=result.exitCode;
+  if(stderr) log("stderr: "+stderr);
+  if(exitCode!==0 && !stdout && !stderr) log("exitCode: "+exitCode);
+  return stdout || stderr || "";
 }
 async function run(command){
   command=command.trim();if(!command)return;
@@ -164,10 +169,10 @@ async function installViaPush(file){
     try{await sync.dispose()}catch{}
   }
   log("→ Chạy package manager trực tiếp…");
-  const out=await shell("pm install -r -g -d --bypass-low-target-sdk-block --skip-verification "+path);
+  const out=await shell("pm install -r -g -d "+path);
   log("pm install: "+(out||"(không có output)"));
   try{await shell("rm -f "+path)}catch{}
-  if(!/success/i.test(out||"")) throw new Error(out||"pm install không trả về Success");
+  if(!/success/i.test(out||"")) throw new Error(out||"pm install thất bại; xem stderr/exitCode trong log.");
 }
 async function installApk(file){
   if(!adb)throw new Error("Hãy kết nối thiết bị trước.");
