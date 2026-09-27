@@ -3,160 +3,159 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Apple Seed Android Service Center - WebADB">
+<meta name="description" content="Apple Seed Android Service Center - Professional WebADB">
 <title>Apple Seed · Android Service Center</title>
 <style>
-:root{--bg:#06100c;--panel:#0b1912;--panel2:#0e2118;--line:#1d3d2b;--green:#20d47a;--green2:#12b965;--text:#edf8f2;--muted:#88a696;--danger:#ff6875;--shadow:0 18px 55px rgba(0,0,0,.28)}
-*{box-sizing:border-box}
-html{background:var(--bg)}
-body{margin:0;color:var(--text);font:14px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(circle at 50% -10%,#123d28 0,#07130d 34%,#06100c 70%);min-height:100vh}
-button,input{font:inherit}
-button{cursor:pointer}
-.wrap{width:min(1180px,calc(100% - 32px));margin:auto;padding:28px 0 48px}
-.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}
-.brand{display:flex;align-items:center;gap:13px}
-.logo{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,#25e889,#0b8d50);box-shadow:0 10px 30px rgba(32,212,122,.2);font-size:24px}
-.brand h1{margin:0;font-size:22px;letter-spacing:-.4px}
-.brand p{margin:3px 0 0;color:var(--muted);font-size:12px}
-.status{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--line);background:#09160f;border-radius:999px;color:var(--muted);font-weight:700}
-.dot{width:8px;height:8px;border-radius:50%;background:#66776d}
-.dot.on{background:var(--green);box-shadow:0 0 12px rgba(32,212,122,.7)}
-.hero,.panel{background:linear-gradient(180deg,rgba(14,33,24,.96),rgba(8,22,15,.96));border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
-.hero{padding:24px;margin-bottom:14px}
-.hero h2{margin:0 0 6px;font-size:26px;letter-spacing:-.6px}
-.hero p{margin:0;color:var(--muted)}
-.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
-.btn{border:1px solid #2a5b41;background:#0c2116;color:var(--text);padding:11px 16px;border-radius:11px;font-weight:800}
-.btn:hover{border-color:#3b7d59;background:#102a1c}
-.btn.primary{border:0;background:linear-gradient(135deg,#22df82,#13b967);color:#04140b;box-shadow:0 8px 24px rgba(32,212,122,.18)}
-.btn.danger{color:#ffb2b8;border-color:#5b2730}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
-.stat{padding:17px;background:#09170f;border:1px solid var(--line);border-radius:15px;min-width:0}
-.stat small{display:block;color:var(--muted);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.7px}
-.stat strong{display:block;margin-top:7px;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.layout{display:grid;grid-template-columns:1.25fr .75fr;gap:14px}
-.panel{padding:20px}
-.panel h3{margin:0 0 14px;font-size:17px}
-.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
-.quick .btn{text-align:left;padding:12px 13px}
-.quick b{display:block;font-size:13px}
-.quick span{display:block;color:var(--muted);font-size:11px;margin-top:2px}
-.shell{display:flex;gap:9px}
-.shell input{flex:1;min-width:0;background:#050d08;border:1px solid #244b36;color:var(--text);border-radius:11px;padding:12px 13px;outline:none}
-.shell input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(32,212,122,.08)}
-.hint{color:var(--muted);font-size:12px;margin:10px 0 0}
-.log{margin:0;background:#040a07;border:1px solid #14291e;border-radius:12px;padding:14px;height:310px;overflow:auto;color:#bfead2;font:12px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap}
-.empty{color:#668071}
-.footer{padding:18px 2px 0;color:#587063;font-size:11px;text-align:center}
-@media(max-width:850px){.grid{grid-template-columns:repeat(2,1fr)}.layout{grid-template-columns:1fr}.quick{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:560px){.wrap{width:min(100% - 20px,1180px);padding-top:16px}.top{align-items:flex-start}.brand h1{font-size:19px}.status{font-size:11px;padding:7px 9px}.hero{padding:18px}.hero h2{font-size:22px}.grid{gap:8px}.stat{padding:13px}.quick{grid-template-columns:1fr}.shell{flex-direction:column}.shell .btn{width:100%}}
+:root{--bg:#050b08;--panel:#0a1510;--panel2:#0d1c15;--card:#0a1711;--line:#1c3929;--line2:#28533b;--green:#20dc7d;--green2:#0db665;--text:#effaf4;--muted:#789587;--dim:#536c5e;--red:#ff6878;--yellow:#f5c45b;--shadow:0 20px 60px rgba(0,0,0,.32)}
+*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;color:var(--text);font:14px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(circle at 50% -15%,#123c28 0,#07120c 32%,#050b08 72%);min-height:100vh}button,input{font:inherit}button{cursor:pointer}
+.wrap{width:min(1240px,calc(100% - 30px));margin:auto;padding:22px 0 44px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:16px}.brand{display:flex;align-items:center;gap:12px}.logo{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(135deg,#2aef8d,#087c47);box-shadow:0 10px 30px rgba(32,220,125,.18);font-size:23px}.brand h1{margin:0;font-size:21px;letter-spacing:-.4px}.brand p{margin:2px 0 0;color:var(--muted);font-size:11px}.status{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--line);background:#08130d;border-radius:999px;color:var(--muted);font-weight:800;font-size:12px}.dot{width:8px;height:8px;border-radius:50%;background:#607268}.dot.on{background:var(--green);box-shadow:0 0 13px rgba(32,220,125,.75)}
+.hero{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:end;padding:22px 24px;background:linear-gradient(135deg,rgba(14,34,24,.98),rgba(7,20,13,.98));border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);margin-bottom:12px}.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:var(--green);font-weight:900}.hero h2{margin:4px 0 5px;font-size:25px;letter-spacing:-.7px}.hero p{margin:0;color:var(--muted);max-width:760px}.actions{display:flex;gap:9px;flex-wrap:wrap}.btn{min-height:42px;border:1px solid #29533c;background:#0c2116;color:var(--text);padding:10px 15px;border-radius:10px;font-weight:850;transition:.15s}.btn:hover{border-color:#3d7856;background:#10291b}.btn.primary{border:0;background:linear-gradient(135deg,#24e787,#10b966);color:#04140b;box-shadow:0 8px 25px rgba(32,220,125,.16)}.btn.danger{color:#ffb5bd;border-color:#54252d}.btn.small{min-height:36px;padding:7px 11px;font-size:12px}.btn:disabled{opacity:.45;cursor:not-allowed}
+.devicebar{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:12px}.stat{padding:14px 15px;background:rgba(8,23,15,.96);border:1px solid var(--line);border-radius:13px;min-width:0}.stat small{display:block;color:var(--muted);font-weight:800;font-size:10px;text-transform:uppercase;letter-spacing:.8px}.stat strong{display:block;margin-top:5px;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.main{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(300px,.55fr);gap:12px}.panel{background:linear-gradient(180deg,rgba(11,27,19,.97),rgba(7,18,12,.97));border:1px solid var(--line);border-radius:17px;padding:17px;box-shadow:var(--shadow)}.panel h3{margin:0;font-size:16px}.sub{color:var(--muted);font-size:11px;margin:3px 0 14px}
+.toolgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.tool{position:relative;text-align:left;padding:13px;background:#091810;border:1px solid #1b3828;border-radius:12px;color:var(--text);min-height:76px}.tool:hover{border-color:var(--line2);background:#0d2017}.tool .ico{font-size:18px}.tool b{display:block;margin-top:5px;font-size:12px}.tool span{display:block;color:var(--muted);font-size:10px;margin-top:1px}
+.install{margin-top:14px;padding-top:15px;border-top:1px solid var(--line)}.installbox{display:grid;grid-template-columns:1fr auto;gap:9px}.drop{border:1px dashed #2b6043;background:#07130d;border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;min-width:0}.drop strong{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.drop span{display:block;color:var(--muted);font-size:10px}.drop input{display:none}.fileicon{width:38px;height:38px;display:grid;place-items:center;border-radius:10px;background:#0e2719;font-size:18px;flex:none}
+.progress{margin-top:10px;display:none}.progress.show{display:block}.bar{height:6px;background:#07100b;border:1px solid #193223;border-radius:99px;overflow:hidden}.bar i{display:block;width:0;height:100%;background:linear-gradient(90deg,#18c972,#61efa7);transition:width .2s}.progtext{display:flex;justify-content:space-between;color:var(--muted);font-size:10px;margin-top:5px}
+.apps{margin-top:14px;padding-top:15px;border-top:1px solid var(--line)}.appactions{display:flex;gap:8px;flex-wrap:wrap}.appinput{flex:1;min-width:190px;background:#050d08;border:1px solid #234a35;color:var(--text);border-radius:10px;padding:10px 11px;outline:none}.appinput:focus{border-color:var(--green)}.appnote{font-size:10px;color:var(--dim);margin-top:8px}
+.shell{margin-top:14px;padding-top:15px;border-top:1px solid var(--line)}.shellrow{display:flex;gap:8px}.shellrow input{flex:1;min-width:0;background:#050d08;border:1px solid #234a35;color:var(--text);border-radius:10px;padding:11px 12px;outline:none}.shellrow input:focus{border-color:var(--green)}.hint{color:var(--muted);font-size:10px;margin:8px 0 0}
+.log{margin:0;background:#030805;border:1px solid #14291e;border-radius:12px;padding:13px;height:455px;overflow:auto;color:#bfead2;font:11px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap}.empty{color:#536e60}.loghead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.badge{font-size:9px;color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:4px 7px}
+.footer{padding:14px 2px 0;color:#4d6559;font-size:10px;text-align:center}
+@media(max-width:900px){.main{grid-template-columns:1fr}.log{height:300px}.hero{grid-template-columns:1fr}.devicebar{grid-template-columns:repeat(2,1fr)}}@media(max-width:620px){.wrap{width:calc(100% - 18px);padding-top:14px}.top{align-items:flex-start}.brand h1{font-size:18px}.status{font-size:10px}.hero{padding:17px}.hero h2{font-size:21px}.devicebar{gap:7px}.stat{padding:12px}.toolgrid{grid-template-columns:repeat(2,1fr)}.installbox{grid-template-columns:1fr}.shellrow{flex-direction:column}.shellrow .btn{width:100%}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header class="top">
-    <div class="brand">
-      <div class="logo">🍏</div>
-      <div><h1>Apple Seed</h1><p>Android Service Center · WebADB</p></div>
-    </div>
-    <div class="status"><i id="dot" class="dot"></i><span id="status">Chưa kết nối</span></div>
-  </header>
+<header class="top">
+  <div class="brand"><div class="logo">🍏</div><div><h1>Apple Seed</h1><p>Android Service Center · WebADB</p></div></div>
+  <div class="status"><i id="dot" class="dot"></i><span id="status">Chưa kết nối</span></div>
+</header>
 
-  <section class="hero">
-    <h2>Huawei / Android Service Tool</h2>
-    <p>Kết nối thiết bị Android trực tiếp bằng USB trên Chrome hoặc Edge. Không cần cài ADB trên máy tính.</p>
-    <div class="actions">
-      <button id="connect" class="btn primary">🔌 Kết nối thiết bị</button>
-      <button id="disconnect" class="btn danger">Ngắt kết nối</button>
-    </div>
-  </section>
+<section class="hero">
+  <div><div class="eyebrow">Professional Web Service Tool</div><h2>Huawei / Android Service Tool</h2><p>WebADB trực tiếp qua USB. Đọc thông tin, cài APK, quản lý app và chạy ADB Shell ngay trên Chrome / Edge.</p></div>
+  <div class="actions"><button id="connect" class="btn primary">🔌 Kết nối thiết bị</button><button id="disconnect" class="btn danger">Ngắt kết nối</button></div>
+</section>
 
-  <section class="grid">
-    <div class="stat"><small>Hãng</small><strong id="brand">—</strong></div>
-    <div class="stat"><small>Model</small><strong id="model">—</strong></div>
-    <div class="stat"><small>Android</small><strong id="android">—</strong></div>
-    <div class="stat"><small>Serial</small><strong id="serial">—</strong></div>
-  </section>
+<section class="devicebar">
+  <div class="stat"><small>Hãng</small><strong id="brand">—</strong></div>
+  <div class="stat"><small>Model</small><strong id="model">—</strong></div>
+  <div class="stat"><small>Android</small><strong id="android">—</strong></div>
+  <div class="stat"><small>Serial</small><strong id="serial">—</strong></div>
+</section>
 
-  <div class="layout">
-    <section class="panel">
-      <h3>⚡ Thao tác nhanh</h3>
-      <div class="quick">
-        <button class="btn" data-cmd="getprop ro.product.brand"><b>Hãng</b><span>ro.product.brand</span></button>
-        <button class="btn" data-cmd="getprop ro.product.model"><b>Model</b><span>ro.product.model</span></button>
-        <button class="btn" data-cmd="getprop ro.build.version.release"><b>Android</b><span>ro.build.version.release</span></button>
-        <button class="btn" data-cmd="getprop gsm.version.baseband"><b>Baseband</b><span>gsm.version.baseband</span></button>
-        <button class="btn" data-cmd="settings get global volte_vt_enabled"><b>VoLTE / VT</b><span>volte_vt_enabled</span></button>
-        <button class="btn" data-cmd="getprop ro.build.display.id"><b>Build</b><span>ro.build.display.id</span></button>
-      </div>
-      <h3 style="margin-top:24px">⌨ ADB Shell</h3>
-      <div class="shell">
-        <input id="cmd" value="getprop ro.product.model" spellcheck="false">
-        <button id="run" class="btn primary">Chạy lệnh</button>
-      </div>
-      <p class="hint">Ví dụ: <b>getprop ro.product.model</b> · <b>settings get global volte_vt_enabled</b></p>
-    </section>
-
-    <section class="panel">
-      <h3>🧾 Nhật ký hoạt động</h3>
-      <pre id="log"><span class="empty">Apple Seed WebADB sẵn sàng.</span></pre>
-    </section>
+<div class="main">
+<section class="panel">
+  <h3>⚡ Service Center</h3><p class="sub">Các thao tác phổ biến — bấm là chạy trực tiếp trên thiết bị.</p>
+  <div class="toolgrid">
+    <button class="tool" data-cmd="getprop ro.product.brand"><span class="ico">🏷️</span><b>Hãng</b><span>Device brand</span></button>
+    <button class="tool" data-cmd="getprop ro.product.model"><span class="ico">📱</span><b>Model</b><span>Device model</span></button>
+    <button class="tool" data-cmd="getprop ro.build.version.release"><span class="ico">🤖</span><b>Android</b><span>OS version</span></button>
+    <button class="tool" data-cmd="getprop gsm.version.baseband"><span class="ico">📡</span><b>Baseband</b><span>Modem version</span></button>
+    <button class="tool" data-cmd="settings get global volte_vt_enabled"><span class="ico">📶</span><b>VoLTE / VT</b><span>System setting</span></button>
+    <button class="tool" data-cmd="getprop ro.build.display.id"><span class="ico">🧩</span><b>Build</b><span>Firmware build</span></button>
+    <button class="tool" data-cmd="pm list packages -3"><span class="ico">📦</span><b>Ứng dụng</b><span>List user apps</span></button>
+    <button class="tool" data-cmd="df -h /data"><span class="ico">💾</span><b>Bộ nhớ</b><span>/data storage</span></button>
+    <button class="tool" data-cmd="getprop ro.boot.verifiedbootstate"><span class="ico">🛡️</span><b>Verified Boot</b><span>Boot state</span></button>
   </div>
-  <div class="footer">Apple Seed · Huawei / Android Service Center</div>
+
+  <div class="install">
+    <h3>📦 Cài APK — One Click</h3><p class="sub">Chọn APK trên máy tính, công cụ sẽ truyền và cài thẳng qua ADB, không cần mở trình cài APK trên điện thoại.</p>
+    <div class="installbox">
+      <label class="drop" for="apk"><div class="fileicon">⬆️</div><div><strong id="filename">Chọn file APK</strong><span id="filesize">APK sẽ được cài trực tiếp vào thiết bị đã kết nối</span></div><input id="apk" type="file" accept=".apk,application/vnd.android.package-archive"></label>
+      <button id="install" class="btn primary" disabled>⚡ Cài ngay</button>
+    </div>
+    <div id="progress" class="progress"><div class="bar"><i id="bar"></i></div><div class="progtext"><span id="progmsg">Đang chuẩn bị…</span><span id="progpct">0%</span></div></div>
+  </div>
+
+  <div class="apps">
+    <h3>🚀 Quản lý ứng dụng</h3><p class="sub">Mở hoặc gỡ app bằng package name sau khi kết nối.</p>
+    <div class="appactions">
+      <input id="pkg" class="appinput" placeholder="Ví dụ: vn.appleseed.volte" spellcheck="false">
+      <button id="launch" class="btn small">▶ Mở app</button>
+      <button id="uninstall" class="btn small danger">🗑 Gỡ app</button>
+    </div>
+    <div class="appnote">Mở app dùng monkey; gỡ app dùng <b>pm uninstall</b>. Chỉ thao tác trên thiết bị đã kết nối và được bạn cấp quyền ADB.</div>
+  </div>
+
+  <div class="shell">
+    <h3>⌨ ADB Shell</h3><p class="sub">Chạy lệnh shell trực tiếp.</p>
+    <div class="shellrow"><input id="cmd" value="getprop ro.product.model" spellcheck="false"><button id="run" class="btn primary">Chạy lệnh</button></div>
+    <p class="hint">Ví dụ: <b>getprop ro.product.model</b> · <b>settings get global volte_vt_enabled</b></p>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="loghead"><h3>🧾 Nhật ký hoạt động</h3><span class="badge">LIVE</span></div>
+  <pre id="log"><span class="empty">Apple Seed WebADB sẵn sàng.
+Kết nối thiết bị để bắt đầu.</span></pre>
+</section>
+</div>
+<div class="footer">Apple Seed · Huawei / Android Service Center · WebUSB / ADB</div>
 </div>
 
 <script type="module">
 import {Adb,AdbDaemonTransport} from "https://esm.sh/@yume-chan/adb@0.0.24";
 import AdbWebCredentialStore from "https://esm.sh/@yume-chan/adb-credential-web@0.0.24";
 import {AdbDaemonWebUsbDeviceManager} from "https://esm.sh/@yume-chan/adb-daemon-webusb@0.0.24";
+import {PackageManager} from "https://esm.sh/@yume-chan/android-bin@0.0.24";
 
-let adb=null, device=null;
+let adb=null,device=null,selectedFile=null;
 const $=id=>document.getElementById(id);
-function log(msg){const el=$("log"); if(el.querySelector(".empty")) el.textContent=""; el.textContent+=(el.textContent?"\n":"")+msg; el.scrollTop=el.scrollHeight}
+function log(msg){const el=$("log");if(el.querySelector(".empty"))el.textContent="";el.textContent+=(el.textContent?"\n":"")+msg;el.scrollTop=el.scrollHeight}
 function setStatus(text,on=false){$("status").textContent=text;$("dot").classList.toggle("on",on)}
+function setBusy(b){$("connect").disabled=b}
 async function shell(command){
-  if(!adb) throw new Error("Chưa kết nối thiết bị");
+  if(!adb)throw new Error("Chưa kết nối thiết bị");
   const result=await adb.subprocess.spawnAndWait(command);
   return (result.stdout||"").trim();
 }
 async function run(command){
-  command=command.trim(); if(!command)return;
+  command=command.trim();if(!command)return;
   try{log("$ adb shell "+command);const out=await shell(command);log(out||"(không có output)");return out}
   catch(e){log("✕ LỖI: "+(e?.message||e));throw e}
 }
+function fmt(n){if(!n)return "0 B";const u=["B","KB","MB","GB"];let i=0,x=n;while(x>=1024&&i<u.length-1){x/=1024;i++}return x.toFixed(i?1:0)+" "+u[i]}
+function progress(p,msg){$("progress").classList.add("show");$("bar").style.width=Math.max(0,Math.min(100,p))+"%";$("progpct").textContent=Math.round(p)+"%";$("progmsg").textContent=msg}
+async function installApk(file){
+  if(!adb)throw new Error("Hãy kết nối thiết bị trước.");
+  if(!file)throw new Error("Chưa chọn APK.");
+  if(!file.name.toLowerCase().endsWith(".apk"))throw new Error("Chỉ hỗ trợ file .apk.");
+  try{
+    $("install").disabled=true;progress(2,"Đang truyền APK…");log("📦 Cài APK: "+file.name+" ("+fmt(file.size)+")");
+    const pm=new PackageManager(adb);
+    await pm.installStream(file.size,file.stream());
+    progress(100,"Cài đặt hoàn tất");
+    log("✓ CÀI APK THÀNH CÔNG: "+file.name);
+  }catch(e){
+    progress(100,"Cài đặt thất bại");
+    log("✕ CÀI APK LỖI: "+(e?.message||e));
+  }finally{$("install").disabled=!selectedFile||!adb}
+}
 $("connect").onclick=async()=>{
   try{
-    if(!AdbDaemonWebUsbDeviceManager.BROWSER) throw new Error("Trình duyệt không hỗ trợ WebUSB. Hãy dùng Chrome/Edge.");
-    device=await AdbDaemonWebUsbDeviceManager.BROWSER.requestDevice();
-    if(!device)return;
-    log("Đã chọn: "+(device.name||device.serial||"Android"));
-    setStatus("Đang xác thực…");
+    setBusy(true);
+    if(!AdbDaemonWebUsbDeviceManager.BROWSER)throw new Error("Trình duyệt không hỗ trợ WebUSB. Hãy dùng Chrome/Edge.");
+    device=await AdbDaemonWebUsbDeviceManager.BROWSER.requestDevice();if(!device)return;
+    log("Đã chọn: "+(device.name||device.serial||"Android"));setStatus("Đang xác thực…");
     const connection=await device.connect();
     const store=new AdbWebCredentialStore("AppleSeed-Huawei-Tool");
     const transport=await AdbDaemonTransport.authenticate({serial:device.serial,connection,credentialStore:store});
-    adb=new Adb(transport);
-    $("serial").textContent=device.serial||"—";
-    setStatus("Đã kết nối",true);
+    adb=new Adb(transport);$("serial").textContent=device.serial||"—";setStatus("Đã kết nối",true);
     $("brand").textContent=await shell("getprop ro.product.brand")||"—";
     $("model").textContent=await shell("getprop ro.product.model")||"—";
     $("android").textContent=await shell("getprop ro.build.version.release")||"—";
-    log("✓ Thiết bị sẵn sàng.");
-  }catch(e){
-    adb=null;
-    setStatus("Kết nối lỗi");
-    log("✕ KẾT NỐI LỖI: "+(e?.message||e));
-  }
+    log("✓ Thiết bị sẵn sàng. Có thể cài APK trực tiếp.");
+    $("install").disabled=!selectedFile;
+  }catch(e){adb=null;setStatus("Kết nối lỗi");log("✕ KẾT NỐI LỖI: "+(e?.message||e))}
+  finally{setBusy(false)}
 };
-$("disconnect").onclick=async()=>{
-  try{await adb?.close()}catch{}
-  adb=null;device=null;
-  $("brand").textContent=$("model").textContent=$("android").textContent=$("serial").textContent="—";
-  setStatus("Chưa kết nối");
-  log("Đã ngắt kết nối.");
-};
+$("disconnect").onclick=async()=>{try{await adb?.close()}catch{}adb=null;device=null;$("brand").textContent=$("model").textContent=$("android").textContent=$("serial").textContent="—";setStatus("Chưa kết nối");$("install").disabled=true;log("Đã ngắt kết nối.")};
+$("apk").onchange=e=>{selectedFile=e.target.files?.[0]||null;if(selectedFile){$("filename").textContent=selectedFile.name;$("filesize").textContent=fmt(selectedFile.size);$("install").disabled=!adb}else{$("filename").textContent="Chọn file APK";$("filesize").textContent="APK sẽ được cài trực tiếp vào thiết bị đã kết nối";$("install").disabled=true}};
+$("install").onclick=()=>installApk(selectedFile);
 $("run").onclick=()=>run($("cmd").value).catch(()=>{});
 $("cmd").addEventListener("keydown",e=>{if(e.key==="Enter")run($("cmd").value).catch(()=>{})});
 document.querySelectorAll("[data-cmd]").forEach(b=>b.onclick=()=>run(b.dataset.cmd).catch(()=>{}));
+$("launch").onclick=async()=>{const p=$("pkg").value.trim();if(!p)return;try{await run("monkey -p "+p+" -c android.intent.category.LAUNCHER 1")}catch{}};
+$("uninstall").onclick=async()=>{const p=$("pkg").value.trim();if(!p)return;if(!confirm("Gỡ ứng dụng "+p+" khỏi thiết bị?"))return;try{await run("pm uninstall "+p)}catch{}};
 </script>
 </body>
 </html>
