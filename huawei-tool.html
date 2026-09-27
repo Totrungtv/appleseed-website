@@ -165,12 +165,12 @@ async function installImsEngine(){
   if(!adb) throw new Error("Chưa kết nối thiết bị.");
   log("===== APPLE SEED IMS ENGINE =====");
   log("→ Tải engine IMS mã nguồn mở...");
-  let file=null;
+  let file=null,apkBlob=null;
   try{
     const res=await fetch(IMS_ENGINE_URL,{cache:"no-store"});
     if(!res.ok) throw new Error("HTTP "+res.status);
-    const blob=await res.blob();
-    file=new File([blob],"ImsForPixel-v1.0.0.apk",{type:"application/vnd.android.package-archive"});
+    apkBlob=await res.blob();
+    file=new File([apkBlob],"ImsForPixel-v1.0.0.apk",{type:"application/vnd.android.package-archive"});
     log("→ APK engine tải xong: "+fmt(file.size));
   }catch(e){
     log("⚠ Không tự tải được engine: "+(e?.message||e));
@@ -183,7 +183,7 @@ async function installImsEngine(){
     await pm.installStream(file.size,file.stream(),{bypassLowTargetSdkBlock:true,skipExisting:true});
   }catch(e){
     log("⚠ Cài lần 1 thất bại, tạo stream mới và thử lại...");
-    await pm.installStream(file.size,file.stream(),{bypassLowTargetSdkBlock:true}); 
+    await pm.installStream(file.size,new File([apkBlob],file.name,{type:file.type}).stream(),{bypassLowTargetSdkBlock:true}); 
   }
   const pkgs=await shell("pm list packages "+IMS_PACKAGE);
   if(!pkgs.includes(IMS_PACKAGE)) throw new Error("APK đã truyền nhưng package chưa xuất hiện: "+pkgs);
