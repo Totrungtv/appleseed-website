@@ -160,8 +160,8 @@ const SHIZUKU_PACKAGE="moe.shizuku.privileged.api";
 let imsInstalled=false,shizukuInstalled=false,shizukuRunning=false;
 
 async function installViaPush(file){
-  const path="/sdcard/Download/.appleseed-"+Date.now()+".apk";
-  log("→ Fallback ADB Push: "+path);
+  const path="/data/local/tmp/.appleseed-"+Date.now()+".apk";
+  log("→ Fallback ADB Push vào vùng ADB được phép: "+path);
   const sync=await adb.sync();
   try{
     await sync.write({filename:path,file:file.stream()});
