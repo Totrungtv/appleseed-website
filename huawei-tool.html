@@ -195,10 +195,18 @@ $("apk").onchange=e=>{selectedFile=e.target.files?.[0]||null;if(selectedFile){$(
 $("install").onclick=()=>installApk(selectedFile);
 
 async function downloadApk(url,name){
-  const res=await fetch(url,{cache:"no-store"});
-  if(!res.ok) throw new Error("HTTP "+res.status);
-  const blob=await res.blob();
-  return new File([blob],name,{type:"application/vnd.android.package-archive"});
+  try{
+    const res=await fetch(url,{cache:"no-store",redirect:"follow"});
+    if(!res.ok) throw new Error("HTTP "+res.status);
+    const blob=await res.blob();
+    if(!blob.size) throw new Error("APK rỗng");
+    return new File([blob],name,{type:"application/vnd.android.package-archive"});
+  }catch(e){
+    log("⚠ Trình duyệt chặn tải APK GitHub trực tiếp (CORS/redirect).");
+    log("→ Đã mở link tải chính thức. Tải APK xuống rồi chọn nó ở mục 'Cài APK — One Click'.");
+    window.open(url,"_blank","noopener");
+    throw new Error("Failed to fetch GitHub APK. Hãy tải APK từ tab GitHub vừa mở rồi chọn file APK ở mục Cài APK.");
+  }
 }
 async function installRemoteApk(url,name,packageName){
   if(!adb) throw new Error("Chưa kết nối thiết bị.");
