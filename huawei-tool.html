@@ -464,7 +464,7 @@ async function readBinaryProcess(command){
   for(const chunk of chunks){data.set(chunk,offset);offset+=chunk.length;}
   return data;
 }
-const SCRCPY_SERVER_B64_URL=new URL("assets/scrcpy-server-v2.5.b64.js?v=2.5-2",window.location.href).href;
+const SCRCPY_SERVER_B64_URL=new URL("assets/apple-seed-scrcpy-v2.5.b64.js?v=20260928-1",window.location.href).href;
 const SCRCPY_SERVER_PATH="/data/local/tmp/scrcpy-server.jar";
 
 function screenButtonState(connected,running){
