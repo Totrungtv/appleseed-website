@@ -206,7 +206,7 @@ uiAction.running="";
 
 async function connectDevice(){
   if(!navigator.usb) throw new Error("Trình duyệt không hỗ trợ WebUSB. Dùng Chrome hoặc Edge.");
-  if(!AdbDaemonWebUsbDeviceManager?.BROWSER) throw new Error("WebADB chưa nạp xong. Hãy chờ trạng thái WebADB sẵn sàng rồi bấm lại.");
+  if(!AdbDaemonWebUsbDeviceManager) throw new Error("WebADB chưa nạp xong.");
   setBusy(true);
   globalProgress(true,"Chọn thiết bị USB / ADB…",12,false);
   try{
@@ -219,7 +219,7 @@ async function connectDevice(){
     if(navigator.userActivation && !navigator.userActivation.isActive){
       log("⚠ Chrome không còn user activation cho lần bấm này.");
     }
-    const manager=AdbDaemonWebUsbDeviceManager.BROWSER;
+    const manager=new AdbDaemonWebUsbDeviceManager(navigator.usb);
     const devicePromise=manager.requestDevice();
     const d=await devicePromise;
     if(!d){log("Đã hủy chọn thiết bị.");return}
@@ -468,7 +468,10 @@ async function fixVolte(){
 }
 
 function bind(){
-  $("connect").onclick=()=>uiAction("KẾT NỐI THIẾT BỊ",connectDevice);
+  $("connect").onclick=(event)=>{
+    event.preventDefault();
+    connectDevice().catch(e=>log("✕ Kết nối: "+(e?.message||e)));
+  };
   $("disconnect").onclick=()=>uiAction("NGẮT KẾT NỐI",disconnectDevice);
   $("apk").onchange=()=>{
     selectedFile=$("apk").files?.[0]||null;
