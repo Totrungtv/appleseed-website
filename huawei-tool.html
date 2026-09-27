@@ -110,7 +110,21 @@ Kết nối thiết bị để bắt đầu.</span></pre>
 
 <script>
 let Adb,AdbDaemonTransport,AdbWebCredentialStore,AdbDaemonWebUsbDeviceManager,PackageManager;
-let libsPromise=null;
+let libsPromise=null,adb=null,device=null,selectedFile=null;
+
+const $=id=>document.getElementById(id);
+function log(msg){
+  const el=$("log");
+  if(el.querySelector(".empty")) el.textContent="";
+  el.textContent+=(el.textContent?"\n":"")+String(msg);
+  el.scrollTop=el.scrollHeight;
+}
+function setStatus(text,on=false){$("status").textContent=text;$("dot").classList.toggle("on",on)}
+function setBusy(b){$("connect").disabled=b}
+function fmt(n){if(!n)return"0 B";const u=["B","KB","MB","GB"];let i=0,x=n;while(x>=1024&&i<u.length-1){x/=1024;i++}return x.toFixed(i?1:0)+" "+u[i]}
+function progress(p,msg){$("progress").classList.add("show");$("bar").style.width=Math.max(0,Math.min(100,p))+"%";$("progpct").textContent=Math.round(p)+"%";$("progmsg").textContent=msg}
+function safeText(v){return String(v??"").trim()}
+
 async function loadAdbLibraries(){
   if(!libsPromise){
     libsPromise=Promise.all([
@@ -119,40 +133,161 @@ async function loadAdbLibraries(){
       import("https://esm.sh/@yume-chan/adb-daemon-webusb@0.0.24?bundle"),
       import("https://esm.sh/@yume-chan/android-bin@0.0.24?bundle")
     ]).then(([adbM,credM,usbM,binM])=>{
-      Adb=adbM.Adb; AdbDaemonTransport=adbM.AdbDaemonTransport;
+      Adb=adbM.Adb;
+      AdbDaemonTransport=adbM.AdbDaemonTransport;
       AdbWebCredentialStore=credM.default;
       AdbDaemonWebUsbDeviceManager=usbM.AdbDaemonWebUsbDeviceManager;
       PackageManager=binM.PackageManager;
       return true;
-    }).catch(e=>{libsPromise=null; throw e});
+    }).catch(e=>{libsPromise=null;throw e});
   }
   return libsPromise;
 }
 
-let adb=null,device=null,selectedFile=null;
-const $=id=>document.getElementById(id);
-function log(msg){const el=$("log");if(el.querySelector(".empty"))el.textContent="";el.textContent+=(el.textContent?"\n":"")+msg;el.scrollTop=el.scrollHeight}
-function setStatus(text,on=false){$("status").textContent=text;$("dot").classList.toggle("on",on)}
-function setBusy(b){$("connect").disabled=b}
 async function shell(command){
-  if(!adb)throw new Error("Chưa kết nối thiết bị");
-  const result=await adb.subprocess.spawnAndWait(command);
-  const stdout=(result.stdout||"").trim();
-  const stderr=(result.stderr||"").trim();
-  const exitCode=result.exitCode;
-  if(stderr) log("stderr: "+stderr);
-  if(exitCode!==0 && !stdout && !stderr) log("exitCode: "+exitCode);
-  return stdout || stderr || "";
+  if(!adb) throw new Error("Chưa kết nối thiết bị");
+  const r=await adb.subprocess.spawnAndWait(command);
+  const out=safeText(r.stdout), err=safeText(r.stderr);
+  if(err) log("stderr: "+err);
+  if(r.exitCode!==0 && !out && !err) log("exitCode: "+r.exitCode);
+  return out||err||"";
 }
 async function run(command){
-  command=command.trim();if(!command)return;
-  try{log("$ adb shell "+command);const out=await shell(command);log(out||"(không có output)");return out}
-  catch(e){log("✕ LỖI: "+(e?.message||e));throw e}
+  log("$ adb shell "+command);
+  try{
+    const out=await shell(command);
+    log(out||"(không có output)");
+    return out;
+  }catch(e){log("✕ LỖI: "+(e?.message||e));throw e}
 }
-function fmt(n){if(!n)return "0 B";const u=["B","KB","MB","GB"];let i=0,x=n;while(x>=1024&&i<u.length-1){x/=1024;i++}return x.toFixed(i?1:0)+" "+u[i]}
-function progress(p,msg){$("progress").classList.add("show");$("bar").style.width=Math.max(0,Math.min(100,p))+"%";$("progpct").textContent=Math.round(p)+"%";$("progmsg").textContent=msg}
-const APPLESEED_VOLTE_URL="https://raw.githubusercontent.com/Totrungtv/AppleSeed-IMS/main/apps/AppleSeed_VoLTE.apk";
-const APPLESEED_VOLTE_PACKAGE="vn.appleseed.volte";
+async function uiAction(title,fn){
+  try{
+    log("\n▶ "+title);
+    await fn();
+    log("✓ "+title+" hoàn tất.");
+  }catch(e){
+    const msg=e?.message||String(e);
+    log("✕ "+title+": "+msg);
+    if(/connection|closed|network|usb|transport|authentication/i.test(msg)) showFixAdb(msg);
+  }
+}
+
+async function connectDevice(){
+  if(!navigator.usb) throw new Error("Trình duyệt không hỗ trợ WebUSB. Dùng Chrome hoặc Edge.");
+  setBusy(true);
+  try{
+    log("→ Nạp thư viện WebADB…");
+    await loadAdbLibraries();
+    if(!AdbDaemonWebUsbDeviceManager?.BROWSER) throw new Error("WebUSB không khả dụng trong trình duyệt này.");
+    const manager=AdbDaemonWebUsbDeviceManager.BROWSER;
+    log("→ Chọn thiết bị USB có ADB…");
+    const d=await manager.requestDevice();
+    if(!d){log("Đã hủy chọn thiết bị.");return}
+    device=d;
+    log("→ Mở kênh ADB: "+(d.name||"Android")+" / "+(d.serial||"unknown"));
+    const connection=await d.connect();
+    const store=new AdbWebCredentialStore("AppleSeed");
+    const transport=await AdbDaemonTransport.authenticate({
+      serial:d.serial,
+      connection,
+      credentialStore:store,
+      preserveConnection:false
+    });
+    adb=new Adb(transport);
+    setStatus("Đã kết nối",true);
+    log("✓ WebADB sẵn sàng.");
+    const brand=safeText(await shell("getprop ro.product.brand"));
+    const model=safeText(await shell("getprop ro.product.model"));
+    const android=safeText(await shell("getprop ro.build.version.release"));
+    const serial=safeText(d.serial)||safeText(await shell("getprop ro.serialno"));
+    $("brand").textContent=brand||"—";
+    $("model").textContent=model||"—";
+    $("android").textContent=android||"—";
+    $("serial").textContent=serial||"—";
+    $("install").disabled=false;
+    $("appleSeedOpen").disabled=false;
+    $("volteVerify").disabled=false;
+    log("✓ Thiết bị sẵn sàng: "+brand+" "+model+" · Android "+android+" · "+serial);
+  }catch(e){
+    adb=null;device=null;setStatus("Lỗi kết nối",false);
+    showFixAdb(e?.message||String(e));
+    throw e;
+  }finally{setBusy(false)}
+}
+
+async function disconnectDevice(){
+  try{
+    if(adb){try{await adb.close()}catch{}}
+    if(device?.raw?.opened){try{await device.raw.close()}catch{}}
+  }finally{
+    adb=null;device=null;selectedFile=null;
+    $("install").disabled=true;
+    $("appleSeedOpen").disabled=true;
+    $("volteVerify").disabled=true;
+    setStatus("Chưa kết nối",false);
+    $("brand").textContent=$("model").textContent=$("android").textContent=$("serial").textContent="—";
+    log("✓ Đã ngắt kết nối.");
+  }
+}
+
+async function downloadApk(url,name){
+  try{
+    const r=await fetch(url,{cache:"no-store",redirect:"follow"});
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    const b=await r.blob();
+    if(!b.size) throw new Error("APK rỗng");
+    return new File([b],name,{type:"application/vnd.android.package-archive"});
+  }catch(e){
+    log("⚠ Không tải APK tự động được: "+(e?.message||e));
+    window.open(url,"_blank","noopener");
+    throw new Error("Trình duyệt chặn tải APK. Hãy tải APK ở tab GitHub rồi chọn file tại 'Cài APK — One Click'.");
+  }
+}
+
+async function installViaPush(file){
+  const path="/data/local/tmp/.appleseed-"+Date.now()+".apk";
+  log("→ Fallback ADB Push: "+path);
+  const sync=await adb.sync();
+  try{
+    await sync.write({filename:path,file:file.stream()});
+    log("✓ Push APK hoàn tất.");
+    log("→ Chạy package manager…");
+    const out=await shell("pm install -r -g -d "+path);
+    if(!/success/i.test(out)) throw new Error(out||"pm install không trả Success");
+    log("✓ pm install: Success");
+  }finally{
+    try{await shell("rm -f "+path)}catch{}
+  }
+}
+
+async function installApk(file){
+  if(!adb) throw new Error("Chưa kết nối thiết bị");
+  progress(5,"Chuẩn bị cài "+file.name);
+  log("📦 Cài APK: "+file.name+" ("+fmt(file.size)+")");
+  try{
+    progress(25,"Streaming install…");
+    const pm=new PackageManager(adb);
+    await pm.installStream(file.size,file.stream(),{
+      bypassLowTargetSdkBlock:true,
+      skipVerification:true,
+      grantRuntimePermissions:true
+    });
+    progress(100,"Cài đặt thành công");
+    log("✓ CÀI APK THÀNH CÔNG (stream)");
+  }catch(e){
+    log("⚠ Streaming install thất bại: "+(e?.message||e));
+    log("→ Chuyển sang ADB Push + pm install.");
+    progress(35,"ADB Push fallback…");
+    await installViaPush(file);
+    progress(100,"Cài đặt thành công");
+    log("✓ CÀI APK THÀNH CÔNG (fallback)");
+  }
+}
+
+async function installSelected(){
+  if(!selectedFile) throw new Error("Chưa chọn APK");
+  await installApk(selectedFile);
+}
 
 async function installAppleSeedVolte(){
   if(!adb) throw new Error("Chưa kết nối thiết bị.");
@@ -160,36 +295,32 @@ async function installAppleSeedVolte(){
   const file=await downloadApk(APPLESEED_VOLTE_URL,"AppleSeed_VoLTE.apk");
   log("→ APK Apple Seed: "+fmt(file.size));
   await installApk(file);
-  const pkgs=await shell("pm list packages "+APPLESEED_VOLTE_PACKAGE);
-  if(!pkgs.includes(APPLESEED_VOLTE_PACKAGE)) throw new Error("Không thấy package "+APPLESEED_VOLTE_PACKAGE+" sau khi cài.");
-  $("appleSeedOpen").disabled=false;
-  $("volteVerify").disabled=false;
+  const p=await shell("pm list packages "+APPLESEED_VOLTE_PACKAGE);
+  if(!p.includes(APPLESEED_VOLTE_PACKAGE)) throw new Error("Cài xong nhưng không tìm thấy "+APPLESEED_VOLTE_PACKAGE);
+  $("appleSeedOpen").disabled=false;$("volteVerify").disabled=false;
   log("✓ APP APPLE SEED ĐÃ CÀI: "+APPLESEED_VOLTE_PACKAGE);
 }
 
 async function openVolteSettings(){
   if(!adb) throw new Error("Chưa kết nối thiết bị.");
-  log("→ Mở màn hình cài đặt VoLTE / mạng di động…");
-  const intents=[
-    "android.settings.NETWORK_OPERATOR_SETTINGS",
-    "android.settings.MOBILE_NETWORK_SETTINGS",
-    "android.settings.WIRELESS_SETTINGS"
-  ];
-  let opened=false;
-  for(const action of intents){
-    try{
-      const out=await shell("am start -a "+action);
-      log("✓ Intent: "+action+(out?"\n"+out:""));
-      opened=true; break;
-    }catch(e){log("  ↪ "+action+" không mở được: "+(e?.message||e))}
+  const brand=safeText(await shell("getprop ro.product.brand")).toLowerCase();
+  const actions=brand==="samsung"
+    ? ["android.settings.NETWORK_OPERATOR_SETTINGS","android.settings.MOBILE_NETWORK_SETTINGS","android.settings.WIRELESS_SETTINGS"]
+    : ["android.settings.MOBILE_NETWORK_SETTINGS","android.settings.NETWORK_OPERATOR_SETTINGS","android.settings.WIRELESS_SETTINGS"];
+  for(const a of actions){
+    const out=await shell("am start -a "+a);
+    if(!/Error|Exception|does not exist|No activity/i.test(out)){
+      log("✓ Đã mở: "+a);
+      return;
+    }
   }
-  if(!opened) throw new Error("Firmware không nhận các Intent cài đặt mạng chuẩn.");
+  throw new Error("Không mở được màn hình mạng trên firmware này.");
 }
 
 async function openAppleSeedVolte(){
   if(!adb) throw new Error("Chưa kết nối thiết bị.");
   const p=await shell("pm list packages "+APPLESEED_VOLTE_PACKAGE);
-  if(!p.includes(APPLESEED_VOLTE_PACKAGE)) throw new Error("Chưa cài Apple Seed VoLTE.");
+  if(!p.includes(APPLESEED_VOLTE_PACKAGE)) throw new Error("Chưa cài "+APPLESEED_VOLTE_PACKAGE);
   await shell("monkey -p "+APPLESEED_VOLTE_PACKAGE+" -c android.intent.category.LAUNCHER 1");
   log("✓ Đã mở Apple Seed VoLTE.");
 }
@@ -197,19 +328,22 @@ async function openAppleSeedVolte(){
 async function verifyVolte(){
   if(!adb) throw new Error("Chưa kết nối thiết bị.");
   log("===== APPLE SEED · IMS VERIFY =====");
-  const cmds=[
-    ["VoLTE setting","settings get global volte_vt_enabled"],
+  const items=[
+    ["VoLTE flag","settings get global volte_vt_enabled"],
     ["Enhanced 4G","settings get global enhanced_4g_mode_enabled"],
-    ["IMS service","dumpsys ims"],
-    ["Telephony","dumpsys telephony.registry"]
+    ["IMS service","dumpsys ims 2>&1"],
+    ["Telephony","dumpsys telephony.registry 2>&1"]
   ];
-  for(const [name,cmd] of cmds){
+  let registered=false;
+  for(const [name,cmd] of items){
     try{
       const out=await shell(cmd);
-      const lines=(out||"").split(/\r?\n/).filter(x=>/(registered|unregistered|registration|volte|ims|mmtel|enhanced_4g|volte_vt)/i.test(x)).slice(0,80);
+      const lines=out.split(/\r?\n/).filter(x=>/(registered|unregistered|registration|volte|ims|mmtel|enhanced_4g)/i.test(x)).slice(0,100);
+      if(/\bregistered\b/i.test(out)&&!/unregistered/i.test(out)) registered=true;
       log(name+":\n"+(lines.join("\n")||out||"(không có dữ liệu)"));
     }catch(e){log("✕ "+name+": "+(e?.message||e))}
   }
+  log(registered?"🟢 PHÁT HIỆN IMS REGISTERED":"🟡 CHƯA XÁC NHẬN IMS REGISTERED");
   log("===== VERIFY KẾT THÚC =====");
 }
 
@@ -218,22 +352,25 @@ async function scanVolte(){
   log("===== VOLTE / IMS REAL SCAN =====");
   const cmds=[
     ["Device","getprop ro.product.brand; getprop ro.product.model; getprop ro.build.version.release; getprop ro.boot.sales_code; getprop gsm.version.baseband"],
-    ["SIM","getprop gsm.sim.operator.numeric; getprop gsm.sim.operator.alpha; getprop gsm.operator.numeric; getprop gsm.operator.alpha"],
+    ["SIM","getprop gsm.sim.state; getprop gsm.sim.operator.numeric; getprop gsm.sim.operator.alpha; getprop gsm.operator.numeric; getprop gsm.operator.alpha"],
     ["Global","settings list global"],
     ["System","settings list system"],
     ["Secure","settings list secure"],
-    ["IMS","dumpsys ims"]
+    ["Services","service list"],
+    ["IMS","dumpsys ims 2>&1"],
+    ["Telephony","dumpsys telephony.registry 2>&1"],
+    ["CarrierConfig","dumpsys carrier_config 2>&1"]
   ];
   for(const [name,cmd] of cmds){
     try{
       const out=await shell(cmd);
-      if(name==="Global"||name==="System"||name==="Secure"){
+      if(["Global","System","Secure"].includes(name)){
         const hits=out.split(/\r?\n/).filter(x=>/(volte|ims|vt_ims|wfc|enhanced_4g)/i.test(x));
         log(name+" VoLTE/IMS keys:\n"+(hits.join("\n")||"(không thấy key VoLTE/IMS)"));
-      }else{
-        const lines=name==="IMS"?out.split(/\r?\n/).filter(x=>/(registration|registered|unregistered|volte|ims|mmtel)/i.test(x)).slice(0,80):out.split(/\r?\n/).slice(0,40);
-        log(name+":\n"+(lines.join("\n")||"(trống)"));
-      }
+      }else if(["IMS","Telephony","CarrierConfig","Services"].includes(name)){
+        const hits=out.split(/\r?\n/).filter(x=>/(ims|volte|mmtel|registration|registered|carrier_volte|enhanced_4g|wfc)/i.test(x)).slice(0,120);
+        log(name+":\n"+(hits.join("\n")||"(không có dòng liên quan)"));
+      }else log(name+":\n"+out.split(/\r?\n/).slice(0,60).join("\n"));
     }catch(e){log("✕ "+name+": "+(e?.message||e))}
   }
   log("===== SCAN KẾT THÚC =====");
@@ -241,25 +378,65 @@ async function scanVolte(){
 
 async function fixVolte(){
   if(!adb) throw new Error("Chưa kết nối thiết bị");
-  log("===== APPLE SEED · MỞ + KIỂM TRA VOLTE =====");
-  await openVolteSettings();
-  log("✓ Đã mở cài đặt mạng. Bật 'VoLTE / Enhanced 4G LTE' trên điện thoại nếu mục này có.");
-  log("→ Sau khi bật, bấm 'Kiểm tra IMS' để xác nhận đăng ký thật.");
+  log("===== APPLE SEED · FIX VOLTE =====");
+  const before=[];
+  for(const [n,c] of [
+    ["VoLTE trước","settings get global volte_vt_enabled"],
+    ["Enhanced 4G trước","settings get global enhanced_4g_mode_enabled"]
+  ]){try{before.push([n,await shell(c)])}catch{}}
+  log("→ Bật các cờ VoLTE Android phổ biến…");
+  const commands=[
+    "settings put global volte_vt_enabled 1",
+    "settings put global enhanced_4g_mode_enabled 1"
+  ];
+  for(const c of commands){
+    try{const out=await shell(c);log("$ "+c+"\n"+(out||"OK"))}
+    catch(e){log("⚠ "+c+" → "+(e?.message||e))}
+  }
+  log("→ Gửi yêu cầu refresh carrier configuration…");
+  for(const c of [
+    "am broadcast -a android.telephony.action.CARRIER_CONFIG_CHANGED",
+    "cmd phone ims reset 2>/dev/null || true"
+  ]){try{await shell(c)}catch{}}
+  log("→ Kiểm tra lại VoLTE + IMS…");
+  await verifyVolte();
+  log("===== FIX VOLTE KẾT THÚC =====");
 }
 
-$("volteScan").onclick=()=>scanVolte().catch(e=>log("✕ VOLTE SCAN: "+(e?.message||e)));
-$("volteFix").onclick=()=>fixVolte().catch(e=>log("✕ VOLTE: "+(e?.message||e)));
-$("volteOpen").onclick=()=>uiAction("MỞ CÀI ĐẶT VoLTE",openVolteSettings);
-$("appleSeedInstall").onclick=()=>uiAction("CÀI APP APPLE SEED VOLTE",async()=>{
-  $("appleSeedInstall").disabled=true;
-  try{await installAppleSeedVolte();}
-  finally{$("appleSeedInstall").disabled=false}
-});
-$("appleSeedOpen").onclick=()=>uiAction("MỞ APP APPLE SEED VOLTE",openAppleSeedVolte);
-$("volteVerify").onclick=()=>uiAction("KIỂM TRA IMS",verifyVolte);
-
-$("launch").onclick=async()=>{const p=$("pkg").value.trim();if(!p)return;try{await run("monkey -p "+p+" -c android.intent.category.LAUNCHER 1")}catch{}};
-$("uninstall").onclick=async()=>{const p=$("pkg").value.trim();if(!p)return;if(!confirm("Gỡ ứng dụng "+p+" khỏi thiết bị?"))return;try{await run("pm uninstall "+p)}catch{}};
+function bind(){
+  $("connect").onclick=()=>uiAction("KẾT NỐI THIẾT BỊ",connectDevice);
+  $("disconnect").onclick=()=>uiAction("NGẮT KẾT NỐI",disconnectDevice);
+  $("apk").onchange=()=>{
+    selectedFile=$("apk").files?.[0]||null;
+    $("filename").textContent=selectedFile?.name||"Chọn file APK";
+    $("filesize").textContent=selectedFile?fmt(selectedFile.size):"APK sẽ được cài trực tiếp vào thiết bị đã kết nối";
+    $("install").disabled=!selectedFile||!adb;
+  };
+  $("install").onclick=()=>uiAction("CÀI APK",installSelected);
+  document.querySelectorAll(".tool[data-cmd]").forEach(b=>b.onclick=()=>uiAction(b.querySelector("b")?.textContent||"ADB",()=>run(b.dataset.cmd)));
+  $("run").onclick=()=>uiAction("ADB SHELL",()=>run($("cmd").value.trim()));
+  $("volteScan").onclick=()=>uiAction("QUÉT VOLTE / IMS",scanVolte);
+  $("volteFix").onclick=()=>uiAction("FIX VOLTE",fixVolte);
+  $("volteOpen").onclick=()=>uiAction("MỞ CÀI ĐẶT VOLTE",openVolteSettings);
+  $("appleSeedInstall").onclick=()=>uiAction("CÀI APP APPLE SEED VOLTE",async()=>{
+    $("appleSeedInstall").disabled=true;try{await installAppleSeedVolte()}finally{$("appleSeedInstall").disabled=false}
+  });
+  $("appleSeedOpen").onclick=()=>uiAction("MỞ APP APPLE SEED VOLTE",openAppleSeedVolte);
+  $("volteVerify").onclick=()=>uiAction("KIỂM TRA IMS",verifyVolte);
+  $("launch").onclick=()=>uiAction("MỞ APP",async()=>{
+    const p=$("pkg").value.trim();if(!p)throw new Error("Nhập package name");
+    await run("monkey -p "+p+" -c android.intent.category.LAUNCHER 1");
+  });
+  $("uninstall").onclick=()=>uiAction("GỠ APP",async()=>{
+    const p=$("pkg").value.trim();if(!p)throw new Error("Nhập package name");
+    if(!confirm("Gỡ "+p+" khỏi thiết bị?"))return;
+    await run("pm uninstall "+p);
+  });
+}
+const APPLESEED_VOLTE_URL="https://raw.githubusercontent.com/Totrungtv/AppleSeed-IMS/main/apps/AppleSeed_VoLTE.apk";
+const APPLESEED_VOLTE_PACKAGE="vn.appleseed.volte";
+bind();
+log("✓ Apple Seed WebADB đã nạp đầy đủ chức năng. Bấm Kết nối thiết bị để bắt đầu.");
 </script>
 <div id="fixOverlay" class="fix-overlay" role="dialog" aria-modal="true" aria-labelledby="fixTitle">
 <div class="fix-modal"><div class="fix-head"><div class="fix-icon">!</div><div style="flex:1"><h3 id="fixTitle">Lỗi kết nối thiết bị</h3><div id="fixError" class="fix-error">Connection closed unexpectedly</div>
