@@ -137,6 +137,17 @@
     <div id="progress" class="progress"><div class="bar"><i id="bar"></i></div><div class="progtext"><span id="progmsg">Đang chuẩn bị…</span><span id="progpct">0%</span></div></div>
   </div>
 
+  <div class="install" id="bankPanel">
+    <h3>🏦 Kiểm tra & FIX ứng dụng ngân hàng</h3>
+    <p class="sub">Khôi phục môi trường Android sạch cho app ngân hàng: kiểm tra package, Google services, ngày giờ, Developer/ADB, Verified Boot, Accessibility và app gây overlay. <b>Không bypass cơ chế bảo mật của ngân hàng.</b></p>
+    <div class="appactions">
+      <input id="bankPkg" class="appinput" placeholder="Package app ngân hàng (vd: com.vcb)" spellcheck="false">
+      <button id="bankCheck" class="btn primary">🔍 Kiểm tra ngân hàng</button>
+      <button id="bankFix" class="btn danger">🔧 FIX ngân hàng</button>
+    </div>
+    <div id="bankStatus" class="appnote">Nhập package app ngân hàng để kiểm tra chính xác.</div>
+  </div>
+
   <div class="install" id="adwarePanel">
     <h3>🧹 Quét & xử lý ứng dụng quảng cáo</h3>
     <p class="sub">Quét ứng dụng bên thứ ba có dấu hiệu dùng cửa sổ nổi, Accessibility hoặc tự chạy cùng hệ thống. Tool <b>không tự xóa</b>; pa chọn app rồi mới gỡ.</p>
@@ -486,6 +497,105 @@ async function installSelected(){
   await installApk(selectedFile);
 }
 
+async function checkBankApp(){
+  if(!adb) throw new Error("Chưa kết nối thiết bị");
+  const pkg=$("bankPkg").value.trim();
+  if(!/^[A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)+$/.test(pkg)) throw new Error("Package ngân hàng không hợp lệ.");
+
+  const status=$("bankStatus");
+  const lines=["===== APPLE SEED · BANK CHECK ====="];
+  const runCheck=async(label,cmd)=>{
+    try{
+      const out=await shell(cmd);
+      lines.push("\n["+label+"]\n"+(out||"(không có dữ liệu)"));
+      return out||"";
+    }catch(e){
+      lines.push("\n["+label+"]\n✕ "+(e?.message||e));
+      return "";
+    }
+  };
+
+  const path=await runCheck("PACKAGE","pm path "+pkg);
+  if(!path.trim()){
+    status.textContent="❌ Không tìm thấy app: "+pkg;
+    log(lines.join("\n"));
+    return;
+  }
+
+  const enabled=await runCheck("ENABLED","pm list packages -e "+pkg);
+  const gms=await runCheck("GOOGLE PLAY SERVICES","pm list packages com.google.android.gms");
+  const vending=await runCheck("GOOGLE PLAY STORE","pm list packages com.android.vending");
+  const gsf=await runCheck("GOOGLE SERVICES FRAMEWORK","pm list packages com.google.android.gsf");
+  const dev=await runCheck("DEVELOPER / ADB","settings get global development_settings_enabled; settings get global adb_enabled");
+  const time=await runCheck("DATE / TIME","settings get global auto_time; settings get global auto_time_zone; date");
+  const boot=await runCheck("VERIFIED BOOT","getprop ro.boot.verifiedbootstate; getprop ro.boot.flash.locked; getprop ro.boot.vbmeta.device_state");
+  const acc=await runCheck("ACCESSIBILITY","settings get secure enabled_accessibility_services");
+  const net=await runCheck("NETWORK","getprop gsm.network.type; getprop gsm.operator.alpha; getprop gsm.sim.state");
+  const overlay=await runCheck("BANK APP OPS","cmd appops get "+pkg+" SYSTEM_ALERT_WINDOW 2>&1");
+  const dbg=await runCheck("PACKAGE DETAILS","dumpsys package "+pkg+" 2>&1 | grep -iE 'versionName|versionCode|enabled=|debuggable|installerPackageName|signing|stopped=' | head -n 80");
+
+  const enabledOk=enabled.includes(pkg);
+  const issues=[];
+  if(!enabledOk) issues.push("App đang bị disable hoặc không nằm trong danh sách enabled.");
+  if(!gms.includes("com.google.android.gms")) issues.push("Thiếu Google Play Services.");
+  if(!vending.includes("com.android.vending")) issues.push("Thiếu Google Play Store.");
+  if(!/\b1\b/.test(time.split(/\r?\n/)[0]||"")) issues.push("Automatic Date & Time đang tắt.");
+  if(/\b1\b/.test(dev)) issues.push("Developer options/ADB đang bật; một số app ngân hàng có thể phản ứng với môi trường debug.");
+  if(/(orange|red|unlocked|unknown)/i.test(boot)) issues.push("Verified Boot/bootloader báo trạng thái cần kiểm tra.");
+  if(/SYSTEM_ALERT_WINDOW.*allow/i.test(overlay)) issues.push("App ngân hàng đang được cấp overlay; cần kiểm tra xem app có thực sự cần hay không.");
+
+  status.textContent=issues.length
+    ? "⚠ Có "+issues.length+" mục cần kiểm tra. Xem Nhật ký hoạt động."
+    : "✅ Không thấy lỗi môi trường cơ bản qua ADB. Xem Nhật ký để biết chi tiết.";
+  log(lines.join("\n"));
+  if(issues.length) issues.forEach(x=>log("⚠ "+x));
+  else log("🟢 BANK CHECK: không thấy vấn đề cơ bản.");
+}
+
+async function fixBankEnvironment(){
+  if(!adb) throw new Error("Chưa kết nối thiết bị");
+  const pkg=$("bankPkg").value.trim();
+  if(!/^[A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)+$/.test(pkg)) throw new Error("Package ngân hàng không hợp lệ.");
+  const p=await shell("pm path "+pkg);
+  if(!p.trim()) throw new Error("Không tìm thấy app ngân hàng: "+pkg);
+
+  if(!confirm("FIX ngân hàng sẽ chỉ khôi phục các thiết lập môi trường an toàn, không bypass bảo mật/Play Integrity.\n\n• Force-stop app ngân hàng\n• Bật tự động ngày giờ\n• Dọn trạng thái overlay của app nghi ngờ cao\n\nTiếp tục?")) return;
+
+  log("===== APPLE SEED · FIX NGÂN HÀNG =====");
+  try{
+    await shell("am force-stop "+pkg);
+    log("✓ Force-stop: "+pkg);
+  }catch(e){log("⚠ Force-stop: "+(e?.message||e));}
+
+  for(const cmd of ["settings put global auto_time 1","settings put global auto_time_zone 1"]){
+    try{await shell(cmd);log("✓ "+cmd);}catch(e){log("⚠ "+cmd+": "+(e?.message||e));}
+  }
+
+  try{
+    const result=await collectAdwareCandidates();
+    const high=result.found.filter(x=>x.highConfidence && x.pkg!==pkg);
+    if(high.length){
+      log("→ Phát hiện "+high.length+" app có dấu hiệu mạnh về overlay/accessibility.");
+      for(const item of high){
+        try{
+          await shell("am force-stop "+item.pkg);
+          log("✓ Đã dừng app nghi ngờ: "+item.pkg);
+        }catch(e){log("⚠ Không dừng được "+item.pkg+": "+(e?.message||e));}
+        try{
+          const out=await shell("cmd appops set "+item.pkg+" SYSTEM_ALERT_WINDOW deny");
+          log("✓ Đã chặn overlay cho "+item.pkg+": "+(out||"OK"));
+        }catch(e){log("⚠ Không chặn overlay "+item.pkg+": "+(e?.message||e));}
+      }
+    }else{
+      log("✓ Không có app nghi ngờ cao cần chặn overlay.");
+    }
+  }catch(e){log("⚠ Bỏ qua bước rà app can thiệp: "+(e?.message||e));}
+
+  log("→ Kiểm tra lại môi trường ngân hàng…");
+  await checkBankApp();
+  log("===== FIX NGÂN HÀNG KẾT THÚC =====");
+}
+
 let adwareCandidates=[];
 function parseAdwareEvidence(info,pkg,activeAccessibility,activeNotif,deviceAdmin){
   const text=String(info||"");
@@ -787,6 +897,8 @@ function bind(){
     $("install").disabled=!selectedFile||!adb;
   };
   $("install").onclick=()=>uiAction("CÀI APK",installSelected);
+  $("bankCheck").onclick=()=>uiAction("KIỂM TRA NGÂN HÀNG",checkBankApp);
+  $("bankFix").onclick=()=>uiAction("FIX NGÂN HÀNG",fixBankEnvironment);
   $("adwareScan").onclick=()=>uiAction("QUÉT APP QUẢNG CÁO",scanAdware);
   $("adwareClean").onclick=()=>uiAction("DỌN QUẢNG CÁO 1-CLICK",cleanAdwareOneClick);
   $("adwareRemove").onclick=()=>uiAction("GỠ APP QUẢNG CÁO",removeSelectedAdware);
