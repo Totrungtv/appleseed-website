@@ -164,9 +164,9 @@ async function installViaPush(file){
     try{await sync.dispose()}catch{}
   }
   log("→ Chạy package manager trực tiếp…");
-  const out=await shell("pm install -r -g -d --bypass-low-target-sdk-block --skip-verification \\\""+path+"\\\"");
+  const out=await shell("pm install -r -g -d --bypass-low-target-sdk-block --skip-verification "+path);
   log("pm install: "+(out||"(không có output)"));
-  try{await shell("rm -f \\\""+path+"\\\"")}catch{}
+  try{await shell("rm -f "+path)}catch{}
   if(!/success/i.test(out||"")) throw new Error(out||"pm install không trả về Success");
 }
 async function installApk(file){
