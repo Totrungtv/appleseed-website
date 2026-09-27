@@ -2280,6 +2280,22 @@ html,body{background:var(--apple-seed-page-bg)!important;color:var(--apple-seed-
     a.onclick=e=>{e.preventDefault();document.getElementById('video-sua-chua')?.scrollIntoView({behavior:'smooth',block:'start'});};
     if(memberAuth)menu.insertBefore(a,memberAuth); else menu.appendChild(a);
   }
+  function ensureAndroidToolNav(){
+    const menu=document.querySelector('.menu');
+    if(!menu) return;
+    const existing=[...menu.querySelectorAll(':scope > a')].find(a=>{
+      const href=(a.getAttribute('href')||'').toLowerCase();
+      const label=(a.textContent||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+      return href.includes('huawei-tool.html') || label.includes('android tool');
+    });
+    const memberAuth=document.getElementById('memberAuthButtons');
+    const a=existing||document.createElement('a');
+    a.className='android-tool-nav';
+    a.href='huawei-tool.html';
+    a.innerHTML='<span class="mi">🛠</span><span>Android Tool</span>';
+    if(!existing) menu.insertBefore(a,memberAuth||null);
+  }
+
   function ensureBookingNav(){
     const menu=document.querySelector('.menu');
     if(!menu) return;
@@ -2311,6 +2327,7 @@ html,body{background:var(--apple-seed-page-bg)!important;color:var(--apple-seed-
   }
 
   function fixNavigation(){
+    ensureAndroidToolNav();
     ensureBookingNav();
     document.querySelectorAll('.menu a').forEach(a=>{      const label=(a.textContent||'').normalize('NFD')
         .replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
@@ -2455,12 +2472,13 @@ html,body{background:var(--apple-seed-page-bg)!important;color:var(--apple-seed-
       existingLinks.forEach((a,i)=>{
         if(!used.has(i) && !a.classList.contains('booking-nav') && !a.dataset.appleSeedVideoNav){
           const label=normalizeNavLabel(a.querySelector('span:last-child')?.textContent||a.textContent||'');
-          if(label && !['dich vu','san pham','giai tri','video','gioi thieu','lien he','dat lich'].includes(label)) a.remove();
+          if(label && !['dich vu','san pham','giai tri','video','gioi thieu','lien he','dat lich','android tool'].includes(label)) a.remove();
         }
       });
       if(memberAuth && memberAuth.parentElement!==menu) menu.appendChild(memberAuth);
     }
       // CMS có thể trả về danh sách nav thiếu Đặt lịch -> tự bổ sung lại.
+      ensureAndroidToolNav();
       ensureBookingNav();
       fixNavigation();if(s.error||!s.data?.length){staticFallback();bindProductCards();fixNavigation();return}let html='';let contactRendered=false;for(const sec of s.data){if(sec.section_type==='products'){html+=await productsHtml();continue}if(sec.section_type==='map'||sec.section_type==='contact'){if(contactRendered)continue;contactRendered=true;html+=sec.section_type==='contact'?contactHtml():renderSection(sec);continue}html+=renderSection(sec)}root.innerHTML=html+(contactRendered?'':contactHtml());
       fixNavigation();
