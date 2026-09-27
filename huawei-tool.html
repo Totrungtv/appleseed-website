@@ -489,12 +489,30 @@ async function pushScrcpyServer(){
   if(!match?.[1]) throw new Error("Không tìm thấy Scrcpy server nhúng trên Pages. Có thể deployment chưa hoàn tất.");
   const data=base64ToBytes(match[1]);
   if(!data.length) throw new Error("Scrcpy server nhúng rỗng.");
+
+  $("screenStatus").textContent="⏳ Đang truyền Scrcpy server vào điện thoại…";
+  log("→ Scrcpy server: "+data.length.toLocaleString()+" bytes");
+
   const sync=await adb.sync();
   try{
-    await sync.write({filename:SCRCPY_SERVER_PATH,file:new Blob([data]).stream()});
+    const readable=new ReadableStream({
+      start(controller){
+        controller.enqueue(data);
+        controller.close();
+      }
+    });
+    await sync.write({
+      path:SCRCPY_SERVER_PATH,
+      readable
+    });
   }finally{
     try{await sync.dispose()}catch{}
   }
+
+  try{
+    const stat=await shell("ls -l "+SCRCPY_SERVER_PATH);
+    log("✓ Scrcpy server đã nằm trên máy: "+stat);
+  }catch{}
 }
 
 function screenPoint(ev){
@@ -572,7 +590,7 @@ async function startDeviceScreen(){
 
   const S=window.AppleSeedScrcpy;
   if(!S.WebCodecsVideoDecoder?.isSupported) throw new Error("Chrome/Edge hiện tại không hỗ trợ WebCodecs.");
-  $("screenStatus").textContent="⏳ Đang tải Scrcpy server và khởi động video mirror…";
+  $("screenStatus").textContent="⏳ Đang chuẩn bị Scrcpy mirror…";
   await pushScrcpyServer();
   log("→ Scrcpy server v4.1 đã được push lên thiết bị.");
 
