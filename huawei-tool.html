@@ -119,6 +119,11 @@ async function run(command){
 }
 function fmt(n){if(!n)return "0 B";const u=["B","KB","MB","GB"];let i=0,x=n;while(x>=1024&&i<u.length-1){x/=1024;i++}return x.toFixed(i?1:0)+" "+u[i]}
 function progress(p,msg){$("progress").classList.add("show");$("bar").style.width=Math.max(0,Math.min(100,p))+"%";$("progpct").textContent=Math.round(p)+"%";$("progmsg").textContent=msg}
+const IMS_ENGINE_URL="https://github.com/svenuks/ImsForPixel/releases/download/v1.0.0/ImsForPixel-v1.0.0.apk";
+const IMS_PACKAGE="com.svenuks.imsforpixel";
+const IMS_INSTR=IMS_PACKAGE+"/com.svenuks.imsforpixel.BrokerInstrumentation";
+let imsInstalled=false;
+
 async function installApk(file){
   if(!adb)throw new Error("Hãy kết nối thiết bị trước.");
   if(!file)throw new Error("Chưa chọn APK.");
@@ -126,7 +131,7 @@ async function installApk(file){
   try{
     $("install").disabled=true;progress(2,"Đang truyền APK…");log("📦 Cài APK: "+file.name+" ("+fmt(file.size)+")");
     const pm=new PackageManager(adb);
-    await pm.installStream(file.size,file.stream());
+    await pm.installStream(file.size,file.stream(),{bypassLowTargetSdkBlock:true});
     progress(100,"Cài đặt hoàn tất");
     log("✓ CÀI APK THÀNH CÔNG: "+file.name);
   }catch(e){
@@ -155,6 +160,59 @@ $("connect").onclick=async()=>{
 $("disconnect").onclick=async()=>{try{await adb?.close()}catch{}adb=null;device=null;$("brand").textContent=$("model").textContent=$("android").textContent=$("serial").textContent="—";setStatus("Chưa kết nối");$("install").disabled=true;log("Đã ngắt kết nối.")};
 $("apk").onchange=e=>{selectedFile=e.target.files?.[0]||null;if(selectedFile){$("filename").textContent=selectedFile.name;$("filesize").textContent=fmt(selectedFile.size);$("install").disabled=!adb}else{$("filename").textContent="Chọn file APK";$("filesize").textContent="APK sẽ được cài trực tiếp vào thiết bị đã kết nối";$("install").disabled=true}};
 $("install").onclick=()=>installApk(selectedFile);
+
+async function installImsEngine(){
+  if(!adb) throw new Error("Chưa kết nối thiết bị.");
+  log("===== APPLE SEED IMS ENGINE =====");
+  log("→ Tải engine IMS mã nguồn mở...");
+  const res=await fetch(IMS_ENGINE_URL,{cache:"no-store"});
+  if(!res.ok) throw new Error("Không tải được IMS Engine: HTTP "+res.status);
+  const blob=await res.blob();
+  const file=new File([blob],"ImsForPixel-v1.0.0.apk",{type:"application/vnd.android.package-archive"});
+  log("→ APK engine: "+fmt(file.size));
+  const pm=new PackageManager(adb);
+  try{
+    await pm.installStream(file.size,file.stream(),{bypassLowTargetSdkBlock:true,skipExisting:true});
+  }catch(e){
+    log("⚠ Cài skipExisting thất bại, thử cài lại: "+(e?.message||e));
+    await pm.installStream(file.size,file.stream(),{bypassLowTargetSdkBlock:true});
+  }
+  const pkgs=await shell("pm list packages "+IMS_PACKAGE);
+  if(!pkgs.includes(IMS_PACKAGE)) throw new Error("APK đã truyền nhưng package chưa xuất hiện: "+pkgs);
+  imsInstalled=true;
+  $("imsActivate").disabled=false;$("imsRestore").disabled=false;
+  log("✓ IMS ENGINE ĐÃ CÀI: "+IMS_PACKAGE);
+  log("→ Kiểm tra instrumentation...");
+  const inst=await shell("pm list instrumentation");
+  log(inst.split(/\r?\n/).filter(x=>x.includes(IMS_PACKAGE)).join("\n")||"(không tìm thấy instrumentation)");
+}
+
+async function runIms(clear=false){
+  if(!adb) throw new Error("Chưa kết nối thiết bị.");
+  if(!imsInstalled){
+    await installImsEngine();
+  }
+  const arg=clear?" -e clear true":"";
+  log("===== "+(clear?"RESTORE IMS":"ACTIVATE VOLTE")+" =====");
+  log("$ adb shell am instrument -w"+arg+" "+IMS_INSTR);
+  const out=await shell("am instrument -w"+arg+" "+IMS_INSTR);
+  log(out||"(instrumentation không trả output)");
+  await new Promise(r=>setTimeout(r,1000));
+  try{
+    const ims=await shell("dumpsys ims");
+    const lines=ims.split(/\r?\n/).filter(x=>/(registered|unregistered|registration|mmtel)/i.test(x)).slice(0,100);
+    log("IMS RESULT:\n"+(lines.join("\n")||"(không có trạng thái IMS)"));
+  }catch(e){log("IMS đọc trạng thái lỗi: "+(e?.message||e))}
+  try{
+    const reg=await shell("dumpsys telephony.registry");
+    const lines=reg.split(/\r?\n/).filter(x=>/(ims|volte|mmtel|serviceState)/i.test(x)).slice(0,80);
+    log("TELEPHONY:\n"+(lines.join("\n")||"(không có dòng phù hợp)"));
+  }catch(e){log("Telephony verify lỗi: "+(e?.message||e))}
+  log("===== KẾT THÚC =====");
+}
+$("imsInstall").onclick=()=>installImsEngine().catch(e=>log("✕ IMS ENGINE: "+(e?.message||e)));
+$("imsActivate").onclick=()=>runIms(false).catch(e=>log("✕ ACTIVATE IMS: "+(e?.message||e)));
+$("imsRestore").onclick=()=>runIms(true).catch(e=>log("✕ RESTORE IMS: "+(e?.message||e)));
 
 async function scanVolte(){
   if(!adb) throw new Error("Chưa kết nối thiết bị");
