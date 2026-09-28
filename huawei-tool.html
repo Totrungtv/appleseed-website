@@ -97,7 +97,7 @@
   <div class="loghead">
     <div>
       <h3>📱 Màn hình điện thoại · Mirror + Chuột</h3>
-      <div class="sub">Scrcpy + WebCodecs: hình ảnh theo luồng video, click/kéo chuột để điều khiển trực tiếp.</div>
+      <div class="sub">Mirror ADB tương thích cao: hình ảnh trực tiếp + click/kéo chuột và bàn phím để điều khiển.</div>
     </div>
     <div class="actions">
       <button id="screenStart" class="btn primary" disabled>▶ Bắt đầu Mirror</button>
@@ -659,8 +659,8 @@ async function startScreenshotMirror(){
     }
     if(lastUrl)URL.revokeObjectURL(lastUrl);
   };
-  screenStatus="🟢 Mirror ADB tương thích · click/kéo chuột và bàn phím hoạt động.";
-  $("screenStatus").textContent=screenStatus;
+  const screenStatusText="🟢 Mirror ADB tương thích · click/kéo chuột và bàn phím hoạt động.";
+  $("screenStatus").textContent=screenStatusText;
   screenshotMirrorStop=()=>{stopped=true};
   screenshotMirrorTask=loop();
   log("✓ Mirror fallback ADB/screencap đang chạy.");
@@ -672,53 +672,11 @@ async function startDeviceScreen(){
   if(!adb)throw new Error("Chưa kết nối thiết bị");
   if(screenRunning)return;
 
-  // Thử Scrcpy/WebCodecs trước.
-  try{
-    if(!window.AppleSeedScrcpy?.AdbScrcpyClient) await loadAdbLibraries();
-    const S=window.AppleSeedScrcpy;
-    if(!S.WebCodecsVideoDecoder?.isSupported) throw new Error("WebCodecs không khả dụng");
-    $("screenStatus").textContent="⏳ Đang chuẩn bị Scrcpy mirror…";
-    await pushScrcpyServer();
-    log("→ Scrcpy server v2.5 đã được push lên thiết bị.");
-
-    const options=new S.AdbScrcpyOptions2_5({
-      video:true,audio:false,control:true,maxSize:1280,maxFps:60,
-      bitRate:8000000,sendFrameMeta:true,tunnelForward:true
-    });
-    scrcpyClient=await S.AdbScrcpyClient.start(adb,SCRCPY_SERVER_PATH,options);
-    const video=await scrcpyClient.videoStream;
-    if(!video)throw new Error("Scrcpy không trả video stream.");
-
-    $("deviceImage").style.display="none";
-    scrcpyCanvas=$("deviceCanvas");
-    const renderer=new S.AutoCanvasRenderer({
-      createCanvas:()=>scrcpyCanvas,
-      canvasSize:"display"
-    });
-    scrcpyDecoder=new S.WebCodecsVideoDecoder({
-      codec:video.metadata.codec,renderer,
-      hardwareAcceleration:"prefer-hardware",optimizeForLatency:true
-    });
-    scrcpyPipe=video.stream.pipeTo(scrcpyDecoder.writable).catch(e=>{
-      if(screenRunning)log("✕ Scrcpy video: "+(e?.message||e));
-    });
-
-    screenRunning=true;
-    $("screenWrap").classList.add("is-live");
-    screenButtonState(true,true);
-    $("screenStatus").textContent="🟢 Mirror Scrcpy · click/kéo chuột và bàn phím để điều khiển.";
-    log("✓ Mirror Scrcpy + WebCodecs đang chạy.");
-    return;
-  }catch(e){
-    log("⚠ Scrcpy/WebCodecs không khởi động được: "+(e?.message||e));
-    try{await scrcpyClient?.close()}catch{}
-    scrcpyClient=null;scrcpyDecoder=null;scrcpyPipe=null;scrcpyCanvas=null;
-    screenRunning=false;
-  }
-
-  // Không để nút Mirror chết: tự động chuyển sang screencap.
+  // Dùng chế độ ADB screencap ổn định làm đường chính.
+  // Không phụ thuộc Scrcpy server/CDN nên tránh CORS/404 và chạy được trên nhiều firmware.
   await startScreenshotMirror();
 }
+
 
 async function stopDeviceScreen(){
   if(!screenRunning&&!scrcpyClient&&!screenshotMirrorTask)return;
