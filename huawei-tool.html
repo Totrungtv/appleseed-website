@@ -505,7 +505,7 @@ async function readScreenshotPng(){
     try{await adb.subprocess.noneProtocol.spawnWaitText("rm -f "+remote)}catch{}
   }
 }
-const SCRCPY_SERVER_B64_URL=new URL("assets/apple-seed-scrcpy-v2.5.b64.js?v=20260928-1",window.location.href).href;
+const SCRCPY_SERVER_B64_URL="https://raw.githubusercontent.com/404Wolf/Browser-Phone/64d661627c926445951f9f92bbf93bd9831a0b28/src/backend/src/android/scrcpy-server-v2.5.jar";
 const SCRCPY_SERVER_PATH="/data/local/tmp/scrcpy-server.jar";
 
 function screenButtonState(connected,running){
@@ -529,6 +529,7 @@ async function pushScrcpyServer(){
   if(!match?.[1]) throw new Error("Không tìm thấy Scrcpy server trên Pages.");
   const data=base64ToBytes(match[1]);
   if(!data.length) throw new Error("Scrcpy server rỗng.");
+  if(data.length<60000) throw new Error("Scrcpy server không hợp lệ: chỉ "+data.length+" bytes.");
 
   $("screenStatus").textContent="⏳ Đang truyền Scrcpy server vào điện thoại…";
   log("→ Scrcpy server: "+data.length.toLocaleString()+" bytes");
