@@ -469,19 +469,38 @@ async function readBinaryProcess(command){
 /* Android shell stdout can corrupt raw PNG bytes on some WebADB/firmware
    combinations. Mirror therefore transports the PNG as base64 text. */
 async function readScreenshotPng(){
-  // spawnWaitText is the text-safe ADB path; use it for base64 so the
-  // screenshot never passes through the binary/text stream conversion.
-  const text=String(await adb.subprocess.noneProtocol.spawnWaitText("screencap -p | base64"))
-    .replace(/\s+/g,"");
-  if(!text) throw new Error("screencap/base64 trả về dữ liệu rỗng");
+  // Reliable fallback: capture to a remote file, then read it through ADB Sync.
+  // This avoids stdout/text conversion entirely.
+  const remote="/sdcard/.appleseed-screen.png";
+  const sync=await adb.sync();
   try{
-    const bytes=base64ToBytes(text);
+    const result=await adb.subprocess.noneProtocol.spawnWaitText(
+      "screencap -p "+remote+" && ls -l "+remote
+    );
+    if(!result) throw new Error("Không tạo được file screenshot");
+    const stream=sync.read(remote);
+    const reader=stream.getReader();
+    const chunks=[];
+    let total=0;
+    try{
+      while(true){
+        const {done,value}=await reader.read();
+        if(done) break;
+        if(value && value.length){chunks.push(value);total+=value.length;}
+      }
+    }finally{
+      try{reader.releaseLock()}catch{}
+    }
+    if(!total) throw new Error("ADB Sync đọc screenshot rỗng");
+    const bytes=new Uint8Array(total);
+    let offset=0;
+    for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.length}
     if(bytes.length<8||bytes[0]!==0x89||bytes[1]!==0x50||bytes[2]!==0x4e||bytes[3]!==0x47){
-      throw new Error("PNG signature không hợp lệ (bytes="+bytes.length+")");
+      throw new Error("Screenshot không phải PNG hợp lệ ("+bytes.length+" bytes)");
     }
     return bytes;
-  }catch(e){
-    throw new Error("Không giải mã được ảnh màn hình: "+(e?.message||e));
+  }finally{
+    try{await adb.subprocess.noneProtocol.spawnWaitText("rm -f "+remote)}catch{}
   }
 }
 const SCRCPY_SERVER_B64_URL=new URL("assets/apple-seed-scrcpy-v2.5.b64.js?v=20260928-1",window.location.href).href;
