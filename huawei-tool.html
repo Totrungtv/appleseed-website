@@ -112,7 +112,11 @@
       <div class="fix-box">
         <strong>Apple Seed cần các thành phần sau</strong>
         <ol id="mirrorSetupList"><li>Chrome/Edge HTTPS + WebUSB</li><li>WebCodecs / VideoDecoder</li><li>WebGL tăng tốc phần cứng</li></ol>
-        <button id="mirrorSetupRetry" class="fix-download" type="button">🔄 Kiểm tra lại & chạy Mirror</button>
+        <div class="fix-download" style="display:flex;gap:8px;flex-wrap:wrap">
+          <a href="https://www.google.com/chrome/" target="_blank" rel="noopener">⬇️ Cài Chrome</a>
+          <a href="https://www.microsoft.com/edge/download" target="_blank" rel="noopener">⬇️ Cài Edge</a>
+          <button id="mirrorSetupRetry" type="button">🔄 Kiểm tra lại</button>
+        </div>
         <button id="mirrorSetupClose" class="fix-close" type="button">Đóng</button>
         <p class="fix-note">Nếu thiếu thành phần trình duyệt, hộp thoại sẽ chỉ rõ thành phần cần bổ sung; không cài phần mềm âm thầm vào Windows.</p>
       </div>
@@ -346,7 +350,7 @@ async function loadAdbLibraries(){
       AdbScrcpyOptions2_5=scrcpyM.AdbScrcpyOptions2_1;
       WebCodecsVideoDecoder=decoderM.WebCodecsVideoDecoder;
       WebGLWebCodecsDecoderRenderer=decoderM.WebGLVideoFrameRenderer;
-      BitmapWebCodecsDecoderRenderer=decoderM.BitmapVideoFrameRenderer;
+      BitmapWebCodecsDecoderRenderer=decoderM.BitmapFrameRenderer;
       return true;
     }).catch(e=>{libsPromise=null;throw e});
   }
@@ -386,7 +390,10 @@ async function mirrorStart(){
     if(!window.isSecureContext) checks.push("Trang chưa chạy HTTPS");
     if(!navigator.usb) checks.push("Trình duyệt không hỗ trợ WebUSB");
     if(typeof VideoDecoder==="undefined") checks.push("Chrome/Edge thiếu WebCodecs (VideoDecoder)");
-    if(!WebGLWebCodecsDecoderRenderer?.isSupported && !BitmapWebCodecsDecoderRenderer?.isSupported) checks.push("Không có renderer video WebCodecs");
+    const webglOk=!!WebGLWebCodecsDecoderRenderer?.isSupported;
+    let bitmapOk=false;
+    try{ const t=document.createElement("canvas"); bitmapOk=!!t.getContext("bitmaprenderer"); }catch{}
+    if(!webglOk && !bitmapOk) checks.push("Không có renderer video WebCodecs");
     if(checks.length){
       const err=$("mirrorSetupError"), list=$("mirrorSetupList");
       if(err) err.textContent="Thiếu thành phần: "+checks.join(" · ");
@@ -424,8 +431,10 @@ async function mirrorStart(){
     let renderer;
     if(WebGLWebCodecsDecoderRenderer?.isSupported){
       renderer=new WebGLWebCodecsDecoderRenderer(canvas);
-    }else{
+    }else if(BitmapWebCodecsDecoderRenderer){
       renderer=new BitmapWebCodecsDecoderRenderer(canvas);
+    }else{
+      throw new Error("Trình duyệt không có renderer WebGL/Bitmap.");
     }
     scrcpyDecoder=new WebCodecsVideoDecoder({codec:metadata.codec,renderer});
     scrcpyPipe=stream.pipeTo(scrcpyDecoder.writable).catch(e=>{
