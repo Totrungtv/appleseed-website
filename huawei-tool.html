@@ -113,7 +113,7 @@
   <div id="screenStatus" class="appnote">Kết nối thiết bị rồi bấm <b>▶ Bắt đầu Mirror</b>.</div>
   <div class="screen-wrap" id="screenWrap" tabindex="0">
     <div class="screen-placeholder" id="screenPlaceholder">📱<br><span>Màn hình video sẽ hiện ở đây</span></div>
-    <canvas id="deviceCanvas" aria-label="Màn hình Android"></canvas>
+    <canvas id="deviceCanvas" aria-label="Màn hình Android"></canvas><img id="deviceImage" alt="Màn hình Android" draggable="false">
   </div>
 </section>
 
@@ -518,10 +518,10 @@ async function pushScrcpyServer(){
 }
 
 function screenPoint(ev){
-  const canvas=$("deviceCanvas");
-  const rect=canvas.getBoundingClientRect();
-  const w=(scrcpyClient?.videoStream && scrcpyDecoder?.width)||canvas.width;
-  const h=(scrcpyClient?.videoStream && scrcpyDecoder?.height)||canvas.height;
+  const el=$("deviceCanvas").style.display!=="none" ? $("deviceCanvas") : $("deviceImage");
+  const rect=el.getBoundingClientRect();
+  const w=el.naturalWidth||el.width||scrcpyDecoder?.width||0;
+  const h=el.naturalHeight||el.height||scrcpyDecoder?.height||0;
   if(!rect.width||!rect.height||!w||!h)return null;
   return {
     x:Math.max(0,Math.min(w,Math.round((ev.clientX-rect.left)*w/rect.width))),
@@ -529,48 +529,83 @@ function screenPoint(ev){
     w,h
   };
 }
-let screenPointerId=1,screenPointerDown=false;
+let screenPointerId=1,screenPointerDown=false,screenPointerStart=null;
+
 async function sendTouch(action,ev){
   const controller=scrcpyClient?.controller;
   const p=screenPoint(ev);
-  if(!controller||!p)return;
-  const map=window.AppleSeedScrcpy?.AndroidMotionEventAction||{Down:0,Up:1,Move:2};
-  await controller.injectTouch({
-    action:action,
-    pointerId:BigInt(screenPointerId),
-    pointerX:p.x,
-    pointerY:p.y,
-    videoWidth:p.w,
-    videoHeight:p.h,
-    pressure:action===map.Up?0:1,
-    actionButton:0,
-    buttons:action===map.Up?0:1
-  });
+  if(!p)return;
+
+  // Ưu tiên điều khiển Scrcpy thật nếu backend video hoạt động.
+  if(controller){
+    const map=window.AppleSeedScrcpy?.AndroidMotionEventAction||{Down:0,Up:1,Move:2};
+    await controller.injectTouch({
+      action,
+      pointerId:BigInt(screenPointerId),
+      pointerX:p.x,
+      pointerY:p.y,
+      videoWidth:p.w,
+      videoHeight:p.h,
+      pressure:action===map.Up?0:1,
+      actionButton:0,
+      buttons:action===map.Up?0:1
+    });
+    return;
+  }
+
+  // Fallback: mirror bằng screencap + điều khiển ADB input.
+  const map=window.AppleSeedScreenActions||{Down:0,Up:1,Move:2};
+  if(action===map.Down){
+    screenPointerStart=p;
+    return;
+  }
+  if(action===map.Up && screenPointerStart){
+    const dx=p.x-screenPointerStart.x, dy=p.y-screenPointerStart.y;
+    const distance=Math.hypot(dx,dy);
+    if(distance<18){
+      await shell("input tap "+p.x+" "+p.y);
+    }else{
+      await shell("input swipe "+screenPointerStart.x+" "+screenPointerStart.y+" "+p.x+" "+p.y+" 250");
+    }
+    screenPointerStart=null;
+  }
 }
+
 function screenPointerDownHandler(ev){
   if(!screenRunning)return;
   ev.preventDefault();
   $("screenWrap").focus();
   screenPointerDown=true;
-  sendTouch(window.AppleSeedScrcpy.AndroidMotionEventAction.Down,ev).catch(e=>log("⚠ Touch Down: "+(e?.message||e)));
+  const action=window.AppleSeedScrcpy?.AndroidMotionEventAction?.Down ?? 0;
+  sendTouch(action,ev).catch(e=>log("⚠ Touch Down: "+(e?.message||e)));
 }
 function screenPointerMoveHandler(ev){
   if(!screenRunning||!screenPointerDown)return;
   ev.preventDefault();
-  sendTouch(window.AppleSeedScrcpy.AndroidMotionEventAction.Move,ev).catch(e=>log("⚠ Touch Move: "+(e?.message||e)));
+  // Scrcpy nhận Move realtime; fallback chỉ cần Down/Up để tránh spam ADB.
+  if(scrcpyClient?.controller){
+    const action=window.AppleSeedScrcpy?.AndroidMotionEventAction?.Move ?? 2;
+    sendTouch(action,ev).catch(e=>log("⚠ Touch Move: "+(e?.message||e)));
+  }
 }
 function screenPointerUpHandler(ev){
   if(!screenRunning||!screenPointerDown)return;
   ev.preventDefault();
   screenPointerDown=false;
-  sendTouch(window.AppleSeedScrcpy.AndroidMotionEventAction.Up,ev).catch(e=>log("⚠ Touch Up: "+(e?.message||e)));
+  const action=window.AppleSeedScrcpy?.AndroidMotionEventAction?.Up ?? 1;
+  sendTouch(action,ev).catch(e=>log("⚠ Touch Up: "+(e?.message||e)));
 }
+
 async function injectKeyCode(code){
   const controller=scrcpyClient?.controller;
-  if(!controller)return;
-  await controller.injectKeyCode({action:0,keyCode:code,repeat:0,metaState:0});
-  await controller.injectKeyCode({action:1,keyCode:code,repeat:0,metaState:0});
+  if(controller){
+    await controller.injectKeyCode({action:0,keyCode:code,repeat:0,metaState:0});
+    await controller.injectKeyCode({action:1,keyCode:code,repeat:0,metaState:0});
+    return;
+  }
+  await shell("input keyevent "+code);
 }
+
 function screenKeydown(ev){
   if(!screenRunning)return;
   if(ev.ctrlKey||ev.altKey||ev.metaKey)return;
@@ -582,66 +617,125 @@ function screenKeydown(ev){
   }
   if(ev.key && ev.key.length===1){
     ev.preventDefault();
-    scrcpyClient?.controller?.injectText(ev.key).catch(e=>log("⚠ Text: "+(e?.message||e)));
+    if(scrcpyClient?.controller){
+      scrcpyClient.controller.injectText(ev.key).catch(e=>log("⚠ Text: "+(e?.message||e)));
+    }else{
+      const escaped=ev.key.replace(/[%s\\]/g,m=>m==="%"?"%25":m==="s"?"%s":"\\\\");
+      shell("input text '"+escaped.replace(/'/g,"\\'")+"'").catch(e=>log("⚠ Text: "+(e?.message||e)));
+    }
   }
 }
-async function startDeviceScreen(){
+
+async function startScreenshotMirror(){
   if(!adb)throw new Error("Chưa kết nối thiết bị");
-  if(screenRunning)return;
-  if(!window.AppleSeedScrcpy?.AdbScrcpyClient) await loadAdbLibraries();
-
-  const S=window.AppleSeedScrcpy;
-  if(!S.WebCodecsVideoDecoder?.isSupported) throw new Error("Chrome/Edge hiện tại không hỗ trợ WebCodecs.");
-  $("screenStatus").textContent="⏳ Đang chuẩn bị Scrcpy mirror…";
-  await pushScrcpyServer();
-  log("→ Scrcpy server v2.5 đã được push lên thiết bị.");
-
-  const options=new S.AdbScrcpyOptions2_5({
-    video:true,
-    audio:false,
-    control:true,
-    maxSize:1280,
-    maxFps:60,
-    bitRate:8000000,
-    sendFrameMeta:true,
-    tunnelForward:true
-  });
-  scrcpyClient=await S.AdbScrcpyClient.start(adb,SCRCPY_SERVER_PATH,options);
-  log("✓ Scrcpy client đã kết nối.");
-
-  const video=await scrcpyClient.videoStream;
-  if(!video)throw new Error("Scrcpy không trả video stream.");
-  scrcpyCanvas=$("deviceCanvas");
-  const renderer=new S.AutoCanvasRenderer({
-    createCanvas:()=>scrcpyCanvas,
-    canvasSize:"display"
-  });
-  scrcpyDecoder=new S.WebCodecsVideoDecoder({
-    codec:video.metadata.codec,
-    renderer,
-    hardwareAcceleration:"prefer-hardware",
-    optimizeForLatency:true
-  });
-  scrcpyPipe=video.stream.pipeTo(scrcpyDecoder.writable).catch(e=>{
-    if(screenRunning)log("✕ Scrcpy video: "+(e?.message||e));
-  });
+  $("screenStatus").textContent="⏳ Đang bật Mirror tương thích ADB…";
+  const img=$("deviceImage");
+  const canvas=$("deviceCanvas");
+  canvas.style.display="none";
+  img.style.display="block";
 
   screenRunning=true;
   $("screenWrap").classList.add("is-live");
   screenButtonState(true,true);
-  $("screenStatus").textContent="🟢 Mirror trực tiếp · click/kéo chuột và bàn phím để điều khiển.";
-  log("✓ Mirror Scrcpy + WebCodecs đang chạy.");
+
+  let stopped=false;
+  let lastUrl="";
+  const loop=async()=>{
+    while(screenRunning && !stopped){
+      try{
+        const bytes=await readBinaryProcess("screencap -p");
+        if(!bytes.length)throw new Error("screencap trả về dữ liệu rỗng");
+        const blob=new Blob([bytes],{type:"image/png"});
+        const url=URL.createObjectURL(blob);
+        const old=lastUrl;
+        lastUrl=url;
+        img.onload=()=>{if(old)URL.revokeObjectURL(old)};
+        img.src=url;
+      }catch(e){
+        if(screenRunning)log("⚠ Screenshot mirror: "+(e?.message||e));
+        break;
+      }
+      await new Promise(r=>setTimeout(r,180));
+    }
+    if(lastUrl)URL.revokeObjectURL(lastUrl);
+  };
+  screenStatus="🟢 Mirror ADB tương thích · click/kéo chuột và bàn phím hoạt động.";
+  $("screenStatus").textContent=screenStatus;
+  screenshotMirrorStop=()=>{stopped=true};
+  screenshotMirrorTask=loop();
+  log("✓ Mirror fallback ADB/screencap đang chạy.");
 }
+
+let screenshotMirrorTask=null,screenshotMirrorStop=null;
+
+async function startDeviceScreen(){
+  if(!adb)throw new Error("Chưa kết nối thiết bị");
+  if(screenRunning)return;
+
+  // Thử Scrcpy/WebCodecs trước.
+  try{
+    if(!window.AppleSeedScrcpy?.AdbScrcpyClient) await loadAdbLibraries();
+    const S=window.AppleSeedScrcpy;
+    if(!S.WebCodecsVideoDecoder?.isSupported) throw new Error("WebCodecs không khả dụng");
+    $("screenStatus").textContent="⏳ Đang chuẩn bị Scrcpy mirror…";
+    await pushScrcpyServer();
+    log("→ Scrcpy server v2.5 đã được push lên thiết bị.");
+
+    const options=new S.AdbScrcpyOptions2_5({
+      video:true,audio:false,control:true,maxSize:1280,maxFps:60,
+      bitRate:8000000,sendFrameMeta:true,tunnelForward:true
+    });
+    scrcpyClient=await S.AdbScrcpyClient.start(adb,SCRCPY_SERVER_PATH,options);
+    const video=await scrcpyClient.videoStream;
+    if(!video)throw new Error("Scrcpy không trả video stream.");
+
+    $("deviceImage").style.display="none";
+    scrcpyCanvas=$("deviceCanvas");
+    const renderer=new S.AutoCanvasRenderer({
+      createCanvas:()=>scrcpyCanvas,
+      canvasSize:"display"
+    });
+    scrcpyDecoder=new S.WebCodecsVideoDecoder({
+      codec:video.metadata.codec,renderer,
+      hardwareAcceleration:"prefer-hardware",optimizeForLatency:true
+    });
+    scrcpyPipe=video.stream.pipeTo(scrcpyDecoder.writable).catch(e=>{
+      if(screenRunning)log("✕ Scrcpy video: "+(e?.message||e));
+    });
+
+    screenRunning=true;
+    $("screenWrap").classList.add("is-live");
+    screenButtonState(true,true);
+    $("screenStatus").textContent="🟢 Mirror Scrcpy · click/kéo chuột và bàn phím để điều khiển.";
+    log("✓ Mirror Scrcpy + WebCodecs đang chạy.");
+    return;
+  }catch(e){
+    log("⚠ Scrcpy/WebCodecs không khởi động được: "+(e?.message||e));
+    try{await scrcpyClient?.close()}catch{}
+    scrcpyClient=null;scrcpyDecoder=null;scrcpyPipe=null;scrcpyCanvas=null;
+    screenRunning=false;
+  }
+
+  // Không để nút Mirror chết: tự động chuyển sang screencap.
+  await startScreenshotMirror();
+}
+
 async function stopDeviceScreen(){
-  if(!screenRunning&&!scrcpyClient)return;
+  if(!screenRunning&&!scrcpyClient&&!screenshotMirrorTask)return;
   screenRunning=false;
   $("screenStatus").textContent="⏳ Đang dừng mirror…";
+  try{if(screenshotMirrorStop)screenshotMirrorStop()}catch{}
+  try{await screenshotMirrorTask}catch{}
+  screenshotMirrorTask=null;screenshotMirrorStop=null;
   try{await scrcpyClient?.close()}catch(e){log("⚠ Dừng Scrcpy: "+(e?.message||e));}
   try{await scrcpyPipe}catch{}
   try{scrcpyDecoder?.dispose()}catch{}
   scrcpyClient=null;scrcpyDecoder=null;scrcpyPipe=null;scrcpyCanvas=null;
   $("screenWrap").classList.remove("is-live");
   $("deviceCanvas").width=1;$("deviceCanvas").height=1;
+  $("deviceCanvas").style.display="none";
+  $("deviceImage").style.display="none";
+  $("deviceImage").removeAttribute("src");
   screenButtonState(!!adb,false);
   $("screenStatus").textContent=adb?"Đã dừng mirror.":"Kết nối thiết bị rồi bấm Bắt đầu Mirror.";
   log("✓ Đã dừng mirror.");
