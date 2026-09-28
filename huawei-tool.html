@@ -116,6 +116,18 @@
     <button class="tool" data-cmd="df -h /data"><span class="ico">💾</span><b>Bộ nhớ</b><span>/data storage</span></button>
     <button class="tool" data-cmd="getprop ro.boot.verifiedbootstate"><span class="ico">🛡️</span><b>Verified Boot</b><span>Boot state</span></button>
     <button class="tool" id="recoveryBtn"><span class="ico">🛠️</span><b>Vào Recovery</b><span>Reboot Recovery</span></button>
+    <button class="tool" data-cmd="getprop ro.serialno"><span class="ico">🔢</span><b>Serial</b><span>ADB serial</span></button>
+    <button class="tool" data-cmd="getprop ro.boot.serialno"><span class="ico">🆔</span><b>Boot Serial</b><span>Boot serial</span></button>
+    <button class="tool" data-cmd="getprop ro.product.cpu.abi"><span class="ico">🧠</span><b>CPU ABI</b><span>Architecture</span></button>
+    <button class="tool" data-cmd="getprop ro.hardware"><span class="ico">⚙️</span><b>Hardware</b><span>SoC / HAL</span></button>
+    <button class="tool" data-cmd="getprop sys.usb.config; getprop sys.usb.state; getprop persist.sys.usb.config"><span class="ico">🔌</span><b>USB ADB</b><span>USB config / state</span></button>
+    <button class="tool" data-cmd="settings get global adb_enabled"><span class="ico">🐞</span><b>ADB Debug</b><span>USB debugging flag</span></button>
+    <button class="tool" data-cmd="dumpsys usb 2>&1 | grep -iE 'currentFunctions|mConnected|mUsbDataUnlocked|UsbPortStatus|adb' | head -n 80"><span class="ico">🔍</span><b>USB Diagnostics</b><span>USB / ADB state</span></button>
+    <button class="tool" data-cmd="getprop ro.boot.flash.locked; getprop ro.boot.vbmeta.device_state; getprop ro.boot.verifiedbootstate"><span class="ico">🔐</span><b>Bootloader State</b><span>Lock / Verified Boot</span></button>
+    <button class="tool" data-cmd="wm size; wm density"><span class="ico">🖥️</span><b>Màn hình</b><span>Resolution / density</span></button>
+    <button class="tool" data-cmd="dumpsys battery 2>&1 | grep -E 'AC powered|USB powered|Wireless powered|status:|level:|voltage:|temperature:'"><span class="ico">🔋</span><b>Pin</b><span>Battery status</span></button>
+    <button class="tool" data-cmd="getprop gsm.sim.state; getprop gsm.operator.alpha; getprop gsm.operator.numeric"><span class="ico">📡</span><b>SIM / Nhà mạng</b><span>SIM state / carrier</span></button>
+    <button class="tool" data-cmd="uptime"><span class="ico">⏱️</span><b>Uptime</b><span>Thời gian hoạt động</span></button>
   </div>
 
   <div class="install">
