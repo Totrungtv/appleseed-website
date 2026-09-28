@@ -28,6 +28,16 @@
 .global-progress{position:fixed;top:0;left:0;right:0;z-index:10001;display:none;padding:8px 18px 9px;background:rgba(3,12,8,.97);border-bottom:1px solid #24583d;box-shadow:0 8px 30px rgba(0,0,0,.35)}.global-progress.show{display:block}.global-progress-head{max-width:1240px;margin:auto;display:flex;justify-content:space-between;gap:12px;font-size:11px;color:#d9f8e7}.global-progress-track{max-width:1240px;margin:5px auto 0;height:5px;background:#06110a;border-radius:99px;overflow:hidden}.global-progress-track i{display:block;width:8%;height:100%;background:linear-gradient(90deg,#18c972,#72f2ae);box-shadow:0 0 12px rgba(32,220,125,.45);transition:width .25s}.global-progress.indeterminate .global-progress-track i{width:35%;animation:loadslide 1.05s ease-in-out infinite}@keyframes loadslide{0%{margin-left:-35%}50%{margin-left:100%}100%{margin-left:-35%}}
 .fix-overlay{position:fixed;inset:0;background:rgba(0,0,0,.66);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:18px;z-index:9999}
 .fix-overlay.show{display:flex}.fix-modal{width:min(520px,100%);background:#fff7f7;color:#2b1719;border:1px solid #ff9ca5;border-radius:18px;box-shadow:0 24px 80px rgba(0,0,0,.45);padding:18px}.fix-head{display:flex;gap:10px;align-items:flex-start}.fix-icon{width:34px;height:34px;border-radius:50%;background:#ffe0e3;color:#e11d2e;display:grid;place-items:center;font-weight:900;flex:none}.fix-modal h3{margin:0;font-size:16px;color:#a80f1d}.fix-error{margin:10px 0;padding:10px 12px;background:#fff;border:1px solid #ffc6ca;border-radius:10px;font:12px ui-monospace,monospace;color:#a12630}.fix-box{border:1px solid #ffc0c5;border-radius:12px;padding:12px;background:#fff}.fix-box strong{display:block;font-size:12px;margin-bottom:7px}.fix-box ol{margin:0 0 10px 18px;padding:0;font-size:11px;line-height:1.65}.fix-download{width:100%;border:0;border-radius:10px;padding:12px;background:#ed101d;color:white;font-weight:900;cursor:pointer}.fix-close{margin-top:10px;width:100%;border:0;border-radius:10px;padding:10px;background:#f2dfe1;color:#74131b;font-weight:800;cursor:pointer}.fix-note{margin:9px 0 0;font-size:10px;color:#78575b}
+</style><style>
+/* Apple Seed lightweight ADB mirror - no Scrcpy server */
+.screen-panel{margin-top:12px}.mirror-box{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:14px;background:#050908;border:1px solid #1c3929;border-radius:14px;padding:12px}
+.mirror-stage{min-height:480px;display:grid;place-items:center;background:#000;border:1px solid #173223;border-radius:10px;overflow:hidden;position:relative}
+#mirrorImage{display:block;max-width:100%;max-height:72vh;width:auto;height:auto;object-fit:contain;user-select:none;-webkit-user-drag:none;cursor:crosshair}
+.mirror-empty{position:absolute;inset:0;display:grid;place-items:center;color:#789587;text-align:center;padding:30px}
+.mirror-side{display:flex;flex-direction:column;gap:8px}.mirror-side button{border:1px solid #28533b;background:#0a1711;color:#effaf4;border-radius:9px;padding:10px;font-weight:800}
+.mirror-side button:hover{background:#10251a}.mirror-side .mirror-main{background:#20dc7d;color:#03150b;border-color:#20dc7d}
+.mirror-status{font-size:11px;color:#789587;padding:8px 2px;line-height:1.5}.mirror-status b{color:#b8d7c5}
+@media(max-width:800px){.mirror-box{grid-template-columns:1fr}.mirror-stage{min-height:360px}.mirror-side{display:grid;grid-template-columns:1fr 1fr}}
 </style></head>
 <body>
 <div id="globalProgress" class="global-progress" aria-live="polite"><div class="global-progress-head"><b id="globalProgressTitle">Đang xử lý…</b><span id="globalProgressText">0%</span></div><div class="global-progress-track"><i id="globalProgressBar"></i></div></div>
@@ -94,6 +104,24 @@
 </section>
 
 
+<section class="panel screen-panel" id="screenPanel">
+  <div class="guide-head"><div><h3>📱 Màn hình điện thoại · ADB Mirror</h3><p class="sub">Mirror nhẹ bằng ADB, không cần Scrcpy server. Ảnh màn hình tự cập nhật và có thể bấm/kéo để điều khiển.</p></div></div>
+  <div class="mirror-box">
+    <div class="mirror-stage" id="mirrorStage">
+      <div class="mirror-empty" id="mirrorEmpty">Kết nối điện thoại trước<br><small>Màn hình sẽ xuất hiện tại đây</small></div>
+      <img id="mirrorImage" alt="Màn hình điện thoại" draggable="false" hidden>
+    </div>
+    <div class="mirror-side">
+      <button id="mirrorStart" class="mirror-main">▶ Bắt đầu Mirror</button>
+      <button id="mirrorStop">■ Dừng Mirror</button>
+      <button id="mirrorBack">← Back</button>
+      <button id="mirrorHome">⌂ Home</button>
+      <button id="mirrorRecent">▣ Recent</button>
+      <button id="mirrorPower">⏻ Power</button>
+      <div class="mirror-status" id="mirrorStatus">Đang chờ thiết bị.</div>
+    </div>
+  </div>
+</section>
 <section class="devicebar">
   <div class="stat"><small>Hãng</small><strong id="brand">—</strong></div>
   <div class="stat"><small>Model</small><strong id="model">—</strong></div>
@@ -276,7 +304,12 @@ function globalProgress(show,title="Đang xử lý…",pct=8,indeterminate=true)
 }
 function fmt(n){if(!n)return"0 B";const u=["B","KB","MB","GB"];let i=0,x=n;while(x>=1024&&i<u.length-1){x/=1024;i++}return x.toFixed(i?1:0)+" "+u[i]}
 function progress(p,msg){$("progress").classList.add("show");$("bar").style.width=Math.max(0,Math.min(100,p))+"%";$("progpct").textContent=Math.round(p)+"%";$("progmsg").textContent=msg}
-function safeText(v){return String(v??"").trim()}
+function safeText(v){
+  if(typeof v==="string") return v.trim();
+  if(v instanceof Uint8Array) return new TextDecoder().decode(v).trim();
+  if(v instanceof ArrayBuffer) return new TextDecoder().decode(new Uint8Array(v)).trim();
+  return String(v??"").trim();
+}
 
 async function loadAdbLibraries(){
   if(!libsPromise){
@@ -295,6 +328,89 @@ async function loadAdbLibraries(){
     }).catch(e=>{libsPromise=null;throw e});
   }
   return libsPromise;
+}
+
+
+// ===== Apple Seed lightweight ADB Mirror =====
+let mirrorTimer=null, mirrorBusy=false, mirrorDragging=false, mirrorDragStart=null;
+
+function setMirrorStatus(text){
+  const el=$("mirrorStatus"); if(el) el.innerHTML=text;
+}
+function mirrorStop(){
+  if(mirrorTimer){clearTimeout(mirrorTimer);mirrorTimer=null}
+  mirrorBusy=false; mirrorDragging=false; mirrorDragStart=null;
+  const img=$("mirrorImage"), empty=$("mirrorEmpty");
+  if(img){img.hidden=true;img.removeAttribute("src")}
+  if(empty) empty.style.display="grid";
+  setMirrorStatus("Mirror đã dừng.");
+}
+async function mirrorFrame(){
+  if(!adb || mirrorBusy) return;
+  mirrorBusy=true;
+  try{
+    const out=await shell("screencap -p | base64");
+    const b64=out.replace(/\s+/g,"");
+    if(!b64 || b64.length<100) throw new Error("ADB không trả ảnh màn hình.");
+    const img=$("mirrorImage"), empty=$("mirrorEmpty");
+    if(img){
+      img.src="data:image/png;base64,"+b64;
+      img.hidden=false;
+      if(empty) empty.style.display="none";
+    }
+    setMirrorStatus("<b>● Đang Mirror</b><br>Cập nhật liên tục qua ADB");
+  }catch(e){
+    setMirrorStatus("⚠ Mirror lỗi: "+(e?.message||e));
+  }finally{
+    mirrorBusy=false;
+    if(mirrorTimer) mirrorTimer=setTimeout(mirrorFrame,700);
+  }
+}
+function mirrorStart(){
+  if(!adb){setMirrorStatus("⚠ Chưa kết nối thiết bị.");return}
+  if(mirrorTimer) clearTimeout(mirrorTimer);
+  mirrorTimer=setTimeout(mirrorFrame,0);
+}
+async function mirrorKey(code){
+  if(!adb) throw new Error("Chưa kết nối thiết bị.");
+  await shell("input keyevent "+code);
+  setTimeout(mirrorFrame,120);
+}
+async function mirrorTap(x,y){
+  await shell("input tap "+Math.round(x)+" "+Math.round(y));
+  setTimeout(mirrorFrame,100);
+}
+function mirrorPoint(ev){
+  const img=$("mirrorImage");
+  if(!img || img.hidden || !img.naturalWidth) return null;
+  const r=img.getBoundingClientRect();
+  if(ev.clientX<r.left||ev.clientX>r.right||ev.clientY<r.top||ev.clientY>r.bottom)return null;
+  return {
+    x:(ev.clientX-r.left)*img.naturalWidth/r.width,
+    y:(ev.clientY-r.top)*img.naturalHeight/r.height
+  };
+}
+function bindMirror(){
+  $("mirrorStart").onclick=()=>mirrorStart();
+  $("mirrorStop").onclick=mirrorStop;
+  $("mirrorBack").onclick=()=>uiAction("MIRROR · BACK",()=>mirrorKey(4));
+  $("mirrorHome").onclick=()=>uiAction("MIRROR · HOME",()=>mirrorKey(3));
+  $("mirrorRecent").onclick=()=>uiAction("MIRROR · RECENT",()=>mirrorKey(187));
+  $("mirrorPower").onclick=()=>uiAction("MIRROR · POWER",()=>mirrorKey(26));
+  const img=$("mirrorImage");
+  img.addEventListener("pointerdown",e=>{
+    const p=mirrorPoint(e); if(!p)return;
+    mirrorDragging=true;mirrorDragStart=p;img.setPointerCapture?.(e.pointerId);
+  });
+  img.addEventListener("pointerup",async e=>{
+    if(!mirrorDragging)return;
+    mirrorDragging=false;
+    const p=mirrorPoint(e),s=mirrorDragStart; mirrorDragStart=null;
+    if(!p||!s)return;
+    const dist=Math.hypot(p.x-s.x,p.y-s.y);
+    if(dist<18) await uiAction("MIRROR · TAP",()=>mirrorTap(p.x,p.y));
+    else await uiAction("MIRROR · SWIPE",()=>shell("input swipe "+Math.round(s.x)+" "+Math.round(s.y)+" "+Math.round(p.x)+" "+Math.round(p.y)+" 300"));
+  });
 }
 
 async function shell(command){
@@ -397,6 +513,8 @@ async function connectDevice(){
     $("install").disabled=false;
     $("appleSeedOpen").disabled=false;
     $("volteVerify").disabled=false;
+    bindMirror();
+    mirrorStart();
     log("✓ THIẾT BỊ ĐÃ KẾT NỐI: "+brand+" "+model+" · Android "+android+" · "+serial);
   }catch(e){
     adb=null;device=null;setStatus("Lỗi kết nối",false);
@@ -452,6 +570,15 @@ async function installViaPush(file){
   }finally{
     try{await shell("rm -f "+path)}catch{}
   }
+}
+
+async function disconnectDevice(){
+  mirrorStop();
+  try{ if(adb?.close) await adb.close(); }catch(e){ log("⚠ Đóng ADB: "+(e?.message||e)); }
+  adb=null; device=null;
+  $("appleSeedOpen").disabled=true; $("volteVerify").disabled=true; $("install").disabled=true;
+  setStatus("Đã ngắt kết nối",false);
+  log("✓ Đã ngắt kết nối thiết bị.");
 }
 
 async function installApk(file){
@@ -870,6 +997,7 @@ async function fixVolte(){
 }
 
 function bind(){
+  bindMirror();
   $("connect").onclick=(event)=>{
     event.preventDefault();
     connectDevice().catch(e=>log("✕ Kết nối: "+(e?.message||e)));
