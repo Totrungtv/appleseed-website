@@ -32,8 +32,8 @@ jobs:
           curl -L --fail --retry 3 -o /tmp/platform-tools.zip https://dl.google.com/android/repository/platform-tools-latest-windows.zip
           test -s /tmp/platform-tools.zip
           unzip -q /tmp/platform-tools.zip -d /tmp/fix-adb
-          test -x /tmp/fix-adb/platform-tools/adb.exe
-          test -x /tmp/fix-adb/platform-tools/fastboot.exe
+          test -f /tmp/fix-adb/platform-tools/adb.exe
+          test -f /tmp/fix-adb/platform-tools/fastboot.exe
           cp tools/Fix-ADB/Fix-ADB.bat /tmp/fix-adb/Fix-ADB.bat
           (cd /tmp/fix-adb && zip -qr "$GITHUB_WORKSPACE/assets/Fix-ADB.zip" Fix-ADB.bat platform-tools)
           test -s assets/Fix-ADB.zip
