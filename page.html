@@ -69,6 +69,12 @@
  if(!window.supabaseClient){state.textContent="Không thể kết nối dữ liệu.";return;}
  const {data,error}=await window.supabaseClient.from("pages").select("title,description,content,is_active,slug").eq("slug",slug).eq("is_active",true).maybeSingle();
  if(error||!data){state.textContent="Không tìm thấy trang.";return;}
+ // Route tool entries to the standalone app instead of displaying saved HTML source as page content.
+ const toolIdentity=String((data.title||"")+" "+(data.slug||slug)).toLowerCase();
+ if(/huawei[\s_-]*tool|android[\s_-]*tool/.test(toolIdentity)){
+   location.replace("huawei-tool.html");
+   return;
+ }
  const pageUrl=location.origin+location.pathname+"?slug="+encodeURIComponent(data.slug||slug);
  const pageDescription=String(data.description||data.title||"Apple Seed Trà Vinh").replace(/\s+/g," ").trim().slice(0,300);
  document.title=data.title+" | Apple Seed";
