@@ -25,17 +25,18 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
-      - name: Prepare Scrcpy server asset
+      - name: Prepare Fix-ADB package with full Android SDK Platform-Tools
         run: |
           set -e
-          curl -L --fail --retry 3 -o /tmp/scrcpy-server-v2.5 https://github.com/Genymobile/scrcpy/releases/download/v2.5/scrcpy-server-v2.5
-          test -s /tmp/scrcpy-server-v2.5
-          mkdir -p assets
-          base64 -w0 /tmp/scrcpy-server-v2.5 > /tmp/scrcpy-server-v2.5.b64
-          printf 'window.APPLESEED_SCRCPY_SERVER_B64="' > assets/apple-seed-scrcpy-v2.5.b64.js
-          cat /tmp/scrcpy-server-v2.5.b64 >> assets/apple-seed-scrcpy-v2.5.b64.js
-          printf '";\nwindow.APPLESEED_SCRCPY_SERVER_VERSION="2.5";\n' >> assets/apple-seed-scrcpy-v2.5.b64.js
-          test -s assets/apple-seed-scrcpy-v2.5.b64.js
+          mkdir -p /tmp/fix-adb/platform-tools assets
+          curl -L --fail --retry 3 -o /tmp/platform-tools.zip https://dl.google.com/android/repository/platform-tools-latest-windows.zip
+          test -s /tmp/platform-tools.zip
+          unzip -q /tmp/platform-tools.zip -d /tmp/fix-adb
+          test -x /tmp/fix-adb/platform-tools/adb.exe
+          test -x /tmp/fix-adb/platform-tools/fastboot.exe
+          cp tools/Fix-ADB/Fix-ADB.bat /tmp/fix-adb/Fix-ADB.bat
+          (cd /tmp/fix-adb && zip -qr "$GITHUB_WORKSPACE/assets/Fix-ADB.zip" Fix-ADB.bat platform-tools)
+          test -s assets/Fix-ADB.zip
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
