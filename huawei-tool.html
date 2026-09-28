@@ -343,10 +343,10 @@ async function loadAdbLibraries(){
       AdbDaemonWebUsbDeviceManager=usbM.AdbDaemonWebUsbDeviceManager;
       PackageManager=binM.PackageManager;
       AdbScrcpyClient=scrcpyM.AdbScrcpyClient;
-      AdbScrcpyOptions2_5=scrcpyM.AdbScrcpyOptions2_5;
+      AdbScrcpyOptions2_5=scrcpyM.AdbScrcpyOptions2_1;
       WebCodecsVideoDecoder=decoderM.WebCodecsVideoDecoder;
-      WebGLWebCodecsDecoderRenderer=decoderM.WebGLWebCodecsDecoderRenderer;
-      BitmapWebCodecsDecoderRenderer=decoderM.BitmapWebCodecsDecoderRenderer;
+      WebGLWebCodecsDecoderRenderer=decoderM.WebGLVideoFrameRenderer;
+      BitmapWebCodecsDecoderRenderer=decoderM.BitmapVideoFrameRenderer;
       return true;
     }).catch(e=>{libsPromise=null;throw e});
   }
