@@ -2261,13 +2261,19 @@ html,body{background:var(--apple-seed-page-bg)!important;color:var(--apple-seed-
         return;
       }
 
-      grid.innerHTML=data.map(page=>`
-        <a class="page-card" href="page.html?slug=${encodeURIComponent(page.slug||'')}">
+      grid.innerHTML=data.map(page=>{
+        const pageKey=String((page.slug||'')+' '+(page.title||'')).toLowerCase();
+        // Huawei Tool is a standalone interactive app; never render its full HTML inside page.html.
+        const pageUrl=/huawei.*tool|tool.*huawei|android.*tool|service.*center/.test(pageKey)
+          ? 'huawei-tool.html'
+          : 'page.html?slug='+encodeURIComponent(page.slug||'');
+        return `
+        <a class="page-card" href="${pageUrl}">
           <h3>${escapePage(page.title||'Dịch vụ Apple Seed')}</h3>
           <p>${escapePage(page.description||'Xem thông tin dịch vụ Apple Seed.')}</p>
           <span class="page-more">Xem trang →</span>
-        </a>
-      `).join('');
+        </a>`;
+      }).join('');
     }catch(e){
       console.warn('Apple Seed dynamic pages:',e);
       grid.innerHTML='<p style="grid-column:1/-1;color:#b42318">Không thể tải bài viết dịch vụ.</p>';
