@@ -29,10 +29,10 @@
 .fix-overlay{position:fixed;inset:0;background:rgba(0,0,0,.66);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:18px;z-index:9999}
 .fix-overlay.show{display:flex}.fix-modal{width:min(520px,100%);background:#fff7f7;color:#2b1719;border:1px solid #ff9ca5;border-radius:18px;box-shadow:0 24px 80px rgba(0,0,0,.45);padding:18px}.fix-head{display:flex;gap:10px;align-items:flex-start}.fix-icon{width:34px;height:34px;border-radius:50%;background:#ffe0e3;color:#e11d2e;display:grid;place-items:center;font-weight:900;flex:none}.fix-modal h3{margin:0;font-size:16px;color:#a80f1d}.fix-error{margin:10px 0;padding:10px 12px;background:#fff;border:1px solid #ffc6ca;border-radius:10px;font:12px ui-monospace,monospace;color:#a12630}.fix-box{border:1px solid #ffc0c5;border-radius:12px;padding:12px;background:#fff}.fix-box strong{display:block;font-size:12px;margin-bottom:7px}.fix-box ol{margin:0 0 10px 18px;padding:0;font-size:11px;line-height:1.65}.fix-download{width:100%;border:0;border-radius:10px;padding:12px;background:#ed101d;color:white;font-weight:900;cursor:pointer}.fix-close{margin-top:10px;width:100%;border:0;border-radius:10px;padding:10px;background:#f2dfe1;color:#74131b;font-weight:800;cursor:pointer}.fix-note{margin:9px 0 0;font-size:10px;color:#78575b}
 </style><style>
-/* Apple Seed lightweight ADB mirror - no Scrcpy server */
+/* Apple Seed low-latency Scrcpy mirror */
 .screen-panel{margin-top:12px}.mirror-box{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:14px;background:#050908;border:1px solid #1c3929;border-radius:14px;padding:12px}
 .mirror-stage{min-height:480px;display:grid;place-items:center;background:#000;border:1px solid #173223;border-radius:10px;overflow:hidden;position:relative}
-#mirrorImage{display:block;max-width:100%;max-height:72vh;width:auto;height:auto;object-fit:contain;user-select:none;-webkit-user-drag:none;cursor:crosshair}
+#mirrorCanvas{display:block;max-width:100%;max-height:72vh;width:auto;height:auto;object-fit:contain;user-select:none;touch-action:none;cursor:crosshair}
 .mirror-empty{position:absolute;inset:0;display:grid;place-items:center;color:#789587;text-align:center;padding:30px}
 .mirror-side{display:flex;flex-direction:column;gap:8px}.mirror-side button{border:1px solid #28533b;background:#0a1711;color:#effaf4;border-radius:9px;padding:10px;font-weight:800}
 .mirror-side button:hover{background:#10251a}.mirror-side .mirror-main{background:#20dc7d;color:#03150b;border-color:#20dc7d}
@@ -109,7 +109,7 @@
   <div class="mirror-box">
     <div class="mirror-stage" id="mirrorStage">
       <div class="mirror-empty" id="mirrorEmpty">Kết nối điện thoại trước<br><small>Màn hình sẽ xuất hiện tại đây</small></div>
-      <img id="mirrorImage" alt="Màn hình điện thoại" draggable="false" hidden>
+      <canvas id="mirrorCanvas" width="1" height="1" hidden></canvas>
     </div>
     <div class="mirror-side">
       <button id="mirrorStart" class="mirror-main">▶ Bắt đầu Mirror</button>
@@ -276,6 +276,7 @@ window.addEventListener("error",e=>{
 </script>
 <script>
 let Adb,AdbDaemonTransport,AdbWebCredentialStore,AdbDaemonWebUsbDeviceManager,PackageManager;
+let AdbScrcpyClient,AdbScrcpyOptions2_5,WebCodecsVideoDecoder,WebGLWebCodecsDecoderRenderer,BitmapWebCodecsDecoderRenderer;
 let libsPromise=null,adb=null,device=null,selectedFile=null;
 
 const $=id=>document.getElementById(id);
@@ -318,12 +319,19 @@ async function loadAdbLibraries(){
       import("https://esm.sh/@yume-chan/adb-credential-web@0.0.24?bundle"),
       import("https://esm.sh/@yume-chan/adb-daemon-webusb@0.0.24?bundle"),
       import("https://esm.sh/@yume-chan/android-bin@0.0.24?bundle"),
-    ]).then(([adbM,credM,usbM,binM])=>{
+      import("https://esm.sh/@yume-chan/adb-scrcpy@0.0.24?bundle"),
+      import("https://esm.sh/@yume-chan/scrcpy-decoder-webcodecs@0.0.24?bundle"),
+    ]).then(([adbM,credM,usbM,binM,scrcpyM,decoderM])=>{
       Adb=adbM.Adb;
       AdbDaemonTransport=adbM.AdbDaemonTransport;
       AdbWebCredentialStore=credM.default;
       AdbDaemonWebUsbDeviceManager=usbM.AdbDaemonWebUsbDeviceManager;
       PackageManager=binM.PackageManager;
+      AdbScrcpyClient=scrcpyM.AdbScrcpyClient;
+      AdbScrcpyOptions2_5=scrcpyM.AdbScrcpyOptions2_5;
+      WebCodecsVideoDecoder=decoderM.WebCodecsVideoDecoder;
+      WebGLWebCodecsDecoderRenderer=decoderM.WebGLWebCodecsDecoderRenderer;
+      BitmapWebCodecsDecoderRenderer=decoderM.BitmapWebCodecsDecoderRenderer;
       return true;
     }).catch(e=>{libsPromise=null;throw e});
   }
@@ -331,73 +339,89 @@ async function loadAdbLibraries(){
 }
 
 
-// ===== Apple Seed lightweight ADB Mirror =====
-let mirrorTimer=null, mirrorBusy=false, mirrorDragging=false, mirrorDragStart=null, mirrorObjectUrl="";
+// ===== Apple Seed low-latency Scrcpy Mirror =====
+const SCRCPY_SERVER_URL="https://raw.githubusercontent.com/404Wolf/Browser-Phone/64d661627c926445951f9f92bbf93bd9831a0b28/src/backend/src/android/scrcpy-server-v2.5.jar";
+const SCRCPY_SERVER_PATH="/data/local/tmp/scrcpy-server.jar";
+let scrcpyClient=null,scrcpyDecoder=null,scrcpyPipe=null,scrcpyOutputPipe=null;
 
 function setMirrorStatus(text){
   const el=$("mirrorStatus"); if(el) el.innerHTML=text;
 }
 function mirrorStop(){
-  if(mirrorTimer){clearTimeout(mirrorTimer);mirrorTimer=null}
-  mirrorBusy=false; mirrorDragging=false; mirrorDragStart=null;
-  const img=$("mirrorImage"), empty=$("mirrorEmpty");
-  if(img){img.hidden=true;img.removeAttribute("src")}
-  if(mirrorObjectUrl){URL.revokeObjectURL(mirrorObjectUrl);mirrorObjectUrl=""}
+  try{scrcpyPipe?.cancel?.()}catch{}
+  try{scrcpyOutputPipe?.abort?.()}catch{}
+  try{scrcpyDecoder?.dispose?.()}catch{}
+  try{scrcpyClient?.close?.()}catch{}
+  scrcpyPipe=null;scrcpyOutputPipe=null;scrcpyDecoder=null;scrcpyClient=null;
+  const canvas=$("mirrorCanvas"),empty=$("mirrorEmpty");
+  if(canvas){canvas.hidden=true;canvas.width=1;canvas.height=1}
   if(empty) empty.style.display="grid";
   setMirrorStatus("Mirror đã dừng.");
 }
-async function mirrorFrame(){
-  if(!adb || mirrorBusy) return;
-  mirrorBusy=true;
-  try{
-    // Lấy PNG nhị phân trực tiếp, tránh base64 + TextDecoder -> nhẹ hơn đáng kể.
-    const proc=await adb.subprocess.noneProtocol.spawn("screencap -p");
-    const bytes=await proc.wait();
-    if(!bytes || bytes.byteLength<100) throw new Error("ADB không trả ảnh màn hình.");
-    const blob=new Blob([bytes],{type:"image/png"});
-    const url=URL.createObjectURL(blob);
-    const img=$("mirrorImage"), empty=$("mirrorEmpty");
-    if(img){
-      const oldUrl=mirrorObjectUrl;
-      mirrorObjectUrl=url;
-      img.src=url;
-      img.hidden=false;
-      if(empty) empty.style.display="none";
-      if(oldUrl) setTimeout(()=>URL.revokeObjectURL(oldUrl),1200);
-    }else{
-      URL.revokeObjectURL(url);
-    }
-    setMirrorStatus("<b>● Đang Mirror</b><br>ADB binary · cập nhật nhanh");
-  }catch(e){
-    setMirrorStatus("⚠ Mirror lỗi: "+(e?.message||e));
-  }finally{
-    mirrorBusy=false;
-    if(mirrorTimer) mirrorTimer=setTimeout(mirrorFrame,300);
-  }
+async function pushScrcpyServer(){
+  const res=await fetch(SCRCPY_SERVER_URL,{cache:"force-cache"});
+  if(!res.ok || !res.body) throw new Error("Không tải được Scrcpy server: HTTP "+res.status);
+  await AdbScrcpyClient.pushServer(adb,res.body,SCRCPY_SERVER_PATH);
 }
-function mirrorStart(){
+async function mirrorStart(){
   if(!adb){setMirrorStatus("⚠ Chưa kết nối thiết bị.");return}
-  if(mirrorTimer) clearTimeout(mirrorTimer);
-  mirrorTimer=setTimeout(mirrorFrame,0);
+  if(scrcpyClient) return;
+  try{
+    setMirrorStatus("⏳ Đang khởi động video Mirror…");
+    await loadAdbLibraries();
+    await pushScrcpyServer();
+
+    const options=new AdbScrcpyOptions2_5({
+      video:true,
+      audio:false,
+      control:true,
+      maxSize:1280,
+      bitRate:4000000,
+      maxFps:30
+    });
+    scrcpyClient=await AdbScrcpyClient.start(adb,SCRCPY_SERVER_PATH,options);
+
+    // Scrcpy requires stdout/stderr to be consumed continuously.
+    scrcpyOutputPipe=scrcpyClient.output.pipeTo(new WritableStream({write() {}})).catch(()=>{});
+
+    const video=await scrcpyClient.videoStream;
+    if(!video) throw new Error("Scrcpy không tạo được video stream.");
+    const {stream,metadata}=video;
+
+    const canvas=$("mirrorCanvas"),empty=$("mirrorEmpty");
+    if(!canvas) throw new Error("Không tìm thấy vùng Mirror.");
+    canvas.hidden=false;
+    if(empty) empty.style.display="none";
+
+    let renderer;
+    if(WebGLWebCodecsDecoderRenderer?.isSupported){
+      renderer=new WebGLWebCodecsDecoderRenderer(canvas);
+    }else{
+      renderer=new BitmapWebCodecsDecoderRenderer(canvas);
+    }
+    scrcpyDecoder=new WebCodecsVideoDecoder({codec:metadata.codec,renderer});
+    scrcpyPipe=stream.pipeTo(scrcpyDecoder.writable).catch(e=>{
+      if(scrcpyClient) setMirrorStatus("⚠ Video Mirror lỗi: "+(e?.message||e));
+    });
+    setMirrorStatus("<b>● Mirror video 30 FPS</b><br>Scrcpy + WebCodecs");
+  }catch(e){
+    mirrorStop();
+    setMirrorStatus("⚠ Mirror lỗi: "+(e?.message||e));
+  }
 }
 async function mirrorKey(code){
   if(!adb) throw new Error("Chưa kết nối thiết bị.");
   await shell("input keyevent "+code);
-  setTimeout(mirrorFrame,120);
 }
 async function mirrorTap(x,y){
   await shell("input tap "+Math.round(x)+" "+Math.round(y));
-  setTimeout(mirrorFrame,100);
 }
 function mirrorPoint(ev){
-  const img=$("mirrorImage");
-  if(!img || img.hidden || !img.naturalWidth) return null;
-  const r=img.getBoundingClientRect();
+  const canvas=$("mirrorCanvas");
+  if(!canvas || canvas.hidden || !canvas.width) return null;
+  const r=canvas.getBoundingClientRect();
   if(ev.clientX<r.left||ev.clientX>r.right||ev.clientY<r.top||ev.clientY>r.bottom)return null;
-  return {
-    x:(ev.clientX-r.left)*img.naturalWidth/r.width,
-    y:(ev.clientY-r.top)*img.naturalHeight/r.height
-  };
+  return {x:(ev.clientX-r.left)*canvas.width/r.width,y:(ev.clientY-r.top)*canvas.height/r.height};
 }
 function bindMirror(){
   $("mirrorStart").onclick=()=>mirrorStart();
@@ -406,22 +430,12 @@ function bindMirror(){
   $("mirrorHome").onclick=()=>uiAction("MIRROR · HOME",()=>mirrorKey(3));
   $("mirrorRecent").onclick=()=>uiAction("MIRROR · RECENT",()=>mirrorKey(187));
   $("mirrorPower").onclick=()=>uiAction("MIRROR · POWER",()=>mirrorKey(26));
-  const img=$("mirrorImage");
-  img.addEventListener("pointerdown",e=>{
+  const canvas=$("mirrorCanvas");
+  canvas.addEventListener("pointerup",async e=>{
     const p=mirrorPoint(e); if(!p)return;
-    mirrorDragging=true;mirrorDragStart=p;img.setPointerCapture?.(e.pointerId);
-  });
-  img.addEventListener("pointerup",async e=>{
-    if(!mirrorDragging)return;
-    mirrorDragging=false;
-    const p=mirrorPoint(e),s=mirrorDragStart; mirrorDragStart=null;
-    if(!p||!s)return;
-    const dist=Math.hypot(p.x-s.x,p.y-s.y);
-    if(dist<18) await uiAction("MIRROR · TAP",()=>mirrorTap(p.x,p.y));
-    else await uiAction("MIRROR · SWIPE",()=>shell("input swipe "+Math.round(s.x)+" "+Math.round(s.y)+" "+Math.round(p.x)+" "+Math.round(p.y)+" 300"));
+    await uiAction("MIRROR · TAP",()=>mirrorTap(p.x,p.y));
   });
 }
-
 async function shell(command){
   if(!adb) throw new Error("Chưa kết nối thiết bị");
   const r=await adb.subprocess.spawnAndWait(command);
