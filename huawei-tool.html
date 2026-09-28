@@ -470,7 +470,7 @@ async function readBinaryProcess(command){
    combinations. Mirror therefore transports the PNG as base64 text. */
 async function readScreenshotPng(){
   const encoded=await readBinaryProcess(["sh","-c","screencap -p | base64"]);
-  const text=new TextDecoder().decode(encoded).replace(/\\s+/g,"");
+  const text=new TextDecoder().decode(encoded).replace(/\s+/g,"");
   if(!text) throw new Error("screencap/base64 trả về dữ liệu rỗng");
   try{
     return base64ToBytes(text);
