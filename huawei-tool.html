@@ -104,8 +104,23 @@
 </section>
 
 
+<div id="mirrorSetup" class="fix-overlay" role="dialog" aria-modal="true" aria-labelledby="mirrorSetupTitle">
+  <div class="fix-modal">
+    <div class="fix-head"><div class="fix-icon">📱</div><div style="flex:1">
+      <h3 id="mirrorSetupTitle">Thiết lập Mirror trên máy tính</h3>
+      <div id="mirrorSetupError" class="fix-error">Đang kiểm tra môi trường…</div>
+      <div class="fix-box">
+        <strong>Apple Seed cần các thành phần sau</strong>
+        <ol id="mirrorSetupList"><li>Chrome/Edge HTTPS + WebUSB</li><li>WebCodecs / VideoDecoder</li><li>WebGL tăng tốc phần cứng</li></ol>
+        <button id="mirrorSetupRetry" class="fix-download" type="button">🔄 Kiểm tra lại & chạy Mirror</button>
+        <button id="mirrorSetupClose" class="fix-close" type="button">Đóng</button>
+        <p class="fix-note">Nếu thiếu thành phần trình duyệt, hộp thoại sẽ chỉ rõ thành phần cần bổ sung; không cài phần mềm âm thầm vào Windows.</p>
+      </div>
+    </div></div>
+  </div>
+</div>
 <section class="panel screen-panel" id="screenPanel">
-  <div class="guide-head"><div><h3>📱 Màn hình điện thoại · ADB Mirror</h3><p class="sub">Mirror nhẹ bằng ADB, không cần Scrcpy server. Ảnh màn hình tự cập nhật và có thể bấm/kéo để điều khiển.</p></div></div>
+  <div class="guide-head"><div><h3>📱 Màn hình điện thoại · ADB Mirror</h3><p class="sub">Mirror video tốc độ cao bằng Scrcpy + WebCodecs. Nếu máy tính thiếu thành phần trình duyệt cần thiết, Apple Seed sẽ báo rõ ngay khi bấm Bắt đầu.</p></div></div>
   <div class="mirror-box">
     <div class="mirror-stage" id="mirrorStage">
       <div class="mirror-empty" id="mirrorEmpty">Kết nối điện thoại trước<br><small>Màn hình sẽ xuất hiện tại đây</small></div>
@@ -367,6 +382,19 @@ async function mirrorStart(){
   if(!adb){setMirrorStatus("⚠ Chưa kết nối thiết bị.");return}
   if(scrcpyClient) return;
   try{
+    const checks=[];
+    if(!window.isSecureContext) checks.push("Trang chưa chạy HTTPS");
+    if(!navigator.usb) checks.push("Trình duyệt không hỗ trợ WebUSB");
+    if(typeof VideoDecoder==="undefined") checks.push("Chrome/Edge thiếu WebCodecs (VideoDecoder)");
+    if(!WebGLWebCodecsDecoderRenderer?.isSupported && !BitmapWebCodecsDecoderRenderer?.isSupported) checks.push("Không có renderer video WebCodecs");
+    if(checks.length){
+      const err=$("mirrorSetupError"), list=$("mirrorSetupList");
+      if(err) err.textContent="Thiếu thành phần: "+checks.join(" · ");
+      if(list) list.innerHTML=checks.map(x=>"<li>❌ "+x+"</li>").join("")+"<li>✅ ADB/WebUSB của Apple Seed</li>";
+      $("mirrorSetup")?.classList.add("show");
+      setMirrorStatus("⚠ Máy tính thiếu thành phần cần thiết cho Mirror.");
+      return;
+    }
     setMirrorStatus("⏳ Đang khởi động video Mirror…");
     await loadAdbLibraries();
     await pushScrcpyServer();
@@ -379,7 +407,7 @@ async function mirrorStart(){
       bitRate:4000000,
       maxFps:30
     });
-    scrcpyClient=await AdbScrcpyClient.start(adb,SCRCPY_SERVER_PATH,options);
+    scrcpyClient=await AdbScrcpyClient.start(adb,SCRCPY_SERVER_PATH,"2.5",options);
 
     // Scrcpy requires stdout/stderr to be consumed continuously.
     scrcpyOutputPipe=scrcpyClient.output.pipeTo(new WritableStream({write() {}})).catch(()=>{});
@@ -425,6 +453,11 @@ function mirrorPoint(ev){
 }
 function bindMirror(){
   $("mirrorStart").onclick=()=>mirrorStart();
+  $("mirrorSetupClose").onclick=()=>$("mirrorSetup")?.classList.remove("show");
+  $("mirrorSetupRetry").onclick=async()=>{
+    $("mirrorSetup")?.classList.remove("show");
+    await mirrorStart();
+  };
   $("mirrorStop").onclick=mirrorStop;
   $("mirrorBack").onclick=()=>uiAction("MIRROR · BACK",()=>mirrorKey(4));
   $("mirrorHome").onclick=()=>uiAction("MIRROR · HOME",()=>mirrorKey(3));
