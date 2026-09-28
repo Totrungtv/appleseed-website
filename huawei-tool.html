@@ -113,8 +113,8 @@
         <strong>Apple Seed cần các thành phần sau</strong>
         <ol id="mirrorSetupList"><li>Chrome/Edge HTTPS + WebUSB</li><li>WebCodecs / VideoDecoder</li><li>WebGL tăng tốc phần cứng</li></ol>
         <div class="fix-download" style="display:flex;gap:8px;flex-wrap:wrap">
-          <a href="https://www.google.com/chrome/" target="_blank" rel="noopener">⬇️ Cài Chrome</a>
-          <a href="https://www.microsoft.com/edge/download" target="_blank" rel="noopener">⬇️ Cài Edge</a>
+          <a href="https://dl.google.com/chrome/install/latest/chrome_installer.exe">⬇️ Tải bộ cài Chrome</a>
+          <a href="https://go.microsoft.com/fwlink/?linkid=2109041">⬇️ Tải bộ cài Edge</a>
           <button id="mirrorSetupRetry" type="button">🔄 Kiểm tra lại</button>
         </div>
         <button id="mirrorSetupClose" class="fix-close" type="button">Đóng</button>
@@ -349,7 +349,7 @@ async function loadAdbLibraries(){
       AdbScrcpyClient=scrcpyM.AdbScrcpyClient;
       AdbScrcpyOptions2_5=scrcpyM.AdbScrcpyOptions2_1;
       WebCodecsVideoDecoder=decoderM.WebCodecsVideoDecoder;
-      WebGLWebCodecsDecoderRenderer=decoderM.WebGLVideoFrameRenderer;
+      WebGLWebCodecsDecoderRenderer=decoderM.WebGLFrameRenderer;
       BitmapWebCodecsDecoderRenderer=decoderM.BitmapFrameRenderer;
       return true;
     }).catch(e=>{libsPromise=null;throw e});
@@ -389,11 +389,10 @@ async function mirrorStart(){
     const checks=[];
     if(!window.isSecureContext) checks.push("Trang chưa chạy HTTPS");
     if(!navigator.usb) checks.push("Trình duyệt không hỗ trợ WebUSB");
-    if(typeof VideoDecoder==="undefined") checks.push("Chrome/Edge thiếu WebCodecs (VideoDecoder)");
-    const webglOk=!!WebGLWebCodecsDecoderRenderer?.isSupported;
-    let bitmapOk=false;
-    try{ const t=document.createElement("canvas"); bitmapOk=!!t.getContext("bitmaprenderer"); }catch{}
-    if(!webglOk && !bitmapOk) checks.push("Không có renderer video WebCodecs");
+    if(typeof VideoDecoder==="undefined") checks.push("Chrome/Edge thiếu WebCodecs (VideoDecoder) — cần cài/cập nhật Chrome hoặc Edge");
+    const webglOk=!!WebGLWebCodecsDecoderRenderer;
+    let bitmapOk=!!BitmapWebCodecsDecoderRenderer;
+    if(!webglOk && !bitmapOk) checks.push("Không tải được renderer WebCodecs");
     if(checks.length){
       const err=$("mirrorSetupError"), list=$("mirrorSetupList");
       if(err) err.textContent="Thiếu thành phần: "+checks.join(" · ");
@@ -429,13 +428,12 @@ async function mirrorStart(){
     if(empty) empty.style.display="none";
 
     let renderer;
-    if(WebGLWebCodecsDecoderRenderer?.isSupported){
-      renderer=new WebGLWebCodecsDecoderRenderer(canvas);
-    }else if(BitmapWebCodecsDecoderRenderer){
-      renderer=new BitmapWebCodecsDecoderRenderer(canvas);
-    }else{
-      throw new Error("Trình duyệt không có renderer WebGL/Bitmap.");
+    if(WebGLWebCodecsDecoderRenderer){
+      try{ renderer=new WebGLWebCodecsDecoderRenderer(canvas,false); }
+      catch(e){ renderer=null; }
     }
+    if(!renderer && BitmapWebCodecsDecoderRenderer) renderer=new BitmapWebCodecsDecoderRenderer(canvas);
+    if(!renderer) throw new Error("Không tạo được renderer WebGL/Bitmap.");
     scrcpyDecoder=new WebCodecsVideoDecoder({codec:metadata.codec,renderer});
     scrcpyPipe=stream.pipeTo(scrcpyDecoder.writable).catch(e=>{
       if(scrcpyClient) setMirrorStatus("⚠ Video Mirror lỗi: "+(e?.message||e));
