@@ -332,7 +332,7 @@ async function loadAdbLibraries(){
 
 
 // ===== Apple Seed lightweight ADB Mirror =====
-let mirrorTimer=null, mirrorBusy=false, mirrorDragging=false, mirrorDragStart=null;
+let mirrorTimer=null, mirrorBusy=false, mirrorDragging=false, mirrorDragStart=null, mirrorObjectUrl="";
 
 function setMirrorStatus(text){
   const el=$("mirrorStatus"); if(el) el.innerHTML=text;
@@ -342,6 +342,7 @@ function mirrorStop(){
   mirrorBusy=false; mirrorDragging=false; mirrorDragStart=null;
   const img=$("mirrorImage"), empty=$("mirrorEmpty");
   if(img){img.hidden=true;img.removeAttribute("src")}
+  if(mirrorObjectUrl){URL.revokeObjectURL(mirrorObjectUrl);mirrorObjectUrl=""}
   if(empty) empty.style.display="grid";
   setMirrorStatus("Mirror đã dừng.");
 }
@@ -349,21 +350,29 @@ async function mirrorFrame(){
   if(!adb || mirrorBusy) return;
   mirrorBusy=true;
   try{
-    const out=await shell("screencap -p | base64");
-    const b64=out.replace(/\s+/g,"");
-    if(!b64 || b64.length<100) throw new Error("ADB không trả ảnh màn hình.");
+    // Lấy PNG nhị phân trực tiếp, tránh base64 + TextDecoder -> nhẹ hơn đáng kể.
+    const proc=await adb.subprocess.noneProtocol.spawn("screencap -p");
+    const bytes=await proc.wait();
+    if(!bytes || bytes.byteLength<100) throw new Error("ADB không trả ảnh màn hình.");
+    const blob=new Blob([bytes],{type:"image/png"});
+    const url=URL.createObjectURL(blob);
     const img=$("mirrorImage"), empty=$("mirrorEmpty");
     if(img){
-      img.src="data:image/png;base64,"+b64;
+      const oldUrl=mirrorObjectUrl;
+      mirrorObjectUrl=url;
+      img.src=url;
       img.hidden=false;
       if(empty) empty.style.display="none";
+      if(oldUrl) setTimeout(()=>URL.revokeObjectURL(oldUrl),1200);
+    }else{
+      URL.revokeObjectURL(url);
     }
-    setMirrorStatus("<b>● Đang Mirror</b><br>Cập nhật liên tục qua ADB");
+    setMirrorStatus("<b>● Đang Mirror</b><br>ADB binary · cập nhật nhanh");
   }catch(e){
     setMirrorStatus("⚠ Mirror lỗi: "+(e?.message||e));
   }finally{
     mirrorBusy=false;
-    if(mirrorTimer) mirrorTimer=setTimeout(mirrorFrame,700);
+    if(mirrorTimer) mirrorTimer=setTimeout(mirrorFrame,300);
   }
 }
 function mirrorStart(){
@@ -513,7 +522,6 @@ async function connectDevice(){
     $("install").disabled=false;
     $("appleSeedOpen").disabled=false;
     $("volteVerify").disabled=false;
-    bindMirror();
     mirrorStart();
     log("✓ THIẾT BỊ ĐÃ KẾT NỐI: "+brand+" "+model+" · Android "+android+" · "+serial);
   }catch(e){
