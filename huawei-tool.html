@@ -323,6 +323,8 @@ async function loadAdbLibraries(){
         AdbScrcpyOptions2_5:scrcpyM.AdbScrcpyOptions2_5,
         DefaultServerPath:scrcpyCoreM.DefaultServerPath,
         WebCodecsVideoDecoder:decoderM.WebCodecsVideoDecoder,
+        WebGLVideoFrameRenderer:decoderM.WebGLVideoFrameRenderer,
+        BitmapVideoFrameRenderer:decoderM.BitmapVideoFrameRenderer,
         AutoCanvasRenderer:decoderM.AutoCanvasRenderer,
       };
       return true;
@@ -521,40 +523,34 @@ function base64ToBytes(base64){
 }
 async function pushScrcpyServer(){
   const response=await fetch(SCRCPY_SERVER_B64_URL,{cache:"no-store"});
-  if(!response.ok) throw new Error("Không tải được server: HTTP "+response.status);
+  if(!response.ok) throw new Error("Không tải được Scrcpy server: HTTP "+response.status);
   const js=await response.text();
   const match=js.match(/window\.APPLESEED_SCRCPY_SERVER_B64="([^"]+)"/);
-  if(!match?.[1]) throw new Error("Không tìm thấy server trên Pages.");
+  if(!match?.[1]) throw new Error("Không tìm thấy Scrcpy server trên Pages.");
   const data=base64ToBytes(match[1]);
-  if(!data.length) throw new Error("Server rỗng.");
+  if(!data.length) throw new Error("Scrcpy server rỗng.");
 
-  $("screenStatus").textContent="⏳ Đang truyền server vào điện thoại…";
-  log("→ Server: "+data.length.toLocaleString()+" bytes");
+  $("screenStatus").textContent="⏳ Đang truyền Scrcpy server vào điện thoại…";
+  log("→ Scrcpy server: "+data.length.toLocaleString()+" bytes");
 
-  // Truyền binary qua stdin của ADB shell, tránh kẹt ở SyncService trên một số Chrome/Android.
-  const process=await adb.subprocess.noneProtocol.spawn([
-    "sh","-c","cat > "+SCRCPY_SERVER_PATH
-  ]);
-  const writer=process.stdin.getWriter();
+  const sync=await adb.sync();
   try{
-    const chunkSize=256*1024;
-    for(let offset=0;offset<data.length;offset+=chunkSize){
-      await writer.write(data.subarray(offset,Math.min(offset+chunkSize,data.length)));
-    }
-    await writer.close();
-    await process.exited;
-  }catch(e){
-    try{await writer.abort(e)}catch{}
-    try{await process.kill()}catch{}
-    throw e;
+    await sync.write({
+      filename:SCRCPY_SERVER_PATH,
+      file:new ReadableStream({
+        start(controller){
+          controller.enqueue(data);
+          controller.close();
+        }
+      })
+    });
   }finally{
-    try{writer.releaseLock()}catch{}
+    try{await sync.dispose()}catch{}
   }
 
   const stat=await shell("ls -l "+SCRCPY_SERVER_PATH);
-  log("✓ Scrcpy server đã truyền xong: "+stat);
+  log("✓ Scrcpy server đã truyền: "+stat);
 }
-
 function screenPoint(ev){
   const el=$("deviceCanvas").style.display!=="none" ? $("deviceCanvas") : $("deviceImage");
   const rect=el.getBoundingClientRect();
@@ -666,51 +662,88 @@ function screenKeydown(ev){
 
 async function startScreenshotMirror(){
   if(!adb)throw new Error("Chưa kết nối thiết bị");
-  $("screenStatus").textContent="⏳ Đang bật Mirror tương thích ADB…";
-  const img=$("deviceImage");
+
   const canvas=$("deviceCanvas");
-  canvas.style.display="none";
-  img.style.display="block";
+  const img=$("deviceImage");
+  canvas.style.display="block";
+  img.style.display="none";
 
   screenRunning=true;
   $("screenWrap").classList.add("is-live");
   screenButtonState(true,true);
+  $("screenStatus").textContent="⏳ Đang khởi động Scrcpy video…";
 
-  let stopped=false;
-  let lastUrl="";
-  const loop=async()=>{
-    while(screenRunning && !stopped){
-      try{
-        const bytes=await readScreenshotPng();
-        if(!bytes.length)throw new Error("Ảnh màn hình rỗng");
-        // Validate the PNG signature before handing it to <img>.
-        if(bytes.length<8||bytes[0]!==0x89||bytes[1]!==0x50||bytes[2]!==0x4e||bytes[3]!==0x47){
-          throw new Error("Dữ liệu screencap không phải PNG hợp lệ");
-        }
-        const blob=new Blob([bytes],{type:"image/png"});
-        const url=URL.createObjectURL(blob);
-        const old=lastUrl;
-        lastUrl=url;
-        img.onload=()=>{if(old)URL.revokeObjectURL(old)};
-        img.onerror=()=>{
-          if(url===lastUrl) log("⚠ Trình duyệt không giải mã được frame PNG từ Android.");
-          URL.revokeObjectURL(url);
-        };
-        img.src=url;
-      }catch(e){
-        if(screenRunning)log("⚠ Screenshot mirror: "+(e?.message||e));
-        break;
-      }
-      await new Promise(r=>setTimeout(r,180));
+  try{
+    await pushScrcpyServer();
+
+    const Options=window.AppleSeedScrcpy?.AdbScrcpyOptions2_5;
+    const Client=window.AppleSeedScrcpy?.AdbScrcpyClient;
+    if(!Options||!Client) throw new Error("WebADB Scrcpy library chưa tải đủ.");
+
+    const options=new Options({
+      video:true,
+      audio:false,
+      control:true,
+      tunnelForward:true,
+      maxFps:30,
+      maxSize:1920,
+      videoBitRate:8000000
+    });
+
+    log("→ Khởi động Scrcpy 2.5 video stream…");
+    scrcpyClient=await Client.start(adb,SCRCPY_SERVER_PATH,options);
+
+    // Scrcpy requires its diagnostic/output stream to be consumed.
+    scrcpyPipe=scrcpyClient.output.pipeTo(new WritableStream({
+      write(line){ if(line) log("scrcpy: "+line); }
+    })).catch(e=>{
+      if(screenRunning) log("⚠ Scrcpy output: "+(e?.message||e));
+    });
+
+    const video=await scrcpyClient.videoStream;
+    if(!video) throw new Error("Scrcpy không trả về video stream.");
+
+    const rendererClass=window.AppleSeedScrcpy.WebGLVideoFrameRenderer;
+    const bitmapClass=window.AppleSeedScrcpy.BitmapVideoFrameRenderer;
+    let renderer;
+    if(rendererClass?.isSupported){
+      renderer=new rendererClass(canvas);
+      log("✓ Video renderer: WebGL");
+    }else if(bitmapClass){
+      renderer=new bitmapClass(canvas);
+      log("✓ Video renderer: Canvas/Bitmap");
+    }else{
+      throw new Error("Không có video renderer.");
     }
-    if(lastUrl)URL.revokeObjectURL(lastUrl);
-  };
-  const screenStatusText="🟢 Mirror ADB tương thích · click/kéo chuột và bàn phím hoạt động.";
-  $("screenStatus").textContent=screenStatusText;
-  screenshotMirrorStop=()=>{stopped=true};
-  screenshotMirrorTask=loop();
-  log("✓ Mirror fallback ADB/screencap đang chạy.");
+
+    scrcpyDecoder=new window.AppleSeedScrcpy.WebCodecsVideoDecoder({
+      codec:video.metadata.codec,
+      renderer
+    });
+
+    scrcpyPipe=video.stream.pipeTo(scrcpyDecoder.writable).catch(e=>{
+      if(screenRunning) log("✕ Video stream: "+(e?.message||e));
+    });
+
+    $("screenStatus").textContent="🟢 Scrcpy Mirror trực tiếp · video realtime + chuột/bàn phím.";
+    log("✓ SCRCPY MIRROR ĐÃ CHẠY.");
+  }catch(e){
+    screenRunning=false;
+    $("screenWrap").classList.remove("is-live");
+    canvas.style.display="none";
+    img.style.display="none";
+    screenButtonState(!!adb,false);
+    try{scrcpyDecoder?.dispose()}catch{}
+    try{await scrcpyClient?.close()}catch{}
+    scrcpyDecoder=null;
+    scrcpyClient=null;
+    const msg=e?.message||String(e);
+    $("screenStatus").textContent="✕ Mirror lỗi: "+msg;
+    log("✕ SCRCPY: "+msg);
+    throw e;
+  }
 }
+
 
 let screenshotMirrorTask=null,screenshotMirrorStop=null;
 
@@ -725,16 +758,15 @@ async function startDeviceScreen(){
 
 
 async function stopDeviceScreen(){
-  if(!screenRunning&&!scrcpyClient&&!screenshotMirrorTask)return;
+  if(!screenRunning&&!scrcpyClient&&!scrcpyDecoder&&!scrcpyPipe)return;
   screenRunning=false;
   $("screenStatus").textContent="⏳ Đang dừng mirror…";
-  try{if(screenshotMirrorStop)screenshotMirrorStop()}catch{}
-  try{await screenshotMirrorTask}catch{}
-  screenshotMirrorTask=null;screenshotMirrorStop=null;
   try{await scrcpyClient?.close()}catch(e){log("⚠ Dừng Scrcpy: "+(e?.message||e));}
   try{await scrcpyPipe}catch{}
   try{scrcpyDecoder?.dispose()}catch{}
-  scrcpyClient=null;scrcpyDecoder=null;scrcpyPipe=null;scrcpyCanvas=null;
+  scrcpyClient=null;
+  scrcpyDecoder=null;
+  scrcpyPipe=null;
   $("screenWrap").classList.remove("is-live");
   $("deviceCanvas").width=1;$("deviceCanvas").height=1;
   $("deviceCanvas").style.display="none";
@@ -744,6 +776,7 @@ async function stopDeviceScreen(){
   $("screenStatus").textContent=adb?"Đã dừng mirror.":"Kết nối thiết bị rồi bấm Bắt đầu Mirror.";
   log("✓ Đã dừng mirror.");
 }
+
 async function disconnectDevice(){
   globalProgress(true,"Đang ngắt kết nối…",20,true);
   try{
