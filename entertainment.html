@@ -375,7 +375,9 @@ function formatInline(s){
  out=out.replace(/\*([^*]+)\*/g,'<em>$1</em>');
  return out;
 }
+let readerRequestId=0;
 async function openReader(item){
+ const requestId=++readerRequestId;
  const reader=document.getElementById('reader');
  const body=document.getElementById('rBody');
  const sourceUrl=String(item.link||'').trim();
@@ -395,6 +397,7 @@ async function openReader(item){
    const api='https://nuismqcjyutqigdydfkg.supabase.co/functions/v1/article-reader?url='+encodeURIComponent(sourceUrl);
    const res=await fetch(api,{headers:{'Accept':'application/json'}});
    const data=await res.json().catch(()=>null);
+   if(requestId!==readerRequestId) return;
    if(!res.ok || !data?.ok) throw new Error(data?.error||'Không thể đọc bài viết');
    if(data.title) document.getElementById('rTitle').textContent=data.title;
    if(data.source) document.getElementById('rSource').textContent=data.source;
@@ -409,6 +412,7 @@ async function openReader(item){
      },{once:true});
    });
  }catch(err){
+   if(requestId!==readerRequestId) return;
    const fallback=cleanDesc(item.description||item.content||'');
    body.innerHTML='<div class="reader-fallback-card"><div class="reader-fallback-icon">📰</div><h3>Nội dung chi tiết không được nguồn cho phép nhúng</h3><p>'+(fallback?esc(fallback):'Apple Seed không thể lấy toàn văn bài này từ nguồn hiện tại.')+'</p><div class="reader-fallback-actions"><a href="'+esc(sourceUrl)+'" target="_blank" rel="noopener noreferrer">Đọc bài gốc ↗</a><button type="button" data-close>← Quay lại</button></div></div>';
  }
