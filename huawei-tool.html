@@ -879,68 +879,23 @@ async function scanVolte(){
   log("===== SCAN KẾT THÚC =====");
 }
 
-async function getHbgDex(){
+async async function getHbgDex(){
   if(window.__appleSeedHbgDex instanceof Uint8Array) return window.__appleSeedHbgDex;
-  return await new Promise((resolve,reject)=>{
-    const input=document.createElement("input");
-    input.type="file"; input.accept=".exe,application/vnd.microsoft.portable-executable";
-    input.style.display="none"; document.body.appendChild(input);
-    input.onchange=async()=>{
-      try{
-        const file=input.files?.[0];
-        if(!file) throw new Error("Chưa chọn HBG_VoLTE_Fixer.exe");
-        log("→ Đọc HBG VoLTE Fixer: "+file.name+" ("+fmt(file.size)+")");
-        const bytes=new Uint8Array(await file.arrayBuffer());
-        const magic=new Uint8Array([0x4d,0x45,0x49,0x0c,0x0b,0x0a,0x0b,0x0e]);
-        let cookie=-1;
-        for(let i=bytes.length-24;i>=0;i--){
-          let ok=true; for(let j=0;j<8;j++) if(bytes[i+j]!==magic[j]){ok=false;break}
-          if(ok){cookie=i;break}
-        }
-        if(cookie<0) throw new Error("Không tìm thấy PyInstaller CArchive trong EXE.");
-        const dv=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
-        const total=dv.getInt32(cookie+8,false)>>>0;
-        const tocPos=dv.getInt32(cookie+12,false)>>>0;
-        const tocLen=dv.getInt32(cookie+16,false)>>>0;
-        const pkgStart=cookie+24-total;
-        const tocStart=pkgStart+tocPos;
-        let p=tocStart, found=null;
-        while(p<tocStart+tocLen){
-          const entryLen=dv.getInt32(p,false)>>>0;
-          if(entryLen<18 || p+entryLen>tocStart+tocLen) break;
-          const dpos=dv.getInt32(p+4,false)>>>0;
-          const dlen=dv.getInt32(p+8,false)>>>0;
-          const flag=dv.getInt8(p+16);
-          const nameBytes=bytes.slice(p+18,p+entryLen);
-          let z=0; while(z<nameBytes.length && nameBytes[z]!==0)z++;
-          const name=new TextDecoder().decode(nameBytes.slice(0,z));
-          if(/hbg_volte_fixer\.dex$/i.test(name)){found={dpos,dlen,flag,name};break}
-          p+=entryLen;
-        }
-        if(!found) throw new Error("EXE không chứa assets\\hbg_volte_fixer.dex.");
-        log("✓ Tìm thấy "+found.name+" · "+found.dlen+" bytes");
-        const region=bytes.slice(pkgStart+found.dpos,Math.min(bytes.length,pkgStart+found.dpos+found.dlen+160));
-        let dex=null;
-        for(let off=0;off<128 && off<region.length;off++){
-          for(const w of [15,-15]){
-            try{
-              const inputStream=new ReadableStream({start(c){c.enqueue(region.slice(off));c.close()}});
-              const ds=new DecompressionStream(w===15?"deflate-raw":"deflate");
-              const out=await new Response(inputStream.pipeThrough(ds)).arrayBuffer();
-              const u=new Uint8Array(out);
-              if(u[0]===0x64&&u[1]===0x65&&u[2]===0x78&&u[3]===0x0a){dex=u;break}
-            }catch(_){}
-          }
-          if(dex)break;
-        }
-        if(!dex) throw new Error("Không giải nén được HBG DEX từ EXE.");
-        window.__appleSeedHbgDex=dex;
-        log("✓ HBG DEX đã nạp: "+fmt(dex.length));
-        resolve(dex);
-      }catch(e){reject(e)}finally{input.remove()}
-    };
-    input.click();
-  });
+  log("→ Nạp Apple Seed VoLTE CarrierConfig engine tích hợp sẵn…");
+  const url=new URL("assets/apple_seed_hbg_volte.dex.b64",document.baseURI);
+  const r=await fetch(url.href,{cache:"no-store"});
+  if(!r.ok) throw new Error("Không tải được Apple Seed VoLTE engine: HTTP "+r.status);
+  const b64=(await r.text()).replace(/\\s+/g,"");
+  if(!b64) throw new Error("Apple Seed VoLTE engine rỗng.");
+  const bin=atob(b64);
+  const dex=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) dex[i]=bin.charCodeAt(i);
+  if(dex.length<8 || dex[0]!==0x64 || dex[1]!==0x65 || dex[2]!==0x78 || dex[3]!==0x0a){
+    throw new Error("Apple Seed VoLTE engine không phải DEX hợp lệ.");
+  }
+  window.__appleSeedHbgDex=dex;
+  log("✓ Apple Seed VoLTE engine đã nạp: "+fmt(dex.length));
+  return dex;
 }
 
 async function runHbgCarrierFix(){
