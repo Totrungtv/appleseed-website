@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="vi">
 <head>
-<meta name="apple-seed-build" content="2026-09-29-webadb-recovery-v3">
-<!-- APPLE SEED ANDROID SERVICE BUILD 2026-09-29 -->
+<meta name="apple-seed-build" content="2026-09-28-no-mirror-v2">
+<!-- APPLE SEED ANDROID SERVICE BUILD 2026-09-28 -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Apple Seed Android Service Center - Professional WebADB">
@@ -300,10 +300,10 @@ function safeText(v){
 async function loadAdbLibraries(){
   if(!libsPromise){
     libsPromise=Promise.all([
-      import("https://esm.sh/@yume-chan/adb@2.6.4?bundle"),
-      import("https://esm.sh/@yume-chan/adb-credential-web@2.1.0?bundle"),
-      import("https://esm.sh/@yume-chan/adb-daemon-webusb@2.3.2?bundle"),
-      import("https://esm.sh/@yume-chan/android-bin@2.1.0?bundle"),
+      import("https://esm.sh/@yume-chan/adb@0.0.24?bundle"),
+      import("https://esm.sh/@yume-chan/adb-credential-web@0.0.24?bundle"),
+      import("https://esm.sh/@yume-chan/adb-daemon-webusb@0.0.24?bundle"),
+      import("https://esm.sh/@yume-chan/android-bin@0.0.24?bundle"),
     ]).then(([adbM,credM,usbM,binM])=>{
       Adb=adbM.Adb;
       AdbDaemonTransport=adbM.AdbDaemonTransport;
@@ -374,38 +374,6 @@ async function closeWebUsbDevice(d){
   }
 }
 
-async function cleanupAllWebUsbSessions(){
-  if(!navigator.usb?.getDevices) return;
-  try{
-    const granted=await navigator.usb.getDevices();
-    let closed=0;
-    for(const raw of granted){
-      try{
-        if(raw.opened){
-          await raw.close();
-          closed++;
-        }
-      }catch(e){
-        log("⚠ Không đóng được USB handle "+(raw.serialNumber||raw.productName||"device")+": "+(e?.message||e));
-      }
-    }
-    if(closed) log("✓ Đã đóng "+closed+" phiên WebUSB còn mở trong origin.");
-  }catch(e){
-    log("⚠ Không quét được phiên WebUSB cũ: "+(e?.message||e));
-  }
-}
-
-async function forgetWebUsbDevice(d){
-  try{
-    if(d?.raw?.opened) await d.raw.close();
-  }catch{}
-  try{
-    if(d?.raw?.forget) await d.raw.forget();
-  }catch(e){
-    log("⚠ Không reset được quyền WebUSB: "+(e?.message||e));
-  }
-}
-
 async function connectDevice(){
   if(!window.isSecureContext) throw new Error("Trang này chưa chạy HTTPS nên Chrome chặn WebUSB.");
   if(!navigator.usb) throw new Error("Chrome/Edge không cung cấp WebUSB.");
@@ -415,43 +383,12 @@ async function connectDevice(){
   let selectedDevice=null;
   let connection=null;
 
-  const isUsbBusyError=(e)=>{
-    const msg=e?.message||String(e);
-    return /claimInterface|Unable to claim interface|DeviceBusyError|NetworkError/i.test(msg);
-  };
-
-  const openSelected=async(d)=>{
-    try{
-      return await d.connect();
-    }catch(e){
-      if(!isUsbBusyError(e)) throw e;
-
-      // Browser-origin cleanup: close every granted WebUSB handle first.
-      await closeWebUsbDevice(d);
-      await cleanupAllWebUsbSessions();
-
-      log("⚠ USB interface đang bận trong phiên trình duyệt. Đã dọn toàn bộ handle WebUSB; thử lại…");
-      globalProgress(true,"Làm sạch phiên USB…",50,true);
-      await new Promise(r=>setTimeout(r,350));
-
-      try{
-        return await d.connect();
-      }catch(second){
-        // If the browser itself is holding a stale permission/session,
-        // forget it and force a fresh chooser on the next pass.
-        log("⚠ Lần thử thứ 2 vẫn lỗi claimInterface. Reset quyền WebUSB…");
-        await forgetWebUsbDevice(d);
-        throw second;
-      }
-    }
-  };
-
   try{
     await loadAdbLibraries();
     if(!AdbDaemonWebUsbDeviceManager) throw new Error("Không khởi tạo được WebADB.");
 
+    // Luôn đóng phiên WebUSB cũ của chính trang trước khi xin kết nối mới.
     await closeWebUsbDevice(device);
-    await cleanupAllWebUsbSessions();
     device=null;
     adb=null;
 
@@ -469,22 +406,22 @@ async function connectDevice(){
     globalProgress(true,"Đang mở kênh ADB…",45,true);
 
     try{
-      connection=await openSelected(selectedDevice);
+      connection=await selectedDevice.connect();
     }catch(e){
-      // If permission was reset by forget(), the selected wrapper is stale.
-      // Ask the user to select the same phone again, but only after all stale
-      // browser handles have been released.
-      if(isUsbBusyError(e)){
-        await cleanupAllWebUsbSessions();
-        log("→ Yêu cầu chọn lại thiết bị sau khi reset phiên WebUSB…");
-        globalProgress(true,"Chọn lại thiết bị ADB…",55,false);
-        selectedDevice=await manager.requestDevice();
-        if(!selectedDevice) throw new Error("Không chọn lại thiết bị.");
-        device=selectedDevice;
-        connection=await selectedDevice.connect();
-      }else{
-        throw e;
-      }
+      const busy=/claimInterface|Unable to claim interface|DeviceBusyError|NetworkError/i.test(e?.message||String(e));
+      // claimInterface có thể để lại USB handle mở trong chính tab.
+      // Đóng handle rồi thử lại đúng một lần trước khi báo lỗi.
+      await closeWebUsbDevice(selectedDevice);
+      if(!busy) throw e;
+
+      log("⚠ USB interface đang bận. Đã đóng handle cũ, thử kết nối lại một lần…");
+      globalProgress(true,"Làm sạch phiên USB…",50,true);
+
+      // Không mở lại USB chooser lần thứ hai: người dùng đã chọn đúng máy.
+      // Thử lại trên cùng WebUSB device sau khi đã đóng handle cũ.
+      await new Promise(r=>setTimeout(r,250));
+      device=selectedDevice;
+      connection=await selectedDevice.connect();
     }
 
     const store=new AdbWebCredentialStore("AppleSeed");
@@ -523,8 +460,8 @@ async function connectDevice(){
     const rawMsg=e?.message||String(e);
     let msg=rawMsg;
 
-    if(isUsbBusyError(e)){
-      msg="Chrome không lấy được giao diện ADB của USB. Apple Seed đã tự đóng các phiên WebUSB của chính trang và thử lại.\n\nNếu lỗi vẫn còn, một adb.exe/ADB server, scrcpy, Android Studio, Smart Switch/HiSuite hoặc tab WebADB khác đang giữ giao diện USB. Trường hợp này WebUSB không thể giành cùng interface từ trình duyệt.\n\nChi tiết: "+rawMsg;
+    if(/claimInterface|Unable to claim interface|DeviceBusyError|NetworkError/i.test(rawMsg)){
+      msg="USB ADB interface đang bị chiếm hoặc phiên WebUSB cũ chưa được nhả. Apple Seed đã tự dọn handle và thử kết nối lại.\n\nNếu vẫn lỗi, một chương trình ADB/scrcpy/Smart Switch khác đang giữ interface USB nên Chrome không thể lấy cùng interface.\n\nChi tiết: "+rawMsg;
     }else if(e?.name==="NotFoundError"){
       msg="Không chọn thiết bị / hộp chọn USB đã bị hủy.";
     }
