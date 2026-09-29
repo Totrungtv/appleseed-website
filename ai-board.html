@@ -1535,4 +1535,91 @@ load();
  .as-ai-chat-window.open:not(.minimized) > .as-ai-chat-hero.as-ai-hero-3d{flex-basis:180px!important;height:180px!important;min-height:180px!important;max-height:180px!important}
  .as-ai-chat-window.open:not(.minimized) > .as-ai-chat-compose{flex-basis:84px!important;min-height:84px!important}
 }
+</style><style id="apple-seed-chat-layout-v12">
+/* ===== AI ROBOT — BALANCED LAYOUT ===== */
+.as-ai-chat-window.open:not(.minimized){
+  width:min(1180px,calc(100vw - 32px))!important;
+  height:min(860px,calc(100vh - 32px))!important;
+  right:16px!important;
+  bottom:16px!important;
+  top:auto!important;
+  left:auto!important;
+  display:flex!important;
+  flex-direction:column!important;
+  overflow:hidden!important;
+  border-radius:24px!important;
+}
+/* Header */
+.as-ai-chat-window.open:not(.minimized) > .as-ai-chat-head{
+  flex:0 0 68px!important;
+  height:68px!important;
+  min-height:68px!important;
+  display:flex!important;
+  align-items:center!important;
+  padding:0 18px!important;
+}
+/* Hero: visible but compact */
+.as-ai-chat-window.open:not(.minimized) > .as-ai-chat-hero.as-ai-hero-3d{
+  flex:0 0 205px!important;
+  height:205px!important;
+  min-height:205px!important;
+  max-height:205px!important;
+  display:block!important;
+  overflow:hidden!important;
+}
+/* Don't let hero typography/visual disappear */
+.as-ai-chat-window.open:not(.minimized) .as-ai-3d-visual,
+.as-ai-chat-window.open:not(.minimized) .as-ai-3d-copy,
+.as-ai-chat-window.open:not(.minimized) .as-ai-ref-toolbar{
+  visibility:visible!important;
+  opacity:1!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-3d-copy{
+  transform:scale(.88)!important;
+  transform-origin:right center!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-ref-toolbar{
+  transform:scale(.88)!important;
+  transform-origin:right bottom!important;
+}
+/* Conversation gets the majority of space */
+.as-ai-chat-window.open:not(.minimized) > .as-ai-chat-messages{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  height:auto!important;
+  overflow-y:auto!important;
+  padding:18px 24px!important;
+  background:#f5faf8!important;
+}
+/* Readable messages */
+.as-ai-chat-window.open:not(.minimized) .as-ai-bubble{
+  max-width:min(820px,82%)!important;
+  font-size:15px!important;
+  line-height:1.6!important;
+  padding:13px 16px!important;
+  border-radius:16px!important;
+}
+/* Composer */
+.as-ai-chat-window.open:not(.minimized) > .as-ai-chat-compose{
+  flex:0 0 78px!important;
+  height:78px!important;
+  min-height:78px!important;
+  display:flex!important;
+  align-items:center!important;
+  padding:10px 14px!important;
+  background:#071812!important;
+}
+/* Mobile */
+@media(max-width:700px){
+ .as-ai-chat-window.open:not(.minimized){
+   width:100vw!important;height:100dvh!important;right:0!important;bottom:0!important;
+   border-radius:0!important;
+ }
+ .as-ai-chat-window.open:not(.minimized) > .as-ai-chat-head{flex-basis:60px!important;height:60px!important;min-height:60px!important}
+ .as-ai-chat-window.open:not(.minimized) > .as-ai-chat-hero.as-ai-hero-3d{
+   flex-basis:165px!important;height:165px!important;min-height:165px!important;max-height:165px!important
+ }
+ .as-ai-chat-window.open:not(.minimized) > .as-ai-chat-messages{padding:12px!important}
+ .as-ai-chat-window.open:not(.minimized) > .as-ai-chat-compose{flex-basis:76px!important;height:76px!important;min-height:76px!important}
+}
 </style></body></html>
