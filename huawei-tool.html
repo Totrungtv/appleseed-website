@@ -376,23 +376,12 @@ async function connectDevice(){
     // QUAN TRỌNG: requestDevice phải được gọi trực tiếp từ thao tác click.
     // Không phụ thuộc WebADB/CDN đã tải xong hay chưa.
     const raw=await navigator.usb.requestDevice({
-      // Chrome WebUSB lọc theo device descriptor, không phải ADB interface.
-      // Bộ lọc classCode:0xff cũ làm Samsung biến mất vì nhiều máy Samsung
-      // khai báo device class khác 0xff dù ADB interface bên trong vẫn là 0xff/42/1.
-      // Giữ Samsung VID 04E8 và thêm các VID Android phổ biến để hộp Pair
-      // hiện lại điện thoại; sau khi chọn, WebADB vẫn kiểm tra interface ADB.
-      filters:[
-        {vendorId:0x04e8}, // Samsung
-        {vendorId:0x12d1}, // Huawei
-        {vendorId:0x22b8}, // Motorola
-        {vendorId:0x18d1}, // Google
-        {vendorId:0x2a70}, // OnePlus
-        {vendorId:0x0bb4}, // HTC
-        {vendorId:0x2717}, // Xiaomi
-        {vendorId:0x1004}, // LG
-        {vendorId:0x17ef}, // Lenovo
-        {vendorId:0x2d95}  // OPPO/Realme (một số model)
-      ]
+      // KHÔNG lọc VID/class ở bước WebUSB.
+      // Android OEM có rất nhiều VID/interface khác nhau; lọc cứng có thể
+      // làm điện thoại hiện "No compatible devices found" dù USB debugging đã bật.
+      // Cho Chrome hiển thị thiết bị USB đã cắm, sau đó WebADB mới xác định
+      // thiết bị nào thực sự có interface ADB.
+      acceptAllDevices:true
     });
     if(!raw) throw new Error("Không chọn thiết bị.");
     log("✓ Chrome đã cấp quyền USB: "+(raw.manufacturerName||"")+" "+(raw.productName||"Android")+" · VID "+raw.vendorId.toString(16).padStart(4,"0")+" · PID "+raw.productId.toString(16).padStart(4,"0"));
