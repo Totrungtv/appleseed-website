@@ -246,11 +246,16 @@ async function downloadApk(url,name){
 
 async function installViaPush(file){
   const path="/data/local/tmp/.appleseed-"+Date.now()+".apk";
-  log("→ Fallback ADB Push: "+path);
-  const sync=await adb.sync();
+  log("→ Truyền APK trực tiếp qua ADB shell: "+path);
+  const proc=await adb.subprocess.spawn("cat > "+path);
+  const drainOut=proc.stdout.pipeTo(new WritableStream({write(){}}));
+  const drainErr=proc.stderr.pipeTo(new WritableStream({write(){}}));
   try{
-    await sync.write({filename:path,file:file.stream()});
-    log("✓ Push APK hoàn tất.");
+    await file.stream().pipeTo(proc.stdin);
+    const code=await proc.exit;
+    await Promise.allSettled([drainOut,drainErr]);
+    if(code!==0) throw new Error("ADB truyền APK thất bại (exit "+code+")");
+    log("✓ Truyền APK hoàn tất: "+fmt(file.size));
     log("→ Chạy package manager…");
     const out=await shell("pm install -r -g -d "+path);
     if(!/success/i.test(out)) throw new Error(out||"pm install không trả Success");
@@ -264,24 +269,10 @@ async function installApk(file){
   if(!adb) throw new Error("Chưa kết nối thiết bị");
   progress(5,"Chuẩn bị cài "+file.name);
   log("📦 Cài APK: "+file.name+" ("+fmt(file.size)+")");
-  try{
-    progress(25,"Streaming install…");
-    const pm=new PackageManager(adb);
-    await pm.installStream(file.size,file.stream(),{
-      bypassLowTargetSdkBlock:true,
-      skipVerification:true,
-      grantRuntimePermissions:true
-    });
-    progress(100,"Cài đặt thành công");
-    log("✓ CÀI APK THÀNH CÔNG (stream)");
-  }catch(e){
-    log("⚠ Streaming install thất bại: "+(e?.message||e));
-    log("→ Chuyển sang ADB Push + pm install.");
-    progress(35,"ADB Push fallback…");
-    await installViaPush(file);
-    progress(100,"Cài đặt thành công");
-    log("✓ CÀI APK THÀNH CÔNG (fallback)");
-  }
+  progress(20,"Đang truyền APK qua ADB…");
+  await installViaPush(file);
+  progress(100,"Cài đặt thành công");
+  log("✓ CÀI APK THÀNH CÔNG");
 }
 
 async function installSelected(){
