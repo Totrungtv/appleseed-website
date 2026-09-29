@@ -320,7 +320,7 @@ function setActionBusy(on,title="Đang xử lý…"){
     $("busyPct").textContent="Đang xử lý";
     o.classList.add("show");
     o.setAttribute("aria-busy","true");
-    document.querySelectorAll("button").forEach(b=>{if(!b.closest("#busyOverlay"))b.dataset.asBusy=b.disabled?"1":"0";});
+    document.querySelectorAll("button").forEach(b=>{if(!b.closest("#busyOverlay")&&!b.disabled){b.dataset.asBusy="1";b.disabled=true;}});
   }else{
     activeActions=Math.max(0,activeActions-1);
     if(activeActions===0){
