@@ -93,6 +93,31 @@
     <div id="progress" class="progress"><div class="bar"><i id="bar"></i></div><div class="progtext"><span id="progmsg">Đang chuẩn bị…</span><span id="progpct">0%</span></div></div>
   </div>
 
+  <div class="install">
+    <h3>🚫 Gỡ app quảng cáo / Bloatware</h3>
+    <p class="sub">Quét các package có dấu hiệu quảng cáo/bloatware, sau đó chọn package để vô hiệu hóa hoặc gỡ cho user hiện tại.</p>
+    <div class="appactions">
+      <button id="scanAdware" class="btn primary">🔍 Quét app quảng cáo</button>
+      <button id="disableAdware" class="btn">🚫 Vô hiệu hóa package</button>
+      <button id="removeAdware" class="btn danger">🗑 Gỡ package</button>
+    </div>
+    <div class="appactions" style="margin-top:8px">
+      <input id="adwarePkg" class="appinput" placeholder="Package cần xử lý, ví dụ com.xxx.ad" spellcheck="false">
+    </div>
+    <div class="appnote">Tool chỉ đề xuất package dựa trên tên/metadata. Không tự xóa package hệ thống quan trọng; hãy kiểm tra log trước khi gỡ.</div>
+  </div>
+
+  <div class="install">
+    <h3>🏦 Fix app ngân hàng</h3>
+    <p class="sub">Kiểm tra và sửa các lỗi cơ bản khiến app ngân hàng không mở: package bị disable, app không tồn tại, Play Services/Play Store và trạng thái thiết bị.</p>
+    <div class="appactions">
+      <input id="bankPkg" class="appinput" placeholder="Package app ngân hàng, ví dụ com.example.bank" spellcheck="false">
+      <button id="bankCheck" class="btn primary">🔍 Kiểm tra</button>
+      <button id="bankFix" class="btn">🛠 Fix cơ bản</button>
+    </div>
+    <div class="appnote">Không bypass cơ chế bảo mật/Integrity của ngân hàng. Chức năng này chỉ sửa cấu hình và thành phần Android thông thường.</div>
+  </div>
+
   <div class="apps">
     <h3>🚀 Quản lý ứng dụng</h3><p class="sub">Mở hoặc gỡ app bằng package name sau khi kết nối.</p>
     <div class="appactions">
@@ -193,6 +218,90 @@ async function adbReboot(mode=""){
   await shell("reboot"+(mode?" "+mode:""));
   log("✓ Đã gửi lệnh reboot "+(mode||"normal")+".");
 }
+async function scanAdware(){
+  if(!adb) throw new Error("Chưa kết nối thiết bị");
+  log("===== QUÉT APP QUẢNG CÁO / BLOATWARE =====");
+  const out=await shell("pm list packages -f");
+  const lines=out.split(/\r?\n/).filter(Boolean);
+  const suspicious=lines.filter(x=>/(adservice|ads|advert|admob|marketing|promo|push|daemon|cleaner|booster|browser|recommend|hotapp|appcenter|appmarket|gamecenter|shareit|ucbrowser|hios|vivo|oppo|coloros|samsung).*$/i.test(x));
+  if(!suspicious.length){
+    log("🟢 Không tìm thấy package đáng chú ý theo bộ lọc tên.");
+    return;
+  }
+  log("🟡 Package cần kiểm tra: "+suspicious.length);
+  suspicious.slice(0,120).forEach(x=>log("  "+x));
+  log("→ Chọn package ở ô bên dưới rồi dùng Vô hiệu hóa/Gỡ package.");
+  log("===== QUÉT KẾT THÚC =====");
+}
+
+async function packageAction(action){
+  if(!adb) throw new Error("Chưa kết nối thiết bị");
+  const p=$("adwarePkg").value.trim();
+  if(!p) throw new Error("Nhập package cần xử lý");
+  if(!/^[A-Za-z0-9._]+$/.test(p)) throw new Error("Package name không hợp lệ");
+  const exists=await shell("pm path "+p);
+  if(!/package:/i.test(exists)) throw new Error("Không tìm thấy package: "+p);
+  if(action==="disable"){
+    if(!confirm("Vô hiệu hóa "+p+" cho user hiện tại?")) return;
+    await run("pm disable-user --user 0 "+p);
+  }else{
+    if(!confirm("Gỡ "+p+" cho user hiện tại?")) return;
+    await run("pm uninstall --user 0 "+p);
+  }
+}
+
+async function bankCheck(){
+  if(!adb) throw new Error("Chưa kết nối thiết bị");
+  const p=$("bankPkg").value.trim();
+  if(!p) throw new Error("Nhập package app ngân hàng");
+  if(!/^[A-Za-z0-9._]+$/.test(p)) throw new Error("Package name không hợp lệ");
+  log("===== KIỂM TRA APP NGÂN HÀNG =====");
+  const cmds=[
+    ["Package","pm path "+p+"; pm list packages -d "+p],
+    ["Enabled","cmd package query-activities --brief "+p],
+    ["Play Services","pm path com.google.android.gms"],
+    ["Play Store","pm path com.android.vending"],
+    ["Verified Boot","getprop ro.boot.verifiedbootstate"],
+    ["Device State","getprop ro.boot.flash.locked; getprop ro.boot.verifiedbootstate"],
+    ["ADB Root","id"],
+    ["Installer","pm list packages -i "+p]
+  ];
+  for(const [n,cmd] of cmds){
+    try{log(n+":\n"+(await shell(cmd)||"(không có dữ liệu)"))}
+    catch(e){log("✕ "+n+": "+(e?.message||e))}
+  }
+  log("===== KIỂM TRA KẾT THÚC =====");
+}
+
+async function bankFix(){
+  if(!adb) throw new Error("Chưa kết nối thiết bị");
+  const p=$("bankPkg").value.trim();
+  if(!p) throw new Error("Nhập package app ngân hàng");
+  if(!/^[A-Za-z0-9._]+$/.test(p)) throw new Error("Package name không hợp lệ");
+  const exists=await shell("pm path "+p);
+  if(!/package:/i.test(exists)) throw new Error("Không tìm thấy app: "+p);
+  if(!confirm("Fix cơ bản cho "+p+"? Tool sẽ force-stop và bật lại package nếu đang bị disable.")) return;
+  log("→ Force-stop app ngân hàng…");
+  await shell("am force-stop "+p);
+  log("→ Kiểm tra package disabled…");
+  const disabled=await shell("pm list packages -d "+p);
+  if(disabled.includes(p)){
+    log("→ Package đang disabled, bật lại…");
+    await shell("pm enable "+p);
+  }
+  log("→ Kiểm tra Play Services / Play Store…");
+  for(const x of ["com.google.android.gms","com.android.vending"]){
+    try{
+      const d=await shell("pm list packages -d "+x);
+      if(d.includes(x)) await shell("pm enable "+x);
+    }catch{}
+  }
+  log("→ Làm mới cache package manager…");
+  try{await shell("cmd package bg-dexopt-job")}catch{}
+  log("✓ Đã hoàn tất fix cơ bản. Nếu app vẫn chặn do Integrity/root/bootloader/certification, cần xử lý đúng nguyên nhân thay vì bypass bảo mật.");
+  log("===== FIX APP NGÂN HÀNG KẾT THÚC =====");
+}
+
 async function uiAction(title,fn){
   try{
     log("\n▶ "+title);
@@ -439,6 +548,11 @@ function bind(){
   $("install").onclick=()=>uiAction("CÀI APK",installSelected);
   document.querySelectorAll(".tool[data-cmd]").forEach(b=>b.onclick=()=>uiAction(b.querySelector("b")?.textContent||"ADB",()=>run(b.dataset.cmd)));
   $("run").onclick=()=>uiAction("ADB SHELL",()=>run($("cmd").value.trim()));
+  $("scanAdware").onclick=()=>uiAction("QUÉT APP QUẢNG CÁO",scanAdware);
+  $("disableAdware").onclick=()=>uiAction("VÔ HIỆU HÓA PACKAGE",()=>packageAction("disable"));
+  $("removeAdware").onclick=()=>uiAction("GỠ PACKAGE",()=>packageAction("remove"));
+  $("bankCheck").onclick=()=>uiAction("KIỂM TRA APP NGÂN HÀNG",bankCheck);
+  $("bankFix").onclick=()=>uiAction("FIX APP NGÂN HÀNG",bankFix);
   $("clearLog").onclick=clearActivityLog;
   $("copyLog").onclick=copyActivityLog;
   $("adbReboot").onclick=()=>uiAction("ADB REBOOT",()=>adbReboot());
