@@ -376,12 +376,10 @@ async function connectDevice(){
     // QUAN TRỌNG: requestDevice phải được gọi trực tiếp từ thao tác click.
     // Không phụ thuộc WebADB/CDN đã tải xong hay chưa.
     const raw=await navigator.usb.requestDevice({
-      // KHÔNG lọc VID/class ở bước WebUSB.
-      // Android OEM có rất nhiều VID/interface khác nhau; lọc cứng có thể
-      // làm điện thoại hiện "No compatible devices found" dù USB debugging đã bật.
-      // Cho Chrome hiển thị thiết bị USB đã cắm, sau đó WebADB mới xác định
-      // thiết bị nào thực sự có interface ADB.
-      acceptAllDevices:true
+      // Không khóa cứng subclass/protocol vì một số Android/Huawei
+      // quảng bá ADB khác nhau tùy firmware. Lọc vendor-specific trước,
+      // sau đó WebADB sẽ tự tìm interface ADB.
+      filters:[{classCode:0xff}]
     });
     if(!raw) throw new Error("Không chọn thiết bị.");
     log("✓ Chrome đã cấp quyền USB: "+(raw.manufacturerName||"")+" "+(raw.productName||"Android")+" · VID "+raw.vendorId.toString(16).padStart(4,"0")+" · PID "+raw.productId.toString(16).padStart(4,"0"));
