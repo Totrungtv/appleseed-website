@@ -164,6 +164,15 @@ function log(msg){
 }
 function setStatus(text,on=false){$("status").textContent=text;$("dot").classList.toggle("on",on)}
 function setBusy(b){$("connect").disabled=b}
+function syncConnectedButtons(){
+  const connected=!!adb;
+  $("install").disabled=!connected||!selectedFile;
+  $("appleSeedOpen").disabled=!connected;
+  $("volteVerify").disabled=!connected;
+  $("launch").disabled=!connected;
+  $("uninstall").disabled=!connected;
+  $("run").disabled=!connected;
+}
 function fmt(n){if(!n)return"0 B";const u=["B","KB","MB","GB"];let i=0,x=n;while(x>=1024&&i<u.length-1){x/=1024;i++}return x.toFixed(i?1:0)+" "+u[i]}
 function progress(p,msg){$("progress").classList.add("show");$("bar").style.width=Math.max(0,Math.min(100,p))+"%";$("progpct").textContent=Math.round(p)+"%";$("progmsg").textContent=msg}
 function safeText(v){return String(v??"").trim()}
@@ -378,9 +387,7 @@ async function connectDevice(){
     $("model").textContent=model||"—";
     $("android").textContent=android||"—";
     $("serial").textContent=serial||"—";
-    $("install").disabled=false;
-    $("appleSeedOpen").disabled=false;
-    $("volteVerify").disabled=false;
+    syncConnectedButtons();
     log("✓ Thiết bị sẵn sàng: "+brand+" "+model+" · Android "+android+" · "+serial);
   }catch(e){
     adb=null;device=null;setStatus("Lỗi kết nối",false);
@@ -396,8 +403,7 @@ async function disconnectDevice(){
   }finally{
     adb=null;device=null;selectedFile=null;
     $("install").disabled=true;
-    $("appleSeedOpen").disabled=true;
-    $("volteVerify").disabled=true;
+    syncConnectedButtons();
     setStatus("Chưa kết nối",false);
     $("brand").textContent=$("model").textContent=$("android").textContent=$("serial").textContent="—";
     log("✓ Đã ngắt kết nối.");
@@ -462,7 +468,7 @@ async function installAppleSeedVolte(){
   await installApk(file);
   const p=await shell("pm list packages "+APPLESEED_VOLTE_PACKAGE);
   if(!p.includes(APPLESEED_VOLTE_PACKAGE)) throw new Error("Cài xong nhưng không tìm thấy "+APPLESEED_VOLTE_PACKAGE);
-  $("appleSeedOpen").disabled=false;$("volteVerify").disabled=false;
+  syncConnectedButtons();
   log("✓ APP APPLE SEED ĐÃ CÀI: "+APPLESEED_VOLTE_PACKAGE);
 }
 
