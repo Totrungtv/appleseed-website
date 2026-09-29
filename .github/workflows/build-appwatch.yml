@@ -52,8 +52,8 @@ jobs:
       - name: Publish APK release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: appwatch-v1.0.0
-          name: Apple Seed App Watch v1.0.0
-          body: Apple Seed App Watch — scanner adware/bloatware and app manager.
+          tag_name: appwatch-v1.0.1
+          name: Apple Seed App Watch v1.0.1
+          body: Apple Seed App Watch — focused third-party adware popup candidate scanner.
           files: appwatch/app/build/outputs/apk/debug/app-debug.apk
           make_latest: true
