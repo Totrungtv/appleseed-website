@@ -508,6 +508,15 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
   .as-ai-bubble{font-size:15px!important;line-height:1.58!important;max-width:88%!important}
 }
 </style>
+<style id="apple-seed-hero-robot-no-image-fix">
+.as-ai-3d-visual .as-ai-hero-robot-live{left:50%!important;bottom:12px!important;transform:translateX(-50%) scale(1.55)!important;transform-origin:center bottom!important;overflow:visible!important;display:block!important;z-index:6!important}
+.as-ai-3d-visual .as-ai-hero-robot-live .head{z-index:4}
+.as-ai-3d-visual .as-ai-hero-robot-live .body{z-index:2}
+.as-ai-robot-arm{position:absolute;top:105px;width:27px;height:78px;border-radius:18px;background:linear-gradient(145deg,#f9fffe,#cbdedb);border:3px solid #6d9892;z-index:1}
+.as-ai-robot-arm.left{left:7px;transform:rotate(12deg)}
+.as-ai-robot-arm.right{right:7px;transform:rotate(-12deg)}
+@media(max-width:700px){.as-ai-3d-visual .as-ai-hero-robot-live{left:50%!important;bottom:22px!important;transform:translateX(-50%) scale(1.08)!important}}
+</style>
 </head>
 <body><main class="wrap">
 <!-- ===== APPLE SEED FULL MEMBER / COMMUNITY / CHAT RESTORE ===== -->
@@ -1215,7 +1224,12 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
   </div>
 
   <div class="as-ai-3d-visual">
-    <img class="as-ai-real-robot as-ai-real-robot-image" src="/apple-seed-ai-robot-3d.webp?v=4" alt="Apple Seed AI Robot" loading="eager" decoding="async" width="720" height="720" onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='/apple-seed-ai-robot-hero.webp?v=4';}else if(this.dataset.fallback==='1'){this.dataset.fallback='2';this.src='/apple-seed-ai-robot-exact.webp?v=4';}else{this.onerror=null;this.style.display='none';}">
+    <div class="as-ai-hero-robot as-ai-hero-robot-live" role="img" aria-label="Apple Seed AI Robot">
+    <div class="ear l"></div><div class="ear r"></div>
+    <div class="head"><div class="visor"></div></div>
+    <div class="body"><div class="core"></div></div>
+    <div class="as-ai-robot-arm left"></div><div class="as-ai-robot-arm right"></div>
+  </div>
   </div>
 
   <div class="as-ai-3d-copy">
