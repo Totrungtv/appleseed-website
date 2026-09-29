@@ -520,7 +520,7 @@ async function installApk(file){
   }
   try{
     progress(70,"Android Package Manager đang cài…");
-    const out=await shell("pm install -r -g -d --bypass-low-target-sdk-block --skip-verification \""+path+"\"");
+    const out=await shell("pm install -r -g -d \""+path+"\"");
     log("pm install: "+(out||"(không có output)"));
     if(!/success/i.test(out||"")) throw new Error(out||"Android không trả Success");
     progress(100,"Cài đặt thành công");
