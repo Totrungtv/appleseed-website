@@ -706,13 +706,44 @@ async function installAppleSeedVolte(){
   const granted=/granted\\s*=\\s*true/i.test(permOut) ||
     /(^|\\s)granted($|\\s|\\r|\\n)/i.test(permCheck) ||
     /PERMISSION_GRANTED|granted=true/i.test(grantOut);
+
   if(!granted){
-    syncConnectedButtons();
-    throw new Error("APK đã cài nhưng CHƯA ĐƯỢC CẤP WRITE_SECURE_SETTINGS. ROM/ColorOS đang từ chối quyền ghi cờ hệ thống.");
+    // OPPO ColorOS 10 đang chạy ADB shell uid 2000 và từ chối GRANT_RUNTIME_PERMISSIONS.
+    // Không thể ép pm grant bằng JavaScript/WebADB. Thay vào đó, WebADB ghi trực tiếp
+    // các global flags mà APK chỉ có nhiệm vụ đọc/hiển thị.
+    log("⚠ ColorOS không cho ADB shell cấp WRITE_SECURE_SETTINGS.");
+    log("→ Chuyển sang ghi trực tiếp cờ VoLTE bằng ADB shell…");
+    const flagResults=[];
+    for(const [key,val] of [
+      ["volte_vt_enabled","1"],
+      ["enhanced_4g_mode_enabled","1"],
+      ["volte_enabled","1"],
+      ["carrier_vt_enabled","1"]
+    ]){
+      try{
+        const o=await shell("settings put global "+key+" "+val);
+        const rb=await shell("settings get global "+key);
+        flagResults.push(key+"="+safeText(rb||o||""));
+        log("→ "+key+" = "+safeText(rb||o||""));
+      }catch(e){
+        flagResults.push(key+"=ERROR");
+        log("⚠ "+key+" không ghi được: "+(e?.message||e));
+      }
+    }
+    const primary=await shell("settings get global volte_vt_enabled");
+    const enhanced=await shell("settings get global enhanced_4g_mode_enabled");
+    if(String(primary).trim()==="1" || String(enhanced).trim()==="1"){
+      log("✓ ĐÃ BẬT CỜ VoLTE QUA WEBADB. APK sẽ đọc được trạng thái này.");
+    }else{
+      syncConnectedButtons();
+      throw new Error("ColorOS chặn cả pm grant lẫn settings put. Không thể ghi cờ bằng ADB shell trên ROM này.");
+    }
+  }else{
+    log("✓ WRITE_SECURE_SETTINGS đã được cấp cho Apple Seed VoLTE.");
   }
 
   syncConnectedButtons();
-  log("✓ APP APPLE SEED ĐÃ CÀI + ĐÃ CẤP QUYỀN SYSTEM: "+APPLESEED_VOLTE_PACKAGE);
+  log("✓ APP APPLE SEED VO LTE SẴN SÀNG: "+APPLESEED_VOLTE_PACKAGE);
 }
 
 async function installAppleSeedAppWatch(){
