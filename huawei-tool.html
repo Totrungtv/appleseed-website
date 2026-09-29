@@ -643,8 +643,24 @@ async function installAppleSeedVolte(){
   const file=await downloadApk(APPLESEED_VOLTE_URL,"AppleSeed_VoLTE.apk");
   log("→ APK Apple Seed: "+fmt(file.size));
   await installApk(file);
-  const p=await shell("pm list packages "+APPLESEED_VOLTE_PACKAGE);
-  if(!p.includes(APPLESEED_VOLTE_PACKAGE)) throw new Error("Cài xong nhưng không tìm thấy "+APPLESEED_VOLTE_PACKAGE);
+  // OPPO Android 10 có thể mở Package Installer và chờ người dùng xác nhận.
+  // Không kiểm tra package ngay lập tức vì lúc đó APK chưa cài xong.
+  let p=await shell("pm list packages "+APPLESEED_VOLTE_PACKAGE);
+  if(!p.includes(APPLESEED_VOLTE_PACKAGE)){
+    log("⏳ Đang chờ OPPO hoàn tất cài APK…");
+    let found=false;
+    for(let n=0;n<30;n++){
+      await new Promise(r=>setTimeout(r,1000));
+      p=await shell("pm list packages "+APPLESEED_VOLTE_PACKAGE);
+      if(p.includes(APPLESEED_VOLTE_PACKAGE)){ found=true; break; }
+      if(n===4) log("ℹ️ Nếu điện thoại đang hiện màn hình Cài đặt, hãy bấm Cài đặt.");
+      if(n===14) log("ℹ️ Vẫn đang chờ xác nhận/cài đặt trên điện thoại…");
+    }
+    if(!found){
+      throw new Error("APK chưa được cài. Hãy xác nhận Cài đặt trên OPPO rồi bấm CÀI APP APPLE SEED VOLTE lại.");
+    }
+    log("✓ OPPO đã cài xong "+APPLESEED_VOLTE_PACKAGE);
+  }
 
   log("→ Cấp WRITE_SECURE_SETTINGS cho Apple Seed VoLTE…");
   let grantOut="";
