@@ -662,23 +662,23 @@ async function installAppleSeedVolte(){
     log("✓ OPPO đã cài xong "+APPLESEED_VOLTE_PACKAGE);
   }
 
-  log("→ Cấp WRITE_SECURE_SETTINGS cho Apple Seed VoLTE…");
+  log("→ CẤP WRITE_SECURE_SETTINGS bằng WebADB…");
   let grantOut="";
-  try{
-    grantOut=await shell("pm grant "+APPLESEED_VOLTE_PACKAGE+" android.permission.WRITE_SECURE_SETTINGS");
-    log("pm grant WRITE_SECURE_SETTINGS: "+(grantOut||"OK"));
-  }catch(e){
-    log("⚠ pm grant bị từ chối: "+(e?.message||e));
-  }
-
-  // Một số ROM/OEM nhận cmd package grant tốt hơn pm grant.
-  if(/denied|failure|exception|security|unknown|not allowed|error/i.test(grantOut||"")){
+  const grantCommands=[
+    "pm grant --user 0 "+APPLESEED_VOLTE_PACKAGE+" android.permission.WRITE_SECURE_SETTINGS",
+    "pm grant "+APPLESEED_VOLTE_PACKAGE+" android.permission.WRITE_SECURE_SETTINGS",
+    "cmd package grant --user 0 "+APPLESEED_VOLTE_PACKAGE+" android.permission.WRITE_SECURE_SETTINGS",
+    "cmd package grant "+APPLESEED_VOLTE_PACKAGE+" android.permission.WRITE_SECURE_SETTINGS"
+  ];
+  for(const cmd of grantCommands){
     try{
-      const alt=await shell("cmd package grant "+APPLESEED_VOLTE_PACKAGE+" android.permission.WRITE_SECURE_SETTINGS");
-      log("cmd package grant WRITE_SECURE_SETTINGS: "+(alt||"OK"));
-      grantOut += "\n"+alt;
+      const out=await shell(cmd);
+      log("→ "+cmd+" => "+(out||"OK"));
+      grantOut += "\n"+out;
+      if(!/error|exception|denied|failure|not allowed|unknown/i.test(out||"")) break;
     }catch(e){
-      log("⚠ cmd package grant cũng bị từ chối: "+(e?.message||e));
+      log("⚠ "+cmd+" => "+(e?.message||e));
+      grantOut += "\n"+(e?.message||e);
     }
   }
 
@@ -698,11 +698,14 @@ async function installAppleSeedVolte(){
 
   let permOut="";
   try{
-    permOut=await shell("dumpsys package "+APPLESEED_VOLTE_PACKAGE+" | grep -i WRITE_SECURE_SETTINGS");
+    permOut=await shell("dumpsys package "+APPLESEED_VOLTE_PACKAGE+" | grep -i -A2 -B2 WRITE_SECURE_SETTINGS");
     log("Chi tiết quyền Apple Seed: "+(permOut||"không thấy dòng quyền"));
   }catch(e){}
 
-  const granted=/granted|GRANTED/i.test(permCheck);
+  // Android 10 thường thể hiện quyền đã cấp bằng "granted=true".
+  const granted=/granted\\s*=\\s*true/i.test(permOut) ||
+    /(^|\\s)granted($|\\s|\\r|\\n)/i.test(permCheck) ||
+    /PERMISSION_GRANTED|granted=true/i.test(grantOut);
   if(!granted){
     syncConnectedButtons();
     throw new Error("APK đã cài nhưng CHƯA ĐƯỢC CẤP WRITE_SECURE_SETTINGS. ROM/ColorOS đang từ chối quyền ghi cờ hệ thống.");
