@@ -528,10 +528,6 @@ async function installAppleSeedAppWatch(){
   if(!adb) throw new Error("Chưa kết nối thiết bị.");
   log("→ Tải Apple Seed App Watch vào bộ nhớ trình duyệt…");
   const file=await downloadApk(APPLESEED_APPWATCH_URL,"AppleSeed_AppWatch.apk",{
-    headers:{
-      apikey:APPLESEED_SUPABASE_KEY,
-      Authorization:"Bearer "+APPLESEED_SUPABASE_KEY
-    },
     openOnFail:false,
     errorMessage:"Không lấy được APK App Watch từ máy chủ Apple Seed."
   });
@@ -697,7 +693,6 @@ function bind(){
 const APPLESEED_VOLTE_URL="https://raw.githubusercontent.com/Totrungtv/AppleSeed-IMS/main/apps/AppleSeed_VoLTE.apk";
 const APPLESEED_VOLTE_PACKAGE="vn.appleseed.volte";
 const APPLESEED_APPWATCH_URL="https://nuismqcjyutqigdydfkg.supabase.co/functions/v1/appwatch-apk";
-const APPLESEED_SUPABASE_KEY="sb_publishable_Z3pTEseMEeoiGU9dYJ1NwQ_Ko7li9Sz";
 const APPLESEED_APPWATCH_PACKAGE="vn.appleseed.appwatch";
 bind();
 log("✓ Apple Seed WebADB đã nạp đầy đủ chức năng. Bấm Kết nối thiết bị để bắt đầu.");
