@@ -1226,10 +1226,10 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
   </div>
 
   <div class="as-ai-ref-toolbar">
-    <button class="as-ai-ref-action" data-prompt="Phân tích ca này như kỹ thuật viên board-level."><span class="ico">⌁</span><b>Phân tích ca</b></button>
-    <button class="as-ai-ref-action" data-prompt="Hãy suy luận power sequence và chỉ ra phép đo tiếp theo."><span class="ico">⚡</span><b>Power sequence</b></button>
-    <button class="as-ai-ref-action" data-prompt="Giải thích panic log này theo kiến thức Brain."><span class="ico">🧠</span><b>Panic log</b></button>
-    <button class="as-ai-ref-action" data-prompt="Tôi muốn tìm hiểu sâu về lỗi này, hãy dạy tôi từng bước."><span class="ico">📖</span><b>Học sửa</b></button>
+    <button class="as-ai-ref-action" data-prompt="Phân tích ca này như kỹ thuật viên board-level."><span class="ico ico-case">⌕</span><b>Phân tích ca</b></button>
+    <button class="as-ai-ref-action" data-prompt="Hãy suy luận power sequence và chỉ ra phép đo tiếp theo."><span class="ico ico-power">ϟ</span><b>Power sequence</b></button>
+    <button class="as-ai-ref-action" data-prompt="Giải thích panic log này theo kiến thức Brain."><span class="ico ico-panic">◈</span><b>Panic log</b></button>
+    <button class="as-ai-ref-action" data-prompt="Tôi muốn tìm hiểu sâu về lỗi này, hãy dạy tôi từng bước."><span class="ico ico-learn">▱</span><b>Học sửa</b></button>
   </div>
 </div>
 <div id="asAiChatMessages" class="as-ai-chat-messages"></div>
@@ -1621,5 +1621,114 @@ load();
  }
  .as-ai-chat-window.open:not(.minimized) > .as-ai-chat-messages{padding:12px!important}
  .as-ai-chat-window.open:not(.minimized) > .as-ai-chat-compose{flex-basis:76px!important;height:76px!important;min-height:76px!important}
+}
+</style><style id="apple-seed-ai-hero-polish-v2">
+/* ===== HERO / ICON POLISH ===== */
+.as-ai-chat-window.open:not(.minimized) .as-ai-3d-bg{
+  background:
+    radial-gradient(circle at 15% 70%,rgba(25,218,165,.28),transparent 32%),
+    radial-gradient(circle at 82% 28%,rgba(35,145,125,.24),transparent 35%),
+    linear-gradient(115deg,#031513 0%,#062a25 48%,#041a18 100%)!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-3d-grid{
+  opacity:.16!important;
+  background-size:34px 34px!important;
+  mask-image:linear-gradient(90deg,rgba(0,0,0,.9),transparent 90%)!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-3d-visual{
+  width:58%!important;
+  background:linear-gradient(90deg,#020e0d 0%,rgba(3,25,22,.82) 65%,rgba(3,25,22,0) 100%)!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-real-robot-image{
+  width:112%!important;
+  height:112%!important;
+  object-fit:cover!important;
+  object-position:center center!important;
+  filter:saturate(1.12) contrast(1.06) brightness(.9)!important;
+  mix-blend-mode:screen!important;
+  mask-image:linear-gradient(90deg,#000 72%,transparent 100%)!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-3d-visual:after{
+  content:"";
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(90deg,transparent 45%,rgba(3,22,19,.75) 100%),linear-gradient(0deg,rgba(1,12,11,.42),transparent 45%);
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-3d-copy{
+  width:39%!important;
+  right:26px!important;
+  top:42px!important;
+  z-index:12!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-3d-copy .kicker{
+  color:#6dffd1!important;letter-spacing:.26em!important;font-weight:900!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-3d-copy h3{
+  font-size:42px!important;
+  text-shadow:0 8px 30px rgba(0,0,0,.4)!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-3d-copy p{
+  color:#effffb!important;text-shadow:0 3px 16px rgba(0,0,0,.5)!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-3d-copy .quote{
+  background:rgba(4,37,32,.72)!important;
+  border-color:rgba(91,255,215,.34)!important;
+  color:#bfffe9!important;
+  backdrop-filter:blur(8px)!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-ref-toolbar{
+  width:48%!important;right:22px!important;bottom:13px!important;gap:8px!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-ref-action{
+  min-height:58px!important;
+  border-radius:15px!important;
+  border:1px solid rgba(12,132,105,.18)!important;
+  background:rgba(250,255,253,.96)!important;
+  box-shadow:0 10px 28px rgba(0,0,0,.22)!important;
+  transition:transform .18s ease,box-shadow .18s ease!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-ref-action:hover{
+  transform:translateY(-3px)!important;
+  box-shadow:0 15px 32px rgba(0,0,0,.28)!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-ref-action .ico{
+  width:28px!important;height:28px!important;border-radius:9px!important;
+  display:grid!important;place-items:center!important;
+  font-size:20px!important;font-weight:900!important;
+  color:#087e63!important;background:#e6fff6!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-ref-action b{
+  font-size:9px!important;color:#153f37!important;
+}
+.as-ai-chat-window.open:not(.minimized) .ico-power{color:#9a6500!important;background:#fff4ce!important}
+.as-ai-chat-window.open:not(.minimized) .ico-panic{color:#9d3378!important;background:#ffe8f6!important}
+.as-ai-chat-window.open:not(.minimized) .ico-learn{color:#3869a8!important;background:#e8f1ff!important}
+/* Chat avatars + composer icons */
+.as-ai-msg-avatar{
+  width:38px!important;height:38px!important;border-radius:12px!important;
+  background:linear-gradient(145deg,#ecfff8,#d4faee)!important;
+  box-shadow:0 5px 15px rgba(15,148,111,.14)!important;
+}
+.as-ai-msg.user .as-ai-msg-avatar{
+  background:linear-gradient(145deg,#eef5ff,#dceaff)!important;
+}
+.as-ai-chat-orb{
+  width:48px!important;height:48px!important;border-radius:15px!important;
+  box-shadow:0 0 24px rgba(77,255,210,.13)!important;
+}
+.as-ai-chat-iconbtn,.as-ai-chat-send{
+  width:48px!important;height:48px!important;border-radius:14px!important;
+  display:grid!important;place-items:center!important;font-size:21px!important;
+}
+.as-ai-chat-send{
+  background:linear-gradient(135deg,#12d99a,#08ae7c)!important;
+  box-shadow:0 8px 22px rgba(7,182,132,.28)!important;
+}
+@media(max-width:700px){
+ .as-ai-chat-window.open:not(.minimized) .as-ai-3d-visual{width:61%!important}
+ .as-ai-chat-window.open:not(.minimized) .as-ai-3d-copy{width:43%!important;right:10px!important;top:28px!important}
+ .as-ai-chat-window.open:not(.minimized) .as-ai-3d-copy h3{font-size:28px!important}
+ .as-ai-chat-window.open:not(.minimized) .as-ai-ref-toolbar{width:55%!important;right:8px!important;gap:4px!important}
+ .as-ai-chat-window.open:not(.minimized) .as-ai-ref-action{min-height:48px!important}
+ .as-ai-chat-window.open:not(.minimized) .as-ai-ref-action b{font-size:7px!important}
 }
 </style></body></html>
