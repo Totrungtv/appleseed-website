@@ -85,8 +85,8 @@
     <div class="appactions">
       <button id="volteOpen" class="btn primary">📶 Mở cài đặt VoLTE</button>
       <button id="appleSeedInstall" class="btn">🍏 Cài Apple Seed VoLTE</button>
-      <button id="appleSeedOpen" class="btn" disabled>▶ Mở app Apple Seed</button>
-      <button id="volteVerify" class="btn" disabled>🔍 Kiểm tra IMS</button>
+      <button id="appleSeedOpen" class="btn">▶ Mở app Apple Seed</button>
+      <button id="volteVerify" class="btn">🔍 Kiểm tra IMS</button>
     </div>
     <div id="imsHint" class="appnote">Tool không giả báo VoLTE đã hoạt động. Sau khi mở/bật VoLTE, nút Kiểm tra IMS sẽ đọc trạng thái thực tế từ thiết bị.</div>
   </div>
@@ -167,10 +167,11 @@ function setBusy(b){$("connect").disabled=b}
 function syncConnectedButtons(){
   const connected=!!adb;
   $("install").disabled=!connected||!selectedFile;
-  $("appleSeedInstall").disabled=!connected;
-  $("appleSeedOpen").disabled=!connected;
-  $("volteVerify").disabled=!connected;
-  $("volteOpen").disabled=!connected;
+  // Các nút VoLTE luôn hiển thị/bấm được; hàm bên trong tự kiểm tra ADB.
+  $("appleSeedInstall").disabled=false;
+  $("appleSeedOpen").disabled=false;
+  $("volteVerify").disabled=false;
+  $("volteOpen").disabled=false;
   $("launch").disabled=!connected;
   $("uninstall").disabled=!connected;
   $("run").disabled=!connected;
