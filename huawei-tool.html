@@ -915,7 +915,7 @@ async function runHbgCarrierFix(){
   // HBG thực hiện override qua hidden CarrierConfig Binder.
   // Không coi global Settings là kết quả; kết quả phải đến từ CarrierConfig.
   const base="CLASSPATH=/data/local/tmp/apple_seed_hbg_volte.dex";
-  const java=base+" app_process -Djava.class.path=/data/local/tmp/apple_seed_hbg_volte.dex /system/bin com.hbg.volte.VolteFixer ENABLE";
+  const java=base+" app_process -Djava.class.path=/data/local/tmp/apple_seed_hbg_volte.dex /data/local/tmp com.hbg.volte.VolteFixer ENABLE";
 
   // Chạy detached và lưu cả PID/exit code. Trên ColorOS, shell wrapper
   // có thể trả stdout khác với PID thực nên dùng pidof app_process.
