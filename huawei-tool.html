@@ -459,21 +459,27 @@ async function disconnectDevice(){
 }
 
 async function downloadApk(url,name,options={}){
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),20000);
   try{
+    log("→ Kết nối máy chủ APK…");
     const r=await fetch(url,{
       cache:"no-store",
       redirect:"follow",
-      headers:options.headers||{}
+      headers:options.headers||{},
+      signal:controller.signal
     });
     if(!r.ok) throw new Error("HTTP "+r.status);
     const b=await r.blob();
     if(!b.size) throw new Error("APK rỗng");
+    log("✓ Đã nhận APK từ máy chủ: "+fmt(b.size));
     return new File([b],name,{type:"application/vnd.android.package-archive"});
   }catch(e){
-    log("⚠ Không tải APK tự động được: "+(e?.message||e));
+    const msg=e?.name==="AbortError"?"Timeout 20 giây khi lấy APK":(e?.message||e);
+    log("✕ Không lấy được APK: "+msg);
     if(options.openOnFail!==false) window.open(url,"_blank","noopener");
-    throw new Error(options.errorMessage||"Không tải được APK để cài tự động: "+(e?.message||e));
-  }
+    throw new Error(options.errorMessage||"Không lấy được APK để cài tự động: "+msg);
+  }finally{clearTimeout(timer)}
 }
 
 async function installViaPush(file){
@@ -707,7 +713,7 @@ function bind(){
     await run("pm uninstall "+p);
   });
 }
-const APPLESEED_VOLTE_URL="https://raw.githubusercontent.com/Totrungtv/AppleSeed-IMS/main/apps/AppleSeed_VoLTE.apk";
+const APPLESEED_VOLTE_URL="https://nuismqcjyutqigdydfkg.supabase.co/functions/v1/volte-apk";
 const APPLESEED_VOLTE_PACKAGE="vn.appleseed.volte";
 const APPLESEED_APPWATCH_URL="https://nuismqcjyutqigdydfkg.supabase.co/functions/v1/appwatch-apk";
 const APPLESEED_APPWATCH_PACKAGE="vn.appleseed.appwatch";
