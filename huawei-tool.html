@@ -105,6 +105,8 @@
     <p class="sub">Quét các package có dấu hiệu quảng cáo/bloatware, sau đó chọn package để vô hiệu hóa hoặc gỡ cho user hiện tại.</p>
     <div class="appactions">
       <button id="scanAdware" class="btn primary">🔍 Quét app quảng cáo</button>
+      <button id="appWatchInstall" class="btn">🛡 Cài Apple Seed App Watch</button>
+      <button id="appWatchOpen" class="btn">▶ Mở App Watch</button>
       <button id="disableAdware" class="btn">🚫 Vô hiệu hóa package</button>
       <button id="removeAdware" class="btn danger">🗑 Gỡ package</button>
     </div>
@@ -180,11 +182,12 @@ function setBusy(b){$("connect").disabled=b}
 function syncConnectedButtons(){
   const connected=!!adb;
   $("install").disabled=!connected||!selectedFile;
-  // Các nút VoLTE luôn hiển thị/bấm được; hàm bên trong tự kiểm tra ADB.
   $("appleSeedInstall").disabled=false;
   $("appleSeedOpen").disabled=false;
   $("volteVerify").disabled=false;
   $("volteOpen").disabled=false;
+  $("appWatchInstall").disabled=false;
+  $("appWatchOpen").disabled=false;
   $("launch").disabled=!connected;
   $("uninstall").disabled=!connected;
   $("run").disabled=!connected;
@@ -517,6 +520,25 @@ async function installAppleSeedVolte(){
   log("✓ APP APPLE SEED ĐÃ CÀI: "+APPLESEED_VOLTE_PACKAGE);
 }
 
+async function installAppleSeedAppWatch(){
+  if(!adb) throw new Error("Chưa kết nối thiết bị.");
+  log("→ Tải Apple Seed App Watch APK…");
+  const file=await downloadApk(APPLESEED_APPWATCH_URL,"AppleSeed_AppWatch.apk");
+  log("→ APK Apple Seed App Watch: "+fmt(file.size));
+  await installApk(file);
+  const p=await shell("pm list packages "+APPLESEED_APPWATCH_PACKAGE);
+  if(!p.includes(APPLESEED_APPWATCH_PACKAGE)) throw new Error("Cài xong nhưng không tìm thấy "+APPLESEED_APPWATCH_PACKAGE);
+  syncConnectedButtons();
+  log("✓ APPLE SEED APP WATCH ĐÃ CÀI: "+APPLESEED_APPWATCH_PACKAGE);
+}
+async function openAppleSeedAppWatch(){
+  if(!adb) throw new Error("Chưa kết nối thiết bị.");
+  const p=await shell("pm list packages "+APPLESEED_APPWATCH_PACKAGE);
+  if(!p.includes(APPLESEED_APPWATCH_PACKAGE)) throw new Error("Chưa cài "+APPLESEED_APPWATCH_PACKAGE);
+  await shell("monkey -p "+APPLESEED_APPWATCH_PACKAGE+" -c android.intent.category.LAUNCHER 1");
+  log("✓ Đã mở Apple Seed App Watch.");
+}
+
 async function openVolteSettings(){
   if(!adb) throw new Error("Chưa kết nối thiết bị.");
   const brand=safeText(await shell("getprop ro.product.brand")).toLowerCase();
@@ -632,6 +654,8 @@ function bind(){
   document.querySelectorAll(".tool[data-cmd]").forEach(b=>b.onclick=()=>uiAction(b.querySelector("b")?.textContent||"ADB",()=>run(b.dataset.cmd)));
   $("run").onclick=()=>uiAction("ADB SHELL",()=>run($("cmd").value.trim()));
   $("scanAdware").onclick=()=>uiAction("QUÉT APP QUẢNG CÁO",scanAdware);
+  $("appWatchInstall").onclick=()=>uiAction("CÀI APPLE SEED APP WATCH",installAppleSeedAppWatch);
+  $("appWatchOpen").onclick=()=>uiAction("MỞ APPLE SEED APP WATCH",openAppleSeedAppWatch);
   $("disableAdware").onclick=()=>uiAction("VÔ HIỆU HÓA PACKAGE",()=>packageAction("disable"));
   $("removeAdware").onclick=()=>uiAction("GỠ PACKAGE",()=>packageAction("remove"));
   $("bankCheck").onclick=()=>uiAction("KIỂM TRA APP NGÂN HÀNG",bankCheck);
@@ -661,6 +685,8 @@ function bind(){
 }
 const APPLESEED_VOLTE_URL="https://raw.githubusercontent.com/Totrungtv/AppleSeed-IMS/main/apps/AppleSeed_VoLTE.apk";
 const APPLESEED_VOLTE_PACKAGE="vn.appleseed.volte";
+const APPLESEED_APPWATCH_URL="https://github.com/Totrungtv/appleseed-website/releases/download/appwatch-v1.0.0/app-debug.apk";
+const APPLESEED_APPWATCH_PACKAGE="vn.appleseed.appwatch";
 bind();
 log("✓ Apple Seed WebADB đã nạp đầy đủ chức năng. Bấm Kết nối thiết bị để bắt đầu.");
 </script>
