@@ -20,7 +20,7 @@
 .shell{margin-top:14px;padding-top:15px;border-top:1px solid var(--line)}.shellrow{display:flex;gap:8px}.shellrow input{flex:1;min-width:0;background:#050d08;border:1px solid #234a35;color:var(--text);border-radius:10px;padding:11px 12px;outline:none}.shellrow input:focus{border-color:var(--green)}.hint{color:var(--muted);font-size:10px;margin:8px 0 0}
 .log{margin:0;background:#030805;border:1px solid #14291e;border-radius:12px;padding:13px;height:455px;overflow:auto;color:#bfead2;font:11px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap}.empty{color:#536e60}.loghead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.badge{font-size:9px;color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:4px 7px}
 .busy-overlay{position:fixed;inset:0;background:rgba(2,8,5,.62);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:10000;padding:18px}.busy-overlay.show{display:flex}.busy-card{width:min(430px,100%);background:#0a1710;border:1px solid #28533b;border-radius:16px;padding:18px;box-shadow:0 24px 80px rgba(0,0,0,.5)}.busy-top{display:flex;align-items:center;gap:12px}.busy-spinner{width:30px;height:30px;border:3px solid #183b29;border-top-color:#20dc7d;border-radius:50%;animation:asSpin .75s linear infinite;flex:none}.busy-title{font-weight:900;font-size:14px}.busy-status{color:#789587;font-size:11px;margin-top:2px}.busy-track{height:7px;background:#050d08;border:1px solid #193223;border-radius:99px;overflow:hidden;margin-top:15px}.busy-track i{display:block;width:12%;height:100%;background:linear-gradient(90deg,#18c972,#61efa7);border-radius:99px;animation:asLoad 1.4s ease-in-out infinite}.busy-pct{text-align:right;color:#789587;font-size:10px;margin-top:5px}@keyframes asSpin{to{transform:rotate(360deg)}}@keyframes asLoad{0%{margin-left:-15%;width:15%}50%{margin-left:35%;width:45%}100%{margin-left:100%;width:15%}}@media(prefers-reduced-motion:reduce){.busy-spinner{animation:none}.busy-track i{animation:none;width:45%;margin-left:35%}}
-.footer{padding:14px 2px 0;color:#4d6559;font-size:10px;text-align:center}
+.scanbox{margin-top:12px;border:1px solid #214a34;background:linear-gradient(180deg,#07150d,#050d08);border-radius:14px;overflow:hidden;display:none}.scanbox.show{display:block}.scanhead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 14px;border-bottom:1px solid #193223}.scanbrand{display:flex;align-items:center;gap:9px}.scanpulse{width:10px;height:10px;border-radius:50%;background:#20dc7d;box-shadow:0 0 0 0 rgba(32,220,125,.55);animation:scanPulse 1.4s infinite}.scanbox.done .scanpulse{animation:none}.scanbrand b{font-size:12px}.scansub{font-size:10px;color:#789587;margin-top:2px}.scanpercent{font:900 13px ui-monospace,SFMono-Regular,Consolas,monospace;color:#20dc7d}.scanmeter{height:5px;background:#030805}.scanmeter i{display:block;width:0;height:100%;background:linear-gradient(90deg,#0db665,#61efa7);transition:width .25s}.scanstats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:10px 12px}.scanstat{background:#091810;border:1px solid #173525;border-radius:9px;padding:8px}.scanstat small{display:block;color:#536c5e;font-size:9px;text-transform:uppercase}.scanstat strong{display:block;margin-top:2px;font-size:13px}.scanresults{padding:0 12px 12px;max-height:245px;overflow:auto}.scanrow{display:grid;grid-template-columns:30px minmax(0,1fr) auto;align-items:center;gap:9px;padding:9px 8px;border-top:1px solid #11271b}.scanicon{width:25px;height:25px;border-radius:7px;display:grid;place-items:center;background:#10281a}.scanpkg{font:11px ui-monospace,SFMono-Regular,Consolas,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.scanreason{font-size:9px;color:#536c5e;margin-top:2px}.scanrisk{font-size:9px;font-weight:900;padding:4px 7px;border-radius:99px}.scanrisk.review{color:#f5c45b;background:#2a2110;border:1px solid #5a461c}.scanrisk.info{color:#789587;background:#0c1c13;border:1px solid #21412f}.scanempty{padding:18px;text-align:center;color:#789587;font-size:11px}@keyframes scanPulse{50%{box-shadow:0 0 0 7px rgba(32,220,125,0)}}.footer{padding:14px 2px 0;color:#4d6559;font-size:10px;text-align:center}
 @media(max-width:900px){.main{grid-template-columns:1fr}.log{height:300px}.hero{grid-template-columns:1fr}.devicebar{grid-template-columns:repeat(2,1fr)}}@media(max-width:620px){.wrap{width:calc(100% - 18px);padding-top:14px}.top{align-items:flex-start}.brand h1{font-size:18px}.status{font-size:10px}.hero{padding:17px}.hero h2{font-size:21px}.devicebar{gap:7px}.stat{padding:12px}.toolgrid{grid-template-columns:repeat(2,1fr)}.installbox{grid-template-columns:1fr}.shellrow{flex-direction:column}.shellrow .btn{width:100%}}
 </style>
 <style>
@@ -112,6 +112,19 @@
       <input id="adwarePkg" class="appinput" placeholder="Package cần xử lý, ví dụ com.xxx.ad" spellcheck="false">
     </div>
     <div class="appnote">Tool chỉ đề xuất package dựa trên tên/metadata. Không tự xóa package hệ thống quan trọng; hãy kiểm tra log trước khi gỡ.</div>
+    <div id="adwareScanBox" class="scanbox" aria-live="polite">
+      <div class="scanhead">
+        <div class="scanbrand"><i class="scanpulse"></i><div><b id="scanTitle">Apple Seed Security Scan</b><div id="scanSub" class="scansub">Đang chuẩn bị quét ứng dụng…</div></div></div>
+        <div id="scanPercent" class="scanpercent">0%</div>
+      </div>
+      <div class="scanmeter"><i id="scanMeter"></i></div>
+      <div class="scanstats">
+        <div class="scanstat"><small>Đã quét</small><strong id="scanCount">0</strong></div>
+        <div class="scanstat"><small>Cần xem</small><strong id="scanReview">0</strong></div>
+        <div class="scanstat"><small>Trạng thái</small><strong id="scanState">Scanning</strong></div>
+      </div>
+      <div id="scanResults" class="scanresults"><div class="scanempty">Đang phân tích package trên thiết bị…</div></div>
+    </div>
   </div>
 
   <div class="install">
@@ -239,18 +252,42 @@ async function adbReboot(mode=""){
 }
 async function scanAdware(){
   if(!adb) throw new Error("Chưa kết nối thiết bị");
-  log("===== QUÉT APP QUẢNG CÁO / BLOATWARE =====");
+  const box=$("adwareScanBox"),results=$("scanResults"),meter=$("scanMeter");
+  box.classList.add("show");box.classList.remove("done");
+  $("scanTitle").textContent="Apple Seed Security Scan";
+  $("scanSub").textContent="Đang quét package và phân tích dấu hiệu bloatware / quảng cáo…";
+  $("scanPercent").textContent="10%";meter.style.width="10%";
+  $("scanCount").textContent="0";$("scanReview").textContent="0";$("scanState").textContent="Scanning";
+  results.innerHTML='<div class="scanempty">🔎 Đang đọc danh sách ứng dụng từ thiết bị…</div>';
+  log("===== APPLE SEED SECURITY SCAN =====");
   const out=await shell("pm list packages -f");
   const lines=out.split(/\r?\n/).filter(Boolean);
-  const suspicious=lines.filter(x=>/(adservice|ads|advert|admob|marketing|promo|push|daemon|cleaner|booster|browser|recommend|hotapp|appcenter|appmarket|gamecenter|shareit|ucbrowser|hios|vivo|oppo|coloros|samsung).*$/i.test(x));
-  if(!suspicious.length){
-    log("🟢 Không tìm thấy package đáng chú ý theo bộ lọc tên.");
-    return;
+  meter.style.width="55%";$("scanPercent").textContent="55%";$("scanSub").textContent="Đang kiểm tra tên package…";
+  const rules=[
+    [/adservice|admob|advert|ads([._-]|$)/i,"Dấu hiệu liên quan quảng cáo"],
+    [/marketing|promo|recommend|hotapp/i,"Marketing / recommendation"],
+    [/appmarket|appcenter|gamecenter|cleaner|booster/i,"Store / cleaner / booster"],
+    [/shareit|ucbrowser/i,"Ứng dụng bên thứ ba cần xem"],
+    [/push.*service|daemon/i,"Service nền cần kiểm tra"]
+  ];
+  const findings=[];
+  for(const line of lines){
+    const m=line.match(/package:(?:[^=]*=)?([^\s]+)/i);
+    const pkg=m?m[1]:line.replace(/^package:/,"").trim();
+    const hit=rules.find(([re])=>re.test(pkg));
+    if(hit) findings.push({pkg,reason:hit[1]});
   }
-  log("🟡 Package cần kiểm tra: "+suspicious.length);
-  suspicious.slice(0,120).forEach(x=>log("  "+x));
-  log("→ Chọn package ở ô bên dưới rồi dùng Vô hiệu hóa/Gỡ package.");
-  log("===== QUÉT KẾT THÚC =====");
+  meter.style.width="85%";$("scanPercent").textContent="85%";$("scanSub").textContent="Đang tổng hợp kết quả…";
+  $("scanCount").textContent=String(lines.length);
+  $("scanReview").textContent=String(findings.length);
+  results.innerHTML=findings.length?findings.slice(0,120).map(x=>'<div class="scanrow"><div class="scanicon">📦</div><div><div class="scanpkg">'+safeText(x.pkg)+'</div><div class="scanreason">'+safeText(x.reason)+'</div></div><span class="scanrisk review">XEM XÉT</span></div>').join(""):'<div class="scanempty">🟢 Không phát hiện package đáng chú ý theo bộ lọc.</div>';
+  meter.style.width="100%";$("scanPercent").textContent="100%";$("scanSub").textContent="Quét hoàn tất · hãy xem các package được đề xuất trước khi xử lý.";
+  $("scanState").textContent=findings.length?"Review":"Clean";
+  box.classList.add("done");
+  log("📊 Đã quét: "+lines.length+" package");
+  log(findings.length?"🟡 Cần xem xét: "+findings.length+" package":"🟢 Không tìm thấy package đáng chú ý");
+  findings.slice(0,120).forEach(x=>log("  "+x.pkg+" · "+x.reason));
+  log("===== SCAN HOÀN TẤT =====");
 }
 
 async function packageAction(action){
