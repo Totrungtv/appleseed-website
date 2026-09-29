@@ -501,10 +501,24 @@ async function installApk(file){
   if(!adb) throw new Error("Chưa kết nối thiết bị");
   progress(5,"Chuẩn bị cài "+file.name);
   log("📦 Cài APK: "+file.name+" ("+fmt(file.size)+")");
-  progress(20,"Đang truyền APK qua ADB…");
-  await installViaPush(file);
-  progress(100,"Cài đặt thành công");
-  log("✓ CÀI APK THÀNH CÔNG");
+  try{
+    progress(25,"Đang cài APK qua WebADB…");
+    const pm=new PackageManager(adb);
+    await pm.installStream(file.size,file.stream(),{
+      bypassLowTargetSdkBlock:true,
+      skipVerification:true,
+      grantRuntimePermissions:true
+    });
+    progress(100,"Cài đặt thành công");
+    log("✓ CÀI APK THÀNH CÔNG (WebADB stream)");
+  }catch(e){
+    log("⚠ WebADB stream thất bại: "+(e?.message||e));
+    log("→ Chuyển sang ADB Push + pm install…");
+    progress(35,"ADB Push fallback…");
+    await installViaPush(file);
+    progress(100,"Cài đặt thành công");
+    log("✓ CÀI APK THÀNH CÔNG (fallback)");
+  }
 }
 
 async function installSelected(){
