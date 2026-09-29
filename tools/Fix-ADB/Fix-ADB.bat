@@ -34,12 +34,13 @@ echo [3/4] Kiem tra platform-tools...
 "%ADB%" version
 echo.
 
-echo [4/4] Khoi dong lai ADB server...
-"%ADB%" start-server
+echo [4/4] De trong ADB server de WebADB co the giu USB interface...
+echo Khong khoi dong lai adb.exe. WebADB tren Chrome se tu mo kenh ADB.
 echo.
 echo ============================================================
-echo  DA FIX ADB.
+echo  DA FIX ADB CHO WEBADB.
 echo  Rut/cam lai cap USB, mo lai Chrome va bam Ket noi thiet bi.
 echo  Neu dien thoai hien "Cho phep go loi USB?" hay bam Cho phep.
+echo  KHONG chay adb start-server truoc khi dung WebADB.
 echo ============================================================
 pause
