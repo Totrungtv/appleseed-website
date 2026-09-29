@@ -979,10 +979,10 @@ bind();
 </script>
 <div id="fixOverlay" class="fix-overlay" role="dialog" aria-modal="true" aria-labelledby="fixTitle">
 <div class="fix-modal"><div class="fix-head"><div class="fix-icon">!</div><div style="flex:1"><h3 id="fixTitle">Lỗi kết nối thiết bị</h3><div id="fixError" class="fix-error">Connection closed unexpectedly</div>
-<div class="fix-box"><strong>🔧 Sửa nhanh bằng công cụ Apple Seed</strong><ol><li>Bấm tải gói Fix-ADB Apple Seed từ Google Drive xuống máy tính.</li><li>Giải nén file ZIP → mở thư mục <b>platform-tools</b>.</li><li>Mở CMD/Terminal ngay trong thư mục <b>platform-tools</b> và chạy <b>adb kill-server</b>. <b>KHÔNG chạy adb start-server</b> khi dùng WebADB trên trình duyệt.</li><li>Đóng Android Studio, scrcpy hoặc tool Android nào đang giữ ADB; sau đó rút/cắm lại USB.</li><li>Quay lại trang và bấm <b>Kết nối thiết bị</b>.</li></ol><button id="fixDownload" class="fix-download">⬇ Tải Platform-Tools chính thức</button><p class="fix-note">Gói Fix-ADB Apple Seed được lưu trên Google Drive; giải nén rồi đặt <b>Fix-ADB.bat</b> vào thư mục <b>platform-tools</b>.</p></div></div></div><button id="fixClose" class="fix-close">Đóng</button></div></div><script>
+<div class="fix-box"><strong>🔌 Kiểm tra kết nối WebADB</strong><ol><li><b>Không cần cài ADB</b> để trang này kết nối trực tiếp qua WebUSB.</li><li>Nếu máy đã có ADB, chỉ cần đảm bảo <b>adb.exe / ADB server không đang giữ USB</b>; cài sẵn ADB không phải lỗi.</li><li>Đóng Android Studio, scrcpy, Samsung Smart Switch/DeX, HiSuite và các tool Android khác đang truy cập máy.</li><li>Đóng các tab WebADB khác, rút/cắm lại USB rồi bấm <b>Kết nối thiết bị</b>.</li><li>Nếu vẫn báo <b>claimInterface</b>, lỗi nằm ở quyền chiếm giao diện USB/driver Windows chứ không phải thiếu gói ADB.</li></ol><p class="fix-note">Apple Seed dùng WebADB trực tiếp trong Chrome/Edge. Hộp chọn thiết bị giờ do WebADB tự lọc đúng giao diện ADB.</p></div></div></div><button id="fixClose" class="fix-close">Đóng</button></div></div><script>
 function showFixAdb(err){const o=document.getElementById("fixOverlay");document.getElementById("fixError").textContent=err||"Connection closed unexpectedly";o.classList.add("show")}
 function hideFixAdb(){document.getElementById("fixOverlay").classList.remove("show")}
 document.getElementById("fixClose").onclick=hideFixAdb;
-document.getElementById("fixDownload").onclick=()=>{window.location.href="https://drive.google.com/uc?export=download&id=1cULUp3ZpvmpgzQKfbr62e7rwLpYADm4O"};
+
 </script></body>
 </html>
