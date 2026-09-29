@@ -1,0 +1,35 @@
+name: Build Apple Seed App Watch
+
+on:
+  push:
+    paths:
+      - 'appwatch/**'
+      - '.github/workflows/build-appwatch.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.10.2'
+      - name: Build release APK
+        run: gradle --no-daemon :app:assembleRelease
+        working-directory: appwatch
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: AppleSeed-AppWatch
+          path: appwatch/app/build/outputs/apk/release/app-release-unsigned.apk
+          if-no-files-found: error
