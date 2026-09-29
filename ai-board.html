@@ -508,14 +508,12 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
   .as-ai-bubble{font-size:15px!important;line-height:1.58!important;max-width:88%!important}
 }
 </style>
-<style id="apple-seed-hero-robot-no-image-fix">
-.as-ai-3d-visual .as-ai-hero-robot-live{left:50%!important;bottom:12px!important;transform:translateX(-50%) scale(1.55)!important;transform-origin:center bottom!important;overflow:visible!important;display:block!important;z-index:6!important}
-.as-ai-3d-visual .as-ai-hero-robot-live .head{z-index:4}
-.as-ai-3d-visual .as-ai-hero-robot-live .body{z-index:2}
-.as-ai-robot-arm{position:absolute;top:105px;width:27px;height:78px;border-radius:18px;background:linear-gradient(145deg,#f9fffe,#cbdedb);border:3px solid #6d9892;z-index:1}
-.as-ai-robot-arm.left{left:7px;transform:rotate(12deg)}
-.as-ai-robot-arm.right{right:7px;transform:rotate(-12deg)}
-@media(max-width:700px){.as-ai-3d-visual .as-ai-hero-robot-live{left:50%!important;bottom:22px!important;transform:translateX(-50%) scale(1.08)!important}}
+
+<style id="apple-seed-hero-robot-inline-svg-v2">
+.as-ai-chat-hero.as-ai-hero-3d .as-ai-3d-visual{position:absolute!important;overflow:hidden!important}
+.as-ai-chat-hero.as-ai-hero-3d .as-ai-3d-visual .as-ai-hero-robot-svg{position:absolute!important;left:0!important;right:0!important;top:0!important;bottom:0!important;width:100%!important;height:100%!important;display:flex!important;align-items:center!important;justify-content:center!important;z-index:20!important;pointer-events:none!important}
+.as-ai-chat-hero.as-ai-hero-3d .as-ai-3d-visual .as-ai-hero-robot-svg svg{display:block!important;width:min(100%,340px)!important;height:100%!important;max-width:100%!important;max-height:100%!important;object-fit:contain!important;overflow:visible!important}
+@media(max-width:700px){.as-ai-chat-hero.as-ai-hero-3d .as-ai-3d-visual .as-ai-hero-robot-svg svg{width:100%!important;height:100%!important}}
 </style>
 </head>
 <body><main class="wrap">
@@ -1224,11 +1222,37 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
   </div>
 
   <div class="as-ai-3d-visual">
-    <div class="as-ai-hero-robot as-ai-hero-robot-live" role="img" aria-label="Apple Seed AI Robot">
-    <div class="ear l"></div><div class="ear r"></div>
-    <div class="head"><div class="visor"></div></div>
-    <div class="body"><div class="core"></div></div>
-    <div class="as-ai-robot-arm left"></div><div class="as-ai-robot-arm right"></div>
+    <div class="as-ai-hero-robot-svg" role="img" aria-label="Apple Seed AI Robot">
+    <svg viewBox="0 0 360 340" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="asBotShell" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#a9d4cc"/></linearGradient>
+        <linearGradient id="asBotScreen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#062c2a"/><stop offset="1" stop-color="#0d6154"/></linearGradient>
+        <linearGradient id="asBotArm" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f8fffd"/><stop offset="1" stop-color="#8bbdb3"/></linearGradient>
+        <filter id="asBotGlow"><feGaussianBlur stdDeviation="5"/></filter>
+      </defs>
+      <ellipse cx="180" cy="317" rx="120" ry="13" fill="#19d6a4" opacity=".18"/>
+      <g stroke="#4d8c81" stroke-width="5" stroke-linejoin="round">
+        <rect x="45" y="150" width="62" height="142" rx="30" fill="url(#asBotArm)" transform="rotate(9 76 150)"/>
+        <rect x="253" y="150" width="62" height="142" rx="30" fill="url(#asBotArm)" transform="rotate(-9 284 150)"/>
+        <rect x="85" y="165" width="190" height="150" rx="58" fill="url(#asBotShell)"/>
+        <rect x="121" y="207" width="118" height="78" rx="34" fill="#dffcf4" stroke="#22b78e"/>
+        <circle cx="180" cy="246" r="28" fill="#f5fffc" stroke="#20c996"/>
+      </g>
+      <text x="180" y="253" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="900" fill="#087d61">AI</text>
+      <g stroke="#4d8c81" stroke-width="5" stroke-linejoin="round">
+        <rect x="72" y="35" width="216" height="155" rx="52" fill="url(#asBotShell)"/>
+        <rect x="99" y="73" width="162" height="76" rx="34" fill="url(#asBotScreen)" stroke="#1b7264"/>
+        <rect x="57" y="86" width="25" height="54" rx="12" fill="#a9d4cc"/>
+        <rect x="278" y="86" width="25" height="54" rx="12" fill="#a9d4cc"/>
+      </g>
+      <circle cx="143" cy="111" r="13" fill="#54ffd0" opacity=".35" filter="url(#asBotGlow)"/>
+      <circle cx="217" cy="111" r="13" fill="#54ffd0" opacity=".35" filter="url(#asBotGlow)"/>
+      <circle cx="143" cy="111" r="8" fill="#70ffda"/>
+      <circle cx="217" cy="111" r="8" fill="#70ffda"/>
+      <path d="M155 132 Q180 147 205 132" fill="none" stroke="#55ffd1" stroke-width="5" stroke-linecap="round"/>
+      <path d="M180 34 V17" stroke="#6acdb5" stroke-width="7" stroke-linecap="round"/>
+      <circle cx="180" cy="13" r="12" fill="#20dc9c" stroke="#d8fff3" stroke-width="4"/>
+    </svg>
   </div>
   </div>
 
