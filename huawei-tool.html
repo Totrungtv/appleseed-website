@@ -485,9 +485,10 @@ async function connectDevice(){
     }catch(e){
       lastError=e;
       if(isClaimOrUsbBusyError(e)){
-        log("⚠ USB interface đang bị giữ bởi ADB/WebUSB session khác.");
-        log("→ Hãy đóng ADB desktop, scrcpy, Android Studio hoặc tab Apple Seed khác rồi bấm Kết nối lại.");
-        log("→ Apple Seed không chạy Fix-ADB cho lỗi claimInterface này.");
+        log("⚠ USB interface đang bị một chương trình ADB khác giữ.");
+        log("→ Đóng HBG VoLTE & IMS Fixer, scrcpy, ADB desktop, Android Studio hoặc tab Apple Seed khác.");
+        log("→ Lưu ý: WebUSB không thể cùng lúc claim interface với HBG/ADB đang chạy trên Windows.");
+        log("→ Sau khi đóng chương trình kia, rút/cắm lại cáp hoặc bấm Kết nối lại.");
       }
       throw lastError;
     }
