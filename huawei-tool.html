@@ -563,48 +563,75 @@ async function installApk(file){
     try{await sync.dispose()}catch{}
   }
 
+  let out="";
+  let verificationBlocked=false;
   try{
     progress(70,"Android Package Manager đang cài…");
-    let out="";
-    try{
-      out=await shell("pm install -r -g -d \""+path+"\"");
-      log("pm install: "+(out||"(không có output)"));
-    }catch(e){
-      const msg=e?.message||String(e);
-      if(!isClaimOrUsbBusyError(e)) throw e;
-      log("⚠ Kết nối WebUSB bị ngắt trong lúc cài: "+msg);
+    out=await shell("pm install -r -g -d \""+path+"\"");
+    log("pm install: "+(out||"(không có output)"));
+  }catch(e){
+    const msg=e?.message||String(e);
+    if(isClaimOrUsbBusyError(e)){
+      log("✕ WebUSB bị ngắt trong lúc cài: "+msg);
       throw e;
     }
+    throw e;
+  }
 
-    if(!/success/i.test(out||"")){
-      const first=out||"Android không trả Success";
-      log("⚠ Cài APK lần 1 thất bại: "+first);
+  if(!/success/i.test(out||"")){
+    verificationBlocked=/INSTALL_FAILED_VERIFICATION_FAILURE|verification|verifier|Permission denial: writing to settings/i.test(out||"");
 
-      // Một số ROM chặn package verification. Tạm tắt verifier bằng shell,
-      // thử lại một lần rồi khôi phục giá trị cũ.
-      const oldVerify=await shell("settings get global verifier_verify_adb_installs").catch(()=>null);
-      const oldPkgVerify=await shell("settings get global package_verifier_enable").catch(()=>null);
+    if(verificationBlocked){
+      log("⚠ ROM đang chặn xác minh APK; không cố ghi Settings vì shell trên ROM này không có quyền.");
+      progress(80,"Thử cài với tùy chọn bỏ xác minh của Package Manager…");
+      let skipOut="";
       try{
-        await shell("settings put global verifier_verify_adb_installs 0").catch(()=>{});
-        await shell("settings put global package_verifier_enable 0").catch(()=>{});
-        await new Promise(r=>setTimeout(r,300));
-        progress(82,"Đang thử lại sau khi xử lý xác minh APK…");
-        out=await shell("pm install -r -g -d \""+path+"\"");
-        log("pm install retry: "+(out||"(không có output)"));
-      }finally{
-        if(oldVerify!=null && oldVerify!=="null" && oldVerify!=="") await shell("settings put global verifier_verify_adb_installs \""+oldVerify.replace(/[^0-9]/g,"")+"\"").catch(()=>{});
-        if(oldPkgVerify!=null && oldPkgVerify!=="null" && oldPkgVerify!=="") await shell("settings put global package_verifier_enable \""+oldPkgVerify.replace(/[^0-9]/g,"")+"\"").catch(()=>{});
+        skipOut=await shell("pm install --skip-verification -r -g -d \""+path+"\"");
+        log("pm install --skip-verification: "+(skipOut||"(không có output)"));
+        if(/success/i.test(skipOut||"")) out=skipOut;
+      }catch(e){
+        log("⚠ ROM không hỗ trợ --skip-verification: "+(e?.message||e));
+      }
+
+      if(!/success/i.test(out||"")){
+        const uiPath="/sdcard/Download/AppleSeed-"+Date.now()+".apk";
+        progress(88,"Mở trình cài APK của Android…");
+        log("→ Fallback: chép APK sang "+uiPath);
+        const cp=await adb.subprocess.spawnAndWait("cp \""+path+"\" \""+uiPath+"\"");
+        const cpOut=safeText(cp.stdout), cpErr=safeText(cp.stderr);
+        if(cp.exitCode!==0) throw new Error("Không chép được APK sang bộ nhớ dùng cho trình cài: "+(cpOut||cpErr||("exit "+cp.exitCode)));
+
+        const uri="file://"+uiPath;
+        const intentOut=await shell("am start -a android.intent.action.VIEW -t application/vnd.android.package-archive -d \""+uri+"\" --grant-read-uri-permission");
+        log("Package Installer: "+(intentOut||"(đã gửi yêu cầu mở trình cài)"));
+        log("ℹ️ ROM đang yêu cầu xác nhận cài đặt trên điện thoại. Hãy bấm Cài đặt/Install nếu màn hình xác nhận xuất hiện.");
+        progress(92,"Đã mở trình cài APK — chờ xác nhận trên điện thoại…");
+
+        await new Promise(r=>setTimeout(r,1500));
+        const pkgGuess=(file.name||"").toLowerCase().includes("volte")?"vn.appleseed.volte":
+          ((file.name||"").toLowerCase().includes("appwatch")?"vn.appleseed.appwatch":"");
+        if(pkgGuess){
+          const installed=await shell("pm list packages "+pkgGuess);
+          if(installed.includes(pkgGuess)){
+            progress(100,"Cài đặt thành công");
+            log("✓ CÀI APK THÀNH CÔNG: "+pkgGuess);
+            try{await shell("rm -f \""+path+"\" \""+uiPath+"\"")}catch{}
+            return;
+          }
+        }
+        progress(100,"Đã mở trình cài APK");
+        log("✓ APK đã được chuyển sang trình cài Android. Hoàn tất sau khi xác nhận trên điện thoại.");
+        try{await shell("rm -f \""+path+"\"")}catch{}
+        return;
       }
     }
-
-    if(!/success/i.test(out||"")) throw new Error(out||"Android không trả Success");
-    progress(100,"Cài đặt thành công");
-    log("✓ CÀI APK THÀNH CÔNG");
-  }finally{
-    try{await shell("rm -f \""+path+"\"")}catch{}
   }
-}
 
+  if(!/success/i.test(out||"")) throw new Error(out||"Android không trả Success");
+  progress(100,"Cài đặt thành công");
+  log("✓ CÀI APK THÀNH CÔNG");
+  try{await shell("rm -f \""+path+"\"")}catch{}
+}
 async function installSelected(){
   if(!selectedFile) throw new Error("Chưa chọn APK");
   await installApk(selectedFile);
