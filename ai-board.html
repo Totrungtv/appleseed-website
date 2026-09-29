@@ -1476,4 +1476,63 @@ load();
 }
 </style>
 
-</body></html>
+<style id="apple-seed-ai-chat-visibility-final">
+/* FINAL: never let the conversation panel swallow the header / hero */
+.as-ai-chat-window.open:not(.minimized){
+  display:flex!important;
+  flex-direction:column!important;
+  overflow:hidden!important;
+}
+.as-ai-chat-window.open:not(.minimized) > .as-ai-chat-head{
+  display:flex!important;
+  flex:0 0 70px!important;
+  height:70px!important;
+  min-height:70px!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
+.as-ai-chat-window.open:not(.minimized) > .as-ai-chat-hero.as-ai-hero-3d{
+  display:block!important;
+  flex:0 0 220px!important;
+  height:220px!important;
+  min-height:220px!important;
+  max-height:220px!important;
+  visibility:visible!important;
+  opacity:1!important;
+  order:2!important;
+}
+.as-ai-chat-window.open:not(.minimized) > .as-ai-chat-messages{
+  display:block!important;
+  flex:1 1 auto!important;
+  min-height:0!important;
+  height:auto!important;
+  order:3!important;
+}
+.as-ai-chat-window.open:not(.minimized) > .as-ai-image-preview{
+  order:4!important;
+}
+.as-ai-chat-window.open:not(.minimized) > .as-ai-chat-compose{
+  display:block!important;
+  flex:0 0 84px!important;
+  min-height:84px!important;
+  order:5!important;
+}
+.as-ai-chat-hero.as-ai-hero-3d > .as-ai-3d-visual{
+  display:flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
+@media(min-width:701px){
+ .as-ai-chat-window.open:not(.minimized){
+   width:min(1180px,calc(100vw - 28px))!important;
+   height:min(900px,calc(100vh - 24px))!important;
+   right:14px!important;
+   bottom:12px!important;
+ }
+}
+@media(max-width:700px){
+ .as-ai-chat-window.open:not(.minimized) > .as-ai-chat-head{flex-basis:62px!important;height:62px!important;min-height:62px!important}
+ .as-ai-chat-window.open:not(.minimized) > .as-ai-chat-hero.as-ai-hero-3d{flex-basis:180px!important;height:180px!important;min-height:180px!important;max-height:180px!important}
+ .as-ai-chat-window.open:not(.minimized) > .as-ai-chat-compose{flex-basis:84px!important;min-height:84px!important}
+}
+</style></body></html>
