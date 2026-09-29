@@ -59,6 +59,17 @@
     <button class="tool" data-cmd="pm list packages -3"><span class="ico">📦</span><b>Ứng dụng</b><span>List user apps</span></button>
     <button class="tool" data-cmd="df -h /data"><span class="ico">💾</span><b>Bộ nhớ</b><span>/data storage</span></button>
     <button class="tool" data-cmd="getprop ro.boot.verifiedbootstate"><span class="ico">🛡️</span><b>Verified Boot</b><span>Boot state</span></button>
+    <button class="tool" data-cmd="dumpsys battery"><span class="ico">🔋</span><b>Pin / Battery</b><span>Battery status</span></button>
+    <button class="tool" data-cmd="dumpsys meminfo | head -40"><span class="ico">🧠</span><b>RAM</b><span>Memory status</span></button>
+    <button class="tool" data-cmd="ip addr show"><span class="ico">🌐</span><b>Mạng</b><span>IP / interfaces</span></button>
+    <button class="tool" data-cmd="ps -A"><span class="ico">⚙️</span><b>Process</b><span>Running processes</span></button>
+    <button class="tool" data-cmd="pm list packages"><span class="ico">📦</span><b>Tất cả app</b><span>All packages</span></button>
+    <button class="tool" data-cmd="getprop"><span class="ico">🔎</span><b>Getprop</b><span>System properties</span></button>
+    <button class="tool" data-cmd="wm size; wm density"><span class="ico">🖥️</span><b>Màn hình</b><span>Resolution / DPI</span></button>
+    <button class="tool" data-cmd="date"><span class="ico">🕒</span><b>Giờ thiết bị</b><span>Device date/time</span></button>
+    <button class="tool" id="adbReboot"><span class="ico">🔄</span><b>Khởi động lại</b><span>ADB reboot</span></button>
+    <button class="tool" id="adbRecovery"><span class="ico">🛠️</span><b>Recovery</b><span>Reboot recovery</span></button>
+    <button class="tool" id="adbBootloader"><span class="ico">⚡</span><b>Bootloader</b><span>Reboot bootloader</span></button>
   </div>
 
   <div class="install">
@@ -100,7 +111,7 @@
 </section>
 
 <section class="panel">
-  <div class="loghead"><h3>🧾 Nhật ký hoạt động</h3><span class="badge">LIVE</span></div>
+  <div class="loghead"><h3>🧾 Nhật ký hoạt động</h3><div style="display:flex;gap:6px;align-items:center"><button id="copyLog" class="btn small">📋 Sao chép</button><button id="clearLog" class="btn small danger">🗑 Xóa nhật ký</button><span class="badge">LIVE</span></div></div>
   <pre id="log"><span class="empty">Apple Seed WebADB sẵn sàng.
 Kết nối thiết bị để bắt đầu.</span></pre>
 </section>
@@ -159,6 +170,28 @@ async function run(command){
     log(out||"(không có output)");
     return out;
   }catch(e){log("✕ LỖI: "+(e?.message||e));throw e}
+}
+function clearActivityLog(){
+  const el=$("log");
+  el.innerHTML='<span class="empty">Nhật ký đã được xóa. Apple Seed WebADB sẵn sàng.</span>';
+  el.scrollTop=0;
+}
+async function copyActivityLog(){
+  const text=$("log").innerText||"";
+  try{
+    await navigator.clipboard.writeText(text);
+    log("✓ Đã sao chép nhật ký vào clipboard.");
+  }catch(e){
+    log("✕ Không thể sao chép nhật ký: "+(e?.message||e));
+  }
+}
+async function adbReboot(mode=""){
+  if(!adb) throw new Error("Chưa kết nối thiết bị");
+  const label=mode==="recovery"?"Recovery":mode==="bootloader"?"Bootloader":"thiết bị";
+  if(!confirm("Khởi động lại "+label+"?")) return;
+  log("→ ADB reboot "+(mode||""));
+  await shell("reboot"+(mode?" "+mode:""));
+  log("✓ Đã gửi lệnh reboot "+(mode||"normal")+".");
 }
 async function uiAction(title,fn){
   try{
@@ -406,6 +439,11 @@ function bind(){
   $("install").onclick=()=>uiAction("CÀI APK",installSelected);
   document.querySelectorAll(".tool[data-cmd]").forEach(b=>b.onclick=()=>uiAction(b.querySelector("b")?.textContent||"ADB",()=>run(b.dataset.cmd)));
   $("run").onclick=()=>uiAction("ADB SHELL",()=>run($("cmd").value.trim()));
+  $("clearLog").onclick=clearActivityLog;
+  $("copyLog").onclick=copyActivityLog;
+  $("adbReboot").onclick=()=>uiAction("ADB REBOOT",()=>adbReboot());
+  $("adbRecovery").onclick=()=>uiAction("ADB RECOVERY",()=>adbReboot("recovery"));
+  $("adbBootloader").onclick=()=>uiAction("ADB BOOTLOADER",()=>adbReboot("bootloader"));
   $("volteScan").onclick=()=>uiAction("QUÉT VOLTE / IMS",scanVolte);
   $("volteFix").onclick=()=>uiAction("FIX VOLTE",fixVolte);
   $("volteOpen").onclick=()=>uiAction("MỞ CÀI ĐẶT VOLTE",openVolteSettings);
