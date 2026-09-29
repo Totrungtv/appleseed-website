@@ -456,7 +456,58 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
     min-height:360px!important;
   }
 }
-</style><link rel="stylesheet" href="apple-seed-ai-hero.css?v=8">
+</style><link rel="stylesheet" href="apple-seed-ai-hero.css?v=8"><style id="apple-seed-ai-chat-final-readable">
+/* AI ROBOT CHAT: prioritize conversation over the giant welcome banner */
+.as-ai-chat-window{
+  width:min(1280px,calc(100vw - 28px))!important;
+  height:min(900px,calc(100vh - 24px))!important;
+  right:14px!important;
+  bottom:12px!important;
+}
+.as-ai-chat-hero.as-ai-hero-3d{
+  flex:0 0 235px!important;
+  height:235px!important;
+  min-height:235px!important;
+}
+.as-ai-3d-copy{top:28px!important}
+.as-ai-3d-copy h3{font-size:30px!important}
+.as-ai-3d-copy p{font-size:13px!important}
+.as-ai-3d .as-ai-ref-toolbar{bottom:9px!important}
+.as-ai-chat-messages{
+  flex:1 1 auto!important;
+  min-height:420px!important;
+  background:#f4f9f7!important;
+  padding:20px 28px!important;
+  color:#183d35!important;
+}
+.as-ai-bubble{
+  max-width:82%!important;
+  background:#ffffff!important;
+  border:1px solid #cfe3dc!important;
+  color:#173c35!important;
+  font-size:16px!important;
+  line-height:1.65!important;
+  box-shadow:0 3px 12px rgba(20,70,58,.08)!important;
+}
+.as-ai-msg.user .as-ai-bubble{
+  background:#e3f4ff!important;
+  color:#214a70!important;
+  border-color:#c3dcef!important;
+}
+.as-ai-chat-compose{
+  background:#fff!important;
+  flex:0 0 auto!important;
+  min-height:82px!important;
+}
+@media(max-width:700px){
+  .as-ai-chat-window{width:100vw!important;height:100dvh!important;right:0!important;bottom:0!important}
+  .as-ai-chat-hero.as-ai-hero-3d{
+    flex-basis:190px!important;height:190px!important;min-height:190px!important;
+  }
+  .as-ai-chat-messages{min-height:0!important;padding:14px!important}
+  .as-ai-bubble{font-size:15px!important;line-height:1.58!important;max-width:88%!important}
+}
+</style>
 </head>
 <body><main class="wrap">
 <!-- ===== APPLE SEED FULL MEMBER / COMMUNITY / CHAT RESTORE ===== -->
