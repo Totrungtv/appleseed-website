@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="vi">
 <head>
-<meta name="apple-seed-build" content="2026-09-29-adb-local-bridge-v1">
+<meta name="apple-seed-build" content="2026-09-29-webadb-recovery-v3">
 <!-- APPLE SEED ANDROID SERVICE BUILD 2026-09-29 -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -200,7 +200,7 @@ Kết nối thiết bị để bắt đầu.</span></pre>
 </div>
 
 
-<div class="footer">Apple Seed · Huawei / Android Service Center · Local ADB Bridge</div>
+<div class="footer">Apple Seed · Huawei / Android Service Center · WebUSB / ADB</div>
 </div>
 
 <script>
@@ -222,11 +222,47 @@ Kết nối thiết bị để bắt đầu.</span></pre>
   else cleanAndBindGuide();
 })();
 </script>
-
 <script>
-let adb=null,device=null,selectedFile=null;
-let bridgeSocket=null,bridgeSeq=0,bridgePending=new Map();
-const BRIDGE_URL="ws://127.0.0.1:8765";
+window.__appleSeedConnectFallback=async function(){
+  const logEl=document.getElementById("log");
+  const add=(m)=>{
+    if(logEl){
+      if(logEl.querySelector(".empty")) logEl.textContent="";
+      logEl.textContent+=(logEl.textContent?"\n":"")+m;
+      logEl.scrollTop=logEl.scrollHeight;
+    }
+  };
+  add("→ CLICK KẾT NỐI ĐÃ NHẬN");
+  try{
+    if(!window.isSecureContext) throw new Error("Không phải HTTPS / secure context.");
+    if(!navigator.usb) throw new Error("Chrome không có navigator.usb.");
+    add("✓ WebUSB API có sẵn.");
+    if(typeof window.connectDevice==="function"){
+      await window.connectDevice();
+      return;
+    }
+    add("⚠ Hàm WebADB chưa khởi tạo — đang kiểm tra USB trực tiếp…");
+    const d=await navigator.usb.requestDevice({filters:[{}]});
+    add("✓ USB được chọn: "+(d.manufacturerName||"")+" "+(d.productName||"")+" · VID "+d.vendorId.toString(16)+" PID "+d.productId.toString(16));
+    alert("Chrome đã nhận USB, nhưng mã WebADB chưa khởi tạo.");
+  }catch(e){
+    const msg=(e&&e.name?e.name+": ":"")+(e&&e.message?e.message:String(e));
+    add("✕ WEBUSB: "+msg);
+    alert("Apple Seed Kết nối:\n"+msg);
+  }
+};
+window.addEventListener("error",e=>{
+  const el=document.getElementById("log");
+  if(el){
+    if(el.querySelector(".empty")) el.textContent="";
+    el.textContent+=(el.textContent?"\n":"")+"✕ JS ERROR: "+(e.message||"Unknown error");
+  }
+});
+</script>
+<script>
+let Adb,AdbDaemonTransport,AdbWebCredentialStore,AdbDaemonWebUsbDeviceManager,PackageManager;
+
+let libsPromise=null,adb=null,device=null,selectedFile=null;
 
 const $=id=>document.getElementById(id);
 function log(msg){
@@ -234,7 +270,7 @@ function log(msg){
   if(el.querySelector(".empty")) el.textContent="";
   const stamp=new Date().toLocaleTimeString("vi-VN",{hour12:false});
   const line=String(msg);
-  el.textContent+=(el.textContent?"\\n":"")+"["+stamp+"] "+line;
+  el.textContent+=(el.textContent?"\n":"")+"["+stamp+"] "+line;
   el.scrollTop=el.scrollHeight;
 }
 function clearLog(){
@@ -261,54 +297,33 @@ function safeText(v){
   return String(v??"").trim();
 }
 
-function bridgeClose(){
-  try{bridgeSocket?.close()}catch{}
-  bridgeSocket=null;
-  for(const [,p] of bridgePending)p.reject(new Error("Apple Seed ADB Bridge đã ngắt kết nối."));
-  bridgePending.clear();
+async function loadAdbLibraries(){
+  if(!libsPromise){
+    libsPromise=Promise.all([
+      import("https://esm.sh/@yume-chan/adb@2.6.4?bundle"),
+      import("https://esm.sh/@yume-chan/adb-credential-web@2.1.0?bundle"),
+      import("https://esm.sh/@yume-chan/adb-daemon-webusb@2.3.2?bundle"),
+      import("https://esm.sh/@yume-chan/android-bin@2.1.0?bundle"),
+    ]).then(([adbM,credM,usbM,binM])=>{
+      Adb=adbM.Adb;
+      AdbDaemonTransport=adbM.AdbDaemonTransport;
+      AdbWebCredentialStore=credM.default;
+      AdbDaemonWebUsbDeviceManager=usbM.AdbDaemonWebUsbDeviceManager;
+      PackageManager=binM.PackageManager;
+      return true;
+    }).catch(e=>{libsPromise=null;throw e});
+  }
+  return libsPromise;
 }
-function bridgeConnect(){
-  if(bridgeSocket?.readyState===WebSocket.OPEN) return Promise.resolve();
-  bridgeClose();
-  return new Promise((resolve,reject)=>{
-    const ws=new WebSocket(BRIDGE_URL);
-    const timer=setTimeout(()=>{try{ws.close()}catch{};reject(new Error("Apple Seed ADB Bridge chưa chạy trên Windows (127.0.0.1:8765). Chạy start-apple-seed-adb-bridge.bat trong thư mục có adb.exe rồi bấm Kết nối lại."))},3500);
-    ws.onopen=()=>{clearTimeout(timer);bridgeSocket=ws;resolve()};
-    ws.onerror=()=>{clearTimeout(timer);reject(new Error("Không kết nối được Bridge. Hãy chạy start-apple-seed-adb-bridge.bat, giữ cửa sổ Bridge mở rồi bấm Kết nối lại."))};
-    ws.onclose=()=>{if(bridgeSocket===ws)bridgeSocket=null};
-    ws.onmessage=ev=>{
-      try{
-        const m=JSON.parse(ev.data);
-        const p=bridgePending.get(m.id);
-        if(!p)return;
-        bridgePending.delete(m.id);
-        if(m.ok)p.resolve(m.data);else p.reject(new Error(m.error||"ADB Bridge error"));
-      }catch(e){log("⚠ Bridge trả dữ liệu không hợp lệ: "+(e?.message||e))}
-    };
-  });
-}
-async function bridgeCall(action,payload={}){
-  await bridgeConnect();
-  const id=++bridgeSeq;
-  return new Promise((resolve,reject)=>{
-    bridgePending.set(id,{resolve,reject});
-    try{bridgeSocket.send(JSON.stringify({id,action,...payload}))}
-    catch(e){bridgePending.delete(id);reject(e)}
-    setTimeout(()=>{
-      const p=bridgePending.get(id);
-      if(p){bridgePending.delete(id);reject(new Error("ADB Bridge timeout: "+action))}
-    },30000);
-  });
-}
-async function bridgeShell(command){
-  const data=await bridgeCall("shell",{serial:device?.serial||"",command});
-  if(data?.stderr)log("stderr: "+safeText(data.stderr));
-  if(data?.exitCode && !data.stdout && !data.stderr)log("exitCode: "+data.exitCode);
-  return safeText(data?.stdout||data?.stderr||"");
-}
+
+
 async function shell(command){
   if(!adb) throw new Error("Chưa kết nối thiết bị");
-  return bridgeShell(command);
+  const r=await adb.subprocess.spawnAndWait(command);
+  const out=safeText(r.stdout), err=safeText(r.stderr);
+  if(err) log("stderr: "+err);
+  if(r.exitCode!==0 && !out && !err) log("exitCode: "+r.exitCode);
+  return out||err||"";
 }
 async function run(command){
   globalProgress(true,"ADB Shell: "+command,12,true);
@@ -337,7 +352,7 @@ async function uiAction(title,fn){
   }catch(e){
     const msg=e?.message||String(e);
     log("✕ "+title+": "+msg);
-    if(/connection|closed|network|bridge|transport|authentication/i.test(msg)) showFixAdb(msg);
+    if(/connection|closed|network|usb|transport|authentication/i.test(msg)) showFixAdb(msg);
   }finally{
     buttons.forEach(b=>b.classList.remove("action-lock"));
     if(own){
@@ -351,30 +366,144 @@ async function uiAction(title,fn){
 }
 uiAction.running="";
 
-async function connectDevice(){
-  setBusy(true);
-  globalProgress(true,"Kết nối Apple Seed ADB Bridge…",15,true);
+async function closeWebUsbDevice(d){
   try{
-    log("→ Kết nối Apple Seed ADB Bridge: "+BRIDGE_URL);
-    await bridgeConnect();
-    const info=await bridgeCall("devices");
-    const list=(info?.devices||[]).filter(x=>x.state==="device");
-    if(!list.length) throw new Error("ADB Bridge đã chạy nhưng không có thiết bị ở trạng thái device. Kiểm tra adb devices và xác nhận USB debugging trên điện thoại.");
-    let picked=list[0];
-    if(list.length>1){
-      const choices=list.map((x,i)=>i+": "+x.serial+" ["+x.state+"]").join("\\n");
-      const answer=prompt("Có "+list.length+" thiết bị ADB. Nhập số thiết bị muốn kết nối:\\n\\n"+choices,"0");
-      const idx=Number(answer);
-      if(!Number.isInteger(idx)||!list[idx]) throw new Error("Đã hủy chọn thiết bị.");
-      picked=list[idx];
+    if(d?.raw?.opened) await d.raw.close();
+  }catch(e){
+    log("⚠ Dọn phiên WebUSB cũ: "+(e?.message||e));
+  }
+}
+
+async function cleanupAllWebUsbSessions(){
+  if(!navigator.usb?.getDevices) return;
+  try{
+    const granted=await navigator.usb.getDevices();
+    let closed=0;
+    for(const raw of granted){
+      try{
+        if(raw.opened){
+          await raw.close();
+          closed++;
+        }
+      }catch(e){
+        log("⚠ Không đóng được USB handle "+(raw.serialNumber||raw.productName||"device")+": "+(e?.message||e));
+      }
     }
-    device={serial:picked.serial,name:picked.serial};
-    adb={close:async()=>{bridgeClose()}};
-    globalProgress(true,"Đang đọc thông tin thiết bị…",55,true);
+    if(closed) log("✓ Đã đóng "+closed+" phiên WebUSB còn mở trong origin.");
+  }catch(e){
+    log("⚠ Không quét được phiên WebUSB cũ: "+(e?.message||e));
+  }
+}
+
+async function forgetWebUsbDevice(d){
+  try{
+    if(d?.raw?.opened) await d.raw.close();
+  }catch{}
+  try{
+    if(d?.raw?.forget) await d.raw.forget();
+  }catch(e){
+    log("⚠ Không reset được quyền WebUSB: "+(e?.message||e));
+  }
+}
+
+async function connectDevice(){
+  if(!window.isSecureContext) throw new Error("Trang này chưa chạy HTTPS nên Chrome chặn WebUSB.");
+  if(!navigator.usb) throw new Error("Chrome/Edge không cung cấp WebUSB.");
+  setBusy(true);
+  globalProgress(true,"Nạp WebADB…",10,true);
+
+  let selectedDevice=null;
+  let connection=null;
+
+  const isUsbBusyError=(e)=>{
+    const msg=e?.message||String(e);
+    return /claimInterface|Unable to claim interface|DeviceBusyError|NetworkError/i.test(msg);
+  };
+
+  const openSelected=async(d)=>{
+    try{
+      return await d.connect();
+    }catch(e){
+      if(!isUsbBusyError(e)) throw e;
+
+      // Browser-origin cleanup: close every granted WebUSB handle first.
+      await closeWebUsbDevice(d);
+      await cleanupAllWebUsbSessions();
+
+      log("⚠ USB interface đang bận trong phiên trình duyệt. Đã dọn toàn bộ handle WebUSB; thử lại…");
+      globalProgress(true,"Làm sạch phiên USB…",50,true);
+      await new Promise(r=>setTimeout(r,350));
+
+      try{
+        return await d.connect();
+      }catch(second){
+        // If the browser itself is holding a stale permission/session,
+        // forget it and force a fresh chooser on the next pass.
+        log("⚠ Lần thử thứ 2 vẫn lỗi claimInterface. Reset quyền WebUSB…");
+        await forgetWebUsbDevice(d);
+        throw second;
+      }
+    }
+  };
+
+  try{
+    await loadAdbLibraries();
+    if(!AdbDaemonWebUsbDeviceManager) throw new Error("Không khởi tạo được WebADB.");
+
+    await closeWebUsbDevice(device);
+    await cleanupAllWebUsbSessions();
+    device=null;
+    adb=null;
+
+    const manager = AdbDaemonWebUsbDeviceManager.BROWSER ||
+      new AdbDaemonWebUsbDeviceManager(navigator.usb);
+
+    log("→ WebADB: mở hộp chọn thiết bị có giao diện ADB…");
+    globalProgress(true,"Chọn thiết bị ADB…",25,false);
+
+    selectedDevice=await manager.requestDevice();
+    if(!selectedDevice) throw new Error("Không chọn thiết bị.");
+
+    device=selectedDevice;
+    log("✓ Đã chọn: "+(selectedDevice.name||"Android")+" / "+(selectedDevice.serial||"unknown"));
+    globalProgress(true,"Đang mở kênh ADB…",45,true);
+
+    try{
+      connection=await openSelected(selectedDevice);
+    }catch(e){
+      // If permission was reset by forget(), the selected wrapper is stale.
+      // Ask the user to select the same phone again, but only after all stale
+      // browser handles have been released.
+      if(isUsbBusyError(e)){
+        await cleanupAllWebUsbSessions();
+        log("→ Yêu cầu chọn lại thiết bị sau khi reset phiên WebUSB…");
+        globalProgress(true,"Chọn lại thiết bị ADB…",55,false);
+        selectedDevice=await manager.requestDevice();
+        if(!selectedDevice) throw new Error("Không chọn lại thiết bị.");
+        device=selectedDevice;
+        connection=await selectedDevice.connect();
+      }else{
+        throw e;
+      }
+    }
+
+    const store=new AdbWebCredentialStore("AppleSeed");
+    const transport=await AdbDaemonTransport.authenticate({
+      serial:selectedDevice.serial,
+      connection,
+      credentialStore:store,
+      preserveConnection:false
+    });
+
+    adb=new Adb(transport);
+    setStatus("Đã kết nối",true);
+    globalProgress(true,"Đọc thông tin thiết bị…",70,true);
+
     const brand=safeText(await shell("getprop ro.product.brand"));
     const model=safeText(await shell("getprop ro.product.model"));
     const android=safeText(await shell("getprop ro.build.version.release"));
-    const serial=safeText(picked.serial)||safeText(await shell("getprop ro.serialno"));
+    const serial=safeText(selectedDevice.serial)||safeText(await shell("getprop ro.serialno"));
+
     $("brand").textContent=brand||"—";
     $("model").textContent=model||"—";
     $("android").textContent=android||"—";
@@ -382,16 +511,30 @@ async function connectDevice(){
     $("install").disabled=false;
     $("appleSeedOpen").disabled=false;
     $("volteVerify").disabled=false;
-    setStatus("Đã kết nối ADB",true);
-    log("✓ ADB KẾT NỐI: "+brand+" "+model+" · Android "+android+" · "+serial);
-    log("✓ Không dùng WebUSB. adb.exe/ADB server có thể tiếp tục chạy bình thường.");
+
+    log("✓ THIẾT BỊ ĐÃ KẾT NỐI: "+brand+" "+model+" · Android "+android+" · "+serial);
   }catch(e){
-    bridgeClose(); adb=null; device=null;
+    try{ if(adb?.close) await adb.close(); }catch{}
+    await closeWebUsbDevice(selectedDevice||device);
+    adb=null;
+    device=null;
     setStatus("Lỗi kết nối",false);
-    const msg=e?.message||String(e);
-    log("✕ KẾT NỐI: "+msg);
+
+    const rawMsg=e?.message||String(e);
+    let msg=rawMsg;
+
+    if(isUsbBusyError(e)){
+      msg="Chrome không lấy được giao diện ADB của USB. Apple Seed đã tự đóng các phiên WebUSB của chính trang và thử lại.\n\nNếu lỗi vẫn còn, một adb.exe/ADB server, scrcpy, Android Studio, Smart Switch/HiSuite hoặc tab WebADB khác đang giữ giao diện USB. Trường hợp này WebUSB không thể giành cùng interface từ trình duyệt.\n\nChi tiết: "+rawMsg;
+    }else if(e?.name==="NotFoundError"){
+      msg="Không chọn thiết bị / hộp chọn USB đã bị hủy.";
+    }
+
+    log(e?.name==="NotFoundError"
+      ?"⚠ KẾT NỐI: Hộp chọn USB đã đóng."
+      :"✕ KẾT NỐI: "+msg);
+
     showFixAdb(msg);
-    throw e;
+    throw new Error(msg);
   }finally{
     setBusy(false);
     setTimeout(()=>globalProgress(false),500);
@@ -914,15 +1057,20 @@ function bind(){
 const APPLESEED_VOLTE_URL="https://raw.githubusercontent.com/Totrungtv/AppleSeed-IMS/main/apps/AppleSeed_VoLTE.apk";
 const APPLESEED_VOLTE_PACKAGE="vn.appleseed.volte";
 $("connect").disabled=false;
-$("status").textContent=window.isSecureContext ? "Sẵn sàng kết nối ADB Bridge" : "Kiểm tra HTTPS";
-if(!window.isSecureContext) log("⚠ Trang không chạy HTTPS.");
-else log("✓ Apple Seed dùng ADB Bridge cục bộ — không claim USB bằng Chrome.");
-log("ℹ Bridge cần được chạy trên chính máy Windows này tại "+BRIDGE_URL+".");
+$("status").textContent=window.isSecureContext && navigator.usb ? "Sẵn sàng kết nối" : "Kiểm tra WebUSB";
+if(!window.isSecureContext) log("⚠ Trang không chạy HTTPS — WebUSB sẽ bị Chrome chặn.");
+else if(!navigator.usb) log("⚠ Trình duyệt hiện tại không có WebUSB. Hãy dùng Chrome/Edge trên Windows.");
+else log("✓ WebUSB sẵn sàng. Bấm Kết nối thiết bị — hộp chọn USB phải xuất hiện ngay.");
+loadAdbLibraries().then(()=>{
+  log("✓ WebADB đã nạp sẵn cho bước ADB.");
+}).catch(e=>{
+  log("⚠ WebADB CDN chưa nạp được; WebUSB chooser vẫn hoạt động để chẩn đoán: "+(e?.message||e));
+});
 bind();
 </script>
 <div id="fixOverlay" class="fix-overlay" role="dialog" aria-modal="true" aria-labelledby="fixTitle">
 <div class="fix-modal"><div class="fix-head"><div class="fix-icon">!</div><div style="flex:1"><h3 id="fixTitle">Lỗi kết nối thiết bị</h3><div id="fixError" class="fix-error">Connection closed unexpectedly</div>
-<div class="fix-box"><strong>🔌 Kiểm tra Apple Seed ADB Bridge</strong><ol><li><b>Giữ adb.exe/ADB server đang chạy bình thường.</b></li><li>Chạy <b>apple-seed-adb-bridge.py</b> trên Windows trước khi bấm Kết nối.</li><li>Kiểm tra <b>adb devices</b> phải hiện máy ở trạng thái <b>device</b>.</li><li>Chrome chỉ kết nối localhost WebSocket, không claim USB nên scrcpy/ADB tool khác có thể tiếp tục hoạt động.</li><li>Nếu Bridge báo không tìm thấy adb.exe, thêm thư mục chứa <b>adb.exe</b> vào PATH hoặc đặt adb.exe cạnh file Bridge.</li></ol><p class="fix-note">Apple Seed dùng adb.exe thông qua Apple Seed ADB Bridge trên máy tính. ADB server có thể tiếp tục chạy bình thường; Chrome không claim USB trực tiếp.</p></div></div></div><button id="fixClose" class="fix-close">Đóng</button></div></div><script>
+<div class="fix-box"><strong>🔌 Kiểm tra kết nối WebADB</strong><ol><li><b>Không cần cài ADB</b> để trang này kết nối trực tiếp qua WebUSB.</li><li>Nếu máy đã có ADB, chỉ cần đảm bảo <b>adb.exe / ADB server không đang giữ USB</b>; cài sẵn ADB không phải lỗi.</li><li>Đóng Android Studio, scrcpy, Samsung Smart Switch/DeX, HiSuite và các tool Android khác đang truy cập máy.</li><li>Đóng các tab WebADB khác, rút/cắm lại USB rồi bấm <b>Kết nối thiết bị</b>.</li><li>Nếu vẫn báo <b>claimInterface</b>, lỗi nằm ở quyền chiếm giao diện USB/driver Windows chứ không phải thiếu gói ADB.</li></ol><p class="fix-note">Apple Seed dùng WebADB trực tiếp trong Chrome/Edge. Hộp chọn thiết bị giờ do WebADB tự lọc đúng giao diện ADB.</p></div></div></div><button id="fixClose" class="fix-close">Đóng</button></div></div><script>
 function showFixAdb(err){const o=document.getElementById("fixOverlay");document.getElementById("fixError").textContent=err||"Connection closed unexpectedly";o.classList.add("show")}
 function hideFixAdb(){document.getElementById("fixOverlay").classList.remove("show")}
 document.getElementById("fixClose").onclick=hideFixAdb;
