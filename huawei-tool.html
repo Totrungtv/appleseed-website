@@ -417,9 +417,9 @@ async function connectDevice(){
       log("⚠ USB interface đang bận. Đã đóng handle cũ, thử kết nối lại một lần…");
       globalProgress(true,"Làm sạch phiên USB…",50,true);
 
-      // Xin lại backend từ manager để tránh dùng object/interface state cũ.
-      selectedDevice=await manager.requestDevice();
-      if(!selectedDevice) throw new Error("Không chọn lại thiết bị.");
+      // Không mở lại USB chooser lần thứ hai: người dùng đã chọn đúng máy.
+      // Thử lại trên cùng WebUSB device sau khi đã đóng handle cũ.
+      await new Promise(r=>setTimeout(r,250));
       device=selectedDevice;
       connection=await selectedDevice.connect();
     }
