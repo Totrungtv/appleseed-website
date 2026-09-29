@@ -846,30 +846,78 @@ async function scanVolte(){
 async function fixVolte(){
   if(!adb) throw new Error("Chưa kết nối thiết bị");
   log("===== APPLE SEED · FIX VOLTE =====");
-  const before=[];
-  for(const [n,c] of [
-    ["VoLTE trước","settings get global volte_vt_enabled"],
-    ["Enhanced 4G trước","settings get global enhanced_4g_mode_enabled"]
-  ]){try{before.push([n,await shell(c)])}catch{}}
-  log("→ Bật các cờ VoLTE Android phổ biến…");
-  const commands=[
+  log("→ Bật cờ VoLTE/Enhanced 4G…");
+
+  // 1) Các setting runtime đã xác nhận hoạt động trên OPPO/ColorOS.
+  const settingCommands=[
     "settings put global volte_vt_enabled 1",
-    "settings put global enhanced_4g_mode_enabled 1"
+    "settings put global enhanced_4g_mode_enabled 1",
+    "settings put global volte_enabled 1",
+    "settings put global carrier_vt_enabled 1",
+    "settings put global carrier_volte_available 1",
+    "settings put global carrier_volte_provisioned 1"
   ];
-  for(const c of commands){
-    try{const out=await shell(c);log("$ "+c+"\n"+(out||"OK"))}
-    catch(e){log("⚠ "+c+" → "+(e?.message||e))}
+  for(const c of settingCommands){
+    try{
+      const out=await shell(c);
+      log("$ "+c+"\n"+(out||"OK"));
+    }catch(e){
+      log("⚠ "+c+" → "+(e?.message||e));
+    }
   }
-  log("→ Gửi yêu cầu refresh carrier configuration…");
-  for(const c of [
-    "am broadcast -a android.telephony.action.CARRIER_CONFIG_CHANGED",
-    "cmd phone ims reset 2>/dev/null || true"
-  ]){try{await shell(c)}catch{}}
-  log("→ Kiểm tra lại VoLTE + IMS…");
-  await verifyVolte();
+
+  // 2) Quan trọng: Settings UI của Android 10 quyết định có hiện
+  // "Enhanced 4G LTE / VoLTE" hay không dựa vào CarrierConfig.
+  // Thử override trực tiếp bằng cmd phone. Nếu ColorOS không cho shell
+  // thay CarrierConfig thì chỉ log lỗi và tiếp tục, không làm tool fail.
+  log("→ Thử mở khóa mục VoLTE trong CarrierConfig…");
+  const carrierCommands=[
+    "cmd phone cc set-value hide_enhanced_4g_lte_bool false",
+    "cmd phone cc set-value editable_enhanced_4g_lte_bool true",
+    "cmd phone cc set-value enhanced_4g_lte_on_by_default_bool true"
+  ];
+  for(const c of carrierCommands){
+    try{
+      const out=await shell(c);
+      log("$ "+c+"\n"+(out||"OK"));
+    }catch(e){
+      log("⚠ CarrierConfig không nhận "+c+": "+(e?.message||e));
+    }
+  }
+
+  // 3) Đọc lại CarrierConfig để biết ROM thực sự có nhận override hay không.
+  try{
+    const cc=await shell("cmd phone cc get-value");
+    const hits=String(cc||"").split(/\r?\n/).filter(x=>/(hide_enhanced_4g_lte_bool|editable_enhanced_4g_lte_bool|enhanced_4g_lte_on_by_default_bool)/i.test(x));
+    log("CarrierConfig VoLTE UI:\n"+(hits.join("\n")||"(ROM không trả key CarrierConfig)"));
+  }catch(e){
+    log("⚠ Không đọc được CarrierConfig: "+(e?.message||e));
+  }
+
+  // 4) KHÔNG gửi CARRIER_CONFIG_CHANGED: ColorOS của máy test chặn
+  // broadcast này với uid shell 2000.
+  log("→ Bỏ qua broadcast CARRIER_CONFIG_CHANGED (ColorOS chặn).");
+  log("→ Xác nhận các cờ VoLTE…");
+  const primary=await shell("settings get global volte_vt_enabled");
+  const enhanced=await shell("settings get global enhanced_4g_mode_enabled");
+  const available=await shell("settings get global carrier_volte_available");
+  const provisioned=await shell("settings get global carrier_volte_provisioned");
+  log("VoLTE flag: "+String(primary).trim());
+  log("Enhanced 4G: "+String(enhanced).trim());
+  log("Carrier VoLTE available: "+String(available).trim());
+  log("Carrier VoLTE provisioned: "+String(provisioned).trim());
+
+  if(String(primary).trim()==="1" && String(enhanced).trim()==="1"){
+    log("✓ ĐÃ BẬT CỜ VO LTE. Nếu CarrierConfig nhận override, mục VoLTE sẽ xuất hiện trong Cài đặt.");
+  }else{
+    throw new Error("Không ghi được cờ VoLTE bằng ADB shell.");
+  }
+
+  // Mở thẳng màn hình mạng để người dùng có thể thấy mục VoLTE nếu ROM
+  // đã cập nhật Settings/CarrierConfig.
+  try{ await openVolteSettings(); }catch(e){ log("ℹ Không tự mở Cài đặt mạng: "+(e?.message||e)); }
   log("===== FIX VOLTE KẾT THÚC =====");
 }
-
 function bind(){
   $("connect").onclick=()=>uiAction("KẾT NỐI THIẾT BỊ",connectDevice);
   $("disconnect").onclick=()=>uiAction("NGẮT KẾT NỐI",disconnectDevice);
