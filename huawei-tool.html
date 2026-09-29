@@ -645,6 +645,22 @@ async function installAppleSeedVolte(){
   await installApk(file);
   const p=await shell("pm list packages "+APPLESEED_VOLTE_PACKAGE);
   if(!p.includes(APPLESEED_VOLTE_PACKAGE)) throw new Error("Cài xong nhưng không tìm thấy "+APPLESEED_VOLTE_PACKAGE);
+
+  // WRITE_SECURE_SETTINGS có cờ "development" trên nhiều Android/ColorOS.
+  // pm grant chỉ cấp được nếu ROM cho phép; không làm hỏng quy trình nếu OEM từ chối.
+  log("→ Cấp WRITE_SECURE_SETTINGS cho Apple Seed VoLTE…");
+  try{
+    const grantOut=await shell("pm grant "+APPLESEED_VOLTE_PACKAGE+" android.permission.WRITE_SECURE_SETTINGS");
+    log("pm grant WRITE_SECURE_SETTINGS: "+(grantOut||"OK"));
+  }catch(e){
+    log("⚠ ROM không cho cấp WRITE_SECURE_SETTINGS: "+(e?.message||e));
+  }
+
+  let permOut="";
+  try{
+    permOut=await shell("dumpsys package "+APPLESEED_VOLTE_PACKAGE+" | grep -i WRITE_SECURE_SETTINGS");
+    log("Quyền Apple Seed: "+(permOut||"không thấy dòng quyền"));
+  }catch(e){}
   syncConnectedButtons();
   log("✓ APP APPLE SEED ĐÃ CÀI: "+APPLESEED_VOLTE_PACKAGE);
 }
