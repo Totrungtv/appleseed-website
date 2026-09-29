@@ -105,7 +105,7 @@
     <p class="sub">Quét các package có dấu hiệu quảng cáo/bloatware, sau đó chọn package để vô hiệu hóa hoặc gỡ cho user hiện tại.</p>
     <div class="appactions">
       <button id="scanAdware" class="btn primary">🔍 Quét app quảng cáo</button>
-      <button id="appWatchInstall" class="btn">🛡 Cài Apple Seed App Watch</button>
+      <button id="appWatchInstall" class="btn primary">🛡 Cài Apple Seed App Watch</button>
       <button id="appWatchOpen" class="btn">▶ Mở App Watch</button>
       <button id="disableAdware" class="btn">🚫 Vô hiệu hóa package</button>
       <button id="removeAdware" class="btn danger">🗑 Gỡ package</button>
@@ -522,7 +522,7 @@ async function installAppleSeedVolte(){
 
 async function installAppleSeedAppWatch(){
   if(!adb) throw new Error("Chưa kết nối thiết bị.");
-  log("→ Tải Apple Seed App Watch APK…");
+  log("→ Tải Apple Seed App Watch APK trực tiếp từ Apple Seed…");
   const file=await downloadApk(APPLESEED_APPWATCH_URL,"AppleSeed_AppWatch.apk");
   log("→ APK Apple Seed App Watch: "+fmt(file.size));
   await installApk(file);
@@ -685,7 +685,7 @@ function bind(){
 }
 const APPLESEED_VOLTE_URL="https://raw.githubusercontent.com/Totrungtv/AppleSeed-IMS/main/apps/AppleSeed_VoLTE.apk";
 const APPLESEED_VOLTE_PACKAGE="vn.appleseed.volte";
-const APPLESEED_APPWATCH_URL="https://github.com/Totrungtv/appleseed-website/releases/download/appwatch-v1.0.0/app-debug.apk";
+const APPLESEED_APPWATCH_URL="https://raw.githubusercontent.com/Totrungtv/appleseed-website/main/apps/AppleSeed_AppWatch.apk";
 const APPLESEED_APPWATCH_PACKAGE="vn.appleseed.appwatch";
 bind();
 log("✓ Apple Seed WebADB đã nạp đầy đủ chức năng. Bấm Kết nối thiết bị để bắt đầu.");
