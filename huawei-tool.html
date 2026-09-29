@@ -367,27 +367,36 @@ async function uiAction(title,fn){
 uiAction.running="";
 
 async function connectDevice(){
-  if(!navigator.usb) throw new Error("Trình duyệt không hỗ trợ WebUSB. Dùng Chrome hoặc Edge.");
-  if(!AdbDaemonWebUsbDeviceManager) throw new Error("WebADB chưa nạp xong.");
+  if(!window.isSecureContext) throw new Error("Trang này chưa chạy HTTPS nên Chrome chặn WebUSB.");
+  if(!navigator.usb) throw new Error("Chrome/Edge không cung cấp WebUSB.");
   setBusy(true);
-  globalProgress(true,"Chọn thiết bị USB / ADB…",12,false);
+  globalProgress(true,"Mở hộp chọn USB…",10,false);
   try{
-    /*
-      QUAN TRỌNG: requestDevice() bắt buộc phải được gọi trực tiếp trong
-      user gesture (click). Không được await load thư viện trước dòng này,
-      nếu không Chrome sẽ không mở hộp chọn USB.
-    */
-    log("→ Mở hộp chọn thiết bị USB…");
-    if(navigator.userActivation && !navigator.userActivation.isActive){
-      log("⚠ Chrome không còn user activation cho lần bấm này.");
-    }
+    log("→ WebUSB: yêu cầu chọn thiết bị ADB…");
+    // QUAN TRỌNG: requestDevice phải được gọi trực tiếp từ thao tác click.
+    // Không phụ thuộc WebADB/CDN đã tải xong hay chưa.
+    const raw=await navigator.usb.requestDevice({
+      // KHÔNG lọc VID/class ở bước WebUSB.
+      // Android OEM có rất nhiều VID/interface khác nhau; lọc cứng có thể
+      // làm điện thoại hiện "No compatible devices found" dù USB debugging đã bật.
+      // Cho Chrome hiển thị thiết bị USB đã cắm, sau đó WebADB mới xác định
+      // thiết bị nào thực sự có interface ADB.
+      acceptAllDevices:true
+    });
+    if(!raw) throw new Error("Không chọn thiết bị.");
+    log("✓ Chrome đã cấp quyền USB: "+(raw.manufacturerName||"")+" "+(raw.productName||"Android")+" · VID "+raw.vendorId.toString(16).padStart(4,"0")+" · PID "+raw.productId.toString(16).padStart(4,"0"));
+    globalProgress(true,"Đang nạp WebADB…",25,true);
+    await loadAdbLibraries();
+    if(!AdbDaemonWebUsbDeviceManager) throw new Error("Không khởi tạo được WebADB sau khi Chrome đã cấp quyền USB.");
+    globalProgress(true,"Khởi tạo kênh ADB…",40,true);
+
+    // Sau khi Chrome cấp quyền, lấy backend ADB tương ứng từ WebADB manager.
     const manager=new AdbDaemonWebUsbDeviceManager(navigator.usb);
-    const devicePromise=manager.requestDevice();
-    const d=await devicePromise;
-    if(!d){log("Đã hủy chọn thiết bị.");return}
+    const list=await manager.getDevices();
+    const d=list.find(x=>x.serial===raw.serialNumber)||list[0];
+    if(!d) throw new Error("Chrome đã nhận USB nhưng không thấy giao diện ADB. Hãy bật USB debugging và chọn 'Cho phép gỡ lỗi USB' trên điện thoại.");
     device=d;
-    log("→ Đã chọn: "+(d.name||"Android")+" / "+(d.serial||"unknown"));
-    globalProgress(true,"Đang mở kênh ADB…",35,true);
+    log("→ ADB device: "+(d.name||"Android")+" / "+(d.serial||raw.serialNumber||"unknown"));
     const connection=await d.connect();
     const store=new AdbWebCredentialStore("AppleSeed");
     const transport=await AdbDaemonTransport.authenticate({
@@ -398,12 +407,11 @@ async function connectDevice(){
     });
     adb=new Adb(transport);
     setStatus("Đã kết nối",true);
-    log("✓ WebADB sẵn sàng.");
     globalProgress(true,"Đọc thông tin thiết bị…",70,true);
     const brand=safeText(await shell("getprop ro.product.brand"));
     const model=safeText(await shell("getprop ro.product.model"));
     const android=safeText(await shell("getprop ro.build.version.release"));
-    const serial=safeText(d.serial)||safeText(await shell("getprop ro.serialno"));
+    const serial=safeText(d.serial)||safeText(raw.serialNumber)||safeText(await shell("getprop ro.serialno"));
     $("brand").textContent=brand||"—";
     $("model").textContent=model||"—";
     $("android").textContent=android||"—";
@@ -411,12 +419,17 @@ async function connectDevice(){
     $("install").disabled=false;
     $("appleSeedOpen").disabled=false;
     $("volteVerify").disabled=false;
-    log("✓ Thiết bị sẵn sàng: "+brand+" "+model+" · Android "+android+" · "+serial);
+    log("✓ THIẾT BỊ ĐÃ KẾT NỐI: "+brand+" "+model+" · Android "+android+" · "+serial);
   }catch(e){
     adb=null;device=null;setStatus("Lỗi kết nối",false);
-    showFixAdb(e?.message||String(e));
-    throw e;
-  }finally{setBusy(false)}
+    const msg=e?.name==="NotFoundError"?"Không chọn thiết bị / hộp USB đã bị hủy.":(e?.message||String(e));
+    log(e?.name==="NotFoundError"?"⚠ KẾT NỐI: Hộp chọn USB đã đóng.":"✕ KẾT NỐI: "+msg);
+    showFixAdb(msg);
+    throw new Error(msg);
+  }finally{
+    setBusy(false);
+    setTimeout(()=>globalProgress(false),500);
+  }
 }
 async function downloadApk(url,name){
   const controller=new AbortController();
