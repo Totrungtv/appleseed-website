@@ -167,8 +167,10 @@ function setBusy(b){$("connect").disabled=b}
 function syncConnectedButtons(){
   const connected=!!adb;
   $("install").disabled=!connected||!selectedFile;
+  $("appleSeedInstall").disabled=!connected;
   $("appleSeedOpen").disabled=!connected;
   $("volteVerify").disabled=!connected;
+  $("volteOpen").disabled=!connected;
   $("launch").disabled=!connected;
   $("uninstall").disabled=!connected;
   $("run").disabled=!connected;
