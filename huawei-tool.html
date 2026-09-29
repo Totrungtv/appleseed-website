@@ -397,26 +397,66 @@ async function uiAction(title,fn){
   }catch(e){
     const msg=e?.message||String(e);
     log("✕ "+title+": "+msg);
-    if(/connection|closed|network|usb|transport|authentication/i.test(msg)) showFixAdb(msg);
+    if(/connection|closed|network|usb|transport|authentication/i.test(msg) && !isClaimOrUsbBusyError(e)) showFixAdb(msg);
+    else if(isClaimOrUsbBusyError(e)) log("↻ Lỗi WebUSB interface — không yêu cầu chạy Fix-ADB; hãy thử Kết nối lại.");
   }finally{
     setActionBusy(false,title);
   }
 }
 
+async function cleanupWebUsbSession(d){
+  try{
+    const raw=d?.raw||d;
+    if(!raw) return;
+    const cfg=raw.configuration;
+    if(cfg?.interfaces){
+      for(const iface of cfg.interfaces){
+        try{await raw.releaseInterface(iface.interfaceNumber)}catch(_){}
+      }
+    }
+    try{if(raw.opened) await raw.close()}catch(_){}
+  }catch(_){}
+}
+
+function isClaimOrUsbBusyError(err){
+  const m=String(err?.message||err||"");
+  return /claimInterface|Unable to claim interface|interface.*(claim|busy|in use)|connection closed unexpectedly|device.*closed|NetworkError/i.test(m);
+}
+
 async function connectDevice(){
   if(!navigator.usb) throw new Error("Trình duyệt không hỗ trợ WebUSB. Dùng Chrome hoặc Edge.");
   setBusy(true);
+  let d=null;
   try{
     log("→ Nạp thư viện WebADB…");
     await loadAdbLibraries();
     if(!AdbDaemonWebUsbDeviceManager?.BROWSER) throw new Error("WebUSB không khả dụng trong trình duyệt này.");
     const manager=AdbDaemonWebUsbDeviceManager.BROWSER;
     log("→ Chọn thiết bị USB có ADB…");
-    const d=await manager.requestDevice();
+    d=await manager.requestDevice();
     if(!d){log("Đã hủy chọn thiết bị.");return}
     device=d;
-    log("→ Mở kênh ADB: "+(d.name||"Android")+" / "+(d.serial||"unknown"));
-    const connection=await d.connect();
+
+    let connection=null;
+    let lastError=null;
+    for(let attempt=1;attempt<=3;attempt++){
+      try{
+        if(attempt>1){
+          log("↻ WebUSB interface đang bận — tự giải phóng và thử lại ("+attempt+"/3)…");
+          await cleanupWebUsbSession(d);
+          await new Promise(r=>setTimeout(r,400));
+        }
+        log("→ Mở kênh ADB "+(attempt>1?"lần "+attempt+": ":"")+ (d.name||"Android")+" / "+(d.serial||"unknown"));
+        connection=await d.connect();
+        break;
+      }catch(e){
+        lastError=e;
+        if(!isClaimOrUsbBusyError(e)||attempt===3) throw e;
+        await cleanupWebUsbSession(d);
+      }
+    }
+    if(!connection) throw lastError||new Error("Không mở được kênh WebUSB.");
+
     const store=new AdbWebCredentialStore("AppleSeed");
     const transport=await AdbDaemonTransport.authenticate({
       serial:d.serial,
@@ -438,8 +478,12 @@ async function connectDevice(){
     syncConnectedButtons();
     log("✓ Thiết bị sẵn sàng: "+brand+" "+model+" · Android "+android+" · "+serial);
   }catch(e){
+    try{if(adb){await adb.close()}}catch(_){}
+    await cleanupWebUsbSession(d);
     adb=null;device=null;setStatus("Lỗi kết nối",false);
-    showFixAdb(e?.message||String(e));
+    const msg=e?.message||String(e);
+    if(!isClaimOrUsbBusyError(e)) showFixAdb(msg);
+    else log("✕ WebUSB chưa claim được interface sau 3 lần thử: "+msg);
     throw e;
   }finally{setBusy(false)}
 }
@@ -518,10 +562,41 @@ async function installApk(file){
   }finally{
     try{await sync.dispose()}catch{}
   }
+
   try{
     progress(70,"Android Package Manager đang cài…");
-    const out=await shell("pm install -r -g -d \""+path+"\"");
-    log("pm install: "+(out||"(không có output)"));
+    let out="";
+    try{
+      out=await shell("pm install -r -g -d \""+path+"\"");
+      log("pm install: "+(out||"(không có output)"));
+    }catch(e){
+      const msg=e?.message||String(e);
+      if(!isClaimOrUsbBusyError(e)) throw e;
+      log("⚠ Kết nối WebUSB bị ngắt trong lúc cài: "+msg);
+      throw e;
+    }
+
+    if(!/success/i.test(out||"")){
+      const first=out||"Android không trả Success";
+      log("⚠ Cài APK lần 1 thất bại: "+first);
+
+      // Một số ROM chặn package verification. Tạm tắt verifier bằng shell,
+      // thử lại một lần rồi khôi phục giá trị cũ.
+      const oldVerify=await shell("settings get global verifier_verify_adb_installs").catch(()=>null);
+      const oldPkgVerify=await shell("settings get global package_verifier_enable").catch(()=>null);
+      try{
+        await shell("settings put global verifier_verify_adb_installs 0").catch(()=>{});
+        await shell("settings put global package_verifier_enable 0").catch(()=>{});
+        await new Promise(r=>setTimeout(r,300));
+        progress(82,"Đang thử lại sau khi xử lý xác minh APK…");
+        out=await shell("pm install -r -g -d \""+path+"\"");
+        log("pm install retry: "+(out||"(không có output)"));
+      }finally{
+        if(oldVerify!=null && oldVerify!=="null" && oldVerify!=="") await shell("settings put global verifier_verify_adb_installs \""+oldVerify.replace(/[^0-9]/g,"")+"\"").catch(()=>{});
+        if(oldPkgVerify!=null && oldPkgVerify!=="null" && oldPkgVerify!=="") await shell("settings put global package_verifier_enable \""+oldPkgVerify.replace(/[^0-9]/g,"")+"\"").catch(()=>{});
+      }
+    }
+
     if(!/success/i.test(out||"")) throw new Error(out||"Android không trả Success");
     progress(100,"Cài đặt thành công");
     log("✓ CÀI APK THÀNH CÔNG");
