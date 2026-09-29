@@ -338,7 +338,12 @@ function setActionBusy(on,title="Đang xử lý…"){
     if(activeActions===0){
       o.classList.remove("show");
       o.setAttribute("aria-busy","false");
-      document.querySelectorAll("button[data-as-busy]").forEach(b=>{b.disabled=b.dataset.asBusy==="1";delete b.dataset.asBusy});
+      document.querySelectorAll("button[data-as-busy]").forEach(b=>{delete b.dataset.asBusy});
+      // Không khôi phục trạng thái disabled cũ sau loading.
+      // Đồng bộ lại theo trạng thái ADB thực tế để nút VoLTE không bị khóa ngược.
+      if(typeof syncConnectedButtons==="function") syncConnectedButtons();
+      $("connect").disabled=false;
+      $("disconnect").disabled=false;
     }
   }
 }
