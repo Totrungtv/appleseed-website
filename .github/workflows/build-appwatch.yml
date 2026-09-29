@@ -16,18 +16,39 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.10.2'
-      - name: Build signed debug APK
+
+      - name: Build Apple Seed App Watch APK
         run: gradle --no-daemon :app:assembleDebug
         working-directory: appwatch
+
+      - name: Publish APK into repository for direct WebADB install
+        shell: bash
+        run: |
+          mkdir -p apps
+          cp appwatch/app/build/outputs/apk/debug/app-debug.apk apps/AppleSeed_AppWatch.apk
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/AppleSeed_AppWatch.apk
+          if git diff --cached --quiet; then
+            echo "APK unchanged; nothing to commit."
+          else
+            git commit -m "Publish Apple Seed App Watch APK"
+            git push
+          fi
+
       - name: Publish APK release
         uses: softprops/action-gh-release@v2
         with:
