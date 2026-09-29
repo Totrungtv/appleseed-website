@@ -1,5 +1,6 @@
 package vn.appleseed.appwatch;
 
+import android.Manifest;
 import android.app.Activity;
 import android.os.Bundle;
 import android.content.*;
@@ -80,7 +81,7 @@ public class MainActivity extends Activity {
         String pkg=p.packageName==null?"":p.packageName.toLowerCase(Locale.ROOT);
         String label=String.valueOf(p.applicationInfo.loadLabel(pm)).toLowerCase(Locale.ROOT);
         String name=pkg+" "+label;
-        boolean adName=name.matches(".*(adware|adservice|ad\.sdk|admob|advert|advertis|adsdk|popup|pop-up|pushads|adplugin|adplugin|hotapp|hot apps).*");
+        boolean adName=name.matches(".*(adware|adservice|ad[.]sdk|admob|advert|advertis|adsdk|popup|pop-up|pushads|adplugin|adplugin|hotapp|hot apps).*");
         boolean overlay=false, boot=false, installPackages=false, usage=false;
         if(p.requestedPermissions!=null){
             for(String perm:p.requestedPermissions){
