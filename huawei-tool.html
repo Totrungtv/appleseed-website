@@ -272,9 +272,9 @@ function bridgeConnect(){
   bridgeClose();
   return new Promise((resolve,reject)=>{
     const ws=new WebSocket(BRIDGE_URL);
-    const timer=setTimeout(()=>{try{ws.close()}catch{};reject(new Error("Không kết nối được Apple Seed ADB Bridge tại 127.0.0.1:8765. Hãy chạy apple-seed-adb-bridge.py."))},3500);
+    const timer=setTimeout(()=>{try{ws.close()}catch{};reject(new Error("Apple Seed ADB Bridge chưa chạy trên Windows (127.0.0.1:8765). Chạy start-apple-seed-adb-bridge.bat trong thư mục có adb.exe rồi bấm Kết nối lại."))},3500);
     ws.onopen=()=>{clearTimeout(timer);bridgeSocket=ws;resolve()};
-    ws.onerror=()=>{clearTimeout(timer);reject(new Error("Apple Seed ADB Bridge chưa chạy. Hãy mở apple-seed-adb-bridge.py rồi thử lại."))};
+    ws.onerror=()=>{clearTimeout(timer);reject(new Error("Không kết nối được Bridge. Hãy chạy start-apple-seed-adb-bridge.bat, giữ cửa sổ Bridge mở rồi bấm Kết nối lại."))};
     ws.onclose=()=>{if(bridgeSocket===ws)bridgeSocket=null};
     ws.onmessage=ev=>{
       try{
@@ -917,7 +917,7 @@ $("connect").disabled=false;
 $("status").textContent=window.isSecureContext ? "Sẵn sàng kết nối ADB Bridge" : "Kiểm tra HTTPS";
 if(!window.isSecureContext) log("⚠ Trang không chạy HTTPS.");
 else log("✓ Apple Seed dùng ADB Bridge cục bộ — không claim USB bằng Chrome.");
-log("ℹ Kiểm tra Bridge tại "+BRIDGE_URL+" khi bấm Kết nối thiết bị.");
+log("ℹ Bridge cần được chạy trên chính máy Windows này tại "+BRIDGE_URL+".");
 bind();
 </script>
 <div id="fixOverlay" class="fix-overlay" role="dialog" aria-modal="true" aria-labelledby="fixTitle">
