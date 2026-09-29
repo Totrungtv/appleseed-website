@@ -646,23 +646,38 @@ async function installAppleSeedVolte(){
   const p=await shell("pm list packages "+APPLESEED_VOLTE_PACKAGE);
   if(!p.includes(APPLESEED_VOLTE_PACKAGE)) throw new Error("Cài xong nhưng không tìm thấy "+APPLESEED_VOLTE_PACKAGE);
 
-  // WRITE_SECURE_SETTINGS có cờ "development" trên nhiều Android/ColorOS.
-  // pm grant chỉ cấp được nếu ROM cho phép; không làm hỏng quy trình nếu OEM từ chối.
   log("→ Cấp WRITE_SECURE_SETTINGS cho Apple Seed VoLTE…");
+  let grantOut="";
   try{
-    const grantOut=await shell("pm grant "+APPLESEED_VOLTE_PACKAGE+" android.permission.WRITE_SECURE_SETTINGS");
+    grantOut=await shell("pm grant "+APPLESEED_VOLTE_PACKAGE+" android.permission.WRITE_SECURE_SETTINGS");
     log("pm grant WRITE_SECURE_SETTINGS: "+(grantOut||"OK"));
   }catch(e){
-    log("⚠ ROM không cho cấp WRITE_SECURE_SETTINGS: "+(e?.message||e));
+    log("⚠ pm grant bị từ chối: "+(e?.message||e));
+  }
+
+  // Kiểm tra QUYỀN THỰC TẾ sau khi grant, không chỉ dựa vào output của pm grant.
+  let permCheck="";
+  try{
+    permCheck=await shell("pm check-permission "+APPLESEED_VOLTE_PACKAGE+" android.permission.WRITE_SECURE_SETTINGS");
+    log("KIỂM TRA QUYỀN SYSTEM: "+(permCheck||"không có kết quả"));
+  }catch(e){
+    log("⚠ Không chạy được pm check-permission: "+(e?.message||e));
   }
 
   let permOut="";
   try{
     permOut=await shell("dumpsys package "+APPLESEED_VOLTE_PACKAGE+" | grep -i WRITE_SECURE_SETTINGS");
-    log("Quyền Apple Seed: "+(permOut||"không thấy dòng quyền"));
+    log("Chi tiết quyền Apple Seed: "+(permOut||"không thấy dòng quyền"));
   }catch(e){}
+
+  const granted=/granted|GRANTED/i.test(permCheck);
+  if(!granted){
+    syncConnectedButtons();
+    throw new Error("APK đã cài nhưng CHƯA ĐƯỢC CẤP WRITE_SECURE_SETTINGS. ROM/ColorOS đang từ chối quyền ghi cờ hệ thống.");
+  }
+
   syncConnectedButtons();
-  log("✓ APP APPLE SEED ĐÃ CÀI: "+APPLESEED_VOLTE_PACKAGE);
+  log("✓ APP APPLE SEED ĐÃ CÀI + ĐÃ CẤP QUYỀN SYSTEM: "+APPLESEED_VOLTE_PACKAGE);
 }
 
 async function installAppleSeedAppWatch(){
