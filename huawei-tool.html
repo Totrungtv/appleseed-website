@@ -958,44 +958,101 @@ async function runHbgCarrierFix(){
 }
 async function fixVolte(){
   if(!adb) throw new Error("Chưa kết nối thiết bị");
-  log("===== APPLE SEED · SHIZUKU CARRIERCONFIG FIX =====");
+  log("===== APPLE SEED · VOLTE CARRIERCONFIG FIX =====");
   const pkg=APPLESEED_VOLTE_PACKAGE;
   const installed=safeText(await shell("pm list packages "+pkg));
   if(!installed.includes(pkg)){
-    log("→ Chưa có Apple Seed VoLTE 1.1.7, tự cài APK mới…");
+    log("→ Chưa có Apple Seed VoLTE, tự cài APK…");
     await installAppleSeedVolte();
-  }else{ log("✓ Apple Seed VoLTE đã cài."); }
-  const shizuku=safeText(await shell("pm list packages | grep -i shizuku 2>/dev/null || true"));
-  log(shizuku ? "✓ Phát hiện Shizuku package." : "⚠ Không phát hiện package Shizuku — CarrierConfig bridge cần Shizuku.");
-  log("→ Ghi global flag nền trước…");
+  }else log("✓ Apple Seed VoLTE đã cài.");
+
+  log("→ Ghi global VoLTE flags nền trước…");
   for(const [k,v] of [["volte_vt_enabled","1"],["enhanced_4g_mode_enabled","1"],["volte_enabled","1"],["carrier_vt_enabled","1"]]){
-    try{ await shell("settings put global "+k+" "+v); log("✓ global "+k+" = "+safeText(await shell("settings get global "+k))); }
-    catch(e){ log("⚠ global "+k+": "+(e?.message||e)); }
+    try{
+      await shell("settings put global "+k+" "+v);
+      log("✓ global "+k+" = "+safeText(await shell("settings get global "+k)));
+    }catch(e){ log("⚠ global "+k+": "+(e?.message||e)); }
   }
-  log("→ Gọi Apple Seed CarrierConfig bridge qua Shizuku…");
-  const action="vn.appleseed.volte.action.FIX_VOLTE";
-  const launch=await shell("am force-stop "+pkg+"; am start -n "+pkg+"/.MainActivity -a "+action);
-  log("→ CarrierConfig bridge launch: "+(launch||"OK"));
-  await new Promise(r=>setTimeout(r,2500));
+
+  // Apple Seed ưu tiên CarrierConfig shell service. Cách này dùng chính
+  // ADB shell identity, không phụ thuộc Shizuku hay app trung gian.
+  const keys=[
+    ["carrier_volte_available_bool","true"],
+    ["carrier_volte_provisioned_bool","true"],
+    ["carrier_vt_available_bool","true"],
+    ["carrier_wfc_ims_available_bool","true"],
+    ["hide_enhanced_4g_lte_bool","false"],
+    ["editable_enhanced_4g_lte_bool","true"],
+    ["enhanced_4g_lte_on_by_default_bool","true"]
+  ];
+
+  let ccOk=false;
+  for(const slot of [0,1]){
+    let slotOk=0;
+    log("→ Apple Seed CarrierConfig · thử SIM slot "+slot+"…");
+    for(const [key,val] of keys){
+      try{
+        const out=safeText(await shell("cmd phone cc set-value -s "+slot+" -p "+key+" "+val+" 2>&1"));
+        if(!/Unknown command|unknown option|not found|SecurityException|Exception|Error/i.test(out)){
+          slotOk++;
+          log("✓ slot "+slot+" · "+key+" = "+val+(out?" · "+out.split(/\r?\n/).filter(Boolean).slice(-1)[0]:""));
+        }else{
+          log("⚠ slot "+slot+" · "+key+" → "+(out||"không có output"));
+        }
+      }catch(e){ log("⚠ slot "+slot+" · "+key+": "+(e?.message||e)); }
+    }
+    if(slotOk>=4){ ccOk=true; log("✓ Apple Seed CarrierConfig đã nhận lệnh ở slot "+slot+" ("+slotOk+"/"+keys.length+")"); break; }
+  }
+
+  // Một số ROM expose service mà không nhận -s. Thử default subscription
+  // nếu cả hai slot không nhận đủ key.
+  if(!ccOk){
+    log("→ Thử Apple Seed CarrierConfig theo default subscription…");
+    let ok=0;
+    for(const [key,val] of keys){
+      try{
+        const out=safeText(await shell("cmd phone cc set-value -p "+key+" "+val+" 2>&1"));
+        if(!/Unknown command|unknown option|not found|SecurityException|Exception|Error/i.test(out)){
+          ok++; log("✓ default · "+key+" = "+val);
+        }else log("⚠ default · "+key+" → "+(out||"không có output"));
+      }catch(e){ log("⚠ default · "+key+": "+(e?.message||e)); }
+    }
+    ccOk=ok>=4;
+  }
+
+  // Luôn đọc lại CarrierConfig thật, không dùng global flag làm bằng chứng.
+  await new Promise(r=>setTimeout(r,1200));
   const primary=String(await shell("settings get global volte_vt_enabled")).trim();
   const enhanced=String(await shell("settings get global enhanced_4g_mode_enabled")).trim();
-  log("VoLTE flag: "+primary); log("Enhanced 4G: "+enhanced);
-  log("→ Đọc lại CarrierConfig sau khi Shizuku override…");
+  log("VoLTE flag: "+primary);
+  log("Enhanced 4G: "+enhanced);
+
   const cc=safeText(await shell("dumpsys carrier_config 2>&1"));
   const wanted=["hide_enhanced_4g_lte_bool","editable_enhanced_4g_lte_bool","enhanced_4g_lte_on_by_default_bool","carrier_volte_available_bool","carrier_volte_provisioned_bool","carrier_vt_available_bool","carrier_wfc_ims_available_bool"];
   const ccLines=cc.split(/\r?\n/);
   const hits=ccLines.filter(x=>wanted.some(k=>x.includes(k)));
   log("CarrierConfig keys:\n"+(hits.join("\n")||"(không tìm thấy key mục tiêu)"));
-  const value=(key)=>{ const line=ccLines.find(x=>x.includes(key)); return line?line.toLowerCase().includes("true"):null; };
-  const hide=value("hide_enhanced_4g_lte_bool");
-  const volte=value("carrier_volte_available_bool");
-  const provisioned=value("carrier_volte_provisioned_bool");
-  const vt=value("carrier_vt_available_bool");
+
+  const getBool=(key)=>{
+    const line=ccLines.find(x=>x.includes(key));
+    if(!line)return null;
+    const m=line.match(/(?:=|:)\\s*(true|false)\\b/i);
+    return m?m[1].toLowerCase()==="true":line.toLowerCase().includes("true");
+  };
+  const hide=getBool("hide_enhanced_4g_lte_bool");
+  const volte=getBool("carrier_volte_available_bool");
+  const provisioned=getBool("carrier_volte_provisioned_bool");
+  const vt=getBool("carrier_vt_available_bool");
+
   if(primary!=="1"||enhanced!=="1") throw new Error("Global VoLTE flags chưa ở trạng thái 1.");
-  if(hide===true||volte!==true||provisioned!==true||vt!==true) throw new Error("CarrierConfig chưa đạt trạng thái VoLTE — kiểm tra Shizuku đã chạy và Apple Seed đã được cấp quyền.");
+  if(hide===true||volte!==true||provisioned!==true||vt!==true){
+    if(!ccOk) throw new Error("ROM này không cho ADB shell thực hiện CarrierConfig override bằng cmd phone cc.");
+    throw new Error("Apple Seed CarrierConfig đã nhận lệnh nhưng dumpsys chưa phản ánh VoLTE.");
+  }
+
   try{ await shell("am force-stop com.android.settings"); await new Promise(r=>setTimeout(r,700)); }catch(_){}
   try{await openVolteSettings()}catch(e){log("ℹ Không tự mở Cài đặt mạng: "+(e?.message||e))}
-  log("===== SHIZUKU CARRIERCONFIG FIX KẾT THÚC =====");
+  log("===== APPLE SEED · VOLTE CARRIERCONFIG FIX KẾT THÚC =====");
 }
 function bind(){
   $("connect").onclick=()=>uiAction("KẾT NỐI THIẾT BỊ",connectDevice);
