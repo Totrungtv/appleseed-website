@@ -879,7 +879,7 @@ async function scanVolte(){
   log("===== SCAN KẾT THÚC =====");
 }
 
-async async function getHbgDex(){
+async function getHbgDex(){
   if(window.__appleSeedHbgDex instanceof Uint8Array) return window.__appleSeedHbgDex;
   log("→ Nạp Apple Seed VoLTE CarrierConfig engine tích hợp sẵn…");
   const url=new URL("assets/apple_seed_hbg_volte.dex.b64",document.baseURI);
