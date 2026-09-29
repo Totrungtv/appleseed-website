@@ -381,7 +381,7 @@ async function connectDevice(){
       // làm điện thoại hiện "No compatible devices found" dù USB debugging đã bật.
       // Cho Chrome hiển thị thiết bị USB đã cắm, sau đó WebADB mới xác định
       // thiết bị nào thực sự có interface ADB.
-      acceptAllDevices:true // WebUSB: không lọc VID/class
+      filters:[{}] // WebUSB chuẩn: filter rỗng = không lọc VID/class
     });
     if(!raw) throw new Error("Không chọn thiết bị.");
     log("✓ Chrome đã cấp quyền USB: "+(raw.manufacturerName||"")+" "+(raw.productName||"Android")+" · VID "+raw.vendorId.toString(16).padStart(4,"0")+" · PID "+raw.productId.toString(16).padStart(4,"0"));
