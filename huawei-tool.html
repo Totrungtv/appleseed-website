@@ -992,11 +992,18 @@ async function fixVolte(){
     try{await sync.write({filename:"/data/local/tmp/apple_seed_volte_engine.dex",file:new ReadableStream({start(c){c.enqueue(dex);c.close()}})})}
     finally{try{await sync.dispose()}catch(_){}}
     log("✓ Apple Seed engine đã đẩy vào thiết bị: "+fmt(dex.length));
+    // Android 10 / ColorOS có ROM không nạp CLASSPATH của app_process theo kiểu export.
+    // Thử lần lượt java.class.path, CLASSPATH inline và dalvikvm trước khi kết luận engine hỏng.
+    const dexPath="/data/local/tmp/apple_seed_volte_engine.dex";
     const attempts=[
-      "export CLASSPATH=/data/local/tmp/apple_seed_volte_engine.dex; app_process64 /system/bin com.hbg.volte.VolteFixer ENABLE",
-      "export CLASSPATH=/data/local/tmp/apple_seed_volte_engine.dex; app_process /system/bin com.hbg.volte.VolteFixer ENABLE",
-      "CLASSPATH=/data/local/tmp/apple_seed_volte_engine.dex app_process64 / com.hbg.volte.VolteFixer ENABLE",
-      "CLASSPATH=/data/local/tmp/apple_seed_volte_engine.dex app_process / com.hbg.volte.VolteFixer ENABLE"
+      "CLASSPATH="+dexPath+" app_process64 /system/bin com.hbg.volte.VolteFixer ENABLE",
+      "CLASSPATH="+dexPath+" app_process /system/bin com.hbg.volte.VolteFixer ENABLE",
+      "export CLASSPATH="+dexPath+"; app_process64 /system/bin com.hbg.volte.VolteFixer ENABLE",
+      "export CLASSPATH="+dexPath+"; app_process /system/bin com.hbg.volte.VolteFixer ENABLE",
+      "app_process64 -Djava.class.path="+dexPath+" /system/bin com.hbg.volte.VolteFixer ENABLE",
+      "app_process -Djava.class.path="+dexPath+" /system/bin com.hbg.volte.VolteFixer ENABLE",
+      "dalvikvm64 -cp "+dexPath+" com.hbg.volte.VolteFixer ENABLE",
+      "dalvikvm -cp "+dexPath+" com.hbg.volte.VolteFixer ENABLE"
     ];
     for(let i=0;i<attempts.length;i++){
       log("→ Native backend "+(i+1)+"/"+attempts.length+"…");
