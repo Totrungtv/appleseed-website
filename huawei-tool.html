@@ -461,11 +461,7 @@ async function connectDevice(){
     let msg=rawMsg;
 
     if(/claimInterface|Unable to claim interface|DeviceBusyError|NetworkError/i.test(rawMsg)){
-      msg="USB ADB interface đang bị chiếm hoặc phiên WebUSB cũ chưa được nhả. Apple Seed đã tự dọn handle và thử kết nối lại.
-
-Nếu vẫn lỗi, một chương trình ADB/scrcpy/Smart Switch khác đang giữ interface USB nên Chrome không thể lấy cùng interface.
-
-Chi tiết: "+rawMsg;
+      msg="USB ADB interface đang bị chiếm hoặc phiên WebUSB cũ chưa được nhả. Apple Seed đã tự dọn handle và thử kết nối lại.\n\nNếu vẫn lỗi, một chương trình ADB/scrcpy/Smart Switch khác đang giữ interface USB nên Chrome không thể lấy cùng interface.\n\nChi tiết: "+rawMsg;
     }else if(e?.name==="NotFoundError"){
       msg="Không chọn thiết bị / hộp chọn USB đã bị hủy.";
     }
