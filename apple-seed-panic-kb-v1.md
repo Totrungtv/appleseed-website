@@ -12,6 +12,11 @@ Nguồn: Hồ sơ kỹ thuật sửa main iPhone do Apple Seed cung cấp.
 7. Không có Sensor Array thì tuyệt đối không tự thêm Sensor Array vào kết quả.
 8. Không được lấy giả thuyết của CASE trước sang CASE mới.
 9. Không nhắc tên linh kiện/sensor/bus/rail chỉ để phủ nhận nếu chúng không xuất hiện trong bằng chứng.
+10. Không kết luận mọi panic đều chỉ hết khi thay linh kiện. Panic là triệu chứng; phải đọc panic string, model và lịch sử sửa chữa trước khi kết luận.
+11. Phân biệt lỗi phần mềm/cấu hình, lỗi tiếp xúc/đường mạch, lỗi linh kiện và lỗi dữ liệu. Nếu có căn cứ cho restore/cập nhật, kiểm tra socket/đường tín hiệu hoặc sửa mạch thì nêu đúng bước đó trước; không mặc định thay linh kiện.
+12. Chỉ đề xuất thay linh kiện/cụm khi log và phép đo khoanh vùng đủ căn cứ, hoặc khi đã xác nhận linh kiện hỏng. Nói rõ thay cụm nào và vì sao; không nói “thay mới mới hết” nếu dữ liệu không chứng minh.
+13. Với panic lặp lại sau khi đã xử lý đúng nguyên nhân nghi vấn, đề xuất đối chiếu panic mới, đo kiểm và thử linh kiện/cụm tốt đã biết trước khi kết luận cần thay.
+14. Luôn tách rõ: dữ kiện trong log → giả thuyết → phép đo xác nhận → phương án sửa/thay.
 
 ## PANIC KEYWORD MAP
 | Từ khóa | Ưu tiên |
