@@ -843,10 +843,94 @@ async function scanVolte(){
   log("===== SCAN KẾT THÚC =====");
 }
 
+async function getHbgDex(){
+  if(window.__appleSeedHbgDex instanceof Uint8Array) return window.__appleSeedHbgDex;
+  return await new Promise((resolve,reject)=>{
+    const input=document.createElement("input");
+    input.type="file"; input.accept=".exe,application/vnd.microsoft.portable-executable";
+    input.style.display="none"; document.body.appendChild(input);
+    input.onchange=async()=>{
+      try{
+        const file=input.files?.[0];
+        if(!file) throw new Error("Chưa chọn HBG_VoLTE_Fixer.exe");
+        log("→ Đọc HBG VoLTE Fixer: "+file.name+" ("+fmt(file.size)+")");
+        const bytes=new Uint8Array(await file.arrayBuffer());
+        const magic=new Uint8Array([0x4d,0x45,0x49,0x0c,0x0b,0x0a,0x0b,0x0e]);
+        let cookie=-1;
+        for(let i=bytes.length-24;i>=0;i--){
+          let ok=true; for(let j=0;j<8;j++) if(bytes[i+j]!==magic[j]){ok=false;break}
+          if(ok){cookie=i;break}
+        }
+        if(cookie<0) throw new Error("Không tìm thấy PyInstaller CArchive trong EXE.");
+        const dv=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
+        const total=dv.getInt32(cookie+8,false)>>>0;
+        const tocPos=dv.getInt32(cookie+12,false)>>>0;
+        const tocLen=dv.getInt32(cookie+16,false)>>>0;
+        const pkgStart=cookie+24-total;
+        const tocStart=pkgStart+tocPos;
+        let p=tocStart, found=null;
+        while(p<tocStart+tocLen){
+          const entryLen=dv.getInt32(p,false)>>>0;
+          if(entryLen<18 || p+entryLen>tocStart+tocLen) break;
+          const dpos=dv.getInt32(p+4,false)>>>0;
+          const dlen=dv.getInt32(p+8,false)>>>0;
+          const flag=dv.getInt8(p+16);
+          const nameBytes=bytes.slice(p+18,p+entryLen);
+          let z=0; while(z<nameBytes.length && nameBytes[z]!==0)z++;
+          const name=new TextDecoder().decode(nameBytes.slice(0,z));
+          if(/hbg_volte_fixer\.dex$/i.test(name)){found={dpos,dlen,flag,name};break}
+          p+=entryLen;
+        }
+        if(!found) throw new Error("EXE không chứa assets\\hbg_volte_fixer.dex.");
+        log("✓ Tìm thấy "+found.name+" · "+found.dlen+" bytes");
+        const region=bytes.slice(pkgStart+found.dpos,Math.min(bytes.length,pkgStart+found.dpos+found.dlen+160));
+        let dex=null;
+        for(let off=0;off<128 && off<region.length;off++){
+          for(const w of [15,-15]){
+            try{
+              const inputStream=new ReadableStream({start(c){c.enqueue(region.slice(off));c.close()}});
+              const ds=new DecompressionStream(w===15?"deflate-raw":"deflate");
+              const out=await new Response(inputStream.pipeThrough(ds)).arrayBuffer();
+              const u=new Uint8Array(out);
+              if(u[0]===0x64&&u[1]===0x65&&u[2]===0x78&&u[3]===0x0a){dex=u;break}
+            }catch(_){}
+          }
+          if(dex)break;
+        }
+        if(!dex) throw new Error("Không giải nén được HBG DEX từ EXE.");
+        window.__appleSeedHbgDex=dex;
+        log("✓ HBG DEX đã nạp: "+fmt(dex.length));
+        resolve(dex);
+      }catch(e){reject(e)}finally{input.remove()}
+    };
+    input.click();
+  });
+}
+
+async function runHbgCarrierFix(){
+  const dex=await getHbgDex();
+  log("→ Đẩy HBG CarrierConfig engine vào /data/local/tmp…");
+  const sync=await adb.sync();
+  try{
+    await sync.write({
+      filename:"/data/local/tmp/apple_seed_hbg_volte.dex",
+      file:new ReadableStream({start(c){c.enqueue(dex);c.close()}})
+    });
+  }finally{try{await sync.dispose()}catch(_){}}
+  log("✓ DEX đã đẩy xong.");
+  const cmd="CLASSPATH=/data/local/tmp/apple_seed_hbg_volte.dex app_process -Djava.class.path=/data/local/tmp/apple_seed_hbg_volte.dex /system/bin com.hbg.volte.VolteFixer ENABLE";
+  const out=await shell(cmd);
+  log("HBG CarrierConfig: "+(out||"(không có output)"));
+  if(!/SUCCESS|success|complete|APPLESEED/i.test(out||"")){
+    throw new Error("HBG CarrierConfig không xác nhận thành công: "+(out||"không có output"));
+  }
+  try{await shell("rm -f /data/local/tmp/apple_seed_hbg_volte.dex")}catch(_){}
+}
+
 async function fixVolte(){
   if(!adb) throw new Error("Chưa kết nối thiết bị");
-  log("===== APPLE SEED · FIX VOLTE =====");
-  log("→ Ghi CarrierConfig theo đúng các key điều khiển giao diện VoLTE…");
+  log("===== APPLE SEED · FIX VOLTE HBG ENGINE =====");
+  log("→ Ghi các global flag nền trước…");
   for(const [k,v] of [
     ["volte_vt_enabled","1"],["enhanced_4g_mode_enabled","1"],
     ["volte_enabled","1"],["carrier_vt_enabled","1"]
@@ -854,63 +938,26 @@ async function fixVolte(){
     try{
       await shell("settings put global "+k+" "+v);
       log("✓ global "+k+" = "+safeText(await shell("settings get global "+k)));
-    }catch(e){ log("⚠ global "+k+": "+(e?.message||e)); }
+    }catch(e){log("⚠ global "+k+": "+(e?.message||e))}
   }
 
-  // Try slot syntax used by Android releases that expose CarrierConfig shell commands.
-  // Never clear/reset CarrierConfig: clearing it can make the VoLTE item disappear again.
-  const cc=[
-    "cmd phone cc set-value -s 0 hide_enhanced_4g_lte_bool false",
-    "cmd phone cc set-value -s 0 editable_enhanced_4g_lte_bool true",
-    "cmd phone cc set-value -s 0 enhanced_4g_lte_on_by_default_bool true",
-    "cmd phone cc set-value -s 0 carrier_volte_available_bool true",
-    "cmd phone cc set-value -s 0 carrier_volte_provisioned_bool true",
-    "cmd phone cc set-value -s 0 carrier_vt_available_bool true",
-    "cmd phone cc set-value -s 0 carrier_wfc_ims_available_bool true",
-    "cmd phone cc set-value -s 0 carrier_supports_ss_over_ut_bool true",
-    "cmd phone cc set-value -s 0 show_4g_for_lte_data_icon_bool true"
-  ];
-  let ccOk=0;
-  for(const c of cc){
-    try{
-      const out=await shell(c);
-      if(!/unknown command|unknown option|error|exception|denied|permission/i.test(out||"")){
-        ccOk++;
-        log("✓ "+c+" => "+(out||"OK"));
-      }else log("⚠ "+c+" => "+(out||"rejected"));
-    }catch(e){ log("⚠ "+c+" => "+(e?.message||e)); }
-  }
+  log("→ Chạy đúng HBG CarrierConfig engine — KHÔNG RESET.");
+  await runHbgCarrierFix();
 
-  if(ccOk===0){
-    log("→ -s 0 không được ROM nhận, thử subscription mode…");
-    for(const c of [
-      "cmd phone cc set-value -p hide_enhanced_4g_lte_bool false",
-      "cmd phone cc set-value -p editable_enhanced_4g_lte_bool true",
-      "cmd phone cc set-value -p enhanced_4g_lte_on_by_default_bool true",
-      "cmd phone cc set-value -p carrier_volte_available_bool true",
-      "cmd phone cc set-value -p carrier_volte_provisioned_bool true",
-      "cmd phone cc set-value -p carrier_vt_available_bool true"
-    ]){
-      try{
-        const out=await shell(c);
-        log("→ "+c+" => "+(out||"OK"));
-      }catch(e){ log("⚠ "+c+" => "+(e?.message||e)); }
-    }
-  }
-
+  log("→ Đọc lại CarrierConfig / telephony sau khi override…");
   try{
-    const ccNow=await shell("cmd phone cc get-value hide_enhanced_4g_lte_bool");
-    log("CarrierConfig hide_enhanced_4g_lte_bool: "+safeText(ccNow));
-  }catch(e){ log("ℹ ROM không hỗ trợ đọc CarrierConfig bằng cmd phone."); }
+    const cc=await shell("dumpsys carrier_config 2>&1");
+    const hits=cc.split(/\r?\n/).filter(x=>/(hide_enhanced_4g|editable_enhanced_4g|carrier_volte|carrier_vt|carrier_wfc|show_4g)/i.test(x)).slice(0,80);
+    log("CarrierConfig:\n"+(hits.join("\n")||"(không tìm thấy key trong dumpsys)"));
+  }catch(e){log("⚠ CarrierConfig scan: "+(e?.message||e))}
 
-  log("→ Không gọi CARRIER_CONFIG_CHANGED: ColorOS đã chặn broadcast này.");
   const primary=String(await shell("settings get global volte_vt_enabled")).trim();
   const enhanced=String(await shell("settings get global enhanced_4g_mode_enabled")).trim();
   log("VoLTE flag: "+primary);
   log("Enhanced 4G: "+enhanced);
-  if(primary!=="1" || enhanced!=="1") throw new Error("Không ghi được cờ VoLTE.");
-  try{ await openVolteSettings(); }catch(e){ log("ℹ Không tự mở Cài đặt mạng: "+(e?.message||e)); }
-  log("===== FIX VOLTE KẾT THÚC — KHÔNG RESET =====");
+  if(primary!=="1"||enhanced!=="1") throw new Error("Global VoLTE flags chưa ở trạng thái 1.");
+  try{await openVolteSettings()}catch(e){log("ℹ Không tự mở Cài đặt mạng: "+(e?.message||e))}
+  log("===== FIX VOLTE HBG KẾT THÚC — KHÔNG RESET =====");
 }
 function bind(){
   $("connect").onclick=()=>uiAction("KẾT NỐI THIẾT BỊ",connectDevice);
