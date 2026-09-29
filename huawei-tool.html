@@ -655,13 +655,29 @@ async function installAppleSeedVolte(){
     log("⚠ pm grant bị từ chối: "+(e?.message||e));
   }
 
-  // Kiểm tra QUYỀN THỰC TẾ sau khi grant, không chỉ dựa vào output của pm grant.
+  // Một số ROM/OEM nhận cmd package grant tốt hơn pm grant.
+  if(/denied|failure|exception|security|unknown|not allowed|error/i.test(grantOut||"")){
+    try{
+      const alt=await shell("cmd package grant "+APPLESEED_VOLTE_PACKAGE+" android.permission.WRITE_SECURE_SETTINGS");
+      log("cmd package grant WRITE_SECURE_SETTINGS: "+(alt||"OK"));
+      grantOut += "\n"+alt;
+    }catch(e){
+      log("⚠ cmd package grant cũng bị từ chối: "+(e?.message||e));
+    }
+  }
+
+  // Kiểm tra QUYỀN THỰC TẾ sau khi grant.
   let permCheck="";
   try{
     permCheck=await shell("pm check-permission "+APPLESEED_VOLTE_PACKAGE+" android.permission.WRITE_SECURE_SETTINGS");
     log("KIỂM TRA QUYỀN SYSTEM: "+(permCheck||"không có kết quả"));
   }catch(e){
-    log("⚠ Không chạy được pm check-permission: "+(e?.message||e));
+    try{
+      permCheck=await shell("cmd package check-permission "+APPLESEED_VOLTE_PACKAGE+" android.permission.WRITE_SECURE_SETTINGS 0");
+      log("KIỂM TRA QUYỀN SYSTEM (cmd): "+(permCheck||"không có kết quả"));
+    }catch(e2){
+      log("⚠ Không thể kiểm tra WRITE_SECURE_SETTINGS: "+(e2?.message||e2));
+    }
   }
 
   let permOut="";
