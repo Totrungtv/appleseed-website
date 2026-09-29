@@ -41,7 +41,7 @@
 
 <section class="hero">
   <div><div class="eyebrow">Professional Web Service Tool</div><h2>Huawei / Android Service Tool</h2><p>WebADB trực tiếp qua USB. Đọc thông tin, cài APK, quản lý app và chạy ADB Shell ngay trên Chrome / Edge.</p></div>
-  <div class="actions"><a class="btn" href="index.html">🏠 Trang chủ</a><button id="connect" class="btn primary" type="button" onclick="window.__appleSeedConnectFallback()">🔌 Kết nối thiết bị</button><button id="disconnect" class="btn danger">Ngắt kết nối</button></div>
+  <div class="actions"><a class="btn" href="index.html">🏠 Trang chủ</a><button id="connect" class="btn primary" type="button">🔌 Kết nối thiết bị</button><button id="disconnect" class="btn danger">Ngắt kết nối</button></div>
 </section>
 <style>
 .guide{margin-top:12px}.guide-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.guide h3{font-size:18px;margin:0}.guide-toggle{border:1px solid #2b6043;background:#07150e;color:#7ef0ae;border-radius:9px;padding:8px 12px;font-weight:850;font-size:11px;white-space:nowrap}.guide-toggle:hover{background:#0d2117;border-color:#3d7856}.guide-body{margin-top:10px}.guide.is-collapsed .guide-body{display:none}.guide-intro{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;background:#07150e;border:1px solid #1d402d;border-radius:12px;color:#b8d7c5;font-size:11px;margin-bottom:12px}.guide-intro b{color:#effaf4}.guide-table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}.guide-table{width:100%;border-collapse:collapse;min-width:760px;font-size:11px}.guide-table th{padding:10px;text-align:left;background:#0d2117;color:#7ef0ae;font-size:10px;text-transform:uppercase;letter-spacing:.7px;white-space:nowrap}.guide-table td{padding:10px;border-top:1px solid #183425;vertical-align:top}.guide-table tr:hover td{background:#091a11}.guide-letter{width:42px;text-align:center;font-size:15px;font-weight:950;color:#20dc7d}.guide-step{width:145px;font-weight:850;color:#e5f8ec}.guide-action{color:#b9d7c6}.guide-note{color:#788f82}.guide-ok{color:#65e9a1;font-weight:800}.guide-warn{color:#f5c45b}.guide-code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:#c7f5d9;background:#041009;padding:2px 5px;border-radius:5px}.guide-links{margin-top:10px;color:#667f70;font-size:10px}.guide-links a{color:#65e9a1;text-decoration:none}.guide-links a:hover{text-decoration:underline}@media(max-width:620px){.guide{padding:13px}.guide-table{min-width:700px}.guide-head{align-items:flex-start}.guide-toggle{padding:7px 9px;font-size:10px}}
@@ -366,20 +366,31 @@ async function uiAction(title,fn){
 }
 uiAction.running="";
 
+async function closeWebUsbDevice(d){
+  try{
+    if(d?.raw?.opened) await d.raw.close();
+  }catch(e){
+    log("⚠ Dọn phiên WebUSB cũ: "+(e?.message||e));
+  }
+}
+
 async function connectDevice(){
   if(!window.isSecureContext) throw new Error("Trang này chưa chạy HTTPS nên Chrome chặn WebUSB.");
   if(!navigator.usb) throw new Error("Chrome/Edge không cung cấp WebUSB.");
   setBusy(true);
   globalProgress(true,"Nạp WebADB…",10,true);
+
+  let selectedDevice=null;
+  let connection=null;
+
   try{
-    // FIX: để chính WebADB manager xử lý requestDevice + ADB interface filter.
-    // Không tự gọi navigator.usb.requestDevice({filters:[{}]}) rồi tạo backend
-    // bằng một USBDevice khác. Cách cũ có thể chọn đúng điện thoại nhưng sau đó
-    // backend vẫn không lấy đúng ADB interface và d.connect() chết ở claimInterface.
     await loadAdbLibraries();
-    if(!AdbDaemonWebUsbDeviceManager) {
-      throw new Error("Không khởi tạo được WebADB.");
-    }
+    if(!AdbDaemonWebUsbDeviceManager) throw new Error("Không khởi tạo được WebADB.");
+
+    // Luôn đóng phiên WebUSB cũ của chính trang trước khi xin kết nối mới.
+    await closeWebUsbDevice(device);
+    device=null;
+    adb=null;
 
     const manager = AdbDaemonWebUsbDeviceManager.BROWSER ||
       new AdbDaemonWebUsbDeviceManager(navigator.usb);
@@ -387,20 +398,35 @@ async function connectDevice(){
     log("→ WebADB: mở hộp chọn thiết bị có giao diện ADB…");
     globalProgress(true,"Chọn thiết bị ADB…",25,false);
 
-    // API chính thức của @yume-chan/adb-daemon-webusb:
-    // requestDevice() tự áp dụng ADB interface filter và trả về backend.
-    const d = await manager.requestDevice();
-    if(!d) throw new Error("Không chọn thiết bị.");
+    selectedDevice=await manager.requestDevice();
+    if(!selectedDevice) throw new Error("Không chọn thiết bị.");
 
-    device=d;
-    log("✓ Chrome/WebADB đã cấp quyền: "+(d.name||"Android")+" / "+(d.serial||"unknown"));
+    device=selectedDevice;
+    log("✓ Đã chọn: "+(selectedDevice.name||"Android")+" / "+(selectedDevice.serial||"unknown"));
     globalProgress(true,"Đang mở kênh ADB…",45,true);
 
-    const connection=await d.connect();
+    try{
+      connection=await selectedDevice.connect();
+    }catch(e){
+      const busy=/claimInterface|Unable to claim interface|DeviceBusyError|NetworkError/i.test(e?.message||String(e));
+      // claimInterface có thể để lại USB handle mở trong chính tab.
+      // Đóng handle rồi thử lại đúng một lần trước khi báo lỗi.
+      await closeWebUsbDevice(selectedDevice);
+      if(!busy) throw e;
+
+      log("⚠ USB interface đang bận. Đã đóng handle cũ, thử kết nối lại một lần…");
+      globalProgress(true,"Làm sạch phiên USB…",50,true);
+
+      // Xin lại backend từ manager để tránh dùng object/interface state cũ.
+      selectedDevice=await manager.requestDevice();
+      if(!selectedDevice) throw new Error("Không chọn lại thiết bị.");
+      device=selectedDevice;
+      connection=await selectedDevice.connect();
+    }
 
     const store=new AdbWebCredentialStore("AppleSeed");
     const transport=await AdbDaemonTransport.authenticate({
-      serial:d.serial,
+      serial:selectedDevice.serial,
       connection,
       credentialStore:store,
       preserveConnection:false
@@ -413,7 +439,7 @@ async function connectDevice(){
     const brand=safeText(await shell("getprop ro.product.brand"));
     const model=safeText(await shell("getprop ro.product.model"));
     const android=safeText(await shell("getprop ro.build.version.release"));
-    const serial=safeText(d.serial)||safeText(await shell("getprop ro.serialno"));
+    const serial=safeText(selectedDevice.serial)||safeText(await shell("getprop ro.serialno"));
 
     $("brand").textContent=brand||"—";
     $("model").textContent=model||"—";
@@ -425,6 +451,8 @@ async function connectDevice(){
 
     log("✓ THIẾT BỊ ĐÃ KẾT NỐI: "+brand+" "+model+" · Android "+android+" · "+serial);
   }catch(e){
+    try{ if(adb?.close) await adb.close(); }catch{}
+    await closeWebUsbDevice(selectedDevice||device);
     adb=null;
     device=null;
     setStatus("Lỗi kết nối",false);
@@ -432,10 +460,14 @@ async function connectDevice(){
     const rawMsg=e?.message||String(e);
     let msg=rawMsg;
 
-    if(/claimInterface|Unable to claim interface/i.test(rawMsg)){
-      msg="Chrome không chiếm được giao diện ADB của điện thoại. WebADB không cần cài ADB server để kết nối; lỗi này thường là giao diện ADB đang bị một tiến trình khác giữ, hoặc driver Windows của giao diện ADB chưa cho WebUSB/WinUSB truy cập.\n\nChi tiết: "+rawMsg;
+    if(/claimInterface|Unable to claim interface|DeviceBusyError|NetworkError/i.test(rawMsg)){
+      msg="USB ADB interface đang bị chiếm hoặc phiên WebUSB cũ chưa được nhả. Apple Seed đã tự dọn handle và thử kết nối lại.
+
+Nếu vẫn lỗi, một chương trình ADB/scrcpy/Smart Switch khác đang giữ interface USB nên Chrome không thể lấy cùng interface.
+
+Chi tiết: "+rawMsg;
     }else if(e?.name==="NotFoundError"){
-      msg="Không chọn thiết bị / hộp USB đã bị hủy.";
+      msg="Không chọn thiết bị / hộp chọn USB đã bị hủy.";
     }
 
     log(e?.name==="NotFoundError"
