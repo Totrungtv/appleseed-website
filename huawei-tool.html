@@ -910,42 +910,55 @@ async function runHbgCarrierFix(){
   }finally{try{await sync.dispose()}catch(_){}}
   log("✓ DEX đã đẩy xong.");
 
-  // Không dùng lệnh "timeout" của toybox vì cú pháp/khả năng hỗ trợ
-  // khác nhau giữa các bản Android/ColorOS. Chạy app_process nền,
-  // lấy PID rồi tự poll tối đa 20 giây để WebADB không bị treo.
   const logFile="/data/local/tmp/apple_seed_hbg_volte.log";
-  const pidOut=await shell(
-    "rm -f "+logFile+"; " +
+  const rcFile="/data/local/tmp/apple_seed_hbg_volte.rc";
+  // Giữ lại exit code + logcat để chẩn đoán app_process bị "Aborted"
+  // trên ColorOS/Android 10 thay vì chỉ trả về một chữ Aborted.
+  const launch=
+    "rm -f "+logFile+" "+rcFile+"; " +
     "sh -c 'CLASSPATH=/data/local/tmp/apple_seed_hbg_volte.dex " +
     "app_process -Djava.class.path=/data/local/tmp/apple_seed_hbg_volte.dex " +
-    "/system/bin com.hbg.volte.VolteFixer ENABLE >"+logFile+" 2>&1' " +
-    "& echo $!"
-  );
-  const pid=String(pidOut||"").trim().split(/\s+/).pop();
-  if(!/^\d+$/.test(pid)) throw new Error("Không lấy được PID HBG app_process: "+(pidOut||"(rỗng)"));
+    "/system/bin com.hbg.volte.VolteFixer ENABLE >"+logFile+" 2>&1; " +
+    "echo $? >"+rcFile+"' & echo $!";
+  const pidOut=await shell(launch);
+  const pid=String(pidOut||"").trim().split(/\\s+/).pop();
+  if(!/^\\d+$/.test(pid)) throw new Error("Không lấy được PID HBG app_process: "+(pidOut||"(rỗng)"));
 
   log("→ HBG app_process đang chạy nền · PID "+pid+" · tối đa 20 giây…");
   let finished=false;
   for(let i=0;i<40;i++){
     await new Promise(r=>setTimeout(r,500));
-    const alive=String(await shell("kill -0 "+pid+" 2>/dev/null; echo $?")).trim().split(/\s+/).pop();
+    const alive=String(await shell("kill -0 "+pid+" 2>/dev/null; echo $?")).trim().split(/\\s+/).pop();
     if(alive!=="0"){ finished=true; break; }
   }
 
   const out=safeText(await shell("cat "+logFile+" 2>/dev/null"));
+  const rc=safeText(await shell("cat "+rcFile+" 2>/dev/null"));
+  log("HBG exit code: "+(rc||"UNKNOWN"));
+  log("HBG CarrierConfig: "+(out||"(không có output)"));
+
   if(!finished){
     try{await shell("kill -9 "+pid+" 2>/dev/null")}catch(_){}
-    try{await shell("rm -f "+logFile+" /data/local/tmp/apple_seed_hbg_volte.dex")}catch(_){}
-    log("HBG CarrierConfig: "+(out||"(không có output)"));
-    throw new Error("HBG CarrierConfig chạy quá 20 giây — đã tự dừng để WebADB không bị treo.");
+    log("→ HBG quá thời gian, lấy logcat chẩn đoán…");
+    const diag=safeText(await shell(
+      "logcat -d -t 400 2>&1 | grep -Ei 'VolteFixer|CarrierConfig|carrier_config|app_process|FATAL EXCEPTION|AndroidRuntime|SIGABRT|Abort|SecurityException|hiddenapi|avc: denied' | tail -n 160"
+    ));
+    log("HBG diagnostic logcat:\n"+(diag||"(không có logcat phù hợp)"));
+    try{await shell("rm -f "+logFile+" "+rcFile+" /data/local/tmp/apple_seed_hbg_volte.dex")}catch(_){}
+    throw new Error("HBG CarrierConfig chạy quá 20 giây — đã dừng.");
   }
-
-  log("HBG CarrierConfig: "+(out||"(không có output)"));
-  try{await shell("rm -f "+logFile+" /data/local/tmp/apple_seed_hbg_volte.dex")}catch(_){}
 
   if(!/SUCCESS|success|complete|APPLESEED/i.test(out||"")){
-    throw new Error("HBG CarrierConfig không xác nhận thành công: "+(out||"không có output"));
+    log("→ HBG không hoàn tất, lấy logcat chẩn đoán…");
+    const diag=safeText(await shell(
+      "logcat -d -t 400 2>&1 | grep -Ei 'VolteFixer|CarrierConfig|carrier_config|app_process|FATAL EXCEPTION|AndroidRuntime|SIGABRT|Abort|SecurityException|hiddenapi|avc: denied' | tail -n 160"
+    ));
+    log("HBG diagnostic logcat:\n"+(diag||"(không có logcat phù hợp)"));
+    try{await shell("rm -f "+logFile+" "+rcFile+" /data/local/tmp/apple_seed_hbg_volte.dex")}catch(_){}
+    throw new Error("HBG CarrierConfig không xác nhận thành công: "+(out||"không có output")+" | exit="+(rc||"UNKNOWN"));
   }
+
+  try{await shell("rm -f "+logFile+" "+rcFile+" /data/local/tmp/apple_seed_hbg_volte.dex")}catch(_){}
 }
 async function fixVolte(){
   if(!adb) throw new Error("Chưa kết nối thiết bị");
