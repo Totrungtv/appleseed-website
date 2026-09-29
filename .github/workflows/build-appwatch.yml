@@ -7,11 +7,12 @@ on:
       - '.github/workflows/build-appwatch.yml'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,12 +25,14 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.10.2'
-      - name: Build release APK
-        run: gradle --no-daemon :app:assembleRelease
+      - name: Build signed debug APK
+        run: gradle --no-daemon :app:assembleDebug
         working-directory: appwatch
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - name: Publish APK release
+        uses: softprops/action-gh-release@v2
         with:
-          name: AppleSeed-AppWatch
-          path: appwatch/app/build/outputs/apk/release/app-release-unsigned.apk
-          if-no-files-found: error
+          tag_name: appwatch-v1.0.0
+          name: Apple Seed App Watch v1.0.0
+          body: Apple Seed App Watch — scanner adware/bloatware and app manager.
+          files: appwatch/app/build/outputs/apk/debug/app-debug.apk
+          make_latest: true
