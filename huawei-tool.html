@@ -949,7 +949,7 @@ async function runHbgCarrierFix(){
 }
 async function fixVolte(){
   if(!adb) throw new Error("Chưa kết nối thiết bị");
-  log("===== APPLE SEED · FIX VOLTE HBG ENGINE =====");
+  log("===== APPLE SEED · FIX VOLTE + CARRIERCONFIG VERIFY =====");
   log("→ Ghi các global flag nền trước…");
   for(const [k,v] of [
     ["volte_vt_enabled","1"],["enhanced_4g_mode_enabled","1"],
@@ -961,23 +961,63 @@ async function fixVolte(){
     }catch(e){log("⚠ global "+k+": "+(e?.message||e))}
   }
 
-  log("→ Chạy đúng HBG CarrierConfig engine — KHÔNG RESET.");
+  log("→ Chạy HBG CarrierConfig engine — KHÔNG RESET.");
   await runHbgCarrierFix();
 
-  log("→ Đọc lại CarrierConfig / telephony sau khi override…");
-  try{
-    const cc=await shell("dumpsys carrier_config 2>&1");
-    const hits=cc.split(/\r?\n/).filter(x=>/(hide_enhanced_4g|editable_enhanced_4g|carrier_volte|carrier_vt|carrier_wfc|show_4g)/i.test(x)).slice(0,80);
-    log("CarrierConfig:\n"+(hits.join("\n")||"(không tìm thấy key trong dumpsys)"));
-  }catch(e){log("⚠ CarrierConfig scan: "+(e?.message||e))}
+  log("→ Đọc lại CarrierConfig sau khi override…");
+  const cc=safeText(await shell("dumpsys carrier_config 2>&1"));
+  const wanted=[
+    "hide_enhanced_4g_lte_bool",
+    "editable_enhanced_4g_lte_bool",
+    "carrier_volte_available_bool",
+    "carrier_volte_provisioned_bool",
+    "carrier_vt_available_bool"
+  ];
+  const ccLines=cc.split(/\r?\n/);
+  const hits=ccLines.filter(x=>wanted.some(k=>x.includes(k)));
+  log("CarrierConfig keys:\n"+(hits.join("\n")||"(không tìm thấy 5 key mục tiêu trong dumpsys)"));
+
+  const readBool=(key)=>{
+    const line=ccLines.find(x=>x.includes(key));
+    if(!line) return null;
+    const tail=line.slice(line.indexOf(key)+key.length);
+    const m=tail.match(/(?:=|:|=>)\s*(true|false)\b/i);
+    return m?m[1].toLowerCase()==="true":null;
+  };
+  const hide=readBool("hide_enhanced_4g_lte_bool");
+  const editable=readBool("editable_enhanced_4g_lte_bool");
+  const volte=readBool("carrier_volte_available_bool");
+  const provisioned=readBool("carrier_volte_provisioned_bool");
+  const vt=readBool("carrier_vt_available_bool");
+
+  log("→ CarrierConfig verify:");
+  log("  hide_enhanced_4g_lte_bool = "+(hide===null?"UNKNOWN":hide));
+  log("  editable_enhanced_4g_lte_bool = "+(editable===null?"UNKNOWN":editable));
+  log("  carrier_volte_available_bool = "+(volte===null?"UNKNOWN":volte));
+  log("  carrier_volte_provisioned_bool = "+(provisioned===null?"UNKNOWN":provisioned));
+  log("  carrier_vt_available_bool = "+(vt===null?"UNKNOWN":vt));
+
+  if(hide===true) throw new Error("CarrierConfig vẫn đang ẩn VoLTE: hide_enhanced_4g_lte_bool=true. HBG chưa áp dụng được override.");
+  if(hide===null || editable===null || volte===null || vt===null){
+    throw new Error("Không xác minh đủ CarrierConfig sau FIX — không xác nhận thành công.");
+  }
+  if(hide!==false || editable!==true || volte!==true || vt!==true){
+    throw new Error("CarrierConfig chưa đạt trạng thái hiển thị/VoLTE cần thiết.");
+  }
 
   const primary=String(await shell("settings get global volte_vt_enabled")).trim();
   const enhanced=String(await shell("settings get global enhanced_4g_mode_enabled")).trim();
   log("VoLTE flag: "+primary);
   log("Enhanced 4G: "+enhanced);
   if(primary!=="1"||enhanced!=="1") throw new Error("Global VoLTE flags chưa ở trạng thái 1.");
+
+  try{
+    await shell("am force-stop com.android.settings");
+    await new Promise(r=>setTimeout(r,700));
+  }catch(_){}
+
   try{await openVolteSettings()}catch(e){log("ℹ Không tự mở Cài đặt mạng: "+(e?.message||e))}
-  log("===== FIX VOLTE HBG KẾT THÚC — KHÔNG RESET =====");
+  log("===== FIX VOLTE + CARRIERCONFIG VERIFY KẾT THÚC =====");
 }
 function bind(){
   $("connect").onclick=()=>uiAction("KẾT NỐI THIẾT BỊ",connectDevice);
