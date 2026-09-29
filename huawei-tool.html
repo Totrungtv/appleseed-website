@@ -242,7 +242,7 @@ window.__appleSeedConnectFallback=async function(){
       return;
     }
     add("⚠ Hàm WebADB chưa khởi tạo — đang kiểm tra USB trực tiếp…");
-    const d=await navigator.usb.requestDevice({filters:[{classCode:0xff}]});
+    const d=await navigator.usb.requestDevice({filters:[{}]});
     add("✓ USB được chọn: "+(d.manufacturerName||"")+" "+(d.productName||"")+" · VID "+d.vendorId.toString(16)+" PID "+d.productId.toString(16));
     alert("Chrome đã nhận USB, nhưng mã WebADB chưa khởi tạo.");
   }catch(e){
