@@ -200,7 +200,7 @@ Kết nối thiết bị để bắt đầu.</span></pre>
 </div>
 
 
-<div class="footer">Apple Seed · Huawei / Android Service Center · WebUSB / ADB</div>
+<div class="footer">Apple Seed · Huawei / Android Service Center · Local ADB Bridge</div>
 </div>
 
 <script>
@@ -222,43 +222,7 @@ Kết nối thiết bị để bắt đầu.</span></pre>
   else cleanAndBindGuide();
 })();
 </script>
-<script>
-window.__appleSeedConnectFallback=async function(){
-  const logEl=document.getElementById("log");
-  const add=(m)=>{
-    if(logEl){
-      if(logEl.querySelector(".empty")) logEl.textContent="";
-      logEl.textContent+=(logEl.textContent?"\n":"")+m;
-      logEl.scrollTop=logEl.scrollHeight;
-    }
-  };
-  add("→ CLICK KẾT NỐI ĐÃ NHẬN");
-  try{
-    if(!window.isSecureContext) throw new Error("Không phải HTTPS / secure context.");
-    if(!navigator.usb) throw new Error("Chrome không có navigator.usb.");
-    add("✓ WebUSB API có sẵn.");
-    if(typeof window.connectDevice==="function"){
-      await window.connectDevice();
-      return;
-    }
-    add("⚠ Hàm WebADB chưa khởi tạo — đang kiểm tra USB trực tiếp…");
-    const d=await navigator.usb.requestDevice({filters:[{}]});
-    add("✓ USB được chọn: "+(d.manufacturerName||"")+" "+(d.productName||"")+" · VID "+d.vendorId.toString(16)+" PID "+d.productId.toString(16));
-    alert("Chrome đã nhận USB, nhưng mã WebADB chưa khởi tạo.");
-  }catch(e){
-    const msg=(e&&e.name?e.name+": ":"")+(e&&e.message?e.message:String(e));
-    add("✕ WEBUSB: "+msg);
-    alert("Apple Seed Kết nối:\n"+msg);
-  }
-};
-window.addEventListener("error",e=>{
-  const el=document.getElementById("log");
-  if(el){
-    if(el.querySelector(".empty")) el.textContent="";
-    el.textContent+=(el.textContent?"\n":"")+"✕ JS ERROR: "+(e.message||"Unknown error");
-  }
-});
-</script>
+
 <script>
 let adb=null,device=null,selectedFile=null;
 let bridgeSocket=null,bridgeSeq=0,bridgePending=new Map();
@@ -950,9 +914,9 @@ function bind(){
 const APPLESEED_VOLTE_URL="https://raw.githubusercontent.com/Totrungtv/AppleSeed-IMS/main/apps/AppleSeed_VoLTE.apk";
 const APPLESEED_VOLTE_PACKAGE="vn.appleseed.volte";
 $("connect").disabled=false;
-$("status").textContent=window.isSecureContext && navigator.usb ? "Sẵn sàng kết nối" : "Kiểm tra WebUSB";
+$("status").textContent=window.isSecureContext ? "Sẵn sàng kết nối ADB Bridge" : "Kiểm tra HTTPS";
 if(!window.isSecureContext) log("⚠ Trang không chạy HTTPS.");
-else log("✓ Apple Seed dùng ADB Bridge cục bộ — không chiếm USB bằng WebUSB.");
+else log("✓ Apple Seed dùng ADB Bridge cục bộ — không claim USB bằng Chrome.");
 log("ℹ Kiểm tra Bridge tại "+BRIDGE_URL+" khi bấm Kết nối thiết bị.");
 bind();
 </script>
