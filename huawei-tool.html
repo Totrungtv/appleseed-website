@@ -885,7 +885,7 @@ async function getHbgDex(){
   const url=new URL("assets/apple_seed_hbg_volte.dex.b64",document.baseURI);
   const r=await fetch(url.href,{cache:"no-store"});
   if(!r.ok) throw new Error("Không tải được Apple Seed VoLTE engine: HTTP "+r.status);
-  const b64=(await r.text()).replace(/\\s+/g,"");
+  const b64=(await r.text()).replace(/\s+/g,"");
   if(!b64) throw new Error("Apple Seed VoLTE engine rỗng.");
   const bin=atob(b64);
   const dex=new Uint8Array(bin.length);
@@ -900,7 +900,7 @@ async function getHbgDex(){
 
 async function runHbgCarrierFix(){
   const dex=await getHbgDex();
-  log("→ Đẩy HBG CarrierConfig engine vào /data/local/tmp…");
+  log("→ Đẩy Apple Seed VoLTE CarrierConfig engine vào /data/local/tmp…");
   const sync=await adb.sync();
   try{
     await sync.write({
@@ -909,21 +909,44 @@ async function runHbgCarrierFix(){
     });
   }finally{try{await sync.dispose()}catch(_){}}
   log("✓ DEX đã đẩy xong.");
-  // HBG có thể giữ Binder/thread của app_process nên không được để WebADB chờ vô hạn.
-  // Android 10/ColorOS có toybox timeout; giới hạn 20 giây để UI luôn thoát được.
-  const cmd="timeout 20s sh -c 'CLASSPATH=/data/local/tmp/apple_seed_hbg_volte.dex app_process -Djava.class.path=/data/local/tmp/apple_seed_hbg_volte.dex /system/bin com.hbg.volte.VolteFixer ENABLE'";
-  log("→ Chạy HBG app_process (timeout 20 giây)…");
-  const out=await shell(cmd);
-  log("HBG CarrierConfig: "+(out||"(không có output)"));
-  if(/timed out|timeout|124/i.test(out||"")){
-    throw new Error("HBG CarrierConfig chạy quá 20 giây — engine không tự thoát.");
+
+  // Không dùng lệnh "timeout" của toybox vì cú pháp/khả năng hỗ trợ
+  // khác nhau giữa các bản Android/ColorOS. Chạy app_process nền,
+  // lấy PID rồi tự poll tối đa 20 giây để WebADB không bị treo.
+  const logFile="/data/local/tmp/apple_seed_hbg_volte.log";
+  const pidOut=await shell(
+    "rm -f "+logFile+"; " +
+    "sh -c 'CLASSPATH=/data/local/tmp/apple_seed_hbg_volte.dex " +
+    "app_process -Djava.class.path=/data/local/tmp/apple_seed_hbg_volte.dex " +
+    "/system/bin com.hbg.volte.VolteFixer ENABLE >"+logFile+" 2>&1' " +
+    "& echo $!"
+  );
+  const pid=String(pidOut||"").trim().split(/\s+/).pop();
+  if(!/^\d+$/.test(pid)) throw new Error("Không lấy được PID HBG app_process: "+(pidOut||"(rỗng)"));
+
+  log("→ HBG app_process đang chạy nền · PID "+pid+" · tối đa 20 giây…");
+  let finished=false;
+  for(let i=0;i<40;i++){
+    await new Promise(r=>setTimeout(r,500));
+    const alive=String(await shell("kill -0 "+pid+" 2>/dev/null; echo $?")).trim().split(/\s+/).pop();
+    if(alive!=="0"){ finished=true; break; }
   }
+
+  const out=safeText(await shell("cat "+logFile+" 2>/dev/null"));
+  if(!finished){
+    try{await shell("kill -9 "+pid+" 2>/dev/null")}catch(_){}
+    try{await shell("rm -f "+logFile+" /data/local/tmp/apple_seed_hbg_volte.dex")}catch(_){}
+    log("HBG CarrierConfig: "+(out||"(không có output)"));
+    throw new Error("HBG CarrierConfig chạy quá 20 giây — đã tự dừng để WebADB không bị treo.");
+  }
+
+  log("HBG CarrierConfig: "+(out||"(không có output)"));
+  try{await shell("rm -f "+logFile+" /data/local/tmp/apple_seed_hbg_volte.dex")}catch(_){}
+
   if(!/SUCCESS|success|complete|APPLESEED/i.test(out||"")){
     throw new Error("HBG CarrierConfig không xác nhận thành công: "+(out||"không có output"));
   }
-  try{await shell("rm -f /data/local/tmp/apple_seed_hbg_volte.dex")}catch(_){}
 }
-
 async function fixVolte(){
   if(!adb) throw new Error("Chưa kết nối thiết bị");
   log("===== APPLE SEED · FIX VOLTE HBG ENGINE =====");
