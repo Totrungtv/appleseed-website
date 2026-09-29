@@ -408,14 +408,50 @@ async function cleanupWebUsbSession(d){
   try{
     const raw=d?.raw||d;
     if(!raw) return;
+    // Chỉ giải phóng các interface mà WebUSB instance hiện tại đang mở.
+    // Không cố release mù tất cả interface của thiết bị.
     const cfg=raw.configuration;
-    if(cfg?.interfaces){
+    if(raw.opened && cfg?.interfaces){
       for(const iface of cfg.interfaces){
         try{await raw.releaseInterface(iface.interfaceNumber)}catch(_){}
       }
     }
     try{if(raw.opened) await raw.close()}catch(_){}
   }catch(_){}
+}
+
+async function cleanupAuthorizedUsbDevices(target){
+  if(!navigator.usb?.getDevices) return;
+  let devices=[];
+  try{devices=await navigator.usb.getDevices()}catch(_){return}
+  const rawTarget=target?.raw||target;
+  const targetSerial=target?.serial||rawTarget?.serialNumber||"";
+  for(const raw of devices){
+    try{
+      const same=targetSerial && raw.serialNumber
+        ? raw.serialNumber===targetSerial
+        : raw.vendorId===rawTarget?.vendorId && raw.productId===rawTarget?.productId;
+      if(!same || !raw.opened) continue;
+      // Dọn USBDevice instance cũ của chính trình duyệt.
+      // Nếu interface vẫn bị chương trình Windows/ADB khác claim thì
+      // WebUSB sẽ tiếp tục báo Unable to claim interface và ta báo đúng nguyên nhân.
+      if(raw.configuration?.interfaces){
+        for(const iface of raw.configuration.interfaces){
+          try{await raw.releaseInterface(iface.interfaceNumber)}catch(_){}
+        }
+      }
+      try{await raw.close()}catch(_){}
+    }catch(_){}
+  }
+}
+
+async function prepareWebUsbDevice(d){
+  const raw=d?.raw||d;
+  if(!raw) return;
+  await cleanupAuthorizedUsbDevices(d);
+  // Nếu instance hiện tại còn mở do một lần connect lỗi, đóng sạch trước khi claim lại.
+  await cleanupWebUsbSession(d);
+  await new Promise(r=>setTimeout(r,150));
 }
 
 function isClaimOrUsbBusyError(err){
@@ -439,23 +475,23 @@ async function connectDevice(){
 
     let connection=null;
     let lastError=null;
-    for(let attempt=1;attempt<=3;attempt++){
-      try{
-        if(attempt>1){
-          log("↻ WebUSB interface đang bận — tự giải phóng và thử lại ("+attempt+"/3)…");
-          await cleanupWebUsbSession(d);
-          await new Promise(r=>setTimeout(r,400));
-        }
-        log("→ Mở kênh ADB "+(attempt>1?"lần "+attempt+": ":"")+ (d.name||"Android")+" / "+(d.serial||"unknown"));
-        connection=await d.connect();
-        break;
-      }catch(e){
-        lastError=e;
-        if(!isClaimOrUsbBusyError(e)||attempt===3) throw e;
-        await cleanupWebUsbSession(d);
+    // Dọn session WebUSB cũ trước khi claim. Không retry mù 3 lần:
+    // nếu ADB desktop/Android tool khác đang giữ interface thì retry không thể giải quyết.
+    log("→ Kiểm tra và giải phóng WebUSB session cũ…");
+    await prepareWebUsbDevice(d);
+    try{
+      log("→ Claim interface ADB: "+(d.name||"Android")+" / "+(d.serial||"unknown"));
+      connection=await d.connect();
+    }catch(e){
+      lastError=e;
+      if(isClaimOrUsbBusyError(e)){
+        log("⚠ USB interface đang bị giữ bởi ADB/WebUSB session khác.");
+        log("→ Hãy đóng ADB desktop, scrcpy, Android Studio hoặc tab Apple Seed khác rồi bấm Kết nối lại.");
+        log("→ Apple Seed không chạy Fix-ADB cho lỗi claimInterface này.");
       }
+      throw lastError;
     }
-    if(!connection) throw lastError||new Error("Không mở được kênh WebUSB.");
+    if(!connection) throw new Error("Không mở được kênh WebUSB.");
 
     const store=new AdbWebCredentialStore("AppleSeed");
     const transport=await AdbDaemonTransport.authenticate({
@@ -483,7 +519,7 @@ async function connectDevice(){
     adb=null;device=null;setStatus("Lỗi kết nối",false);
     const msg=e?.message||String(e);
     if(!isClaimOrUsbBusyError(e)) showFixAdb(msg);
-    else log("✕ WebUSB chưa claim được interface sau 3 lần thử: "+msg);
+    else log("✕ WebUSB chưa claim được interface: "+msg);
     throw e;
   }finally{setBusy(false)}
 }
