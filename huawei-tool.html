@@ -223,6 +223,16 @@ async function shell(command){
   if(r.exitCode!==0 && !out && !err) log("exitCode: "+r.exitCode);
   return out||err||"";
 }
+async function shellTimeout(command,ms=6000){
+  if(!adb) throw new Error("Chưa kết nối thiết bị");
+  let timer;
+  try{
+    return await Promise.race([
+      shell(command),
+      new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error("ADB timeout: "+command)),ms)})
+    ]);
+  }finally{if(timer)clearTimeout(timer)}
+}
 async function run(command){
   log("$ adb shell "+command);
   try{
@@ -1007,13 +1017,15 @@ async function fixVolte(){
     log("→ Thử Apple Seed VoLTE CarrierConfig bridge…");
     try{
       const before=safeText(await shell("logcat -c 2>&1"));
-      const r=safeText(await shell(
-        "am start -W -a vn.appleseed.volte.action.FIX_VOLTE -n vn.appleseed.volte/.MainActivity 2>&1"
+      // Không để Activity bridge làm treo toàn bộ WebADB. Một số ColorOS
+      // giữ am start -W lâu nếu service/bridge không sẵn sàng.
+      const r=safeText(await shellTimeout(
+        "am start -a vn.appleseed.volte.action.FIX_VOLTE -n vn.appleseed.volte/.MainActivity 2>&1",5000
       ));
       log("Apple Seed VoLTE bridge: "+(r||"(không có output)"));
-      await new Promise(r=>setTimeout(r,1800));
-      const appLog=safeText(await shell(
-        "logcat -d -t 500 2>&1 | grep -Ei 'AppleSeedCarrier|AppleSeed|CarrierConfig|Shizuku|SecurityException|FIX_VOLTE' | tail -n 120"
+      await new Promise(r=>setTimeout(r,900));
+      const appLog=safeText(await shellTimeout(
+        "logcat -d -t 300 2>&1 | grep -Ei 'AppleSeedCarrier|AppleSeed|CarrierConfig|Shizuku|SecurityException|FIX_VOLTE' | tail -n 80",5000
       ));
       if(appLog) log("CarrierConfig bridge log:\n"+appLog);
       if(/CarrierConfig OK|IMS reset OK|overrideConfig/i.test(appLog)) ccChanged=true;
@@ -1026,7 +1038,7 @@ async function fixVolte(){
   log("VoLTE flag: "+primary);
   log("Enhanced 4G: "+enhanced);
 
-  const cc=safeText(await shell("dumpsys carrier_config 2>&1"));
+  const cc=safeText(await shellTimeout("dumpsys carrier_config 2>&1",7000));
   const wanted=[
     "hide_enhanced_4g_lte_bool",
     "editable_enhanced_4g_lte_bool",
