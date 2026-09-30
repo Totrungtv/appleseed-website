@@ -92,6 +92,15 @@
   </div>
 
   <div class="install">
+    <h3>🖥️ Apple Seed · VoLTE Desktop</h3>
+    <p class="sub">Bản desktop dành cho Windows. Nếu máy chưa có ADB, tool sẽ tự tải Android SDK Platform-Tools chính thức khi bấm Kết nối.</p>
+    <div class="appactions">
+      <button id="downloadVoLTEDesktop" class="btn primary">⬇️ Tải Apple Seed VoLTE Desktop v1.1</button>
+    </div>
+    <div class="appnote">Dùng desktop tool khi cần ADB trực tiếp trên Windows; WebADB trên trình duyệt vẫn hoạt động độc lập.</div>
+  </div>
+
+  <div class="install">
     <h3>📦 Cài APK — One Click</h3><p class="sub">Chọn APK trên máy tính, công cụ sẽ truyền và cài thẳng qua ADB, không cần mở trình cài APK trên điện thoại.</p>
     <div class="installbox">
       <label class="drop" for="apk"><div class="fileicon">⬆️</div><div><strong id="filename">Chọn file APK</strong><span id="filesize">APK sẽ được cài trực tiếp vào thiết bị đã kết nối</span></div><input id="apk" type="file" accept=".apk,application/vnd.android.package-archive"></label>
@@ -1111,6 +1120,7 @@ function bind(){
   });
   $("appleSeedOpen").onclick=()=>uiAction("MỞ APP APPLE SEED VOLTE",openAppleSeedVolte);
   $("volteVerify").onclick=()=>uiAction("KIỂM TRA IMS",verifyVolte);
+  $("downloadVoLTEDesktop").onclick=()=>{window.location.href="https://github.com/Totrungtv/appleseed-website/releases/download/volte-desktop-v1.1/AppleSeed_VoLTE_Desktop_v1.1.zip"};
   $("launch").onclick=()=>uiAction("MỞ APP",async()=>{
     const p=$("pkg").value.trim();if(!p)throw new Error("Nhập package name");
     await run("monkey -p "+p+" -c android.intent.category.LAUNCHER 1");
