@@ -2370,4 +2370,24 @@ load();
 @keyframes asCombatBot1{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-6px) scale(1.015)}}
 @keyframes asCombatBot2{0%,100%{transform:translateY(0) scale(.96)}50%{transform:translateY(-8px) scale(1)}}
 @keyframes asCombatBot3{0%,100%{transform:translateY(0) scale(.98)}50%{transform:translateY(-5px) scale(1.02)}}
+</style><style id="apple-seed-full-frame-banner-v1">
+/* SINGLE FULL-FRAME ROBOT BANNER */
+.as-ai-chat-hero.as-ai-hero-3d .as-ai-3d-visual{
+ position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+ display:block!important;overflow:hidden!important;z-index:20!important;
+ background:#001c18 url("assets/apple-seed-ai-banner.svg") center bottom/cover no-repeat!important;
+ animation:asFullFrameRobotMove 10s ease-in-out infinite alternate!important;
+}
+.as-ai-chat-hero.as-ai-hero-3d .as-robot-image-squad,
+.as-ai-chat-hero.as-ai-hero-3d .as-robot-img-slot{display:none!important}
+@keyframes asFullFrameRobotMove{
+ 0%{background-position:48% 50%;transform:scale(1)}
+ 100%{background-position:52% 48%;transform:scale(1.035)}
+}
+.as-ai-chat-hero.as-ai-hero-3d:after{
+ content:"";position:absolute;inset:0;z-index:25;pointer-events:none;
+ background:linear-gradient(180deg,rgba(0,20,18,.08),rgba(0,20,18,.18) 65%,rgba(0,10,9,.38));
+}
+.as-ai-chat-hero.as-ai-hero-3d .as-ai-3d-copy,
+.as-ai-chat-hero.as-ai-hero-3d .as-ai-ref-toolbar{z-index:40!important}
 </style></body></html>
