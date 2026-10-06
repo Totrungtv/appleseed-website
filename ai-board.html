@@ -671,7 +671,54 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
   .as-ai-chat-window.open:not(.minimized) .as-ai-future-robot.as-squad-right{right:-125px!important;opacity:.72}
 }
 </style>
-</style>
+<style id="apple-seed-robot-squad-v6">
+.as-ai-chat-window.open:not(.minimized) .as-ai-3d-visual{
+  width:100%!important;left:0!important;right:0!important;overflow:hidden!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-hero-robot-svg{
+  position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+  display:block!important;z-index:5!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-hero-robot-svg>.as-ai-future-robot.as-squad-left{
+  position:absolute!important;left:-5px!important;right:auto!important;top:-16%!important;
+  width:390px!important;height:150%!important;max-width:none!important;max-height:none!important;
+  object-fit:contain!important;object-position:center!important;mix-blend-mode:screen!important;
+  mask-image:none!important;-webkit-mask-image:none!important;
+  filter:saturate(1.18) contrast(1.08) drop-shadow(0 0 18px rgba(0,255,205,.3))!important;
+  transform:scale(1.02)!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-squad-bot{
+  position:absolute!important;top:-16%!important;height:150%!important;
+  pointer-events:none!important;z-index:6!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-squad-bot svg{
+  width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;
+  display:block!important;object-fit:contain!important;object-position:center!important;
+  overflow:visible!important;mix-blend-mode:screen!important;
+  filter:saturate(1.12) contrast(1.08) drop-shadow(0 0 18px rgba(0,255,205,.25))!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-squad-mid-wrap{
+  left:auto!important;right:145px!important;width:340px!important;
+  transform:scale(.86)!important;animation:asSquadMidV6 5.6s ease-in-out infinite!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-squad-right-wrap{
+  left:auto!important;right:-20px!important;width:330px!important;
+  transform:scale(.82)!important;animation:asSquadRightV6 5.1s ease-in-out infinite!important;
+}
+@keyframes asSquadMidV6{
+  0%,100%{transform:scale(.86) translate3d(0,1px,0) rotate(.5deg)}
+  50%{transform:scale(.89) translate3d(-4px,-6px,0) rotate(-.5deg)}
+}
+@keyframes asSquadRightV6{
+  0%,100%{transform:scale(.82) translate3d(2px,0,0) rotate(.6deg)}
+  50%{transform:scale(.85) translate3d(-3px,-7px,0) rotate(-.7deg)}
+}
+@media(max-width:900px){
+ .as-ai-chat-window.open:not(.minimized) .as-ai-hero-robot-svg>.as-ai-future-robot.as-squad-left{width:310px!important;left:-30px!important}
+ .as-ai-chat-window.open:not(.minimized) .as-squad-mid-wrap{right:80px!important;width:280px!important}
+ .as-ai-chat-window.open:not(.minimized) .as-squad-right-wrap{right:-80px!important;width:275px!important}
+}
+</style>\n</style>
 </head>
 <body><main class="wrap">
 <!-- ===== APPLE SEED FULL MEMBER / COMMUNITY / CHAT RESTORE ===== -->
@@ -1415,13 +1462,28 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
   </div>
 <script id="apple-seed-robot-squad-cloner">
 (()=>{
-  const host=document.querySelector('.as-ai-hero-robot-svg');
-  const base=host?.querySelector('svg.as-ai-future-robot.as-squad-left');
-  if(!host||!base||host.dataset.squadReady)return;
-  host.dataset.squadReady='1';
-  const mid=base.cloneNode(true); mid.classList.remove('as-squad-left'); mid.classList.add('as-squad-mid'); mid.setAttribute('aria-label','Apple Seed AI Robot phụ 1');
-  const right=base.cloneNode(true); right.classList.remove('as-squad-left'); right.classList.add('as-squad-right'); right.setAttribute('aria-label','Apple Seed AI Robot phụ 2');
-  host.append(mid,right);
+  function build(){
+    const host=document.querySelector('.as-ai-hero-robot-svg');
+    const base=host?.querySelector('svg.as-ai-future-robot.as-squad-left');
+    if(!host||!base)return false;
+    if(host.querySelector('.as-squad-mid-wrap'))return true;
+    const make=(cls,label)=>{
+      const wrap=document.createElement('div');
+      wrap.className='as-squad-bot '+cls;
+      const svg=base.cloneNode(true);
+      svg.classList.remove('as-squad-left','as-squad-mid','as-squad-right');
+      svg.removeAttribute('style');
+      svg.setAttribute('aria-label',label);
+      wrap.appendChild(svg);
+      return wrap;
+    };
+    host.appendChild(make('as-squad-mid-wrap','Apple Seed AI Robot phụ 1'));
+    host.appendChild(make('as-squad-right-wrap','Apple Seed AI Robot phụ 2'));
+    return true;
+  }
+  let n=0;
+  const t=setInterval(()=>{if(build()||++n>80)clearInterval(t)},250);
+  new MutationObserver(build).observe(document.body,{childList:true,subtree:true});
 })();
 </script>
 
