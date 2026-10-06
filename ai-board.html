@@ -1422,9 +1422,9 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
 
   <div class="as-ai-3d-visual">
     <div class="as-ai-hero-robot-svg as-robot-image-squad" role="img" aria-label="Apple Seed AI Robot Squad">
-      <div class="as-robot-img-slot as-squad-left"><img src="assets/apple-seed-robot-01.svg" alt="Apple Seed AI Robot chiến đấu 1"></div>
-      <div class="as-robot-img-slot as-squad-mid"><img src="assets/apple-seed-robot-02.svg" alt="Apple Seed AI Robot chiến đấu 2"></div>
-      <div class="as-robot-img-slot as-squad-right"><img src="assets/apple-seed-robot-03.svg" alt="Apple Seed AI Robot chiến đấu 3"></div>
+      <div class="as-robot-img-slot as-squad-left"><img src="assets/apple-seed-robot-01.webp" alt="Apple Seed AI Robot chiến đấu 1"></div>
+      <div class="as-robot-img-slot as-squad-mid"><img src="assets/apple-seed-robot-02.webp" alt="Apple Seed AI Robot chiến đấu 2"></div>
+      <div class="as-robot-img-slot as-squad-right"><img src="assets/apple-seed-robot-03.webp" alt="Apple Seed AI Robot chiến đấu 3"></div>
     </div>
   </div>
 
@@ -2336,4 +2336,38 @@ load();
  mix-blend-mode:normal!important;filter:drop-shadow(0 0 14px rgba(0,255,205,.35))!important;
 }
 .as-ai-chat-hero.as-ai-hero-3d .as-ai-3d-copy{z-index:40!important}
+</style>
+<style id="apple-seed-combat-robots-final-v3">
+/* FINAL: use the actual uploaded combat-robot artwork; grid prevents legacy absolute-position rules from collapsing the squad */
+.as-ai-chat-hero.as-ai-hero-3d .as-ai-3d-visual{
+  position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+  display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  align-items:end!important;overflow:hidden!important;z-index:20!important;
+}
+.as-ai-chat-hero.as-ai-hero-3d .as-robot-image-squad{
+  position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+  display:contents!important;
+}
+.as-ai-chat-hero.as-ai-hero-3d .as-robot-img-slot{
+  position:relative!important;inset:auto!important;left:auto!important;right:auto!important;
+  top:auto!important;bottom:auto!important;width:100%!important;height:100%!important;
+  min-width:0!important;margin:0!important;padding:0!important;
+  display:flex!important;align-items:flex-end!important;justify-content:center!important;
+  overflow:hidden!important;opacity:1!important;visibility:visible!important;
+  transform:none!important;z-index:30!important;
+}
+.as-ai-chat-hero.as-ai-hero-3d .as-robot-img-slot img{
+  position:relative!important;inset:auto!important;
+  width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;
+  display:block!important;object-fit:contain!important;object-position:center bottom!important;
+  opacity:1!important;visibility:visible!important;mix-blend-mode:normal!important;
+  filter:drop-shadow(0 0 18px rgba(0,255,205,.38))!important;
+  transform:none!important;
+}
+.as-ai-chat-hero.as-ai-hero-3d .as-squad-left img{animation:asCombatBot1 4.6s ease-in-out infinite!important}
+.as-ai-chat-hero.as-ai-hero-3d .as-squad-mid img{animation:asCombatBot2 5.1s ease-in-out .35s infinite!important}
+.as-ai-chat-hero.as-ai-hero-3d .as-squad-right img{animation:asCombatBot3 4.8s ease-in-out .7s infinite!important}
+@keyframes asCombatBot1{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-6px) scale(1.015)}}
+@keyframes asCombatBot2{0%,100%{transform:translateY(0) scale(.96)}50%{transform:translateY(-8px) scale(1)}}
+@keyframes asCombatBot3{0%,100%{transform:translateY(0) scale(.98)}50%{transform:translateY(-5px) scale(1.02)}}
 </style></body></html>
