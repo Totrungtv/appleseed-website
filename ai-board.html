@@ -718,66 +718,31 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
  .as-ai-chat-window.open:not(.minimized) .as-squad-mid-wrap{right:80px!important;width:280px!important}
  .as-ai-chat-window.open:not(.minimized) .as-squad-right-wrap{right:-80px!important;width:275px!important}
 }
-</style>\n<style id="apple-seed-robot-squad-v7">
-/* ===== THREE ROBOTS — STATIC DOM, NO JS CLONING ===== */
-.as-ai-chat-window.open:not(.minimized) .as-ai-3d-visual{
-  width:100%!important;left:0!important;right:0!important;overflow:hidden!important;
-}
-.as-ai-chat-window.open:not(.minimized) .as-ai-hero-robot-svg{
-  position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
-  display:block!important;z-index:5!important;pointer-events:none!important;
-}
-.as-ai-chat-window.open:not(.minimized) .as-squad-static{
-  position:absolute!important;top:-10%!important;height:135%!important;
-  display:block!important;z-index:6!important;pointer-events:none!important;
-}
-.as-ai-chat-window.open:not(.minimized) .as-squad-static .as-ai-future-robot{
-  width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;
-  display:block!important;object-fit:contain!important;object-position:center!important;
-  overflow:visible!important;mix-blend-mode:screen!important;
-  mask-image:none!important;-webkit-mask-image:none!important;
-  filter:saturate(1.3) contrast(1.1) brightness(1.02) drop-shadow(0 0 18px rgba(0,255,205,.28))!important;
-}
-.as-ai-chat-window.open:not(.minimized) .as-squad-static.as-squad-left{
-  left:-18px!important;width:390px!important;
-  transform:scale(1.08)!important;transform-origin:50% 72%!important;
-  animation:asRobotLeftV7 5s ease-in-out infinite!important;
-}
-.as-ai-chat-window.open:not(.minimized) .as-squad-static.as-squad-mid{
-  right:150px!important;width:350px!important;
-  transform:scale(.92)!important;transform-origin:50% 72%!important;
-  animation:asRobotMidV7 5.5s ease-in-out infinite!important;
-}
-.as-ai-chat-window.open:not(.minimized) .as-squad-static.as-squad-right{
-  right:-28px!important;width:350px!important;
-  transform:scale(.9)!important;transform-origin:50% 72%!important;
-  animation:asRobotRightV7 5.2s ease-in-out infinite!important;
-}
-@keyframes asRobotLeftV7{0%,100%{transform:scale(1.08) translate(0,0) rotate(-.3deg)}50%{transform:scale(1.105) translate(3px,-5px) rotate(.3deg)}}
-@keyframes asRobotMidV7{0%,100%{transform:scale(.92) translate(0,0) rotate(.3deg)}50%{transform:scale(.95) translate(-4px,-6px) rotate(-.3deg)}}
-@keyframes asRobotRightV7{0%,100%{transform:scale(.9) translate(0,0) rotate(.5deg)}50%{transform:scale(.93) translate(-3px,-7px) rotate(-.5deg)}}
-.as-ai-chat-window.open:not(.minimized) .as-ai-3d-copy{
-  z-index:30!important;width:39%!important;right:26px!important;
-}
+</style>\n</style>
+<style id="apple-seed-robot-image-assets-v8">
+.as-ai-chat-window.open:not(.minimized) .as-ai-3d-visual{width:100%!important;overflow:hidden!important;background:linear-gradient(90deg,#011310 0%,#042a25 48%,#021714 100%)!important}
+.as-ai-chat-window.open:not(.minimized) .as-robot-image-squad{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;z-index:5!important;pointer-events:none!important}
+.as-ai-chat-window.open:not(.minimized) .as-robot-img-slot{position:absolute!important;top:-18%!important;height:145%!important;display:block!important}
+.as-ai-chat-window.open:not(.minimized) .as-robot-img-slot img{width:100%!important;height:100%!important;display:block!important;object-fit:contain!important;object-position:center!important;filter:saturate(1.18) contrast(1.08) drop-shadow(0 0 22px rgba(0,255,205,.3))!important;mix-blend-mode:screen!important}
+.as-ai-chat-window.open:not(.minimized) .as-robot-img-slot.as-squad-left{left:-28px!important;width:430px!important;transform:scale(1.06)!important;animation:asImgBot1 5s ease-in-out infinite!important}
+.as-ai-chat-window.open:not(.minimized) .as-robot-img-slot.as-squad-mid{right:145px!important;width:385px!important;transform:scale(.9)!important;animation:asImgBot2 5.7s ease-in-out infinite!important}
+.as-ai-chat-window.open:not(.minimized) .as-robot-img-slot.as-squad-right{right:-32px!important;width:390px!important;transform:scale(.88)!important;animation:asImgBot3 5.3s ease-in-out infinite!important}
+@keyframes asImgBot1{0%,100%{transform:scale(1.06) translateY(0) rotate(-.3deg)}50%{transform:scale(1.09) translate(4px,-6px) rotate(.3deg)}}
+@keyframes asImgBot2{0%,100%{transform:scale(.9) translateY(0) rotate(.3deg)}50%{transform:scale(.93) translate(-4px,-7px) rotate(-.3deg)}}
+@keyframes asImgBot3{0%,100%{transform:scale(.88) translateY(0) rotate(.5deg)}50%{transform:scale(.91) translate(-3px,-8px) rotate(-.5deg)}}
+.as-ai-chat-window.open:not(.minimized) .as-ai-3d-copy{z-index:30!important}
 .as-ai-chat-window.open:not(.minimized) .as-ai-ref-toolbar{z-index:31!important}
 .as-ai-chat-window.open:not(.minimized) .as-ai-3d-topline{z-index:32!important}
-.as-ai-chat-window.open:not(.minimized) .as-ai-3d-visual:after{
-  content:"";position:absolute;inset:0;z-index:18;pointer-events:none;
-  background:linear-gradient(90deg,rgba(0,255,205,.05),transparent 30%,transparent 70%,rgba(0,255,205,.04)),
-  repeating-linear-gradient(0deg,transparent 0 10px,rgba(93,255,224,.035) 11px,transparent 12px);
-  opacity:.7;mix-blend-mode:screen;
-}
 @media(max-width:900px){
- .as-ai-chat-window.open:not(.minimized) .as-squad-static.as-squad-left{left:-55px!important;width:320px!important}
- .as-ai-chat-window.open:not(.minimized) .as-squad-static.as-squad-mid{right:75px!important;width:285px!important}
- .as-ai-chat-window.open:not(.minimized) .as-squad-static.as-squad-right{right:-95px!important;width:285px!important}
+ .as-ai-chat-window.open:not(.minimized) .as-robot-img-slot.as-squad-left{left:-70px!important;width:340px!important}
+ .as-ai-chat-window.open:not(.minimized) .as-robot-img-slot.as-squad-mid{right:65px!important;width:300px!important}
+ .as-ai-chat-window.open:not(.minimized) .as-robot-img-slot.as-squad-right{right:-100px!important;width:300px!important}
 }
 @media(max-width:700px){
- .as-ai-chat-window.open:not(.minimized) .as-squad-static.as-squad-left{left:-90px!important;width:290px!important}
- .as-ai-chat-window.open:not(.minimized) .as-squad-static.as-squad-mid{right:15px!important;width:250px!important;opacity:.85}
- .as-ai-chat-window.open:not(.minimized) .as-squad-static.as-squad-right{right:-125px!important;width:250px!important;opacity:.75}
+ .as-ai-chat-window.open:not(.minimized) .as-robot-img-slot.as-squad-left{left:-105px!important;width:300px!important}
+ .as-ai-chat-window.open:not(.minimized) .as-robot-img-slot.as-squad-mid{right:10px!important;width:250px!important}
+ .as-ai-chat-window.open:not(.minimized) .as-robot-img-slot.as-squad-right{right:-130px!important;width:250px!important}
 }
-</style>
 </style>
 </head>
 <body><main class="wrap">
@@ -1486,99 +1451,883 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
   </div>
 
   <div class="as-ai-3d-visual">
-    <div class="as-ai-hero-robot-svg" role="img" aria-label="Apple Seed AI Robot Squad">
-<div class="as-squad-static as-squad-left" role="img" aria-label="Apple Seed AI Robot chiến đấu chính"><svg class="as-ai-future-robot as-squad-left" viewBox="0 0 420 500" role="img" aria-label="Apple Seed AI Robot chiến đấu chính" preserveAspectRatio="xMidYMid meet">
-  <defs>
-    <linearGradient id="asArmor" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f5ffff"/><stop offset=".45" stop-color="#b9d5d3"/><stop offset="1" stop-color="#3d6868"/></linearGradient>
-    <linearGradient id="asDark" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#173535"/><stop offset="1" stop-color="#071817"/></linearGradient>
-    <radialGradient id="asCore"><stop stop-color="#bffff1"/><stop offset=".35" stop-color="#22e6b2"/><stop offset="1" stop-color="#087b65"/></radialGradient>
-    <filter id="asGlow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-  </defs>
-  <ellipse cx="210" cy="478" rx="130" ry="14" fill="#16d9ae" opacity=".18"/>
-  <g stroke="#56ffe0" stroke-width="3" stroke-linejoin="round">
-    <path fill="url(#asArmor)" d="M157 108 L145 128 L153 160 L181 168 L239 168 L267 160 L275 128 L263 108 L245 94 L175 94Z"/>
-    <path fill="url(#asDark)" d="M171 119 L184 105 L236 105 L249 119 L242 143 L178 143Z"/>
-    <path fill="#5dffe1" d="M190 122 L207 116 L230 122 L207 130Z" filter="url(#asGlow)"/>
-    <path fill="url(#asArmor)" d="M150 165 L116 185 L101 245 L123 255 L149 220 L164 195Z"/>
-    <path fill="url(#asArmor)" d="M270 165 L304 185 L319 245 L297 255 L271 220 L256 195Z"/>
-    <path fill="url(#asDark)" d="M105 238 L91 259 L101 278 L122 269 L123 252Z"/>
-    <path fill="url(#asDark)" d="M315 238 L329 259 L319 278 L298 269 L297 252Z"/>
-    <path fill="url(#asArmor)" d="M157 158 L263 158 L288 207 L273 315 L147 315 L132 207Z"/>
-    <path fill="url(#asDark)" d="M159 184 L261 184 L272 218 L148 218Z"/>
-    <circle cx="210" cy="252" r="38" fill="url(#asCore)" filter="url(#asGlow)"/>
-    <circle cx="210" cy="252" r="22" fill="#06201d"/>
-    <text x="210" y="260" text-anchor="middle" font-size="24" font-family="Arial" font-weight="900" fill="#8dffe9" stroke="none">AI</text>
-    <path fill="url(#asArmor)" d="M148 300 L176 315 L184 383 L157 420 L132 401 L144 350Z"/>
-    <path fill="url(#asArmor)" d="M272 300 L244 315 L236 383 L263 420 L288 401 L276 350Z"/>
-    <path fill="url(#asDark)" d="M157 414 L181 424 L176 455 L145 455 L132 438Z"/>
-    <path fill="url(#asDark)" d="M263 414 L239 424 L244 455 L275 455 L288 438Z"/>
-    <path fill="#2c5554" d="M139 326 L166 337 L156 382 L137 374Z"/>
-    <path fill="#2c5554" d="M281 326 L254 337 L264 382 L283 374Z"/>
-    <path fill="#52ffe0" d="M181 166 L210 178 L239 166 L230 190 L190 190Z" filter="url(#asGlow)"/>
-    <path fill="none" d="M151 204 L137 232 M269 204 L283 232"/>
-  </g>
-</svg></div>
-<div class="as-squad-static as-squad-mid" role="img" aria-label="Apple Seed AI Robot chiến đấu phụ 1"><svg class="as-ai-future-robot as-squad-mid" viewBox="0 0 420 500" role="img" aria-label="Apple Seed AI Robot chiến đấu phụ 1" preserveAspectRatio="xMidYMid meet">
-  <defs>
-    <linearGradient id="asArmor" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f5ffff"/><stop offset=".45" stop-color="#b9d5d3"/><stop offset="1" stop-color="#3d6868"/></linearGradient>
-    <linearGradient id="asDark" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#173535"/><stop offset="1" stop-color="#071817"/></linearGradient>
-    <radialGradient id="asCore"><stop stop-color="#bffff1"/><stop offset=".35" stop-color="#22e6b2"/><stop offset="1" stop-color="#087b65"/></radialGradient>
-    <filter id="asGlow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-  </defs>
-  <ellipse cx="210" cy="478" rx="130" ry="14" fill="#16d9ae" opacity=".18"/>
-  <g stroke="#56ffe0" stroke-width="3" stroke-linejoin="round">
-    <path fill="url(#asArmor)" d="M157 108 L145 128 L153 160 L181 168 L239 168 L267 160 L275 128 L263 108 L245 94 L175 94Z"/>
-    <path fill="url(#asDark)" d="M171 119 L184 105 L236 105 L249 119 L242 143 L178 143Z"/>
-    <path fill="#5dffe1" d="M190 122 L207 116 L230 122 L207 130Z" filter="url(#asGlow)"/>
-    <path fill="url(#asArmor)" d="M150 165 L116 185 L101 245 L123 255 L149 220 L164 195Z"/>
-    <path fill="url(#asArmor)" d="M270 165 L304 185 L319 245 L297 255 L271 220 L256 195Z"/>
-    <path fill="url(#asDark)" d="M105 238 L91 259 L101 278 L122 269 L123 252Z"/>
-    <path fill="url(#asDark)" d="M315 238 L329 259 L319 278 L298 269 L297 252Z"/>
-    <path fill="url(#asArmor)" d="M157 158 L263 158 L288 207 L273 315 L147 315 L132 207Z"/>
-    <path fill="url(#asDark)" d="M159 184 L261 184 L272 218 L148 218Z"/>
-    <circle cx="210" cy="252" r="38" fill="url(#asCore)" filter="url(#asGlow)"/>
-    <circle cx="210" cy="252" r="22" fill="#06201d"/>
-    <text x="210" y="260" text-anchor="middle" font-size="24" font-family="Arial" font-weight="900" fill="#8dffe9" stroke="none">AI</text>
-    <path fill="url(#asArmor)" d="M148 300 L176 315 L184 383 L157 420 L132 401 L144 350Z"/>
-    <path fill="url(#asArmor)" d="M272 300 L244 315 L236 383 L263 420 L288 401 L276 350Z"/>
-    <path fill="url(#asDark)" d="M157 414 L181 424 L176 455 L145 455 L132 438Z"/>
-    <path fill="url(#asDark)" d="M263 414 L239 424 L244 455 L275 455 L288 438Z"/>
-    <path fill="#2c5554" d="M139 326 L166 337 L156 382 L137 374Z"/>
-    <path fill="#2c5554" d="M281 326 L254 337 L264 382 L283 374Z"/>
-    <path fill="#52ffe0" d="M181 166 L210 178 L239 166 L230 190 L190 190Z" filter="url(#asGlow)"/>
-    <path fill="none" d="M151 204 L137 232 M269 204 L283 232"/>
-  </g>
-</svg></div>
-<div class="as-squad-static as-squad-right" role="img" aria-label="Apple Seed AI Robot chiến đấu phụ 2"><svg class="as-ai-future-robot as-squad-right" viewBox="0 0 420 500" role="img" aria-label="Apple Seed AI Robot chiến đấu phụ 2" preserveAspectRatio="xMidYMid meet">
-  <defs>
-    <linearGradient id="asArmor" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f5ffff"/><stop offset=".45" stop-color="#b9d5d3"/><stop offset="1" stop-color="#3d6868"/></linearGradient>
-    <linearGradient id="asDark" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#173535"/><stop offset="1" stop-color="#071817"/></linearGradient>
-    <radialGradient id="asCore"><stop stop-color="#bffff1"/><stop offset=".35" stop-color="#22e6b2"/><stop offset="1" stop-color="#087b65"/></radialGradient>
-    <filter id="asGlow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-  </defs>
-  <ellipse cx="210" cy="478" rx="130" ry="14" fill="#16d9ae" opacity=".18"/>
-  <g stroke="#56ffe0" stroke-width="3" stroke-linejoin="round">
-    <path fill="url(#asArmor)" d="M157 108 L145 128 L153 160 L181 168 L239 168 L267 160 L275 128 L263 108 L245 94 L175 94Z"/>
-    <path fill="url(#asDark)" d="M171 119 L184 105 L236 105 L249 119 L242 143 L178 143Z"/>
-    <path fill="#5dffe1" d="M190 122 L207 116 L230 122 L207 130Z" filter="url(#asGlow)"/>
-    <path fill="url(#asArmor)" d="M150 165 L116 185 L101 245 L123 255 L149 220 L164 195Z"/>
-    <path fill="url(#asArmor)" d="M270 165 L304 185 L319 245 L297 255 L271 220 L256 195Z"/>
-    <path fill="url(#asDark)" d="M105 238 L91 259 L101 278 L122 269 L123 252Z"/>
-    <path fill="url(#asDark)" d="M315 238 L329 259 L319 278 L298 269 L297 252Z"/>
-    <path fill="url(#asArmor)" d="M157 158 L263 158 L288 207 L273 315 L147 315 L132 207Z"/>
-    <path fill="url(#asDark)" d="M159 184 L261 184 L272 218 L148 218Z"/>
-    <circle cx="210" cy="252" r="38" fill="url(#asCore)" filter="url(#asGlow)"/>
-    <circle cx="210" cy="252" r="22" fill="#06201d"/>
-    <text x="210" y="260" text-anchor="middle" font-size="24" font-family="Arial" font-weight="900" fill="#8dffe9" stroke="none">AI</text>
-    <path fill="url(#asArmor)" d="M148 300 L176 315 L184 383 L157 420 L132 401 L144 350Z"/>
-    <path fill="url(#asArmor)" d="M272 300 L244 315 L236 383 L263 420 L288 401 L276 350Z"/>
-    <path fill="url(#asDark)" d="M157 414 L181 424 L176 455 L145 455 L132 438Z"/>
-    <path fill="url(#asDark)" d="M263 414 L239 424 L244 455 L275 455 L288 438Z"/>
-    <path fill="#2c5554" d="M139 326 L166 337 L156 382 L137 374Z"/>
-    <path fill="#2c5554" d="M281 326 L254 337 L264 382 L283 374Z"/>
-    <path fill="#52ffe0" d="M181 166 L210 178 L239 166 L230 190 L190 190Z" filter="url(#asGlow)"/>
-    <path fill="none" d="M151 204 L137 232 M269 204 L283 232"/>
-  </g>
-</svg></div>
-    </div>>
+    <div class="as-ai-hero-robot-svg as-robot-image-squad" role="img" aria-label="Apple Seed AI Robot Squad">
+      <div class="as-robot-img-slot as-squad-left"><img src="assets/apple-seed-robot-01.svg" alt="Apple Seed AI Robot chiến đấu 1"></div>
+      <div class="as-robot-img-slot as-squad-mid"><img src="assets/apple-seed-robot-02.svg" alt="Apple Seed AI Robot chiến đấu 2"></div>
+      <div class="as-robot-img-slot as-squad-right"><img src="assets/apple-seed-robot-03.svg" alt="Apple Seed AI Robot chiến đấu 3"></div>
+    </div>
+
+  <div class="as-ai-3d-copy">
+    <div class="kicker">APPLE SEED</div>
+    <h3>Xin chào! 👋</h3>
+    <p>Tôi là <strong>Apple Seed AI Robot.</strong><br>Sẵn sàng hỗ trợ bạn sửa chữa iPhone.</p>
+    <div class="quote">“Phân tích chính xác hơn<br>Sửa chữa hiệu quả hơn”</div>
   </div>
+
+  <div class="as-ai-ref-toolbar">
+    <button class="as-ai-ref-action" data-prompt="Phân tích ca này như kỹ thuật viên board-level."><span class="ico ico-case">⌕</span><b>Phân tích ca</b></button>
+    <button class="as-ai-ref-action" data-prompt="Hãy suy luận power sequence và chỉ ra phép đo tiếp theo."><span class="ico ico-power">ϟ</span><b>Power sequence</b></button>
+    <button class="as-ai-ref-action" data-prompt="Giải thích panic log này theo kiến thức Brain."><span class="ico ico-panic">◈</span><b>Panic log</b></button>
+    <button class="as-ai-ref-action" data-prompt="Tôi muốn tìm hiểu sâu về lỗi này, hãy dạy tôi từng bước."><span class="ico ico-learn">▱</span><b>Học sửa</b></button>
+  </div>
+</div>
+<div id="asAiChatMessages" class="as-ai-chat-messages"></div>
+  <div id="asAiChatImage" class="as-ai-image-preview"><button id="asAiChatImageClear" type="button">×</button><img id="asAiChatImagePreview" alt="Ảnh đính kèm"></div>
+  <div class="as-ai-chat-compose">
+    <div class="as-ai-chat-input-wrap">
+      <button id="asAiChatAttach" class="as-ai-chat-iconbtn" type="button" title="Đính kèm ảnh">📎</button>
+      <textarea id="asAiChatInput" class="as-ai-chat-input" placeholder="Hỏi robot bất cứ điều gì về sửa iPhone… (Enter gửi, Shift+Enter xuống dòng)"></textarea>
+      <button id="asAiChatSend" class="as-ai-chat-send" type="button" title="Gửi">➤</button>
+      <input id="asAiChatFile" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+    </div>
+    <div class="as-ai-chat-hint"><span>Ctrl + V để dán ảnh • Brain sẽ tự tra kiến thức liên quan</span><span id="asAiBrainHits" class="as-ai-chat-brain"></span></div>
+  </div>
+</div><script id="apple-seed-ai-chat-js">
+(()=>{
+const $=id=>document.getElementById(id),sb=window.supabaseClient;
+const launch=$('asAiChatLaunch'),win=$('asAiChatWindow'),msgsEl=$('asAiChatMessages'),input=$('asAiChatInput'),send=$('asAiChatSend'),file=$('asAiChatFile'),preview=$('asAiChatImage'),previewImg=$('asAiChatImagePreview'),status=$('asAiChatStatus'),hits=$('asAiBrainHits');
+let imageData='',busy=false,messages=[];
+
+function key(){return 'apple_seed_ai_chat_'+((window.__asChatUserId)||'guest')}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+
+function render(){
+  if(!messages.length){
+    msgsEl.innerHTML='<div class="as-ai-chat-empty"><div class="big"></div><h3>Xin chào, tôi là Apple Seed AI</h3><p>Cứ hỏi thoải mái. Tôi sẽ dùng Electronic Brain làm kiến thức nền rồi tự suy luận theo từng ca, không bị ép theo một kịch bản cố định.</p></div>';
+    return;
+  }
+  msgsEl.innerHTML=messages.map(m=>'<div class="as-ai-msg '+(m.role==='user'?'user':'')+'"><div class="as-ai-msg-avatar">'+(m.role==='user'?'⌁':'AI')+'</div><div><div class="as-ai-bubble">'+esc(m.content)+'</div><div class="as-ai-msg-meta">'+(m.role==='user'?'Bạn':'Apple Seed AI')+'</div></div></div>').join('');
+  msgsEl.scrollTop=msgsEl.scrollHeight;
+}
+
+function save(){try{localStorage.setItem(key(),JSON.stringify(messages.slice(-40)))}catch(_){}}
+async function user(){try{const r=await sb?.auth?.getSession();const u=r?.data?.session?.user;if(u){window.__asChatUserId=u.id;return u}}catch(_){}return null}
+async function load(){await user();try{messages=JSON.parse(localStorage.getItem(key())||'[]')||[]}catch(_){messages=[]}render()}
+function setImage(f){
+  if(!f)return;
+  if(!/^image\/(png|jpe?g|webp)$/i.test(f.type||'')){status.textContent='Chỉ nhận PNG / JPG / WEBP';return}
+  const rd=new FileReader();
+  rd.onload=()=>{
+    imageData=String(rd.result||'');
+    previewImg.src=imageData;
+    preview.classList.add('show');
+    send.classList.add('has-image');
+    send.textContent='➤';
+    send.title='Gửi ảnh cho AI';
+    status.textContent='📎 Ảnh đã sẵn sàng — bấm nút ➤ để gửi';
+  };
+  rd.readAsDataURL(f);
+}
+function clearImage(){
+  imageData='';
+  previewImg.src='';
+  preview.classList.remove('show');
+  send.classList.remove('has-image');
+  send.title='Gửi';
+  send.textContent='➤';
+  if(file)file.value='';
+}
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+async function typeAnswer(answer){
+  const target=String(answer||'AI không trả lời.');
+  messages.push({role:'assistant',content:''});
+  render();
+  const bubbles=msgsEl.querySelectorAll('.as-ai-bubble');
+  const bubble=bubbles[bubbles.length-1];
+  if(!bubble){messages[messages.length-1].content=target;render();return}
+  bubble.classList.add('as-ai-typing-live');
+  const cursor=document.createElement('span');
+  cursor.className='as-ai-type-cursor';
+  bubble.appendChild(cursor);
+  let i=0;
+  const chars=target.length>2500?28:target.length>1200?20:target.length>500?12:7;
+  while(i<target.length){
+    i=Math.min(target.length,i+chars);
+    const visible=target.slice(0,i);
+    bubble.textContent=visible;
+    bubble.appendChild(cursor);
+    msgsEl.scrollTop=msgsEl.scrollHeight;
+    await sleep(18);
+  }
+  cursor.remove();
+  bubble.classList.remove('as-ai-typing-live');
+  bubble.textContent=target;
+  save();
+}
+
+async function ask(){
+  const text=input.value.trim();
+  if((!text&&!imageData)||busy)return;
+  const u=await user();
+  if(!u){status.textContent='Đăng nhập để chat với AI';$('asAccountBtn')?.click();return}
+  const sent=text||'Hãy phân tích ảnh tôi gửi.';
+  messages.push({role:'user',content:sent});
+  input.value='';render();save();
+  busy=true;send.disabled=true;status.textContent='AI đang suy luận…';
+  const typing=document.createElement('div');
+  typing.className='as-ai-msg';
+  typing.innerHTML='<div class="as-ai-msg-avatar">🧠</div><div><div class="as-ai-bubble"><span class="as-ai-typing"><i></i><i></i><i></i></span></div><div class="as-ai-msg-meta">Apple Seed AI</div></div>';
+  msgsEl.appendChild(typing);msgsEl.scrollTop=msgsEl.scrollHeight;
+  try{
+    const call=await sb.functions.invoke('ai-board-chat',{body:{message:sent,messages:messages.slice(-13),image_data:imageData||''}});
+    if(call.error)throw call.error;
+    if(call.data?.error)throw new Error(call.data.error);
+    typing.remove();
+    hits.textContent=call.data?.brain_hits?('🧠 '+call.data.brain_hits+' kiến thức'):'';
+    status.textContent='Electronic Brain • '+(call.data?.model||'AI');
+    await typeAnswer(String(call.data?.answer||'AI không trả lời.'));
+  }catch(e){
+    typing.remove();
+    messages.push({role:'assistant',content:'❌ '+(e?.message||String(e))});
+    status.textContent='Có lỗi khi kết nối AI';
+    render();save();
+  }finally{
+    busy=false;send.disabled=false;clearImage();input.focus();
+  }
+}
+
+launch.onclick=()=>{win.classList.add('open');input.focus()};
+$('asAiChatClose').onclick=()=>win.classList.remove('open');
+$('asAiChatMin').onclick=()=>win.classList.toggle('minimized');
+$('asAiChatClear').onclick=()=>{if(confirm('Xóa toàn bộ cuộc trò chuyện này?')){messages=[];save();render()}};
+$('asAiChatAttach').onclick=()=>file.click();
+file.onchange=()=>setImage(file.files?.[0]);
+$('asAiChatImageClear').onclick=clearImage;
+send.onclick=ask;
+input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();ask()}});
+document.addEventListener('paste',e=>{
+  if(!win.classList.contains('open'))return;
+  const f=[...(e.clipboardData?.items||[])].find(x=>x.type?.startsWith('image/'))?.getAsFile();
+  if(f){setImage(f);status.textContent='📋 Đã dán ảnh — gửi để AI phân tích'}
+});
+document.querySelectorAll('.as-ai-chat-toolbar button,.as-ai-ref-action').forEach(b=>b.onclick=()=>{input.value=b.dataset.prompt||'';input.focus()});
+load();
+})();
+</script><style id="apple-seed-autopilot-ui">
+#asAiChatStatus{transition:all .25s ease}
+.as-ai-runtime-badge{margin-left:6px;padding:3px 7px;border:1px solid rgba(125,255,226,.3);border-radius:999px;color:#baffee;font-weight:800;font-size:9px;letter-spacing:.02em;background:rgba(0,0,0,.1)}
+.as-ai-3d-topline .status.evolving{box-shadow:0 0 18px rgba(52,239,181,.18)}
+</style>
+<script id="apple-seed-ai-autopilot-ui">
+(()=>{
+  const endpoint='https://nuismqcjyutqigdydfkg.supabase.co/functions/v1/ai-autopilot';
+  const statusEl=document.getElementById('asAiChatStatus');
+  const brainHits=document.getElementById('asAiBrainHits');
+  const topStatus=document.querySelector('.as-ai-3d-topline .status');
+  const hint=document.querySelector('.as-ai-chat-hint span');
+  async function refreshRuntime(){
+    try{
+      const r=await fetch(endpoint,{cache:'no-store'});
+      if(!r.ok) return;
+      const x=await r.json();
+      if(!x.runtime) return;
+      const rt=x.runtime, st=x.stats||{};
+      const cycle=Number(rt.learning_cycles||0);
+      const atoms=Number(st.knowledge_atoms||rt.stats?.brain_knowledge||0);
+      const next=rt.next_run_at ? new Date(rt.next_run_at) : null;
+      const nextText=next && !Number.isNaN(next.getTime()) ? next.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'}) : '';
+      if(statusEl){
+        statusEl.innerHTML='Electronic Brain • tự học nền <span class="as-ai-runtime-badge">v'+(rt.brain_version||1)+' • cycle '+cycle+'</span>';
+      }
+      if(topStatus){
+        topStatus.classList.add('evolving');
+        topStatus.innerHTML='<i></i> Online • Evolution';
+      }
+      if(brainHits){
+        brainHits.textContent='🧠 '+atoms.toLocaleString('vi-VN')+' kiến thức';
+      }
+      if(hint){
+        hint.textContent=nextText
+          ? 'Ctrl + V để dán ảnh • Robot vẫn tự học khi ông đóng website • vòng tiếp theo '+nextText
+          : 'Ctrl + V để dán ảnh • Robot vẫn tự học khi ông đóng website';
+      }
+    }catch(_){}
+  }
+  refreshRuntime();
+  setInterval(refreshRuntime,60000);
+})();
+</script>
+<style id="apple-seed-chat-controls-final-fix">
+/* ===== AI CHAT CONTROLS — CLOSE / MINIMIZE MUST WORK ===== */
+/* A later composer rule forced display:flex!important, so removing .open no longer hid the window. */
+.as-ai-chat-window:not(.open){
+  display:none!important;
+}
+.as-ai-chat-window.open{
+  display:flex!important;
+}
+
+/* Minimize must override every later desktop min-height/height rule. */
+.as-ai-chat-window.minimized{
+  height:68px!important;
+  min-height:68px!important;
+  max-height:68px!important;
+  overflow:hidden!important;
+}
+.as-ai-chat-window.minimized > *:not(.as-ai-chat-head){
+  display:none!important;
+}
+
+/* Keep the header buttons clickable above all decorative layers. */
+.as-ai-chat-head,
+.as-ai-chat-head-actions,
+.as-ai-chat-head-actions button{
+  position:relative!important;
+  z-index:30!important;
+  pointer-events:auto!important;
+}
+
+/* Desktop readable frame */
+@media(min-width:701px){
+  .as-ai-chat-window.open:not(.minimized){
+    right:18px!important;
+    left:auto!important;
+    top:auto!important;
+    bottom:86px!important;
+    transform:none!important;
+    width:min(900px,calc(100vw - 36px))!important;
+    height:min(820px,calc(100vh - 120px))!important;
+    min-height:560px!important;
+    max-height:calc(100vh - 120px)!important;
+  }
+  .as-ai-chat-hero.as-ai-hero-3d{
+    flex:0 0 270px!important;
+    height:270px!important;
+    min-height:270px!important;
+  }
+}
+
+/* Mobile stays full-screen when open, but close still works. */
+@media(max-width:700px){
+  .as-ai-chat-window.open:not(.minimized){
+    left:0!important;
+    right:0!important;
+    top:0!important;
+    bottom:0!important;
+    width:100vw!important;
+    height:100dvh!important;
+    min-height:0!important;
+    max-height:none!important;
+    transform:none!important;
+    border-radius:0!important;
+  }
+}
+</style>
+
+<style id="apple-seed-ai-chat-visibility-final">
+/* FINAL: never let the conversation panel swallow the header / hero */
+.as-ai-chat-window.open:not(.minimized){
+  display:flex!important;
+  flex-direction:column!important;
+  overflow:hidden!important;
+}
+.as-ai-chat-window.open:not(.minimized) > .as-ai-chat-head{
+  display:flex!important;
+  flex:0 0 70px!important;
+  height:70px!important;
+  min-height:70px!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
+.as-ai-chat-window.open:not(.minimized) > .as-ai-chat-hero.as-ai-hero-3d{
+  display:block!important;
+  flex:0 0 220px!important;
+  height:220px!important;
+  min-height:220px!important;
+  max-height:220px!important;
+  visibility:visible!important;
+  opacity:1!important;
+  order:2!important;
+}
+.as-ai-chat-window.open:not(.minimized) > .as-ai-chat-messages{
+  display:block!important;
+  flex:1 1 auto!important;
+  min-height:0!important;
+  height:auto!important;
+  order:3!important;
+}
+.as-ai-chat-window.open:not(.minimized) > .as-ai-image-preview{
+  order:4!important;
+}
+.as-ai-chat-window.open:not(.minimized) > .as-ai-chat-compose{
+  display:block!important;
+  flex:0 0 84px!important;
+  min-height:84px!important;
+  order:5!important;
+}
+.as-ai-chat-hero.as-ai-hero-3d > .as-ai-3d-visual{
+  display:flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
+@media(min-width:701px){
+ .as-ai-chat-window.open:not(.minimized){
+   width:min(1180px,calc(100vw - 28px))!important;
+   height:min(900px,calc(100vh - 24px))!important;
+   right:14px!important;
+   bottom:12px!important;
+ }
+}
+@media(max-width:700px){
+ .as-ai-chat-window.open:not(.minimized) > .as-ai-chat-head{flex-basis:62px!important;height:62px!important;min-height:62px!important}
+ .as-ai-chat-window.open:not(.minimized) > .as-ai-chat-hero.as-ai-hero-3d{flex-basis:180px!important;height:180px!important;min-height:180px!important;max-height:180px!important}
+ .as-ai-chat-window.open:not(.minimized) > .as-ai-chat-compose{flex-basis:84px!important;min-height:84px!important}
+}
+</style><style id="apple-seed-chat-layout-v12">
+/* ===== AI ROBOT — BALANCED LAYOUT ===== */
+.as-ai-chat-window.open:not(.minimized){
+  width:min(1180px,calc(100vw - 32px))!important;
+  height:min(860px,calc(100vh - 32px))!important;
+  right:16px!important;
+  bottom:16px!important;
+  top:auto!important;
+  left:auto!important;
+  display:flex!important;
+  flex-direction:column!important;
+  overflow:hidden!important;
+  border-radius:24px!important;
+}
+/* Header */
+.as-ai-chat-window.open:not(.minimized) > .as-ai-chat-head{
+  flex:0 0 68px!important;
+  height:68px!important;
+  min-height:68px!important;
+  display:flex!important;
+  align-items:center!important;
+  padding:0 18px!important;
+}
+/* Hero: visible but compact */
+.as-ai-chat-window.open:not(.minimized) > .as-ai-chat-hero.as-ai-hero-3d{
+  flex:0 0 205px!important;
+  height:205px!important;
+  min-height:205px!important;
+  max-height:205px!important;
+  display:block!important;
+  overflow:hidden!important;
+}
+/* Don't let hero typography/visual disappear */
+.as-ai-chat-window.open:not(.minimized) .as-ai-3d-visual,
+.as-ai-chat-window.open:not(.minimized) .as-ai-3d-copy,
+.as-ai-chat-window.open:not(.minimized) .as-ai-ref-toolbar{
+  visibility:visible!important;
+  opacity:1!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-3d-copy{
+  transform:scale(.88)!important;
+  transform-origin:right center!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-ref-toolbar{
+  transform:scale(.88)!important;
+  transform-origin:right bottom!important;
+}
+/* Conversation gets the majority of space */
+.as-ai-chat-window.open:not(.minimized) > .as-ai-chat-messages{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  height:auto!important;
+  overflow-y:auto!important;
+  padding:18px 24px!important;
+  background:#f5faf8!important;
+}
+/* Readable messages */
+.as-ai-chat-window.open:not(.minimized) .as-ai-bubble{
+  max-width:min(820px,82%)!important;
+  font-size:15px!important;
+  line-height:1.6!important;
+  padding:13px 16px!important;
+  border-radius:16px!important;
+}
+/* Composer */
+.as-ai-chat-window.open:not(.minimized) > .as-ai-chat-compose{
+  flex:0 0 78px!important;
+  height:78px!important;
+  min-height:78px!important;
+  display:flex!important;
+  align-items:center!important;
+  padding:10px 14px!important;
+  background:#071812!important;
+}
+/* Mobile */
+@media(max-width:700px){
+ .as-ai-chat-window.open:not(.minimized){
+   width:100vw!important;height:100dvh!important;right:0!important;bottom:0!important;
+   border-radius:0!important;
+ }
+ .as-ai-chat-window.open:not(.minimized) > .as-ai-chat-head{flex-basis:60px!important;height:60px!important;min-height:60px!important}
+ .as-ai-chat-window.open:not(.minimized) > .as-ai-chat-hero.as-ai-hero-3d{
+   flex-basis:165px!important;height:165px!important;min-height:165px!important;max-height:165px!important
+ }
+ .as-ai-chat-window.open:not(.minimized) > .as-ai-chat-messages{padding:12px!important}
+ .as-ai-chat-window.open:not(.minimized) > .as-ai-chat-compose{flex-basis:76px!important;height:76px!important;min-height:76px!important}
+}
+</style><style id="apple-seed-ai-hero-polish-v2">
+/* ===== HERO / ICON POLISH ===== */
+.as-ai-chat-window.open:not(.minimized) .as-ai-3d-bg{
+  background:
+    radial-gradient(circle at 15% 70%,rgba(25,218,165,.28),transparent 32%),
+    radial-gradient(circle at 82% 28%,rgba(35,145,125,.24),transparent 35%),
+    linear-gradient(115deg,#031513 0%,#062a25 48%,#041a18 100%)!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-3d-grid{
+  opacity:.16!important;
+  background-size:34px 34px!important;
+  mask-image:linear-gradient(90deg,rgba(0,0,0,.9),transparent 90%)!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-3d-visual{
+  width:58%!important;
+  background:linear-gradient(90deg,#020e0d 0%,rgba(3,25,22,.82) 65%,rgba(3,25,22,0) 100%)!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-real-robot-image{
+  width:112%!important;
+  height:112%!important;
+  object-fit:cover!important;
+  object-position:center center!important;
+  filter:saturate(1.12) contrast(1.06) brightness(.9)!important;
+  mix-blend-mode:screen!important;
+  mask-image:linear-gradient(90deg,#000 72%,transparent 100%)!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-3d-visual:after{
+  content:"";
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(90deg,transparent 45%,rgba(3,22,19,.75) 100%),linear-gradient(0deg,rgba(1,12,11,.42),transparent 45%);
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-3d-copy{
+  width:39%!important;
+  right:26px!important;
+  top:42px!important;
+  z-index:12!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-3d-copy .kicker{
+  color:#6dffd1!important;letter-spacing:.26em!important;font-weight:900!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-3d-copy h3{
+  font-size:42px!important;
+  text-shadow:0 8px 30px rgba(0,0,0,.4)!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-3d-copy p{
+  color:#effffb!important;text-shadow:0 3px 16px rgba(0,0,0,.5)!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-3d-copy .quote{
+  background:rgba(4,37,32,.72)!important;
+  border-color:rgba(91,255,215,.34)!important;
+  color:#bfffe9!important;
+  backdrop-filter:blur(8px)!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-ref-toolbar{
+  width:48%!important;right:22px!important;bottom:13px!important;gap:8px!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-ref-action{
+  min-height:58px!important;
+  border-radius:15px!important;
+  border:1px solid rgba(12,132,105,.18)!important;
+  background:rgba(250,255,253,.96)!important;
+  box-shadow:0 10px 28px rgba(0,0,0,.22)!important;
+  transition:transform .18s ease,box-shadow .18s ease!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-ref-action:hover{
+  transform:translateY(-3px)!important;
+  box-shadow:0 15px 32px rgba(0,0,0,.28)!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-ref-action .ico{
+  width:28px!important;height:28px!important;border-radius:9px!important;
+  display:grid!important;place-items:center!important;
+  font-size:20px!important;font-weight:900!important;
+  color:#087e63!important;background:#e6fff6!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-ref-action b{
+  font-size:9px!important;color:#153f37!important;
+}
+.as-ai-chat-window.open:not(.minimized) .ico-power{color:#9a6500!important;background:#fff4ce!important}
+.as-ai-chat-window.open:not(.minimized) .ico-panic{color:#9d3378!important;background:#ffe8f6!important}
+.as-ai-chat-window.open:not(.minimized) .ico-learn{color:#3869a8!important;background:#e8f1ff!important}
+/* Chat avatars + composer icons */
+.as-ai-msg-avatar{
+  width:38px!important;height:38px!important;border-radius:12px!important;
+  background:linear-gradient(145deg,#ecfff8,#d4faee)!important;
+  box-shadow:0 5px 15px rgba(15,148,111,.14)!important;
+}
+.as-ai-msg.user .as-ai-msg-avatar{
+  background:linear-gradient(145deg,#eef5ff,#dceaff)!important;
+}
+.as-ai-chat-orb{
+  width:48px!important;height:48px!important;border-radius:15px!important;
+  box-shadow:0 0 24px rgba(77,255,210,.13)!important;
+}
+.as-ai-chat-iconbtn,.as-ai-chat-send{
+  width:48px!important;height:48px!important;border-radius:14px!important;
+  display:grid!important;place-items:center!important;font-size:21px!important;
+}
+.as-ai-chat-send{
+  background:linear-gradient(135deg,#12d99a,#08ae7c)!important;
+  box-shadow:0 8px 22px rgba(7,182,132,.28)!important;
+}
+@media(max-width:700px){
+ .as-ai-chat-window.open:not(.minimized) .as-ai-3d-visual{width:61%!important}
+ .as-ai-chat-window.open:not(.minimized) .as-ai-3d-copy{width:43%!important;right:10px!important;top:28px!important}
+ .as-ai-chat-window.open:not(.minimized) .as-ai-3d-copy h3{font-size:28px!important}
+ .as-ai-chat-window.open:not(.minimized) .as-ai-ref-toolbar{width:55%!important;right:8px!important;gap:4px!important}
+ .as-ai-chat-window.open:not(.minimized) .as-ai-ref-action{min-height:48px!important}
+ .as-ai-chat-window.open:not(.minimized) .as-ai-ref-action b{font-size:7px!important}
+}
+</style><style id="apple-seed-ai-chat-composer-icons-final">
+/* ===== FINAL CHAT COMPOSER: FULL WIDTH ===== */
+.as-ai-chat-window.open:not(.minimized) > .as-ai-chat-compose{
+  display:block!important;
+  width:100%!important;
+  box-sizing:border-box!important;
+  flex:0 0 94px!important;
+  height:94px!important;
+  min-height:94px!important;
+  padding:10px 16px 8px!important;
+  background:#071812!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-chat-input-wrap{
+  width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:flex-end!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-chat-input{
+  width:auto!important;
+  min-width:0!important;
+  flex:1 1 auto!important;
+  display:block!important;
+  box-sizing:border-box!important;
+  font-size:16px!important;
+  line-height:1.45!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-chat-iconbtn{
+  flex:0 0 46px!important;
+  width:46px!important;height:46px!important;
+  font-size:0!important;
+  position:relative!important;
+  background:#effaf7!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-chat-iconbtn:before{
+  content:"";
+  width:13px;height:20px;
+  border:2px solid #138f70;
+  border-radius:7px;
+  transform:rotate(-42deg);
+  display:block;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-chat-iconbtn:after{
+  content:"";
+  position:absolute;
+  width:7px;height:7px;
+  border-left:2px solid #138f70;
+  border-bottom:2px solid #138f70;
+  left:18px;top:13px;
+  transform:rotate(-42deg);
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-chat-send{
+  flex:0 0 52px!important;
+  width:52px!important;height:52px!important;
+  font-size:24px!important;
+}
+/* ===== HERO ACTION ICONS ===== */
+.as-ai-chat-window.open:not(.minimized) .as-ai-ref-action .ico{
+  width:34px!important;height:34px!important;
+  min-width:34px!important;
+  border-radius:10px!important;
+  font-size:0!important;
+  position:relative!important;
+  background:#e8fff7!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-ref-action .ico:before,
+.as-ai-chat-window.open:not(.minimized) .as-ai-ref-action .ico:after{
+  content:"";
+  position:absolute;
+  box-sizing:border-box;
+}
+.as-ai-chat-window.open:not(.minimized) .ico-case:before{
+  width:15px;height:15px;border:2px solid #078765;border-radius:50%;left:8px;top:7px;
+}
+.as-ai-chat-window.open:not(.minimized) .ico-case:after{
+  width:8px;height:2px;background:#078765;transform:rotate(45deg);left:21px;top:23px;border-radius:2px;
+}
+.as-ai-chat-window.open:not(.minimized) .ico-power{background:#fff4d5!important}
+.as-ai-chat-window.open:not(.minimized) .ico-power:before{
+  width:10px;height:20px;background:#d58a00;clip-path:polygon(55% 0,100% 0,62% 42%,100% 42%,25% 100%,42% 54%,0 54%);
+  left:12px;top:7px;
+}
+.as-ai-chat-window.open:not(.minimized) .ico-panic{background:#ffeaf7!important}
+.as-ai-chat-window.open:not(.minimized) .ico-panic:before{
+  width:19px;height:15px;border:2px solid #b23b86;border-radius:50%;left:7px;top:8px;
+}
+.as-ai-chat-window.open:not(.minimized) .ico-panic:after{
+  width:5px;height:5px;border-radius:50%;background:#b23b86;left:12px;top:13px;box-shadow:8px 0 #b23b86;
+}
+.as-ai-chat-window.open:not(.minimized) .ico-learn{background:#eaf2ff!important}
+.as-ai-chat-window.open:not(.minimized) .ico-learn:before{
+  width:20px;height:17px;border:2px solid #4775b1;border-radius:3px;left:7px;top:8px;
+}
+.as-ai-chat-window.open:not(.minimized) .ico-learn:after{
+  width:2px;height:17px;background:#4775b1;left:16px;top:8px;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-ref-action b{
+  margin-top:2px!important;
+}
+@media(max-width:700px){
+ .as-ai-chat-window.open:not(.minimized) > .as-ai-chat-compose{
+   flex-basis:94px!important;height:94px!important;min-height:94px!important;
+   padding:9px 10px 7px!important;
+ }
+ .as-ai-chat-window.open:not(.minimized) .as-ai-chat-input{font-size:15px!important}
+}
+</style><style id="apple-seed-chat-composer-absolute-final">
+/* FINAL FIX: composer always spans the entire chat window */
+.as-ai-chat-window.open:not(.minimized) > .as-ai-chat-compose{
+  display:block!important;
+  align-self:stretch!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+  flex:0 0 108px!important;
+  height:108px!important;
+  min-height:108px!important;
+  padding:10px 14px 8px!important;
+  margin:0!important;
+  background:#061711!important;
+}
+.as-ai-chat-window.open:not(.minimized) > .as-ai-chat-compose > .as-ai-chat-input-wrap{
+  display:grid!important;
+  grid-template-columns:46px minmax(0,1fr) 54px!important;
+  align-items:center!important;
+  gap:8px!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  height:58px!important;
+  box-sizing:border-box!important;
+  padding:5px!important;
+  margin:0!important;
+  border:1px solid #cfe1dc!important;
+  border-radius:17px!important;
+  background:#fbfefd!important;
+}
+.as-ai-chat-window.open:not(.minimized) > .as-ai-chat-compose > .as-ai-chat-input-wrap > .as-ai-chat-iconbtn{
+  grid-column:1!important;
+  width:46px!important;height:46px!important;
+  min-width:46px!important;max-width:46px!important;
+}
+.as-ai-chat-window.open:not(.minimized) > .as-ai-chat-compose > .as-ai-chat-input-wrap > .as-ai-chat-input{
+  grid-column:2!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  height:46px!important;
+  min-height:46px!important;
+  max-height:46px!important;
+  box-sizing:border-box!important;
+  padding:9px 6px!important;
+  margin:0!important;
+  font-size:16px!important;
+}
+.as-ai-chat-window.open:not(.minimized) > .as-ai-chat-compose > .as-ai-chat-input-wrap > .as-ai-chat-send{
+  grid-column:3!important;
+  width:54px!important;height:48px!important;
+  min-width:54px!important;max-width:54px!important;
+}
+.as-ai-chat-window.open:not(.minimized) > .as-ai-chat-compose > .as-ai-chat-hint{
+  display:flex!important;
+  width:100%!important;
+  box-sizing:border-box!important;
+  height:24px!important;
+  padding:4px 3px 0!important;
+  justify-content:space-between!important;
+  align-items:center!important;
+}
+@media(max-width:700px){
+ .as-ai-chat-window.open:not(.minimized) > .as-ai-chat-compose{
+   flex-basis:104px!important;height:104px!important;min-height:104px!important;
+   padding:8px 9px 6px!important;
+ }
+ .as-ai-chat-window.open:not(.minimized) > .as-ai-chat-compose > .as-ai-chat-input-wrap{
+   grid-template-columns:42px minmax(0,1fr) 50px!important;
+   height:56px!important;
+ }
+ .as-ai-chat-window.open:not(.minimized) > .as-ai-chat-compose > .as-ai-chat-input-wrap > .as-ai-chat-iconbtn{
+   width:42px!important;height:44px!important;min-width:42px!important
+ }
+ .as-ai-chat-window.open:not(.minimized) > .as-ai-chat-compose > .as-ai-chat-input-wrap > .as-ai-chat-send{
+   width:50px!important;height:46px!important;min-width:50px!important
+ }
+}
+</style><style id="apple-seed-chat-avatar-polish-v2">
+/* ===== CHAT AVATARS — clean Apple Seed icons ===== */
+.as-ai-chat-window.open:not(.minimized) .as-ai-msg-avatar{
+  width:42px!important;
+  height:42px!important;
+  min-width:42px!important;
+  border-radius:13px!important;
+  position:relative!important;
+  display:grid!important;
+  place-items:center!important;
+  font-size:0!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+  box-shadow:0 6px 18px rgba(19,137,106,.12)!important;
+}
+/* AI robot */
+.as-ai-chat-window.open:not(.minimized) .as-ai-msg:not(.user) .as-ai-msg-avatar{
+  color:#08a77b!important;
+  background:linear-gradient(145deg,#f4fffb,#d9faef)!important;
+  border:1px solid #8edec6!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-msg:not(.user) .as-ai-msg-avatar:before{
+  content:""!important;
+  position:absolute!important;
+  width:23px!important;
+  height:18px!important;
+  left:8px!important;
+  top:11px!important;
+  border:2px solid currentColor!important;
+  border-radius:7px!important;
+  background:linear-gradient(#ffffffaa,#e8fff8aa)!important;
+  box-sizing:border-box!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-msg:not(.user) .as-ai-msg-avatar:after{
+  content:""!important;
+  position:absolute!important;
+  width:4px!important;
+  height:4px!important;
+  left:13px!important;
+  top:18px!important;
+  border-radius:50%!important;
+  background:currentColor!important;
+  box-shadow:10px 0 0 currentColor!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-msg:not(.user) .as-ai-msg-avatar{
+  box-shadow:0 0 0 3px #eafff7,0 7px 20px rgba(11,170,126,.18)!important;
+}
+/* little antenna */
+.as-ai-chat-window.open:not(.minimized) .as-ai-msg:not(.user) .as-ai-msg-avatar > *{display:none!important}
+/* User */
+.as-ai-chat-window.open:not(.minimized) .as-ai-msg.user .as-ai-msg-avatar{
+  color:#4677b7!important;
+  background:linear-gradient(145deg,#f4f8ff,#dceaff)!important;
+  border:1px solid #b8d2f1!important;
+  box-shadow:0 6px 18px rgba(70,119,183,.14)!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-msg.user .as-ai-msg-avatar:before{
+  content:""!important;
+  position:absolute!important;
+  width:10px!important;
+  height:10px!important;
+  left:15px!important;
+  top:8px!important;
+  border:2px solid currentColor!important;
+  border-radius:50%!important;
+  box-sizing:border-box!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-msg.user .as-ai-msg-avatar:after{
+  content:""!important;
+  position:absolute!important;
+  width:22px!important;
+  height:12px!important;
+  left:9px!important;
+  top:21px!important;
+  border:2px solid currentColor!important;
+  border-bottom:0!important;
+  border-radius:13px 13px 0 0!important;
+  box-sizing:border-box!important;
+}
+/* Remove the old pseudo/avatar styling that was drawing duplicate dots */
+.as-ai-chat-window.open:not(.minimized) .as-ai-msg-avatar{
+  text-indent:-9999px!important;
+}
+</style><style id="apple-seed-chat-icons-v3-clean">
+/* CLEAN ICON SET — no emoji, no duplicate pseudo graphics */
+.as-ai-chat-window.open:not(.minimized) .as-ai-msg-avatar{
+  font-size:0!important;text-indent:0!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-msg:not(.user) .as-ai-msg-avatar{
+  width:44px!important;height:44px!important;border-radius:14px!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-msg.user .as-ai-msg-avatar{
+  width:44px!important;height:44px!important;border-radius:14px!important;
+}
+/* paperclip */
+.as-ai-chat-window.open:not(.minimized) .as-ai-chat-iconbtn{
+  font-size:0!important;position:relative!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-chat-iconbtn:before{
+  content:""!important;position:absolute!important;
+  width:13px!important;height:21px!important;
+  border:2px solid #129b78!important;border-radius:8px!important;
+  transform:rotate(45deg)!important;
+  left:14px!important;top:10px!important;
+  background:transparent!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-chat-iconbtn:after{
+  content:""!important;position:absolute!important;
+  width:7px!important;height:14px!important;
+  border:2px solid #129b78!important;border-radius:6px!important;
+  border-top-color:transparent!important;border-left-color:transparent!important;
+  transform:rotate(45deg)!important;
+  left:16px!important;top:12px!important;
+  background:transparent!important;
+}
+/* hero shortcut icon: hide emoji text and draw clean symbols */
+.as-ai-chat-window.open:not(.minimized) .as-ai-ref-action .ico{
+  font-size:0!important;text-indent:0!important;
+}
+.as-ai-chat-window.open:not(.minimized) .ico-case:before{
+  content:""!important;width:15px!important;height:15px!important;
+  border:2px solid #087e63!important;border-radius:50%!important;
+  left:8px!important;top:7px!important;
+}
+.as-ai-chat-window.open:not(.minimized) .ico-case:after{
+  content:""!important;width:7px!important;height:2px!important;
+  background:#087e63!important;border-radius:2px!important;
+  transform:rotate(45deg)!important;left:20px!important;top:22px!important;
+}
+.as-ai-chat-window.open:not(.minimized) .ico-power:before{
+  content:""!important;width:11px!important;height:21px!important;
+  background:#d28a00!important;clip-path:polygon(52% 0,100% 0,62% 43%,100% 43%,20% 100%,40% 55%,0 55%)!important;
+  left:11px!important;top:6px!important;
+}
+.as-ai-chat-window.open:not(.minimized) .ico-panic:before{
+  content:""!important;width:20px!important;height:15px!important;
+  border:2px solid #b23b86!important;border-radius:50%!important;
+  left:7px!important;top:8px!important;
+}
+.as-ai-chat-window.open:not(.minimized) .ico-panic:after{
+  content:""!important;width:4px!important;height:4px!important;
+  border-radius:50%!important;background:#b23b86!important;
+  left:12px!important;top:13px!important;
+  box-shadow:8px 0 #b23b86!important;
+}
+.as-ai-chat-window.open:not(.minimized) .ico-learn:before{
+  content:""!important;width:20px!important;height:16px!important;
+  border:2px solid #4775b1!important;border-radius:3px!important;
+  left:7px!important;top:8px!important;
+}
+.as-ai-chat-window.open:not(.minimized) .ico-learn:after{
+  content:""!important;width:2px!important;height:16px!important;
+  background:#4775b1!important;left:16px!important;top:8px!important;
+}
+/* make AI avatar unmistakable */
+.as-ai-chat-window.open:not(.minimized) .as-ai-msg:not(.user) .as-ai-msg-avatar:before{
+  width:24px!important;height:18px!important;left:8px!important;top:11px!important;
+  border:2px solid #08a77b!important;border-radius:7px!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-msg:not(.user) .as-ai-msg-avatar:after{
+  width:4px!important;height:4px!important;left:13px!important;top:18px!important;
+  background:#08a77b!important;box-shadow:10px 0 #08a77b!important;
+}
+/* make user avatar a proper person */
+.as-ai-chat-window.open:not(.minimized) .as-ai-msg.user .as-ai-msg-avatar:before{
+  width:10px!important;height:10px!important;left:15px!important;top:7px!important;
+  border:2px solid #4677b7!important;border-radius:50%!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-msg.user .as-ai-msg-avatar:after{
+  width:22px!important;height:12px!important;left:9px!important;top:21px!important;
+  border:2px solid #4677b7!important;border-bottom:0!important;
+  border-radius:13px 13px 0 0!important;
+}
+</style></body></html>
