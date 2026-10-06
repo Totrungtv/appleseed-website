@@ -2330,4 +2330,34 @@ load();
   border:2px solid #4677b7!important;border-bottom:0!important;
   border-radius:13px 13px 0 0!important;
 }
-</style></body></html>
+</style><style id="apple-seed-chat-launch-hotfix">
+.as-ai-chat-window.open{display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
+.as-ai-chat-window:not(.open){display:none!important;pointer-events:none!important}
+</style>
+<script id="apple-seed-chat-launch-hotfix-js">
+(()=>{
+  const boot=()=>{
+    const launch=document.getElementById('asAiChatLaunch');
+    const win=document.getElementById('asAiChatWindow');
+    if(!launch||!win)return;
+    launch.addEventListener('click',()=>{
+      win.classList.add('open');
+      win.classList.remove('minimized');
+      win.style.removeProperty('display');
+      win.style.removeProperty('visibility');
+      win.style.removeProperty('opacity');
+      win.style.removeProperty('pointer-events');
+    },true);
+    document.getElementById('asAiChatClose')?.addEventListener('click',()=>{
+      win.classList.remove('open');
+      win.classList.remove('minimized');
+    },true);
+    document.getElementById('asAiChatMin')?.addEventListener('click',()=>{
+      win.classList.toggle('minimized');
+    },true);
+  };
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
+  else boot();
+})();
+</script>
+</body></html>
