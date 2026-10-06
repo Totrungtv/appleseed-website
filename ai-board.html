@@ -570,6 +570,28 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
   }
 }
 </style>
+<style id="apple-seed-future-robot-svg-v4">
+.as-ai-chat-window.open:not(.minimized) .as-ai-future-robot{
+  width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;
+  display:block!important;overflow:visible!important;object-fit:contain!important;
+  object-position:center!important;mix-blend-mode:normal!important;
+  mask-image:none!important;-webkit-mask-image:none!important;
+  filter:drop-shadow(0 0 12px rgba(30,255,210,.25))!important;
+  transform-origin:50% 72%!important;
+  animation:appleSeedRobotBody 4.8s ease-in-out infinite!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-ai-3d-visual:before{
+  z-index:22!important;
+  background:linear-gradient(90deg,rgba(0,255,205,.06),transparent 75%),repeating-linear-gradient(0deg,transparent 0 11px,rgba(93,255,224,.035) 12px,transparent 13px)!important;
+}
+@keyframes appleSeedRobotBody{
+  0%,100%{transform:translateY(0) scale(1) rotate(0deg)}
+  50%{transform:translateY(-5px) scale(1.015) rotate(.35deg)}
+}
+@media(max-width:700px){
+ .as-ai-chat-window.open:not(.minimized) .as-ai-future-robot{width:100%!important;height:100%!important}
+}
+</style>
 </head>
 <body><main class="wrap">
 <!-- ===== APPLE SEED FULL MEMBER / COMMUNITY / CHAT RESTORE ===== -->
@@ -1278,7 +1300,37 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
 
   <div class="as-ai-3d-visual">
     <div class="as-ai-hero-robot-svg" role="img" aria-label="Apple Seed AI Robot">
-    <img class="as-ai-future-robot" src="apple-seed-ai-robot-future.webp" alt="Apple Seed AI Robot chiến đấu tương lai" loading="eager">
+    <svg class="as-ai-future-robot" viewBox="0 0 420 500" role="img" aria-label="Apple Seed AI Robot chiến đấu tương lai" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <linearGradient id="asArmor" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f5ffff"/><stop offset=".45" stop-color="#b9d5d3"/><stop offset="1" stop-color="#3d6868"/></linearGradient>
+    <linearGradient id="asDark" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#173535"/><stop offset="1" stop-color="#071817"/></linearGradient>
+    <radialGradient id="asCore"><stop stop-color="#bffff1"/><stop offset=".35" stop-color="#22e6b2"/><stop offset="1" stop-color="#087b65"/></radialGradient>
+    <filter id="asGlow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <ellipse cx="210" cy="478" rx="130" ry="14" fill="#16d9ae" opacity=".18"/>
+  <g stroke="#56ffe0" stroke-width="3" stroke-linejoin="round">
+    <path fill="url(#asArmor)" d="M157 108 L145 128 L153 160 L181 168 L239 168 L267 160 L275 128 L263 108 L245 94 L175 94Z"/>
+    <path fill="url(#asDark)" d="M171 119 L184 105 L236 105 L249 119 L242 143 L178 143Z"/>
+    <path fill="#5dffe1" d="M190 122 L207 116 L230 122 L207 130Z" filter="url(#asGlow)"/>
+    <path fill="url(#asArmor)" d="M150 165 L116 185 L101 245 L123 255 L149 220 L164 195Z"/>
+    <path fill="url(#asArmor)" d="M270 165 L304 185 L319 245 L297 255 L271 220 L256 195Z"/>
+    <path fill="url(#asDark)" d="M105 238 L91 259 L101 278 L122 269 L123 252Z"/>
+    <path fill="url(#asDark)" d="M315 238 L329 259 L319 278 L298 269 L297 252Z"/>
+    <path fill="url(#asArmor)" d="M157 158 L263 158 L288 207 L273 315 L147 315 L132 207Z"/>
+    <path fill="url(#asDark)" d="M159 184 L261 184 L272 218 L148 218Z"/>
+    <circle cx="210" cy="252" r="38" fill="url(#asCore)" filter="url(#asGlow)"/>
+    <circle cx="210" cy="252" r="22" fill="#06201d"/>
+    <text x="210" y="260" text-anchor="middle" font-size="24" font-family="Arial" font-weight="900" fill="#8dffe9" stroke="none">AI</text>
+    <path fill="url(#asArmor)" d="M148 300 L176 315 L184 383 L157 420 L132 401 L144 350Z"/>
+    <path fill="url(#asArmor)" d="M272 300 L244 315 L236 383 L263 420 L288 401 L276 350Z"/>
+    <path fill="url(#asDark)" d="M157 414 L181 424 L176 455 L145 455 L132 438Z"/>
+    <path fill="url(#asDark)" d="M263 414 L239 424 L244 455 L275 455 L288 438Z"/>
+    <path fill="#2c5554" d="M139 326 L166 337 L156 382 L137 374Z"/>
+    <path fill="#2c5554" d="M281 326 L254 337 L264 382 L283 374Z"/>
+    <path fill="#52ffe0" d="M181 166 L210 178 L239 166 L230 190 L190 190Z" filter="url(#asGlow)"/>
+    <path fill="none" d="M151 204 L137 232 M269 204 L283 232"/>
+  </g>
+</svg>
   </div>
   </div>
 
