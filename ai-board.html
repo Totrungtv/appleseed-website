@@ -605,7 +605,56 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
 .as-ai-chat-window.open:not(.minimized) .as-ai-ref-toolbar{position:absolute!important;z-index:21!important}
 @media(max-width:700px){.as-ai-chat-window.open:not(.minimized) .as-squad-left{left:-12%!important;width:43%!important}.as-ai-chat-window.open:not(.minimized) .as-squad-mid{right:7%!important;width:43%!important}.as-ai-chat-window.open:not(.minimized) .as-squad-right{right:-14%!important;width:43%!important}}
 </style>
-</head>
+<style id="apple-seed-uploaded-combat-robots-v1">
+/* ===== UPLOADED COMBAT ROBOTS ===== */
+.as-ai-chat-window.open:not(.minimized) .as-ai-chat-hero.as-ai-hero-3d{
+  isolation:isolate!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-robot-img-slot{
+  top:-3%!important;
+  height:108%!important;
+  overflow:visible!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-robot-img-slot img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  object-position:center bottom!important;
+  mix-blend-mode:screen!important;
+  filter:saturate(1.14) contrast(1.08) brightness(.96) drop-shadow(0 0 18px rgba(0,255,205,.28))!important;
+  transform-origin:center bottom!important;
+  will-change:transform,filter!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-squad-left img{
+  animation:appleSeedUploadedRobot1 4.6s ease-in-out infinite!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-squad-mid img{
+  animation:appleSeedUploadedRobot2 5.2s ease-in-out .45s infinite!important;
+}
+.as-ai-chat-window.open:not(.minimized) .as-squad-right img{
+  animation:appleSeedUploadedRobot3 4.9s ease-in-out .9s infinite!important;
+}
+@keyframes appleSeedUploadedRobot1{
+  0%,100%{transform:translate3d(0,0,0) scale(1)}
+  50%{transform:translate3d(0,-5px,0) scale(1.018)}
+}
+@keyframes appleSeedUploadedRobot2{
+  0%,100%{transform:translate3d(0,0,0) scale(.98)}
+  50%{transform:translate3d(0,-7px,0) scale(1.015)}
+}
+@keyframes appleSeedUploadedRobot3{
+  0%,100%{transform:translate3d(0,0,0) scale(.99)}
+  50%{transform:translate3d(0,-4px,0) scale(1.02)}
+}
+@media(max-width:700px){
+  .as-ai-chat-window.open:not(.minimized) .as-robot-img-slot{
+    top:-1%!important;height:103%!important;
+  }
+  .as-ai-chat-window.open:not(.minimized) .as-squad-left{left:-14%!important;width:46%!important}
+  .as-ai-chat-window.open:not(.minimized) .as-squad-mid{right:5%!important;width:46%!important}
+  .as-ai-chat-window.open:not(.minimized) .as-squad-right{right:-16%!important;width:46%!important}
+}
+</style></head>
 <body><main class="wrap">
 <!-- ===== APPLE SEED FULL MEMBER / COMMUNITY / CHAT RESTORE ===== -->
 <div class="as-fullbar" id="asFullBar">
@@ -1313,9 +1362,9 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
 
   <div class="as-ai-3d-visual">
     <div class="as-ai-hero-robot-svg as-robot-image-squad" role="img" aria-label="Apple Seed AI Robot Squad">
-      <div class="as-robot-img-slot as-squad-left"><img src="assets/apple-seed-robot-01.svg" alt="Apple Seed AI Robot chiến đấu 1"></div>
-      <div class="as-robot-img-slot as-squad-mid"><img src="assets/apple-seed-robot-02.svg" alt="Apple Seed AI Robot chiến đấu 2"></div>
-      <div class="as-robot-img-slot as-squad-right"><img src="assets/apple-seed-robot-03.svg" alt="Apple Seed AI Robot chiến đấu 3"></div>
+      <div class="as-robot-img-slot as-squad-left"><img src="assets/apple-seed-robot-01.webp" alt="Apple Seed AI Robot chiến đấu 1"></div>
+      <div class="as-robot-img-slot as-squad-mid"><img src="assets/apple-seed-robot-02.webp" alt="Apple Seed AI Robot chiến đấu 2"></div>
+      <div class="as-robot-img-slot as-squad-right"><img src="assets/apple-seed-robot-03.webp" alt="Apple Seed AI Robot chiến đấu 3"></div>
     </div>
   </div>
 
