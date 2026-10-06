@@ -515,6 +515,33 @@ textarea{min-height:110px;resize:vertical}.btn{border:0;border-radius:12px;paddi
 .as-ai-chat-hero.as-ai-hero-3d .as-ai-3d-visual .as-ai-hero-robot-svg svg{display:block!important;width:min(100%,340px)!important;height:100%!important;max-width:100%!important;max-height:100%!important;object-fit:contain!important;overflow:visible!important}
 @media(max-width:700px){.as-ai-chat-hero.as-ai-hero-3d .as-ai-3d-visual .as-ai-hero-robot-svg svg{width:100%!important;height:100%!important}}
 </style>
+<style id="apple-seed-future-robot-v1">
+.as-ai-chat-hero.as-ai-hero-3d .as-ai-hero-robot-svg{
+  position:absolute!important;
+  inset:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  overflow:hidden!important;
+  z-index:20!important;
+}
+.as-ai-chat-hero.as-ai-hero-3d .as-ai-future-robot{
+  display:block!important;
+  width:125%!important;
+  height:100%!important;
+  max-width:none!important;
+  object-fit:contain!important;
+  object-position:left center!important;
+  filter:drop-shadow(0 18px 28px rgba(0,0,0,.45)) saturate(1.08)!important;
+  transform:translateX(-7%) scale(1.04)!important;
+}
+@media(max-width:700px){
+  .as-ai-chat-hero.as-ai-hero-3d .as-ai-future-robot{
+    width:135%!important;
+    transform:translateX(-10%) scale(1.02)!important;
+  }
+}
+</style>
 </head>
 <body><main class="wrap">
 <!-- ===== APPLE SEED FULL MEMBER / COMMUNITY / CHAT RESTORE ===== -->
@@ -1223,55 +1250,7 @@ document.getElementById('upload').onclick=()=>{const f=document.getElementById('
 
   <div class="as-ai-3d-visual">
     <div class="as-ai-hero-robot-svg" role="img" aria-label="Apple Seed AI Robot">
-    <svg viewBox="0 0 420 360" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <defs>
-    <linearGradient id="asBotArmor" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e8fff9"/><stop offset=".42" stop-color="#75b9ad"/><stop offset="1" stop-color="#244b4d"/></linearGradient>
-    <linearGradient id="asBotDark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#153e43"/><stop offset="1" stop-color="#061b25"/></linearGradient>
-    <linearGradient id="asBotMetal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#bfffee"/><stop offset=".55" stop-color="#428e88"/><stop offset="1" stop-color="#183e47"/></linearGradient>
-    <linearGradient id="asBotEnergy" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a8fff0"/><stop offset="1" stop-color="#00d8b2"/></linearGradient>
-    <filter id="asBotAura"><feGaussianBlur stdDeviation="8"/></filter>
-  </defs>
-  <ellipse cx="210" cy="337" rx="145" ry="15" fill="#00e5b2" opacity=".17"/>
-  <ellipse cx="210" cy="334" rx="100" ry="5" fill="#56ffe0" opacity=".35"/>
-  <!-- Rear thruster fins -->
-  <path d="M126 170 L77 203 L92 272 L143 248 Z M294 170 L343 203 L328 272 L277 248 Z" fill="#153d46" stroke="#5b9c91" stroke-width="5" stroke-linejoin="round"/>
-  <path d="M100 215 L123 207 L132 246 L110 255 Z M320 215 L297 207 L288 246 L310 255 Z" fill="#00d9b1" opacity=".72"/>
-  <!-- Legs -->
-  <path d="M157 267 L151 316 L188 329 L207 277 Z M263 267 L269 316 L232 329 L213 277 Z" fill="url(#asBotArmor)" stroke="#477e78" stroke-width="5" stroke-linejoin="round"/>
-  <path d="M145 310 L191 310 L201 337 L139 337 Z M275 310 L229 310 L219 337 L281 337 Z" fill="url(#asBotDark)" stroke="#4d9589" stroke-width="4" stroke-linejoin="round"/>
-  <path d="M150 323 H185 M235 323 H270" stroke="#36f4cd" stroke-width="5" stroke-linecap="round"/>
-  <!-- Arms / armored shoulders -->
-  <path d="M123 139 L79 153 L57 217 L83 255 L130 232 L147 177 Z" fill="url(#asBotArmor)" stroke="#4b8880" stroke-width="6" stroke-linejoin="round"/>
-  <path d="M297 139 L341 153 L363 217 L337 255 L290 232 L273 177 Z" fill="url(#asBotArmor)" stroke="#4b8880" stroke-width="6" stroke-linejoin="round"/>
-  <path d="M78 196 L111 181 L123 219 L94 238 Z M342 196 L309 181 L297 219 L326 238 Z" fill="#123c45" stroke="#4e958b" stroke-width="4"/>
-  <path d="M93 205 L110 197 M327 205 L310 197" stroke="#6effdf" stroke-width="5" stroke-linecap="round"/>
-  <!-- Torso -->
-  <path d="M137 151 L283 151 L310 211 L280 292 L140 292 L110 211 Z" fill="url(#asBotArmor)" stroke="#5a9a8d" stroke-width="6" stroke-linejoin="round"/>
-  <path d="M151 170 L269 170 L286 215 L264 270 L156 270 L134 215 Z" fill="url(#asBotDark)" stroke="#2d6564" stroke-width="4" stroke-linejoin="round"/>
-  <path d="M160 183 L260 183 L270 205 L150 205 Z" fill="#2b6665" opacity=".85"/>
-  <!-- Reactor core -->
-  <path d="M174 207 L246 207 L263 239 L246 270 L174 270 L157 239 Z" fill="#063b3c" stroke="#53bba6" stroke-width="4"/>
-  <circle cx="210" cy="238" r="38" fill="#00e7ba" opacity=".23" filter="url(#asBotAura)"/>
-  <circle cx="210" cy="238" r="29" fill="url(#asBotEnergy)" stroke="#c5fff4" stroke-width="4"/>
-  <circle cx="210" cy="238" r="18" fill="#073f42" stroke="#73ffe1" stroke-width="3"/>
-  <text x="210" y="245" text-anchor="middle" font-family="Arial,sans-serif" font-size="17" font-weight="900" fill="#c9fff4">AI</text>
-  <!-- Head / angular helmet -->
-  <path d="M143 40 L178 17 L242 17 L277 40 L291 89 L275 145 L244 169 L176 169 L145 145 L129 89 Z" fill="url(#asBotArmor)" stroke="#5d9d92" stroke-width="6" stroke-linejoin="round"/>
-  <path d="M163 50 L185 34 L235 34 L257 50 L270 88 L253 130 L235 145 L185 145 L167 130 L150 88 Z" fill="url(#asBotDark)" stroke="#285f60" stroke-width="4" stroke-linejoin="round"/>
-  <path d="M151 76 L181 62 L239 62 L269 76 L258 104 L237 119 L183 119 L162 104 Z" fill="#062b34" stroke="#397f79" stroke-width="3"/>
-  <!-- Visor and eyes -->
-  <path d="M167 84 L193 75 L202 94 L192 103 L169 100 Z M253 84 L227 75 L218 94 L228 103 L251 100 Z" fill="#00dcb7" opacity=".28" filter="url(#asBotAura)"/>
-  <path d="M168 84 L193 76 L201 94 L191 101 L170 98 Z M252 84 L227 76 L219 94 L229 101 L250 98 Z" fill="#65ffe0" stroke="#c5fff5" stroke-width="2" stroke-linejoin="round"/>
-  <path d="M207 80 L213 80 L216 112 L204 112 Z" fill="#2a7774"/>
-  <path d="M180 124 L210 134 L240 124" fill="none" stroke="#49eacb" stroke-width="4" stroke-linecap="round"/>
-  <!-- Helmet crest and side panels -->
-  <path d="M185 22 L196 5 L224 5 L235 22 L224 37 L196 37 Z" fill="url(#asBotMetal)" stroke="#6ab6a8" stroke-width="4"/>
-  <path d="M133 67 L113 88 L126 123 L145 112 Z M287 67 L307 88 L294 123 L275 112 Z" fill="url(#asBotMetal)" stroke="#4c8982" stroke-width="4" stroke-linejoin="round"/>
-  <path d="M126 90 L138 96 M294 90 L282 96" stroke="#56ffda" stroke-width="4" stroke-linecap="round"/>
-  <!-- Small armor lights -->
-  <circle cx="146" cy="184" r="5" fill="#5dffe0"/><circle cx="274" cy="184" r="5" fill="#5dffe0"/>
-  <path d="M143 286 H277" stroke="#6dffe1" stroke-width="4" stroke-linecap="round" opacity=".8"/>
-</svg>
+    <img class="as-ai-future-robot" src="apple-seed-ai-robot-future.webp" alt="Apple Seed AI Robot chiến đấu tương lai" loading="eager">
   </div>
   </div>
 
