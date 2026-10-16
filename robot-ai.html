@@ -340,7 +340,7 @@ body{
       <div class="holo-phone">▯<small>DEVICE</small><b>XS MAX</b></div>
       <div class="holo-wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     </div>
-    <div class="robot-art" id="face"><img class="robot-img" id="robotImage" src="/apple-seed-ai-robot-exact.webp?v=20261016-fallback" alt="Robot humanoid Apple Seed AI màu trắng đen với ánh sáng xanh lá" fetchpriority="high" decoding="async"></div>
+    <div class="robot-art" id="face"><img class="robot-img" id="robotImage" src="/apple-seed-ai-robot-exact.webp?v=20261016-clarity" alt="Robot humanoid Apple Seed AI màu trắng đen với ánh sáng xanh lá" fetchpriority="high" decoding="async"></div>
     <div class="stage-caption"><span class="caption-line"></span><span>APPLE SEED ROBOTICS</span><span class="caption-line"></span></div>
     <div class="stage-corner corner-a"></div><div class="stage-corner corner-b"></div>
   </div>
@@ -492,37 +492,7 @@ $('camera').onclick=async()=>{if(cameraStream){cameraStream.getTracks().forEach(
   byId('featureSettings')?.addEventListener('click',()=>{byId('speak')?.scrollIntoView({behavior:'smooth',block:'center'});byId('speak')?.classList.add('active');setTimeout(()=>byId('speak')?.classList.remove('active'),1200);});
 })();
 
-/* Load the original 520x780 transparent WebP in parts, then swap it in after decode. */
-(async function loadSeedRobotArtworkHD(){
-  const img=document.getElementById('robotImage');
-  if(!img)return;
-  try{
-    const paths=Array.from({length:12},(_,i)=>'/seed-robot-hd-parts/part-'+String(i).padStart(2,'0')+'.txt?v=20261016-hd');
-    const parts=await Promise.all(paths.map(async path=>{
-      const res=await fetch(path,{cache:'force-cache'});
-      if(!res.ok)throw new Error('HTTP '+res.status+' khi tải '+path);
-      return (await res.text()).trim();
-    }));
-    const encoded=parts.join('');
-    if(encoded.length!==118424)throw new Error('Sai kích thước base64 ảnh HD: '+encoded.length);
-    const binary=atob(encoded);
-    if(binary.length!==88816)throw new Error('Sai kích thước ảnh HD sau giải mã: '+binary.length);
-    const bytes=new Uint8Array(binary.length);
-    for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
-    const objectUrl=URL.createObjectURL(new Blob([bytes],{type:'image/webp'}));
-    const probe=new Image();
-    probe.onload=()=>{
-      img.onload=()=>URL.revokeObjectURL(objectUrl);
-      img.onerror=()=>URL.revokeObjectURL(objectUrl);
-      img.src=objectUrl;
-      img.dataset.resolution='520x780-hd';
-    };
-    probe.onerror=()=>{URL.revokeObjectURL(objectUrl);console.error('[Apple Seed] HD WebP decode failed');};
-    probe.src=objectUrl;
-  }catch(error){
-    console.error('[Apple Seed] Không tải được hình robot HD:',error);
-  }
-})();
+
 
 
 <style id="apple-seed-robot-ambient-glow">
