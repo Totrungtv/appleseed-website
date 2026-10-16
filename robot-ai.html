@@ -278,16 +278,17 @@ body{
 
 
 <style id="apple-seed-mobile-robot-head-no-overlap-force">
-/* Mobile correction: keep the robot inside its stage so its head cannot collide with the badge. */
+/* Mobile correction: restore the floating animation and reserve space above the robot's head. */
 @media screen and (max-width:760px){
   .hero-stage .stage-badge{
     top:8px!important;
     z-index:20!important;
   }
   .hero-stage #face.robot-art{
+    box-sizing:border-box!important;
     height:430px!important;
     min-height:400px!important;
-    padding:0!important;
+    padding:48px 0 0!important;
     margin-top:0!important;
     overflow:visible!important;
     align-items:flex-end!important;
@@ -295,14 +296,14 @@ body{
   .hero-stage #face #robotImage.robot-img{
     display:block!important;
     width:100%!important;
-    max-width:340px!important;
-    height:430px!important;
-    max-height:430px!important;
+    max-width:320px!important;
+    height:calc(100% - 48px)!important;
+    max-height:382px!important;
     margin:0 auto!important;
     object-fit:contain!important;
     object-position:center bottom!important;
-    transform:scale(1.02)!important;
     transform-origin:center bottom!important;
+    /* Do not set transform here: it overrides the robotFloat animation. */
   }
 }
 </style>
