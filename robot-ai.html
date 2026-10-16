@@ -278,7 +278,7 @@ body{
 
 
 <style id="apple-seed-mobile-robot-head-no-overlap-force">
-/* Mobile correction: restore the floating animation and reserve space above the robot's head. */
+/* Mobile fix: lower/scale the robot so its head clears the status pill, and force the float animation back on. */
 @media screen and (max-width:760px){
   .hero-stage .stage-badge{
     top:8px!important;
@@ -288,22 +288,22 @@ body{
     box-sizing:border-box!important;
     height:430px!important;
     min-height:400px!important;
-    padding:48px 0 0!important;
-    margin-top:0!important;
+    padding:0!important;
+    margin:0!important;
     overflow:visible!important;
     align-items:flex-end!important;
   }
   .hero-stage #face #robotImage.robot-img{
     display:block!important;
     width:100%!important;
-    max-width:320px!important;
-    height:calc(100% - 48px)!important;
-    max-height:382px!important;
+    max-width:300px!important;
+    height:360px!important;
+    max-height:360px!important;
     margin:0 auto!important;
     object-fit:contain!important;
     object-position:center bottom!important;
     transform-origin:center bottom!important;
-    /* Do not set transform here: it overrides the robotFloat animation. */
+    animation:asRobotFloat 4.8s ease-in-out infinite!important;
   }
 }
 </style>
