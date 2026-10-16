@@ -524,6 +524,75 @@ $('camera').onclick=async()=>{if(cameraStream){cameraStream.getTracks().forEach(
   }
 })();
 
+
+<style id="apple-seed-robot-ambient-glow">
+/* Ambient emerald light around Seed: decorative only, robot layout/float animation untouched. */
+#face.robot-art{
+  isolation:isolate!important;
+}
+#face.robot-art::before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  pointer-events:none;
+  left:50%;
+  top:53%;
+  width:min(92%,440px);
+  height:min(88%,650px);
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:
+    radial-gradient(ellipse at 50% 53%,rgba(28,255,194,.23) 0%,rgba(0,221,177,.14) 24%,rgba(0,190,165,.075) 43%,rgba(0,130,150,.025) 61%,transparent 73%);
+  filter:blur(15px);
+  opacity:.8;
+  animation:seedRobotAura 4.8s ease-in-out infinite;
+}
+#face.robot-art::after{
+  content:"";
+  position:absolute;
+  z-index:0;
+  pointer-events:none;
+  left:50%;
+  bottom:3%;
+  width:min(78%,340px);
+  height:48px;
+  transform:translateX(-50%);
+  border-radius:50%;
+  background:radial-gradient(ellipse,rgba(42,255,203,.34) 0%,rgba(0,222,184,.16) 32%,rgba(0,180,160,.045) 58%,transparent 74%);
+  filter:blur(7px);
+  animation:seedRobotFootGlow 3.4s ease-in-out infinite;
+}
+#face.robot-art #robotImage.robot-img{
+  position:relative!important;
+  z-index:1!important;
+  filter:contrast(1.10) saturate(1.08)
+    drop-shadow(0 0 7px rgba(55,255,207,.28))
+    drop-shadow(0 0 20px rgba(0,242,190,.18))
+    drop-shadow(0 12px 28px rgba(0,255,194,.16))!important;
+}
+#face.robot-art.talking #robotImage.robot-img{
+  filter:contrast(1.12) saturate(1.12)
+    drop-shadow(0 0 10px rgba(52,255,198,.58))
+    drop-shadow(0 0 28px rgba(0,255,200,.32))!important;
+}
+#face.robot-art.listening #robotImage.robot-img{
+  filter:contrast(1.12) saturate(1.12)
+    drop-shadow(0 0 12px rgba(71,255,215,.68))
+    drop-shadow(0 0 34px rgba(0,255,200,.40))!important;
+}
+@keyframes seedRobotAura{
+  0%,100%{opacity:.56;filter:blur(17px);transform:translate(-50%,-50%) scale(.94)}
+  50%{opacity:1;filter:blur(12px);transform:translate(-50%,-50%) scale(1.04)}
+}
+@keyframes seedRobotFootGlow{
+  0%,100%{opacity:.55;transform:translateX(-50%) scaleX(.88)}
+  50%{opacity:1;transform:translateX(-50%) scaleX(1.08)}
+}
+@media(prefers-reduced-motion:reduce){
+  #face.robot-art::before,#face.robot-art::after{animation:none!important}
+}
+</style>
+
 </script>
 
 </body></html>
