@@ -26,7 +26,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:10p
 <div class="section-title">TRÒ CHUYỆN TRỰC TUYẾN</div>
 <div class="chat" id="chat" aria-live="polite"><div class="bubble bot">Chào ông! Tôi là Seed 🤖. Gửi tin nhắn để bắt đầu trò chuyện với AI trực tuyến nhé.<div class="time">SEED 01</div></div></div>
 <div class="input-row"><input id="message" placeholder="Nhắn gì đó với Seed…" autocomplete="off"><button class="btn" id="send" aria-label="Gửi">➤</button></div>
-<div class="actions"><button class="action" id="mic"><span>🎙️</span>Nói chuyện<small id="micHint" class="small">Thử micro</small></button><button class="action" id="camera"><span>👁️</span>Mở camera<small class="small">Cần cấp quyền</small></button><button class="action" id="speak"><span>🔊</span>Đọc câu trả lời<small class="small">Giọng hệ thống</small></button></div>
+<div class="actions"><button class="action" id="mic"><span>🎙️</span>Nói chuyện<small id="micHint" class="small">Bấm để trò chuyện</small></button><button class="action" id="camera"><span>👁️</span>Mở camera<small class="small">Cần cấp quyền</small></button><button class="action" id="speak"><span>🔊</span>Đọc câu trả lời<small class="small">Giọng hệ thống</small></button></div>
 <div class="camera-box" id="cameraBox"><video id="video" autoplay playsinline muted></video><div class="note">Camera chỉ bật khi ông nhấn nút và cấp quyền. Nhấn lại để tắt.</div></div>
 <div class="foot">APPLE SEED AI · BẢN WEB TRỰC TUYẾN<br>Seed có trợ lý AI đa năng. Khóa API nằm riêng ở máy chủ robot, không nằm trong trang web.</div>
 </main>
@@ -74,6 +74,60 @@ async function sendText(text){
 }
 $('send').onclick=()=>sendText($('message').value);$('message').addEventListener('keydown',e=>{if(e.key==='Enter')sendText($('message').value)});
 $('speak').onclick=()=>{if(!('speechSynthesis'in window)){bubble('Trình duyệt chưa hỗ trợ đọc văn bản.');return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(lastReply);u.lang='vi-VN';u.onstart=()=>state('Seed đang nói…','talk');u.onend=()=>state('AI trực tuyến sẵn sàng');speechSynthesis.speak(u)};
-$('mic').onclick=()=>{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){bubble('Trình duyệt này chưa hỗ trợ nhận dạng giọng nói. Ông có thể nhập tin nhắn bằng bàn phím.');return}if(recognition){recognition.stop();return}recognition=new SR();recognition.lang='vi-VN';recognition.interimResults=false;recognition.onstart=()=>{state('Seed đang lắng nghe…','listening');$('mic').classList.add('active');$('micHint').textContent='Đang nghe…'};recognition.onresult=e=>sendText(e.results[0][0].transcript);recognition.onerror=e=>bubble('Lỗi micro: '+e.error);recognition.onend=()=>{$('mic').classList.remove('active');$('micHint').textContent='Thử micro';recognition=null;state('AI trực tuyến sẵn sàng')};try{recognition.start()}catch(e){bubble('Chưa mở được micro. Thử lại nhé.')}};
+let voicePC=null,voiceStream=null,voiceChannel=null,voiceAudio=null,voiceActive=false,currentVoiceUserBubble=null,currentVoiceBotBubble=null;
+function stopVoice(){
+ voiceActive=false;
+ if(voiceChannel){try{voiceChannel.close()}catch(e){}voiceChannel=null}
+ if(voicePC){try{voicePC.close()}catch(e){}voicePC=null}
+ if(voiceStream){voiceStream.getTracks().forEach(t=>t.stop());voiceStream=null}
+ if(voiceAudio){voiceAudio.pause();voiceAudio.srcObject=null;voiceAudio.remove();voiceAudio=null}
+ $('mic').classList.remove('active');$('micHint').textContent='Bấm để trò chuyện';
+ state('Đã ngắt hội thoại giọng nói');
+}
+async function startVoice(){
+ if(voiceActive){stopVoice();return}
+ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||!window.RTCPeerConnection){bubble('Trình duyệt chưa hỗ trợ thoại trực tiếp. Hãy mở trang bằng Safari qua HTTPS và thử lại.');return}
+ voiceActive=true;$('mic').classList.add('active');$('micHint').textContent='Đang kết nối…';state('Đang kết nối thoại AI…','listening');
+ try{
+  const tokenRes=await fetch('https://nuismqcjyutqigdydfkg.supabase.co/functions/v1/apple-seed-voice-session',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});
+  const tokenData=await tokenRes.json().catch(()=>({}));
+  if(!tokenRes.ok||!tokenData.value)throw new Error(tokenData.error||'Không lấy được quyền thoại tạm thời.');
+  voicePC=new RTCPeerConnection();
+  voiceAudio=document.createElement('audio');voiceAudio.autoplay=true;voiceAudio.playsInline=true;voiceAudio.style.display='none';document.body.appendChild(voiceAudio);
+  voicePC.ontrack=e=>{voiceAudio.srcObject=e.streams[0];voiceAudio.play().catch(()=>{})};
+  voiceStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:false});
+  voiceStream.getTracks().forEach(track=>voicePC.addTrack(track,voiceStream));
+  voiceChannel=voicePC.createDataChannel('oai-events');
+  voiceChannel.onopen=()=>{state('Seed đang nghe ông nói…','listening');$('micHint').textContent='Đang trò chuyện';};
+  voiceChannel.onmessage=ev=>{
+   let event;try{event=JSON.parse(ev.data)}catch(e){return}
+   if(event.type==='input_audio_buffer.speech_started'){state('Ông đang nói…','listening')}
+   if(event.type==='input_audio_buffer.speech_stopped'){state('Seed đang nghe hiểu…','talk')}
+   if(event.type==='conversation.item.input_audio_transcription.completed'&&event.transcript){
+    currentVoiceUserBubble=bubble(event.transcript,'user');
+   }
+   if(event.type==='response.created'){currentVoiceBotBubble=bubble('','bot');state('Seed đang trả lời bằng giọng nói…','talk')}
+   if((event.type==='response.output_audio_transcript.delta'||event.type==='response.text.delta')&&event.delta&&currentVoiceBotBubble){
+    const textNode=currentVoiceBotBubble.firstChild;textNode.data+=event.delta;chat.scrollTop=chat.scrollHeight;
+   }
+   if(event.type==='response.output_audio_transcript.done'&&event.transcript){
+    if(currentVoiceBotBubble)currentVoiceBotBubble.firstChild.data=event.transcript;
+    lastReply=event.transcript;history.push({role:'assistant',content:lastReply});currentVoiceBotBubble=null;
+   }
+   if(event.type==='response.done'){state('Seed sẵn sàng — ông cứ nói tiếp','listening')}
+   if(event.type==='error'){bubble('Lỗi thoại AI: '+(event.error?.message||'Vui lòng thử lại.'));state('Thoại AI gặp lỗi','sleepy')}
+  };
+  voicePC.onconnectionstatechange=()=>{if(voicePC&&['failed','disconnected','closed'].includes(voicePC.connectionState)&&voiceActive){if(voicePC.connectionState==='failed'){state('Kết nối thoại bị gián đoạn','sleepy')}}};
+  const offer=await voicePC.createOffer();await voicePC.setLocalDescription(offer);
+  const answerRes=await fetch('https://api.openai.com/v1/realtime/calls',{method:'POST',headers:{'Authorization':'Bearer '+tokenData.value,'Content-Type':'application/sdp'},body:offer.sdp});
+  const answerSdp=await answerRes.text();
+  if(!answerRes.ok)throw new Error('Không mở được kênh thoại trực tiếp: '+answerSdp.slice(0,220));
+  await voicePC.setRemoteDescription({type:'answer',sdp:answerSdp});
+  $('micHint').textContent='Đang trò chuyện';state('Seed đã kết nối — hãy nói nhé','listening');
+ }catch(e){
+  stopVoice();bubble('Chưa bật được thoại trực tiếp: '+(e.message||'Lỗi không xác định')+'. Hãy kiểm tra quyền micro và OPENAI_API_KEY trong Supabase.');state('Chưa kết nối thoại AI','sleepy');
+ }
+}
+$('mic').onclick=startVoice;
 $('camera').onclick=async()=>{if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;$('video').srcObject=null;$('cameraBox').classList.remove('show');$('camera').classList.remove('active');return}try{cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});$('video').srcObject=cameraStream;$('cameraBox').classList.add('show');$('camera').classList.add('active')}catch(e){bubble('Không mở được camera. Hãy kiểm tra quyền camera và HTTPS.')}};
 </script></body></html>
