@@ -278,7 +278,7 @@ body{
 
 
 <style id="apple-seed-mobile-robot-head-no-overlap-force">
-/* Mobile fine-tune: keep the AI CORE pill close to the robot without touching its head. */
+/* Mobile composition: bring the robot closer to the AI CORE pill while keeping its feet aligned. */
 @media screen and (max-width:760px){
   .hero-stage .stage-badge{
     top:8px!important;
@@ -294,12 +294,14 @@ body{
   }
   .hero-stage #face #robotImage.robot-img{
     width:100%!important;
-    max-width:330px!important;
-    height:420px!important;
-    max-height:420px!important;
+    max-width:350px!important;
+    height:460px!important;
+    max-height:460px!important;
+    margin-top:-42px!important;
     object-fit:contain!important;
     object-position:center bottom!important;
-    transform:translateY(0)!important;
+    transform:translateY(0) scale(1.04)!important;
+    transform-origin:center bottom!important;
   }
 }
 </style>
