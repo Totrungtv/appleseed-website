@@ -177,6 +177,20 @@ body{
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}}
 </style>
 
+<style id="apple-seed-robot-clarity-fix">
+/* Robot image clarity pass: use the site's transparent cutout asset directly. */
+#robotImage.robot-img{
+  width:100%!important;max-width:320px!important;height:100%!important;
+  object-fit:contain!important;object-position:center bottom!important;
+  mix-blend-mode:normal!important;image-rendering:auto;
+  filter:contrast(1.12) saturate(1.10) drop-shadow(0 12px 26px rgba(0,255,194,.22))!important;
+  transform:translateZ(0);
+}
+#face.robot-art{background:transparent!important;overflow:visible!important}
+#face.robot-art.talking #robotImage{filter:contrast(1.14) saturate(1.14) drop-shadow(0 0 28px rgba(52,255,198,.48))!important}
+#face.robot-art.listening #robotImage{filter:contrast(1.14) saturate(1.14) drop-shadow(0 0 34px rgba(71,255,215,.60))!important}
+@media(max-width:760px){#robotImage.robot-img{max-width:300px!important}}
+</style>
 </head>
 <body><main class="app">
 <header><div class="brand"><div class="logo">✦</div><div><h1>APPLE SEED AI</h1><small>PERSONAL ROBOT · SEED 01</small></div></div><a class="home" href="/">← Website</a></header>
@@ -209,7 +223,7 @@ body{
       <div class="holo-phone">▯<small>DEVICE</small><b>XS MAX</b></div>
       <div class="holo-wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     </div>
-    <div class="robot-art" id="face"><img class="robot-img" id="robotImage" alt="Robot humanoid Apple Seed AI màu trắng đen với ánh sáng xanh lá" fetchpriority="high"></div>
+    <div class="robot-art" id="face"><img class="robot-img" id="robotImage" src="/apple-seed-ai-robot-exact.webp?v=20261016-clarity" alt="Robot humanoid Apple Seed AI màu trắng đen với ánh sáng xanh lá" fetchpriority="high" decoding="async"></div>
     <div class="stage-caption"><span class="caption-line"></span><span>APPLE SEED ROBOTICS</span><span class="caption-line"></span></div>
     <div class="stage-corner corner-a"></div><div class="stage-corner corner-b"></div>
   </div>
@@ -349,29 +363,6 @@ async function startVoice(){
 $('mic').onclick=startVoice;
 $('camera').onclick=async()=>{if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;$('video').srcObject=null;$('cameraBox').classList.remove('show');$('camera').classList.remove('active');return}try{cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});$('video').srcObject=cameraStream;$('cameraBox').classList.add('show');$('camera').classList.add('active')}catch(e){bubble('Không mở được camera. Hãy kiểm tra quyền camera và HTTPS.')}};
 
-(async function loadSeedRobotArtwork(){
-  const img=document.getElementById('robotImage');
-  if(!img)return;
-  try{
-    const paths=[
-      '/seed-robot-parts/part-00.txt?v=20261016',
-      '/seed-robot-parts/part-01.txt?v=20261016',
-      '/seed-robot-parts/part-02.txt?v=20261016',
-      '/seed-robot-parts/part-03.txt?v=20261016'
-    ];
-    const parts=await Promise.all(paths.map(async path=>{
-      const res=await fetch(path);
-      if(!res.ok)throw new Error('HTTP '+res.status+' tải '+path);
-      return (await res.text()).trim();
-    }));
-    const binary=atob(parts.join(''));
-    const bytes=new Uint8Array(binary.length);
-    for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
-    const objectUrl=URL.createObjectURL(new Blob([bytes],{type:'image/webp'}));
-    img.onload=()=>URL.revokeObjectURL(objectUrl);
-    img.src=objectUrl;
-  }catch(error){console.warn('[Apple Seed] Không tải được hình robot:',error);}
-})();
 </script>
 <script id="apple-seed-ai-dashboard-actions">
 (function(){
