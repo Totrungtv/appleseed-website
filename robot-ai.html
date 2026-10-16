@@ -246,6 +246,36 @@ body{
 }
 </style>
 
+
+<style id="apple-seed-mobile-robot-head-no-overlap-final">
+/* Reserve a clear strip below the AI CORE pill so it never covers the robot's head. */
+@media (max-width:760px){
+  .hero-stage{padding-top:0!important}
+  .stage-badge{
+    top:7px!important;
+    left:50%!important;
+    z-index:10!important;
+  }
+  #face.robot-art{
+    height:430px!important;
+    min-height:400px!important;
+    padding:72px 0 0!important;
+    margin:0 auto!important;
+    overflow:visible!important;
+    align-items:flex-end!important;
+  }
+  #face #robotImage.robot-img{
+    display:block!important;
+    width:100%!important;
+    max-width:300px!important;
+    height:calc(100% - 72px)!important;
+    margin:0 auto!important;
+    object-fit:contain!important;
+    object-position:center bottom!important;
+  }
+}
+</style>
+
 </head>
 <body><main class="app">
 <header><div class="brand"><div class="logo">✦</div><div><h1>APPLE SEED AI</h1><small>PERSONAL ROBOT · SEED 01</small></div></div><a class="home" href="/">← Website</a></header>
