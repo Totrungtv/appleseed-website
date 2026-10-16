@@ -196,6 +196,37 @@ body{
 #face.robot-art.listening #robotImage{filter:contrast(1.12) saturate(1.12) drop-shadow(0 0 34px rgba(71,255,215,.60))!important}
 @media(max-width:760px){#robotImage.robot-img{max-width:315px!important}}
 </style>
+
+<style id="apple-seed-mobile-robot-text-spacing-fix">
+/* Mobile: keep the quote/system text away from the robot's head. */
+@media (max-width:760px){
+  .hero-copy{order:1!important}
+  .hero-stage{
+    order:2!important;
+    padding-top:34px!important;
+    margin-top:2px!important;
+    overflow:hidden!important;
+  }
+  #face.robot-art{
+    height:430px!important;
+    min-height:400px!important;
+    margin-top:0!important;
+    overflow:visible!important;
+  }
+  #face #robotImage.robot-img{
+    max-width:315px!important;
+    height:100%!important;
+    object-position:center bottom!important;
+  }
+  .hero-side{
+    order:3!important;
+    margin-top:4px!important;
+  }
+  .hero-bottom{order:4!important}
+  .stage-badge{top:8px!important}
+}
+</style>
+
 </head>
 <body><main class="app">
 <header><div class="brand"><div class="logo">✦</div><div><h1>APPLE SEED AI</h1><small>PERSONAL ROBOT · SEED 01</small></div></div><a class="home" href="/">← Website</a></header>
