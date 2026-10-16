@@ -276,6 +276,34 @@ body{
 }
 </style>
 
+
+<style id="apple-seed-mobile-robot-head-no-overlap-force">
+/* Strong mobile-only separation: the status pill stays above the robot's head. */
+@media screen and (max-width:760px){
+  .hero-stage .stage-badge{
+    top:8px!important;
+    z-index:20!important;
+  }
+  .hero-stage #face.robot-art{
+    height:430px!important;
+    min-height:400px!important;
+    padding:0!important;
+    margin-top:58px!important;
+    overflow:visible!important;
+    align-items:flex-end!important;
+  }
+  .hero-stage #face #robotImage.robot-img{
+    width:100%!important;
+    max-width:285px!important;
+    height:360px!important;
+    max-height:360px!important;
+    object-fit:contain!important;
+    object-position:center bottom!important;
+    transform:translateY(0)!important;
+  }
+}
+</style>
+
 </head>
 <body><main class="app">
 <header><div class="brand"><div class="logo">✦</div><div><h1>APPLE SEED AI</h1><small>PERSONAL ROBOT · SEED 01</small></div></div><a class="home" href="/">← Website</a></header>
