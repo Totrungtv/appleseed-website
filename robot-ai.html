@@ -37,7 +37,41 @@ const history=[];
 let lastReply='Chào ông! Tôi là Seed.',recognition=null,cameraStream=null;
 function state(t,mode=''){stateText.textContent=t;face.className='face '+mode}
 function bubble(text,who='bot'){const b=document.createElement('div');b.className='bubble '+who;b.append(document.createTextNode(text));const t=document.createElement('div');t.className='time';t.textContent=(who==='user'?'ÔNG':'SEED')+' · '+new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});b.append(t);chat.append(b);chat.scrollTop=chat.scrollHeight;return b}
-async function sendText(text){text=(text||'').trim();if(!text)return;bubble(text,'user');$('message').value='';$('send').disabled=true;state('Đang hỏi AI trực tuyến…','talk');try{const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text,history:history.slice(-8)})});const data=await res.json().catch(()=>({}));if(!res.ok||!data.reply)throw new Error(data.error||'Không kết nối được AI.');lastReply=String(data.reply);history.push({role:'user',content:text},{role:'assistant',content:lastReply});bubble(lastReply);state('AI trực tuyến sẵn sàng')}catch(e){bubble('Lỗi kết nối: '+(e.message||'Không rõ nguyên nhân')+'. Nếu báo chưa cấu hình API key, cần thêm OPENAI_API_KEY trong Supabase Secrets của chức năng robot riêng.');state('Chưa kết nối được AI','sleepy')}finally{$('send').disabled=false}}
+async function sendText(text){
+ text=(text||'').trim();if(!text)return;
+ bubble(text,'user');$('message').value='';$('send').disabled=true;state('Đang kết nối Seed…','talk');
+ let answer='',botBubble=null,answerNode=null,sseBuffer='';
+ try{
+  const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text,history:history.slice(-8)})});
+  if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error(err.error||'Không kết nối được AI.');}
+  if(!res.body)throw new Error('Trình duyệt không hỗ trợ luồng trả lời.');
+  botBubble=bubble('','bot');answerNode=botBubble.firstChild;state('Seed đang trả lời…','talk');
+  const reader=res.body.getReader(),decoder=new TextDecoder();
+  while(true){
+   const result=await reader.read();if(result.done)break;
+   sseBuffer+=decoder.decode(result.value,{stream:true});
+   const blocks=sseBuffer.split(/\r?\n\r?\n/);sseBuffer=blocks.pop()||'';
+   for(const block of blocks){
+    const dataLine=block.split(/\r?\n/).find(line=>line.startsWith('data:'));
+    if(!dataLine)continue;
+    const payload=dataLine.slice(5).trim();if(payload==='[DONE]')continue;
+    let event;try{event=JSON.parse(payload)}catch{continue}
+    if(event.type==='response.output_text.delta'&&typeof event.delta==='string'){
+     answer+=event.delta;answerNode.data=answer;chat.scrollTop=chat.scrollHeight;
+    }else if(event.type==='error'||event.type==='response.failed'){
+     throw new Error(event.error?.message||event.response?.error?.message||'AI gặp lỗi khi đang trả lời.');
+    }
+   }
+  }
+  if(!answer.trim())throw new Error('AI chưa trả về nội dung. Kiểm tra cấu hình API key và thử lại.');
+  const time=botBubble.querySelector('.time');if(time)time.textContent='SEED · '+new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
+  lastReply=answer;history.push({role:'user',content:text},{role:'assistant',content:lastReply});state('Seed sẵn sàng');
+ }catch(e){
+  if(botBubble&&answer){answerNode.data=answer+'\n\n[Luồng trả lời bị gián đoạn]';}
+  else bubble('Lỗi kết nối: '+(e.message||'Không rõ nguyên nhân')+'. Nếu báo chưa cấu hình API key, cần thêm OPENAI_API_KEY trong Supabase Secrets của chức năng robot riêng.');
+  state('AI chưa sẵn sàng','sleepy');
+ }finally{$('send').disabled=false}
+}
 $('send').onclick=()=>sendText($('message').value);$('message').addEventListener('keydown',e=>{if(e.key==='Enter')sendText($('message').value)});
 $('speak').onclick=()=>{if(!('speechSynthesis'in window)){bubble('Trình duyệt chưa hỗ trợ đọc văn bản.');return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(lastReply);u.lang='vi-VN';u.onstart=()=>state('Seed đang nói…','talk');u.onend=()=>state('AI trực tuyến sẵn sàng');speechSynthesis.speak(u)};
 $('mic').onclick=()=>{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){bubble('Trình duyệt này chưa hỗ trợ nhận dạng giọng nói. Ông có thể nhập tin nhắn bằng bàn phím.');return}if(recognition){recognition.stop();return}recognition=new SR();recognition.lang='vi-VN';recognition.interimResults=false;recognition.onstart=()=>{state('Seed đang lắng nghe…','listening');$('mic').classList.add('active');$('micHint').textContent='Đang nghe…'};recognition.onresult=e=>sendText(e.results[0][0].transcript);recognition.onerror=e=>bubble('Lỗi micro: '+e.error);recognition.onend=()=>{$('mic').classList.remove('active');$('micHint').textContent='Thử micro';recognition=null;state('AI trực tuyến sẵn sàng')};try{recognition.start()}catch(e){bubble('Chưa mở được micro. Thử lại nhé.')}};
