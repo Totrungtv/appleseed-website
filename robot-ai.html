@@ -278,7 +278,7 @@ body{
 
 
 <style id="apple-seed-mobile-robot-head-no-overlap-force">
-/* Strong mobile-only separation: the status pill stays above the robot's head. */
+/* Mobile fine-tune: keep the AI CORE pill close to the robot without touching its head. */
 @media screen and (max-width:760px){
   .hero-stage .stage-badge{
     top:8px!important;
@@ -288,15 +288,15 @@ body{
     height:430px!important;
     min-height:400px!important;
     padding:0!important;
-    margin-top:58px!important;
+    margin-top:-8px!important;
     overflow:visible!important;
     align-items:flex-end!important;
   }
   .hero-stage #face #robotImage.robot-img{
     width:100%!important;
-    max-width:285px!important;
-    height:360px!important;
-    max-height:360px!important;
+    max-width:330px!important;
+    height:420px!important;
+    max-height:420px!important;
     object-fit:contain!important;
     object-position:center bottom!important;
     transform:translateY(0)!important;
