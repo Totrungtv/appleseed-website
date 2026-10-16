@@ -227,6 +227,25 @@ body{
 }
 </style>
 
+
+<style id="apple-seed-mobile-badge-clearance-fix">
+/* Keep the AI CORE badge clear of the robot's head on narrow screens. */
+@media (max-width:760px){
+  .hero-stage{padding-top:42px!important}
+  .stage-badge{top:7px!important;z-index:8!important}
+  #face.robot-art{
+    height:430px!important;
+    min-height:400px!important;
+    padding-top:42px!important;
+  }
+  #face #robotImage.robot-img{
+    height:calc(100% - 42px)!important;
+    max-width:315px!important;
+    object-position:center bottom!important;
+  }
+}
+</style>
+
 </head>
 <body><main class="app">
 <header><div class="brand"><div class="logo">✦</div><div><h1>APPLE SEED AI</h1><small>PERSONAL ROBOT · SEED 01</small></div></div><a class="home" href="/">← Website</a></header>
