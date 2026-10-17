@@ -340,7 +340,7 @@ body{
       <div class="holo-phone">▯<small>DEVICE</small><b>XS MAX</b></div>
       <div class="holo-wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     </div>
-    <div class="robot-art" id="face"><img class="robot-img" id="robotImage" src="/apple-seed-ai-robot-exact.webp?v=20261017-fixed" alt="Robot humanoid Apple Seed AI màu trắng đen với ánh sáng xanh lá và bảng mạch hologram" fetchpriority="high" decoding="async"></div>
+    <div class="robot-art" id="face"><img class="robot-img" id="robotImage" src="/apple-seed-ai-robot-exact.webp?v=20261016-fallback" alt="Robot humanoid Apple Seed AI màu trắng đen với ánh sáng xanh lá" fetchpriority="high" decoding="async"></div>
     <div class="stage-caption"><span class="caption-line"></span><span>APPLE SEED ROBOTICS</span><span class="caption-line"></span></div>
     <div class="stage-corner corner-a"></div><div class="stage-corner corner-b"></div>
   </div>
@@ -560,47 +560,6 @@ $('camera').onclick=async()=>{if(cameraStream){cameraStream.getTracks().forEach(
 }
 @media(prefers-reduced-motion:reduce){
   #face.robot-art::before,#face.robot-art::after{animation:none!important}
-}
-</style>
-
-
-<style id="apple-seed-robot-layout-recovery">
-/* Restore breathing room between AI CORE badge and humanoid robot. */
-#hero .hero-stage{position:relative!important}
-#hero .stage-badge{z-index:30!important}
-#hero #face.robot-art{
-  z-index:2!important;
-  padding:0!important;
-  margin:24px auto 0!important;
-  align-items:flex-end!important;
-  overflow:visible!important;
-}
-#hero #robotImage.robot-img{
-  width:100%!important;
-  max-width:280px!important;
-  height:330px!important;
-  max-height:330px!important;
-  object-fit:contain!important;
-  object-position:center bottom!important;
-  transform-origin:center bottom!important;
-  animation:asRobotFloat 4.8s ease-in-out infinite!important;
-}
-@media(max-width:760px){
-  #hero .hero-stage{padding-top:34px!important}
-  #hero .stage-badge{top:7px!important}
-  #hero #face.robot-art{
-    height:430px!important;
-    min-height:400px!important;
-    margin-top:8px!important;
-  }
-  #hero #robotImage.robot-img{
-    max-width:285px!important;
-    height:350px!important;
-    max-height:350px!important;
-  }
-}
-@media(prefers-reduced-motion:reduce){
-  #hero #robotImage.robot-img{animation:none!important}
 }
 </style>
 
