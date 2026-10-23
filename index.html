@@ -3163,7 +3163,9 @@ form.onsubmit=async e=>{
     }
   }catch(error){
     console.error("AppleSeed AI:",error);
-    answerText=answerFallback(q);
+    const recentContext=Array.from(document.querySelectorAll("#chatBody .msg")).slice(-8)
+      .map(el=>(el.innerText||el.textContent||"").trim()).filter(Boolean).join(" ");
+    answerText=answerFallback((recentContext+" "+q).slice(-5000));
     await animateAppleSeedText(thinking,answerText);
   }finally{
     input.disabled=false;
