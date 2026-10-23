@@ -2968,8 +2968,10 @@ function answerFallback(q){
   if(s.includes("face id")||s.includes("faceid"))
     return (model?model[0]+": ":"")+"Apple Seed nhận kiểm tra và sửa Face ID. Cần kiểm tra cụm Face ID, cáp và phần main trước khi báo phương án sửa.";
 
+  if(/len nguon roi tat|len nguon xong tat|bat len roi tat|mo len roi tat|khoi dong roi tat/.test(s))
+    return (model?model[0]+": ":"")+"Máy lên nguồn rồi tự tắt: kiểm tra pin và socket pin trước, quan sát dòng tiêu thụ lúc khởi động, thử pin tốt; sau đó kiểm tra panic log nếu máy kịp khởi động và đo các đường nguồn chính. Máy tắt ngay khi vừa lên logo hay dùng được một lúc mới tắt?";
   if(s.includes("mat nguon")||s.includes("khong nguon")||s.includes("khong len nguon")||s.includes("chet nguon"))
-    return (model?model[0]+": ":"")+"Máy mất nguồn nên kiểm tra dòng tiêu thụ trước, sau đó đo các đường nguồn và xác định khu vực chạm/lỗi. Bạn cho tôi biết máy hiện dòng bao nhiêu mA khi cấp nguồn.";
+    return (model?model[0]+": ":"")+"Máy mất nguồn nên kiểm tra dòng tiêu thụ trước, sau đó đo chạm VBAT/VDD_MAIN và các đường nguồn chính. Cho biết dòng cấp nguồn lúc bấm mở máy để khoanh vùng.";
 
   if(s.includes("main")||s.includes("ic")||s.includes("cham"))
     return (model?model[0]+": ":"")+"Apple Seed nhận kiểm tra main iPhone. Bạn gửi model máy và hiện tượng cụ thể (mất nguồn, chạm, nóng IC, mất áp, mất sóng...) để khoanh vùng.";
@@ -3020,7 +3022,14 @@ async function askAppleSeedAI(message, onDelta){
         "apikey":anonKey,
         "Authorization":"Bearer "+anonKey
       },
-      body:JSON.stringify({message,source:"homepage-chat"}),
+      body:JSON.stringify({
+        message,
+        history:Array.from(document.querySelectorAll("#appleSeedChatBody .msg")).slice(-8).map(el=>({
+          role:el.classList.contains("user")?"user":"assistant",
+          text:(el.innerText||el.textContent||"").trim().slice(0,1200)
+        })).filter(x=>x.text),
+        source:"homepage-chat"
+      }),
       signal:controller.signal
     });
 
