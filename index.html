@@ -3134,11 +3134,24 @@ form.onsubmit=async e=>{
   sendBtn.textContent="Đang trả lời…";
 
   let answerText="";
+  let streamed=false;
   try{
-    /* Câu hỏi đơn giản trả lời ngay tại trình duyệt, không chờ gọi AI. */
+    /* Câu hỏi thường gặp trả lời ngay; câu hỏi AI hiển thị từng phần khi máy chủ phát dữ liệu. */
     answerText=quickAppleSeedAnswer(q);
-    if(!answerText) await askAppleSeedAI(q,(delta)=>{ answerText+=delta; });
-    await animateAppleSeedText(thinking,answerText);
+    if(answerText){
+      await animateAppleSeedText(thinking,answerText);
+    }else{
+      await askAppleSeedAI(q,(delta)=>{
+        answerText+=delta;
+        if(!streamed){
+          streamed=true;
+          thinking.textContent="";
+        }
+        thinking.textContent+=delta;
+        body.scrollTop=body.scrollHeight;
+      });
+      if(!streamed) throw new Error("AI chưa trả về nội dung.");
+    }
   }catch(error){
     console.error("AppleSeed AI:",error);
     answerText=answerFallback(q);
