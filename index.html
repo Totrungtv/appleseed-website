@@ -3024,7 +3024,7 @@ async function askAppleSeedAI(message, onDelta){
       },
       body:JSON.stringify({
         message,
-        history:Array.from(document.querySelectorAll("#appleSeedChatBody .msg")).slice(-8).map(el=>({
+        history:Array.from(document.querySelectorAll("#chatBody .msg")).slice(-8).map(el=>({
           role:el.classList.contains("user")?"user":"assistant",
           text:(el.innerText||el.textContent||"").trim().slice(0,1200)
         })).filter(x=>x.text),
