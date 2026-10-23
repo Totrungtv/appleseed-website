@@ -3152,14 +3152,10 @@ form.onsubmit=async e=>{
     }else{
       await askAppleSeedAI(q,(delta)=>{
         answerText+=delta;
-        if(!streamed){
-          streamed=true;
-          thinking.textContent="";
-        }
-        thinking.textContent+=delta;
-        body.scrollTop=body.scrollHeight;
       });
-      if(!streamed) throw new Error("AI chưa trả về nội dung.");
+      if(!answerText.trim()) throw new Error("AI chưa trả về nội dung.");
+      streamed=true;
+      await animateAppleSeedText(thinking,answerText);
     }
   }catch(error){
     console.error("AppleSeed AI:",error);
