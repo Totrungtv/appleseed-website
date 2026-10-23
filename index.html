@@ -3097,6 +3097,19 @@ function animateAppleSeedText(node,text){
     step();
   });
 }
+function quickAppleSeedAnswer(question){
+  const q=String(question||"").toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").replace(/đ/g,"d").trim();
+  if(/\\b(hom nay la thu may|hom nay thu may|thu may hom nay|ngay hom nay la ngay may|hom nay ngay may)\\b/.test(q)){
+    const days=["Chủ nhật","Thứ hai","Thứ ba","Thứ tư","Thứ năm","Thứ sáu","Thứ bảy"];
+    const now=new Date();
+    return "Hôm nay là "+days[now.getDay()]+", ngày "+now.getDate()+"/"+(now.getMonth()+1)+"/"+now.getFullYear()+". 😊";
+  }
+  if(/\\b(dia chi|apple seed o dau|cua hang o dau|google maps)\\b/.test(q))
+    return 'Apple Seed ở 292 Phạm Ngũ Lão, Trà Vinh. Bạn có thể mở Google Maps hoặc bấm “Đặt lịch sửa” trên website.';
+  if(/\\b(so dien thoai|sdt|lien he|goi cho)\\b/.test(q))
+    return "Bạn có thể liên hệ Apple Seed qua số 0898 888 269.";
+  return "";
+}
 form.onsubmit=async e=>{
   e.preventDefault();
   const q=input.value.trim();
@@ -3122,7 +3135,9 @@ form.onsubmit=async e=>{
 
   let answerText="";
   try{
-    await askAppleSeedAI(q,(delta)=>{ answerText+=delta; });
+    /* Câu hỏi đơn giản trả lời ngay tại trình duyệt, không chờ gọi AI. */
+    answerText=quickAppleSeedAnswer(q);
+    if(!answerText) await askAppleSeedAI(q,(delta)=>{ answerText+=delta; });
     await animateAppleSeedText(thinking,answerText);
   }catch(error){
     console.error("AppleSeed AI:",error);
