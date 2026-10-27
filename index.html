@@ -1782,9 +1782,19 @@ html,body{background:var(--apple-seed-page-bg)!important;color:var(--apple-seed-
 <div class="msg bot">Xin chào 👋 Tôi là trợ lý Apple Seed. Bạn cần hỏi về sửa iPhone, Face ID, main, linh kiện hay địa chỉ cửa hàng?</div>
 <a class="chat-booking" href="booking.html">📅 Đặt lịch sửa</a>
 </div>
+<div class="as-chat-tools" aria-label="Công cụ trò chuyện">
+  <button type="button" id="asChatCamera" title="Chụp ảnh bằng camera">📷 <span>Chụp ảnh</span></button>
+  <button type="button" id="asChatGallery" title="Chọn ảnh trong thư viện">🖼️ <span>Thư viện</span></button>
+  <button type="button" id="asChatMic" title="Nói câu hỏi bằng giọng nói">🎙️ <span>Micro</span></button>
+  <button type="button" id="asChatSpeak" title="Bật hoặc tắt đọc câu trả lời">🔊 <span>Đọc AI</span></button>
+</div>
+<input id="asChatCameraInput" type="file" accept="image/*" capture="environment" hidden>
+<input id="asChatGalleryInput" type="file" accept="image/*" hidden>
+<div id="asChatImagePreview" class="as-chat-image-preview" hidden></div>
+<div id="asChatVoiceStatus" class="as-chat-voice-status" aria-live="polite"></div>
 <form class="chat-input" id="chatForm">
-<input id="chatInput" autocomplete="off" placeholder="Nhập câu hỏi...">
-<button>Gửi</button>
+<input id="chatInput" autocomplete="off" placeholder="Nhập câu hỏi hoặc bấm Micro...">
+<button type="submit">Gửi</button>
 </form>
 </div>
 
@@ -3000,7 +3010,7 @@ function answerFallback(q){
   return "Tôi chưa hiểu rõ câu hỏi. Bạn thử ghi model + lỗi, ví dụ: “iPhone 13 Pro Max mất nguồn”, “iPhone 12 đơ cảm ứng” hoặc “Apple Seed ở đâu?”";
 }
 
-async function askAppleSeedAI(message, onDelta){
+async function askAppleSeedAI(message, onDelta, imageDataUrl){
   const sb=window.supabaseClient;
   if(!sb) throw new Error("Chưa khởi tạo Supabase.");
 
@@ -3024,6 +3034,7 @@ async function askAppleSeedAI(message, onDelta){
       },
       body:JSON.stringify({
         message,
+        image: imageDataUrl || null,
         history:Array.from(document.querySelectorAll("#chatBody .msg")).slice(-8).map(el=>({
           role:el.classList.contains("user")?"user":"assistant",
           text:(el.innerText||el.textContent||"").trim().slice(0,1200)
@@ -3119,54 +3130,141 @@ function quickAppleSeedAnswer(question){
     return "Bạn có thể liên hệ Apple Seed qua số 0898 888 269.";
   return "";
 }
+const asCameraInput=document.getElementById("asChatCameraInput");
+const asGalleryInput=document.getElementById("asChatGalleryInput");
+const asImagePreview=document.getElementById("asChatImagePreview");
+const asVoiceStatus=document.getElementById("asChatVoiceStatus");
+const asCameraBtn=document.getElementById("asChatCamera");
+const asGalleryBtn=document.getElementById("asChatGallery");
+const asMicBtn=document.getElementById("asChatMic");
+const asSpeakBtn=document.getElementById("asChatSpeak");
+let asSelectedImage=null, asSelectedImageUrl="", asSpeakEnabled=false, asRecognition=null;
+const asChatStyle=document.createElement("style");
+asChatStyle.textContent=`
+.as-chat-tools{display:flex;gap:7px;flex-wrap:wrap;padding:10px 14px 2px;background:#fff}
+.as-chat-tools button{border:1px solid #e8d5a7;background:#fffaf0;color:#26334b;border-radius:12px;padding:8px 10px;font-size:13px;font-weight:700;cursor:pointer}
+.as-chat-tools button:disabled{opacity:.5}
+.as-chat-tools button.as-active{background:#d3ad54;color:#fff}
+.as-chat-image-preview{position:relative;margin:8px 14px 0;padding:8px;border:1px solid #e3d7ba;border-radius:12px;background:#fff;max-width:220px}
+.as-chat-image-preview img{display:block;max-width:100%;max-height:150px;border-radius:8px;object-fit:contain}
+.as-chat-image-preview button{margin-top:6px;border:0;border-radius:8px;padding:5px 9px;background:#f7e9e5;color:#a32920}
+.as-chat-voice-status{padding:2px 14px;color:#6c7484;font-size:12px}
+#chatForm{display:flex;gap:8px}
+#chatInput{min-width:0;flex:1}
+@media(max-width:480px){.as-chat-tools{gap:5px;padding:8px 10px 2px}.as-chat-tools button{padding:7px 8px;font-size:12px}.as-chat-tools button span{display:inline}}
+`;
+document.head.appendChild(asChatStyle);
+function asShowStatus(text){asVoiceStatus.textContent=text||""}
+function asClearImage(){
+  asSelectedImage=null;
+  if(asSelectedImageUrl)URL.revokeObjectURL(asSelectedImageUrl);
+  asSelectedImageUrl="";
+  asImagePreview.innerHTML="";
+  asImagePreview.hidden=true;
+}
+function asCompressImage(file){
+  return new Promise((resolve,reject)=>{
+    if(!file||!file.type.startsWith("image/"))return reject(new Error("Vui lòng chọn tệp ảnh."));
+    const url=URL.createObjectURL(file),img=new Image();
+    img.onload=()=>{
+      try{
+        const max=1280,scale=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
+        const canvas=document.createElement("canvas");
+        canvas.width=Math.max(1,Math.round(img.naturalWidth*scale));
+        canvas.height=Math.max(1,Math.round(img.naturalHeight*scale));
+        canvas.getContext("2d").drawImage(img,0,0,canvas.width,canvas.height);
+        URL.revokeObjectURL(url);
+        resolve(canvas.toDataURL("image/jpeg",0.82));
+      }catch(err){URL.revokeObjectURL(url);reject(err)}
+    };
+    img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error("Không đọc được ảnh này."))};
+    img.src=url;
+  });
+}
+async function asHandleImage(file){
+  try{
+    const data=await asCompressImage(file);
+    asClearImage();
+    asSelectedImage=data;
+    asSelectedImageUrl=URL.createObjectURL(file);
+    const img=document.createElement("img");img.src=asSelectedImageUrl;img.alt="Ảnh đính kèm";
+    const remove=document.createElement("button");remove.type="button";remove.textContent="✕ Xóa ảnh";remove.onclick=asClearImage;
+    asImagePreview.append(img,remove);asImagePreview.hidden=false;
+    asShowStatus("Đã chọn ảnh. Nhập câu hỏi rồi bấm Gửi để AI phân tích.");
+  }catch(err){asShowStatus(err.message||"Không thể mở ảnh.")}
+}
+asCameraBtn.addEventListener("click",()=>asCameraInput.click());
+asGalleryBtn.addEventListener("click",()=>asGalleryInput.click());
+asCameraInput.addEventListener("change",()=>{if(asCameraInput.files?.[0])asHandleImage(asCameraInput.files[0]);asCameraInput.value=""});
+asGalleryInput.addEventListener("change",()=>{if(asGalleryInput.files?.[0])asHandleImage(asGalleryInput.files[0]);asGalleryInput.value=""});
+asMicBtn.addEventListener("click",()=>{
+  const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SpeechRecognition){asShowStatus("Trình duyệt này chưa hỗ trợ nhập giọng nói. Hãy dùng micro trên bàn phím hoặc thử Safari/Chrome mới.");return}
+  if(asRecognition){asRecognition.stop();asRecognition=null;asMicBtn.classList.remove("as-active");return}
+  try{
+    asRecognition=new SpeechRecognition();asRecognition.lang="vi-VN";asRecognition.interimResults=true;asRecognition.continuous=false;
+    asMicBtn.classList.add("as-active");asShowStatus("Đang nghe… Hãy nói câu hỏi của bạn.");
+    asRecognition.onresult=(event)=>{
+      let transcript="";
+      for(let i=event.resultIndex;i<event.results.length;i++)transcript+=event.results[i][0].transcript;
+      input.value=transcript;
+    };
+    asRecognition.onerror=(event)=>asShowStatus(event.error==="not-allowed"?"Bạn chưa cấp quyền micro cho trình duyệt.":"Không nhận được giọng nói: "+event.error);
+    asRecognition.onend=()=>{asRecognition=null;asMicBtn.classList.remove("as-active");if(input.value.trim())asShowStatus("Đã nhận giọng nói. Bấm Gửi để hỏi AI.")};
+    asRecognition.start();
+  }catch(err){asRecognition=null;asMicBtn.classList.remove("as-active");asShowStatus("Không thể khởi động micro. Kiểm tra quyền micro của trình duyệt.")}
+});
+asSpeakBtn.addEventListener("click",()=>{
+  asSpeakEnabled=!asSpeakEnabled;asSpeakBtn.classList.toggle("as-active",asSpeakEnabled);
+  asSpeakBtn.querySelector("span").textContent=asSpeakEnabled?"Đọc AI: bật":"Đọc AI";
+  if(!asSpeakEnabled&&window.speechSynthesis)window.speechSynthesis.cancel();
+  asShowStatus(asSpeakEnabled?"AI sẽ đọc câu trả lời bằng giọng nói khi trình duyệt hỗ trợ.":"Đã tắt đọc câu trả lời.");
+});
 form.onsubmit=async e=>{
   e.preventDefault();
   const q=input.value.trim();
-  if(!q)return;
-
+  if(!q&&!asSelectedImage){asShowStatus("Nhập câu hỏi hoặc đính kèm ảnh trước nhé.");return}
+  const question=q||(asSelectedImage?"Hãy phân tích hình ảnh này và cho biết những gì có thể nhận định.":"");
   const userMsg=document.createElement("div");
   userMsg.className="msg user";
-  userMsg.textContent=q;
+  userMsg.textContent=question;
+  if(asSelectedImage){
+    const img=document.createElement("img");img.src=asSelectedImage;img.alt="Ảnh khách gửi";
+    img.style.cssText="display:block;max-width:100%;max-height:220px;border-radius:10px;margin-top:8px";
+    userMsg.appendChild(img);
+  }
   body.appendChild(userMsg);
-
+  const imageToSend=asSelectedImage;
+  asClearImage();
+  asShowStatus("");
   const thinking=document.createElement("div");
-  thinking.className="msg bot";
-  thinking.setAttribute("aria-live","polite");
+  thinking.className="msg bot";thinking.setAttribute("aria-live","polite");
   thinking.innerHTML='<span class="as-chat-wait" aria-label="Apple Seed đang suy nghĩ"><span></span><span></span><span></span></span> <small>Apple Seed đang suy nghĩ…</small>';
-  body.appendChild(thinking);
-  body.scrollTop=body.scrollHeight;
-
-  input.value="";
-  input.disabled=true;
-  const sendBtn=form.querySelector("button");
-  sendBtn.disabled=true;
-  sendBtn.textContent="Đang trả lời…";
-
+  body.appendChild(thinking);body.scrollTop=body.scrollHeight;
+  input.value="";input.disabled=true;
+  const sendBtn=form.querySelector("button");sendBtn.disabled=true;sendBtn.textContent="Đang trả lời…";
+  asCameraBtn.disabled=asGalleryBtn.disabled=asMicBtn.disabled=true;
   let answerText="";
-  let streamed=false;
   try{
-    /* API hiện trả nguyên câu trả lời trong một lần; thu thập xong rồi chạy hiệu ứng chữ ở giao diện. */
-    answerText=quickAppleSeedAnswer(q);
+    if(!imageToSend)answerText=quickAppleSeedAnswer(question);
     if(!answerText){
-      await askAppleSeedAI(q,(delta)=>{
-        answerText+=delta;
-      });
-      if(!answerText.trim()) throw new Error("AI chưa trả về nội dung.");
+      await askAppleSeedAI(question,(delta)=>{answerText+=delta},imageToSend);
+      if(!answerText.trim())throw new Error("AI chưa trả về nội dung.");
     }
-    streamed=true;
     await animateAppleSeedText(thinking,answerText);
+    if(asSpeakEnabled&&window.speechSynthesis){
+      window.speechSynthesis.cancel();
+      const utterance=new SpeechSynthesisUtterance(answerText);utterance.lang="vi-VN";utterance.rate=1;
+      window.speechSynthesis.speak(utterance);
+    }
   }catch(error){
     console.error("AppleSeed AI:",error);
-    const recentContext=Array.from(document.querySelectorAll("#chatBody .msg")).slice(-8)
-      .map(el=>(el.innerText||el.textContent||"").trim()).filter(Boolean).join(" ");
-    answerText=answerFallback(q);
+    answerText=imageToSend?"Xin lỗi, AI chưa phân tích được ảnh lúc này. Vui lòng thử lại hoặc mô tả lỗi bằng chữ.":answerFallback(question);
     await animateAppleSeedText(thinking,answerText);
   }finally{
-    input.disabled=false;
-    sendBtn.disabled=false;
-    sendBtn.textContent="Gửi";
-    input.focus();
-    body.scrollTop=body.scrollHeight;
+    input.disabled=false;sendBtn.disabled=false;sendBtn.textContent="Gửi";
+    asCameraBtn.disabled=asGalleryBtn.disabled=asMicBtn.disabled=false;
+    input.focus();body.scrollTop=body.scrollHeight;
   }
 };
 </script>
