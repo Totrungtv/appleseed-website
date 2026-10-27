@@ -1786,11 +1786,13 @@ html,body{background:var(--apple-seed-page-bg)!important;color:var(--apple-seed-
   <button type="button" id="asChatCamera" title="Chụp ảnh bằng camera">📷 <span>Chụp ảnh</span></button>
   <button type="button" id="asChatVideo" title="Trò chuyện với AI qua video trực tiếp">🎥 <span>Video AI</span></button>
   <button type="button" id="asChatGallery" title="Chọn ảnh trong thư viện">🖼️ <span>Thư viện</span></button>
+  <button type="button" id="asChatDocument" title="Tải tài liệu điện tử để AI học">📎 <span>Tài liệu</span></button>
   <button type="button" id="asChatMic" title="Nói câu hỏi bằng giọng nói">🎙️ <span>Micro</span></button>
   <button type="button" id="asChatSpeak" title="Bật hoặc tắt đọc câu trả lời">🔊 <span>Đọc AI</span></button>
 </div>
 <input id="asChatCameraInput" type="file" accept="image/*" capture="environment" hidden>
 <input id="asChatGalleryInput" type="file" accept="image/*" hidden>
+<input id="asChatDocumentInput" type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,.txt,.md,.json,application/pdf,image/jpeg,image/png,image/webp,text/plain,application/json" hidden>
 <div id="asChatImagePreview" class="as-chat-image-preview" hidden></div>
 <div id="asChatVoiceStatus" class="as-chat-voice-status" aria-live="polite"></div>
 <form class="chat-input" id="chatForm">
@@ -3137,6 +3139,8 @@ const asImagePreview=document.getElementById("asChatImagePreview");
 const asVoiceStatus=document.getElementById("asChatVoiceStatus");
 const asCameraBtn=document.getElementById("asChatCamera");
 const asGalleryBtn=document.getElementById("asChatGallery");
+const asDocumentBtn=document.getElementById("asChatDocument");
+const asDocumentInput=document.getElementById("asChatDocumentInput");
 const asMicBtn=document.getElementById("asChatMic");
 const asSpeakBtn=document.getElementById("asChatSpeak");
 let asSelectedImage=null, asSelectedImageUrl="", asSpeakEnabled=false, asRecognition=null;
@@ -3330,6 +3334,61 @@ async function asStartVideoChat(){
 }
 asVideoBtn.addEventListener("click",asStartVideoChat);
 asGalleryBtn.addEventListener("click",()=>asGalleryInput.click());
+asDocumentBtn.addEventListener("click",()=>asDocumentInput.click());
+asDocumentInput.addEventListener("change",async()=>{
+  const file=asDocumentInput.files?.[0];
+  asDocumentInput.value="";
+  if(!file)return;
+  const allowed=/\.(pdf|jpe?g|png|webp|txt|md|json)$/i.test(file.name);
+  if(!allowed){asShowStatus("Loại file chưa hỗ trợ. Hãy chọn PDF, JPG, PNG, WEBP, TXT, MD hoặc JSON.");return}
+  if(file.size>25*1024*1024){asShowStatus("File tối đa 25 MB. Hãy chọn tài liệu nhỏ hơn.");return}
+  const sb=window.supabaseClient;
+  if(!sb){asShowStatus("Chưa kết nối Supabase.");return}
+  asDocumentBtn.disabled=true;
+  asShowStatus("Đang kiểm tra quyền và tải tài liệu lên bộ não…");
+  try{
+    const {data:{session},error:sessionError}=await sb.auth.getSession();
+    if(sessionError)throw sessionError;
+    if(!session?.user)throw new Error("Bạn cần đăng nhập tài khoản Apple Seed trước khi gửi tài liệu.");
+    const roleResult=await sb.from("profiles").select("role").eq("id",session.user.id).maybeSingle();
+    if(roleResult.error)throw roleResult.error;
+    if(!roleResult.data||!["admin","staff"].includes(roleResult.data.role)){
+      throw new Error("Tài khoản này chưa có quyền huấn luyện bộ não chung. Hãy đăng nhập tài khoản Admin/Staff; khách hàng vẫn có thể gửi ảnh để hỏi AI.");
+    }
+    const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+    const path="documents/"+crypto.randomUUID()+"-"+safeName;
+    const uploaded=await sb.storage.from("electronic-brain").upload(path,file,{upsert:false,contentType:file.type||"application/octet-stream"});
+    if(uploaded.error)throw uploaded.error;
+    const created=await sb.from("brain_documents").insert({
+      uploaded_by:session.user.id,file_name:file.name,storage_path:path,
+      mime_type:file.type||null,file_size:file.size,status:"queued"
+    }).select("id").single();
+    if(created.error){
+      await sb.storage.from("electronic-brain").remove([path]);
+      throw created.error;
+    }
+    const docId=created.data.id;
+    asShowStatus("📚 Đã tải "+file.name+" lên. AI đang hấp thụ kiến thức điện tử…");
+    const worker=await sb.functions.invoke("brain-learn-document",{body:{document_id:docId}});
+    if(worker.error)console.warn("Apple Seed brain learner:",worker.error);
+    for(let i=0;i<180;i++){
+      await new Promise(resolve=>setTimeout(resolve,2000));
+      const status=await sb.from("brain_documents").select("status,atoms_learned,relationships_learned,error_message").eq("id",docId).maybeSingle();
+      if(status.error)throw status.error;
+      if(!status.data)throw new Error("Không tìm thấy trạng thái xử lý tài liệu.");
+      if(status.data.status==="completed"){
+        asShowStatus("✅ Đã học xong "+file.name+": "+(status.data.atoms_learned||0)+" kiến thức, "+(status.data.relationships_learned||0)+" quan hệ mạch.");
+        return;
+      }
+      if(status.data.status==="failed")throw new Error(status.data.error_message||"AI không học được tài liệu này.");
+      if(i%5===0)asShowStatus("🧠 Đang đọc tài liệu và trích xuất kiến thức…");
+    }
+    asShowStatus("⏳ Tài liệu đã nhận; AI vẫn đang xử lý. Kiểm tra mục Electronic Brain để xem trạng thái.");
+  }catch(err){
+    console.error("Apple Seed document learning:",err);
+    asShowStatus("❌ "+(err?.message||"Không tải được tài liệu."));
+  }finally{asDocumentBtn.disabled=false}
+});
 asCameraInput.addEventListener("change",()=>{if(asCameraInput.files?.[0])asHandleImage(asCameraInput.files[0]);asCameraInput.value=""});
 asGalleryInput.addEventListener("change",()=>{if(asGalleryInput.files?.[0])asHandleImage(asGalleryInput.files[0]);asGalleryInput.value=""});
 asMicBtn.addEventListener("click",()=>{
