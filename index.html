@@ -3321,7 +3321,7 @@ async function asStartVideoChat(){
       const queueReadySpeech=(flush=false)=>{
         // Tách ở cuối câu; nếu AI viết đoạn dài không có dấu câu thì đọc theo cụm.
         while(speechBuffer){
-          const match=speechBuffer.match(/^([\\s\\S]*?[.!?…](?:[”’\"')\\]]*)\\s+)/);
+          const match=speechBuffer.match(/^([\s\S]*?[.!?…](?:[”’\"')\]]*)\s+)/);
           if(match){
             speakChunk(match[1]);
             speechBuffer=speechBuffer.slice(match[0].length);
