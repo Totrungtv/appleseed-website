@@ -3369,8 +3369,9 @@ asDocumentInput.addEventListener("change",async()=>{
     }
     const docId=created.data.id;
     asShowStatus("📚 Đã tải "+file.name+" lên. AI đang hấp thụ kiến thức điện tử…");
-    const worker=await sb.functions.invoke("brain-learn-document",{body:{document_id:docId}});
-    if(worker.error)console.warn("Apple Seed brain learner:",worker.error);
+    sb.functions.invoke("brain-learn-document",{body:{document_id:docId}})
+      .then(result=>{if(result.error)console.warn("Apple Seed brain learner:",result.error)})
+      .catch(error=>console.warn("Apple Seed brain learner:",error));
     for(let i=0;i<180;i++){
       await new Promise(resolve=>setTimeout(resolve,2000));
       const status=await sb.from("brain_documents").select("status,atoms_learned,relationships_learned,error_message").eq("id",docId).maybeSingle();
