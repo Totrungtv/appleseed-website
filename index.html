@@ -3149,6 +3149,16 @@ asChatStyle.textContent=`
 .as-chat-image-preview img{display:block;max-width:100%;max-height:150px;border-radius:8px;object-fit:contain}
 .as-chat-image-preview button{margin-top:6px;border:0;border-radius:8px;padding:5px 9px;background:#f7e9e5;color:#a32920}
 .as-chat-voice-status{padding:2px 14px;color:#6c7484;font-size:12px}
+.as-livecam-overlay{position:fixed;inset:0;z-index:2147483000;background:rgba(8,15,30,.88);display:flex;align-items:center;justify-content:center;padding:16px}
+.as-livecam-panel{width:min(100%,520px);background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px #0005}
+.as-livecam-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:#d3ad54;color:#fff;font-weight:800}
+.as-livecam-head button{border:0;background:transparent;color:#fff;font-size:25px}
+.as-livecam-video-wrap{position:relative;background:#111;min-height:220px}
+.as-livecam-video{display:block;width:100%;max-height:58vh;object-fit:contain;background:#111}
+.as-livecam-help{padding:12px 16px;color:#26334b;font-size:14px;line-height:1.45}
+.as-livecam-actions{display:flex;gap:10px;padding:0 14px 14px}
+.as-livecam-actions button{flex:1;border:0;border-radius:12px;padding:12px 9px;font-weight:800;font-size:14px}
+.as-livecam-capture{background:#d3ad54;color:#fff}.as-livecam-close{background:#eef1f6;color:#26334b}
 #chatForm{display:flex;gap:8px}
 #chatInput{min-width:0;flex:1}
 @media(max-width:480px){.as-chat-tools{gap:5px;padding:8px 10px 2px}.as-chat-tools button{padding:7px 8px;font-size:12px}.as-chat-tools button span{display:inline}}
@@ -3193,7 +3203,52 @@ async function asHandleImage(file){
     asShowStatus("Đã chọn ảnh. Nhập câu hỏi rồi bấm Gửi để AI phân tích.");
   }catch(err){asShowStatus(err.message||"Không thể mở ảnh.")}
 }
-asCameraBtn.addEventListener("click",()=>asCameraInput.click());
+let asLiveCamStream=null,asLiveCamOverlay=null;
+function asCloseLiveCamera(){
+  if(asLiveCamStream){asLiveCamStream.getTracks().forEach(track=>track.stop());asLiveCamStream=null}
+  if(asLiveCamOverlay){asLiveCamOverlay.remove();asLiveCamOverlay=null}
+}
+async function asOpenLiveCamera(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    asShowStatus("Trình duyệt chưa hỗ trợ camera trực tiếp. Hãy mở website bằng Safari/Chrome mới và kiểm tra quyền camera.");
+    asCameraInput.click();return;
+  }
+  const overlay=document.createElement("div");overlay.className="as-livecam-overlay";
+  overlay.innerHTML='<section class="as-livecam-panel" role="dialog" aria-modal="true" aria-label="Camera trực tiếp Apple Seed"><div class="as-livecam-head"><span>📷 Camera kiểm tra máy</span><button type="button" aria-label="Đóng camera">×</button></div><div class="as-livecam-video-wrap"><video class="as-livecam-video" autoplay muted playsinline></video></div><div class="as-livecam-help">Đưa điện thoại hoặc linh kiện cần kiểm tra vào khung hình. Bấm <b>Chụp & hỏi AI</b> để gửi ảnh cho Trợ lý Apple Seed phân tích. Camera chỉ hoạt động khi bạn cho phép.</div><div class="as-livecam-actions"><button type="button" class="as-livecam-close">Đóng</button><button type="button" class="as-livecam-capture">📸 Chụp & hỏi AI</button></div></section>';
+  document.body.appendChild(overlay);asLiveCamOverlay=overlay;
+  const video=overlay.querySelector("video"),closeBtns=overlay.querySelectorAll(".as-livecam-head button,.as-livecam-close"),capture=overlay.querySelector(".as-livecam-capture");
+  closeBtns.forEach(btn=>btn.addEventListener("click",asCloseLiveCamera));
+  overlay.addEventListener("click",ev=>{if(ev.target===overlay)asCloseLiveCamera()});
+  try{
+    asShowStatus("Đang mở camera…");
+    asLiveCamStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1280},height:{ideal:720}},audio:false});
+    if(!asLiveCamOverlay){asLiveCamStream.getTracks().forEach(t=>t.stop());asLiveCamStream=null;return}
+    video.srcObject=asLiveCamStream;
+    await video.play();
+    asShowStatus("Camera đang hoạt động. Canh rõ vị trí lỗi rồi chụp.");
+  }catch(err){
+    console.error("AppleSeed camera:",err);asCloseLiveCamera();
+    const msg=err?.name==="NotAllowedError"?"Bạn chưa cấp quyền camera. Hãy cho phép Camera trong cài đặt trình duyệt rồi thử lại.":err?.name==="NotFoundError"?"Không tìm thấy camera trên thiết bị.":"Không mở được camera. Hãy kiểm tra quyền camera và thử lại.";
+    asShowStatus(msg);
+  }
+  capture.addEventListener("click",async()=>{
+    if(!video.videoWidth||!video.videoHeight){asShowStatus("Camera chưa sẵn sàng, đợi một chút rồi thử lại.");return}
+    capture.disabled=true;capture.textContent="Đang chụp…";
+    try{
+      const canvas=document.createElement("canvas");
+      const scale=Math.min(1,1280/Math.max(video.videoWidth,video.videoHeight));
+      canvas.width=Math.round(video.videoWidth*scale);canvas.height=Math.round(video.videoHeight*scale);
+      canvas.getContext("2d").drawImage(video,0,0,canvas.width,canvas.height);
+      const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error("Không chụp được khung hình.")),"image/jpeg",.82));
+      const file=new File([blob],"appleseed-camera.jpg",{type:"image/jpeg"});
+      asCloseLiveCamera();
+      await asHandleImage(file);
+      input.value="Hãy kiểm tra điện thoại/linh kiện trong ảnh. Mô tả những gì nhìn thấy, các khả năng gây lỗi và bước kiểm tra tiếp theo.";
+      form.requestSubmit();
+    }catch(err){console.error(err);asShowStatus("Chụp ảnh chưa thành công. Vui lòng thử lại.");capture.disabled=false;capture.textContent="📸 Chụp & hỏi AI"}
+  });
+}
+asCameraBtn.addEventListener("click",asOpenLiveCamera);
 asGalleryBtn.addEventListener("click",()=>asGalleryInput.click());
 asCameraInput.addEventListener("change",()=>{if(asCameraInput.files?.[0])asHandleImage(asCameraInput.files[0]);asCameraInput.value=""});
 asGalleryInput.addEventListener("change",()=>{if(asGalleryInput.files?.[0])asHandleImage(asGalleryInput.files[0]);asGalleryInput.value=""});
