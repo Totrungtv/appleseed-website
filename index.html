@@ -1784,6 +1784,7 @@ html,body{background:var(--apple-seed-page-bg)!important;color:var(--apple-seed-
 </div>
 <div class="as-chat-tools" aria-label="Công cụ trò chuyện">
   <button type="button" id="asChatCamera" title="Chụp ảnh bằng camera">📷 <span>Chụp ảnh</span></button>
+  <button type="button" id="asChatVideo" title="Trò chuyện với AI qua video trực tiếp">🎥 <span>Video AI</span></button>
   <button type="button" id="asChatGallery" title="Chọn ảnh trong thư viện">🖼️ <span>Thư viện</span></button>
   <button type="button" id="asChatMic" title="Nói câu hỏi bằng giọng nói">🎙️ <span>Micro</span></button>
   <button type="button" id="asChatSpeak" title="Bật hoặc tắt đọc câu trả lời">🔊 <span>Đọc AI</span></button>
@@ -3159,6 +3160,16 @@ asChatStyle.textContent=`
 .as-livecam-actions{display:flex;gap:10px;padding:0 14px 14px}
 .as-livecam-actions button{flex:1;border:0;border-radius:12px;padding:12px 9px;font-weight:800;font-size:14px}
 .as-livecam-capture{background:#d3ad54;color:#fff}.as-livecam-close{background:#eef1f6;color:#26334b}
+.as-videochat-panel{width:min(100%,560px);background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px #0005}
+.as-videochat-video{display:block;width:100%;max-height:44vh;object-fit:contain;background:#111}
+.as-videochat-state{padding:9px 14px;color:#26334b;font-size:13px;background:#f6f8fc}
+.as-videochat-transcript{padding:8px 14px;min-height:38px;max-height:100px;overflow:auto;color:#26334b;font-size:14px}
+.as-videochat-controls{display:flex;gap:8px;padding:10px 12px}
+.as-videochat-controls input{min-width:0;flex:1;border:1px solid #d8deeb;border-radius:11px;padding:11px;font-size:15px}
+.as-videochat-controls button{border:0;border-radius:11px;padding:10px 12px;font-weight:800;background:#d3ad54;color:#fff}
+.as-videochat-bottom{display:flex;gap:8px;padding:0 12px 12px}
+.as-videochat-bottom button{flex:1;border:0;border-radius:11px;padding:10px;font-weight:700}
+.as-videochat-mic{background:#eaf0ff;color:#1d4ed8}.as-videochat-end{background:#f7e9e5;color:#a32920}
 #chatForm{display:flex;gap:8px}
 #chatInput{min-width:0;flex:1}
 @media(max-width:480px){.as-chat-tools{gap:5px;padding:8px 10px 2px}.as-chat-tools button{padding:7px 8px;font-size:12px}.as-chat-tools button span{display:inline}}
@@ -3249,6 +3260,75 @@ async function asOpenLiveCamera(){
   });
 }
 asCameraBtn.addEventListener("click",asOpenLiveCamera);
+const asVideoBtn=document.getElementById("asChatVideo");
+let asVideoChat=null,asVideoStream=null,asVideoRecognition=null,asVideoListening=false,asVideoBusy=false,asVideoLastFrame="";
+function asStopVideoChat(){
+  asVideoListening=false;
+  if(asVideoRecognition){try{asVideoRecognition.onend=null;asVideoRecognition.stop()}catch(_){}asVideoRecognition=null}
+  if(asVideoStream){asVideoStream.getTracks().forEach(t=>t.stop());asVideoStream=null}
+  if(window.speechSynthesis)window.speechSynthesis.cancel();
+  if(asVideoChat){asVideoChat.remove();asVideoChat=null}
+  asShowStatus("Đã kết thúc trò chuyện video.");
+}
+async function asStartVideoChat(){
+  if(!navigator.mediaDevices?.getUserMedia){asShowStatus("Video chat cần trình duyệt hỗ trợ camera. Hãy mở bằng Safari hoặc Chrome mới.");return}
+  const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const overlay=document.createElement("div");overlay.className="as-livecam-overlay";
+  overlay.innerHTML='<section class="as-videochat-panel" role="dialog" aria-modal="true" aria-label="Trò chuyện video Apple Seed"><div class="as-livecam-head"><span>🎥 Apple Seed AI Video</span><button type="button" class="as-videochat-x" aria-label="Đóng">×</button></div><video class="as-videochat-video" autoplay muted playsinline></video><div class="as-videochat-state">Đang kết nối camera…</div><div class="as-videochat-transcript">Đưa điện thoại hoặc linh kiện vào khung hình, rồi hỏi AI bằng giọng nói hoặc nhập câu hỏi.</div><div class="as-videochat-controls"><input class="as-videochat-input" placeholder="Hỏi về thiết bị đang quay…"><button type="button" class="as-videochat-send">Gửi</button></div><div class="as-videochat-bottom"><button type="button" class="as-videochat-mic">🎙️ Nói với AI</button><button type="button" class="as-videochat-end">Kết thúc video</button></div><div class="as-livecam-help">Camera giữ hình ảnh trực tiếp trên thiết bị. Khi bạn gửi câu hỏi, một khung hình sẽ được gửi cho AI phân tích. Đây chưa phải truyền video liên tục.</div></section>';
+  document.body.appendChild(overlay);asVideoChat=overlay;
+  const video=overlay.querySelector("video"),state=overlay.querySelector(".as-videochat-state"),transcript=overlay.querySelector(".as-videochat-transcript"),field=overlay.querySelector(".as-videochat-input"),send=overlay.querySelector(".as-videochat-send"),mic=overlay.querySelector(".as-videochat-mic");
+  overlay.querySelector(".as-videochat-x").onclick=asStopVideoChat;
+  overlay.querySelector(".as-videochat-end").onclick=asStopVideoChat;
+  overlay.addEventListener("click",e=>{if(e.target===overlay)asStopVideoChat()});
+  try{
+    asVideoStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1280},height:{ideal:720}},audio:false});
+    if(!asVideoChat){asVideoStream.getTracks().forEach(t=>t.stop());asVideoStream=null;return}
+    video.srcObject=asVideoStream;await video.play();
+    state.textContent="🟢 Camera đang hoạt động — đưa máy vào khung hình.";
+  }catch(err){
+    state.textContent=err?.name==="NotAllowedError"?"Chưa được cấp quyền camera. Hãy cho phép trong cài đặt trình duyệt.":"Không mở được camera. Kiểm tra quyền truy cập rồi thử lại.";
+    return;
+  }
+  function captureFrame(){
+    if(!video.videoWidth||!video.videoHeight)throw new Error("Camera chưa sẵn sàng.");
+    const canvas=document.createElement("canvas"),scale=Math.min(1,1000/Math.max(video.videoWidth,video.videoHeight));
+    canvas.width=Math.round(video.videoWidth*scale);canvas.height=Math.round(video.videoHeight*scale);
+    canvas.getContext("2d").drawImage(video,0,0,canvas.width,canvas.height);
+    return canvas.toDataURL("image/jpeg",.72);
+  }
+  async function sendVideoQuestion(text){
+    const question=String(text||"").trim();if(!question||asVideoBusy)return;
+    asVideoBusy=true;send.disabled=true;mic.disabled=true;state.textContent="🤖 AI đang xem khung hình và trả lời…";
+    transcript.textContent="Bạn: "+question;
+    try{
+      const frame=captureFrame();asVideoLastFrame=frame;
+      const answer=await new Promise(async(resolve,reject)=>{
+        let output="";
+        try{await askAppleSeedAI(question,delta=>{output+=delta},frame);resolve(output.trim())}catch(err){reject(err)}
+      });
+      if(!answer)throw new Error("AI chưa trả lời.");
+      transcript.textContent="Bạn: "+question+"\n\nApple Seed AI: "+answer;
+      state.textContent="🟢 Đang trò chuyện video — bạn có thể hỏi tiếp.";
+      if(window.speechSynthesis){window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(answer);u.lang="vi-VN";u.rate=1;window.speechSynthesis.speak(u)}
+    }catch(err){console.error("AppleSeed video chat",err);state.textContent="Chưa gửi được câu hỏi. Kiểm tra kết nối rồi thử lại.";transcript.textContent=err.message||"Có lỗi khi kết nối AI."}
+    finally{asVideoBusy=false;send.disabled=false;mic.disabled=false;field.focus()}
+  }
+  send.onclick=()=>{const q=field.value.trim();if(q){field.value="";sendVideoQuestion(q)}};
+  field.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();send.click()}});
+  mic.onclick=()=>{
+    if(!SpeechRecognition){state.textContent="Trình duyệt chưa hỗ trợ nhận giọng nói trong trang. Hãy nhập câu hỏi hoặc dùng micro bàn phím.";return}
+    if(asVideoRecognition){try{asVideoRecognition.stop()}catch(_){}return}
+    try{
+      asVideoRecognition=new SpeechRecognition();asVideoRecognition.lang="vi-VN";asVideoRecognition.interimResults=false;asVideoRecognition.continuous=false;
+      asVideoRecognition.onstart=()=>{state.textContent="🎙️ Đang nghe bạn nói…";mic.textContent="🎙️ Đang nghe…"};
+      asVideoRecognition.onresult=e=>{const q=e.results?.[0]?.[0]?.transcript||"";field.value=q;if(q)sendVideoQuestion(q)};
+      asVideoRecognition.onerror=e=>{state.textContent=e.error==="not-allowed"?"Chưa được cấp quyền micro.":"Không nhận được giọng nói. Bạn có thể nhập câu hỏi.";};
+      asVideoRecognition.onend=()=>{asVideoRecognition=null;mic.textContent="🎙️ Nói với AI"};
+      asVideoRecognition.start();
+    }catch(err){asVideoRecognition=null;state.textContent="Không mở được micro. Hãy nhập câu hỏi bằng bàn phím."}
+  };
+}
+asVideoBtn.addEventListener("click",asStartVideoChat);
 asGalleryBtn.addEventListener("click",()=>asGalleryInput.click());
 asCameraInput.addEventListener("change",()=>{if(asCameraInput.files?.[0])asHandleImage(asCameraInput.files[0]);asCameraInput.value=""});
 asGalleryInput.addEventListener("change",()=>{if(asGalleryInput.files?.[0])asHandleImage(asGalleryInput.files[0]);asGalleryInput.value=""});
