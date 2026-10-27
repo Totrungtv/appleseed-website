@@ -3302,14 +3302,53 @@ async function asStartVideoChat(){
     transcript.textContent="Bạn: "+question;
     try{
       const frame=captureFrame();asVideoLastFrame=frame;
-      const answer=await new Promise(async(resolve,reject)=>{
-        let output="";
-        try{await askAppleSeedAI(question,delta=>{output+=delta},frame);resolve(output.trim())}catch(err){reject(err)}
-      });
+      // Bắt đầu đọc từng câu ngay khi stream trả về, thay vì đợi toàn bộ câu trả lời.
+      // Vẫn giữ luồng chữ và giao diện hiện có; chỉ cập nhật nội dung trong khung chat.
+      let output="",speechBuffer="",speechStarted=false;
+      const speechSupported=!!(window.speechSynthesis&&window.SpeechSynthesisUtterance);
+      if(speechSupported)window.speechSynthesis.cancel();
+      transcript.textContent="Bạn: "+question+"\n\nApple Seed AI: ";
+      const speakChunk=(text)=>{
+        const chunk=String(text||"").trim();
+        if(!chunk||!speechSupported||!asVideoChat)return;
+        const utterance=new SpeechSynthesisUtterance(chunk);
+        utterance.lang="vi-VN";
+        utterance.rate=1.05;
+        utterance.pitch=1;
+        window.speechSynthesis.speak(utterance);
+        speechStarted=true;
+      };
+      const queueReadySpeech=(flush=false)=>{
+        // Tách ở cuối câu; nếu AI viết đoạn dài không có dấu câu thì đọc theo cụm.
+        while(speechBuffer){
+          const match=speechBuffer.match(/^([\\s\\S]*?[.!?…](?:[”’\"')\\]]*)\\s+)/);
+          if(match){
+            speakChunk(match[1]);
+            speechBuffer=speechBuffer.slice(match[0].length);
+            continue;
+          }
+          if(speechBuffer.length>=180){
+            let cut=speechBuffer.lastIndexOf(" ",160);
+            if(cut<80)cut=160;
+            speakChunk(speechBuffer.slice(0,cut));
+            speechBuffer=speechBuffer.slice(cut).trimStart();
+            continue;
+          }
+          break;
+        }
+        if(flush&&speechBuffer.trim()){speakChunk(speechBuffer);speechBuffer=""}
+      };
+      await askAppleSeedAI(question,delta=>{
+        output+=delta;
+        speechBuffer+=delta;
+        transcript.textContent="Bạn: "+question+"\n\nApple Seed AI: "+output;
+        queueReadySpeech(false);
+      },frame);
+      const answer=output.trim();
+      queueReadySpeech(true);
       if(!answer)throw new Error("AI chưa trả lời.");
       transcript.textContent="Bạn: "+question+"\n\nApple Seed AI: "+answer;
-      state.textContent="🟢 Đang trò chuyện video — bạn có thể hỏi tiếp.";
-      if(window.speechSynthesis){window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(answer);u.lang="vi-VN";u.rate=1;window.speechSynthesis.speak(u)}
+      state.textContent=speechStarted?"🔊 AI đang trả lời bằng giọng nói — bạn có thể hỏi tiếp.":"🟢 Đang trò chuyện video — bạn có thể hỏi tiếp.";
     }catch(err){console.error("AppleSeed video chat",err);state.textContent="Chưa gửi được câu hỏi. Kiểm tra kết nối rồi thử lại.";transcript.textContent=err.message||"Có lỗi khi kết nối AI."}
     finally{asVideoBusy=false;send.disabled=false;mic.disabled=false;field.focus()}
   }
