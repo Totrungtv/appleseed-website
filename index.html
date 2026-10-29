@@ -3454,7 +3454,9 @@ form.onsubmit=async e=>{
     }
   }catch(error){
     console.error("AppleSeed AI:",error);
-    answerText=imageToSend?"Xin lỗi, AI chưa phân tích được ảnh lúc này. Vui lòng thử lại hoặc mô tả lỗi bằng chữ.":answerFallback(question);
+    answerText=imageToSend
+      ?"Xin lỗi, AI chưa phân tích được ảnh lúc này. Vui lòng thử lại hoặc mô tả lỗi bằng chữ."
+      :"Xin lỗi, Trợ lý Apple Seed đang gặp sự cố kết nối AI nên chưa thể trả lời câu này. Vui lòng thử lại sau ít phút.";
     await animateAppleSeedText(thinking,answerText);
   }finally{
     input.disabled=false;sendBtn.disabled=false;sendBtn.textContent="Gửi";
