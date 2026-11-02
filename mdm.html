@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1425">
+<title>Apple Seed MDM — Bản xem thử</title>
+<style>
+:root{--bg:#0a1220;--panel:#111d30;--panel2:#15243a;--line:#263751;--text:#eef5ff;--muted:#91a3bd;--blue:#4c8dff;--green:#37d69a;--amber:#f5bd58;--red:#ff7585}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 75% -10%,#19365d 0,transparent 34%),var(--bg);color:var(--text);font:14px Inter,system-ui,-apple-system,"Segoe UI",sans-serif}button,input{font:inherit}button{cursor:pointer}
+.app{display:grid;grid-template-columns:248px 1fr;min-height:100vh}.side{padding:26px 17px;border-right:1px solid var(--line);background:#0c1728}.brand{display:flex;gap:12px;align-items:center;padding:0 8px 28px}.logo{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#63a5ff,#2361d7);display:grid;place-items:center;font-size:22px;box-shadow:0 8px 24px #1d5cc755}.brand b{font-size:15px;letter-spacing:.5px}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:1.8px;margin-top:4px}.nav-label{color:#71839d;font-size:10px;font-weight:800;letter-spacing:1.5px;padding:18px 11px 8px}.nav a{display:flex;gap:12px;align-items:center;color:#9db0cb;padding:12px;border-radius:10px;text-decoration:none;margin:3px 0}.nav a.active{background:#1b3458;color:#fff;box-shadow:inset 3px 0 #65a1ff}.nav .ico{width:20px;text-align:center;font-size:16px}.side-foot{position:fixed;bottom:20px;width:210px;color:#72849e;font-size:11px;line-height:1.6}.main{padding:30px clamp(18px,3vw,42px);max-width:1600px;width:100%;margin:auto}.top{display:flex;justify-content:space-between;gap:18px;align-items:center;margin-bottom:30px}.crumb{color:var(--muted);font-size:12px}.top h1{font-size:27px;margin:7px 0 0;letter-spacing:-.7px}.top-actions{display:flex;gap:10px;align-items:center}.badge{border:1px solid #355070;background:#12233a;color:#a9caff;border-radius:30px;padding:8px 12px;font-size:11px;font-weight:800}.avatar{width:37px;height:37px;border-radius:50%;background:#244b7c;display:grid;place-items:center;font-weight:800}.notice{border:1px solid #69552e;background:#2b2417;color:#f5d79c;padding:12px 15px;border-radius:12px;margin-bottom:22px;line-height:1.5;font-size:12px}.notice b{color:#ffe6ad}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}.stat,.card{background:linear-gradient(160deg,#14243a,#101b2d);border:1px solid var(--line);border-radius:15px}.stat{padding:18px}.stat-head{display:flex;justify-content:space-between;color:var(--muted);font-size:12px}.stat-icon{font-size:18px}.stat strong{display:block;font-size:29px;margin:13px 0 4px;letter-spacing:-1px}.stat small{color:#7f93ae;font-size:11px}.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:26px 0 13px}.section-head h2{font-size:16px;margin:0}.section-head span{color:var(--muted);font-size:12px}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:13px}.search{flex:1;min-width:200px;background:#0e1a2c;border:1px solid var(--line);border-radius:10px;padding:11px 13px;color:var(--text);outline:none}.search:focus{border-color:var(--blue)}.filter,.primary,.secondary{border-radius:10px;padding:10px 14px;font-weight:750;border:1px solid var(--line);background:#172840;color:#c9d8ed}.primary{background:linear-gradient(135deg,#438cff,#2466d5);border-color:#478aff;color:#fff}.secondary:hover,.filter:hover{border-color:#5c83b6}.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:720px}.table th{text-align:left;color:#8195b1;font-size:10px;letter-spacing:1px;padding:14px 15px;border-bottom:1px solid var(--line)}.table td{padding:15px;border-bottom:1px solid #203149;color:#dce8f8}.table tr:last-child td{border:0}.device{display:flex;align-items:center;gap:11px}.device-icon{width:36px;height:42px;border:1px solid #476080;border-radius:9px;background:#1b2d46;display:grid;place-items:center;font-size:19px}.device b{display:block;font-size:12px}.device small{color:var(--muted);font-size:10px}.pill{display:inline-flex;align-items:center;gap:6px;border-radius:30px;padding:6px 9px;font-size:10px;font-weight:800}.online{background:#12382f;color:#64e2b5}.offline{background:#342c20;color:#edc16d}.dot{width:6px;height:6px;border-radius:50%;background:currentColor}.rowbtn{border:1px solid #344b69;background:#182a43;color:#c9dcf6;border-radius:8px;padding:7px 10px;font-size:11px}.bottom-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:14px;margin-top:18px}.card{padding:18px}.card h3{margin:0 0 15px;font-size:14px}.activity{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #22334a}.activity:last-child{border:0}.activity-icon{width:30px;height:30px;border-radius:9px;background:#1c3453;display:grid;place-items:center}.activity b{display:block;font-size:11px}.activity small{color:var(--muted);font-size:10px}.empty{color:var(--muted);font-size:12px;line-height:1.7}.modal-bg{position:fixed;inset:0;background:#030914c9;display:none;place-items:center;padding:20px;z-index:5}.modal-bg.show{display:grid}.modal{width:min(440px,100%);background:#14243a;border:1px solid #395271;border-radius:17px;padding:22px;box-shadow:0 25px 90px #0009}.modal h3{margin:0 0 9px}.modal p{color:#a9bad1;line-height:1.6;font-size:13px}.modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:18px}.mobile-menu{display:none}
+@media(max-width:900px){.app{grid-template-columns:1fr}.side{display:none}.main{padding:22px 16px}.stats{grid-template-columns:repeat(2,1fr)}.bottom-grid{grid-template-columns:1fr}.side-foot{display:none}.top h1{font-size:23px}.mobile-menu{display:inline-block}.top-actions .badge{display:none}}
+@media(max-width:440px){.stats{gap:8px}.stat{padding:13px}.stat strong{font-size:24px}.stat-head{font-size:10px}.top{align-items:flex-start}.top-actions{gap:7px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="side">
+ <div class="brand"><div class="logo">✦</div><div><b>APPLE SEED</b><small>DEVICE MANAGEMENT</small></div></div>
+ <div class="nav-label">WORKSPACE</div>
+ <nav class="nav">
+  <a class="active" href="#overview"><span class="ico">▦</span>Tổng quan</a>
+  <a href="#devices"><span class="ico">▣</span>Thiết bị</a>
+  <a href="#activity"><span class="ico">◷</span>Lịch sử hoạt động</a>
+  <a href="#policies"><span class="ico">◇</span>Chính sách quản lý</a>
+ </nav>
+ <div class="nav-label">SYSTEM</div>
+ <nav class="nav"><a href="#settings"><span class="ico">⚙</span>Cài đặt hệ thống</a><a href="#help"><span class="ico">?</span>Trợ giúp</a></nav>
+ <div class="side-foot">Apple Seed MDM Preview<br>Giao diện thử nghiệm · v0.1</div>
+</aside>
+<main class="main" id="overview">
+ <header class="top"><div><div class="crumb">APPLE SEED / DEVICE MANAGEMENT</div><h1>Trung tâm quản lý thiết bị</h1></div><div class="top-actions"><span class="badge">● PREVIEW MODE</span><div class="avatar">AS</div></div></header>
+ <div class="notice"><b>⚠ Đây là bản xem thử giao diện.</b> Dữ liệu thiết bị bên dưới là dữ liệu minh họa. Chưa kết nối Apple MDM, APNs hoặc Android Enterprise; các nút thao tác chỉ mô phỏng, không khóa/xóa/can thiệp thiết bị thật.</div>
+ <section class="stats">
+  <div class="stat"><div class="stat-head">TỔNG THIẾT BỊ <span class="stat-icon">▣</span></div><strong id="total">12</strong><small>Thiết bị đã thêm vào danh sách mẫu</small></div>
+  <div class="stat"><div class="stat-head">ĐANG TRỰC TUYẾN <span class="stat-icon">◉</span></div><strong style="color:var(--green)">9</strong><small>Minh họa trạng thái kết nối</small></div>
+  <div class="stat"><div class="stat-head">ĐANG NGOẠI TUYẾN <span class="stat-icon">◌</span></div><strong style="color:var(--amber)">3</strong><small>Chưa có tín hiệu gần đây</small></div>
+  <div class="stat"><div class="stat-head">ĐANG QUẢN LÝ <span class="stat-icon">◇</span></div><strong>12</strong><small>Đăng ký mẫu trong hệ thống</small></div>
+ </section>
+ <div class="section-head" id="devices"><h2>Danh sách thiết bị</h2><span>12 thiết bị mẫu</span></div>
+ <div class="toolbar"><input class="search" id="search" placeholder="Tìm theo tên, model, serial hoặc nền tảng..."><button class="filter" id="all">Tất cả ▾</button><button class="primary" id="add">＋ Thêm thiết bị</button></div>
+ <div class="card table-wrap" style="padding:0">
+  <table class="table"><thead><tr><th>THIẾT BỊ</th><th>NỀN TẢNG</th><th>TRẠNG THÁI</th><th>ĐĂNG KÝ</th><th></th></tr></thead><tbody id="rows">
+  <tr data-search="iphone 15 pro max ios as-demo-001"><td><div class="device"><div class="device-icon">📱</div><div><b>iPhone 15 Pro Max</b><small>AS-DEMO-001 · Serial mẫu</small></div></div></td><td>iOS / iPhone</td><td><span class="pill online"><i class="dot"></i>Online</span></td><td>Đã đăng ký</td><td><button class="rowbtn" data-device="iPhone 15 Pro Max">Chi tiết</button></td></tr>
+  <tr data-search="iphone 13 pro ios as-demo-002"><td><div class="device"><div class="device-icon">📱</div><div><b>iPhone 13 Pro</b><small>AS-DEMO-002 · Serial mẫu</small></div></div></td><td>iOS / iPhone</td><td><span class="pill online"><i class="dot"></i>Online</span></td><td>Đã đăng ký</td><td><button class="rowbtn" data-device="iPhone 13 Pro">Chi tiết</button></td></tr>
+  <tr data-search="ipad air android? ipados as-demo-003"><td><div class="device"><div class="device-icon">▯</div><div><b>iPad Air</b><small>AS-DEMO-003 · Serial mẫu</small></div></div></td><td>iPadOS / iPad</td><td><span class="pill offline"><i class="dot"></i>Offline</span></td><td>Chờ đồng bộ</td><td><button class="rowbtn" data-device="iPad Air">Chi tiết</button></td></tr>
+  <tr data-search="oppo cph1931 android as-demo-004"><td><div class="device"><div class="device-icon">🤖</div><div><b>OPPO CPH1931</b><small>AS-DEMO-004 · Serial mẫu</small></div></div></td><td>Android 10</td><td><span class="pill online"><i class="dot"></i>Online</span></td><td>Đã đăng ký</td><td><button class="rowbtn" data-device="OPPO CPH1931">Chi tiết</button></td></tr>
+  <tr data-search="iphone 11 ios as-demo-005"><td><div class="device"><div class="device-icon">📱</div><div><b>iPhone 11</b><small>AS-DEMO-005 · Serial mẫu</small></div></div></td><td>iOS / iPhone</td><td><span class="pill offline"><i class="dot"></i>Offline</span></td><td>Chờ đồng bộ</td><td><button class="rowbtn" data-device="iPhone 11">Chi tiết</button></td></tr>
+  </tbody></table>
+ </div>
+ <div class="bottom-grid">
+  <section class="card" id="activity"><h3>◷ Hoạt động gần đây</h3><div class="activity"><div class="activity-icon">＋</div><div><b>iPhone 15 Pro Max được thêm vào danh sách</b><small>Minh họa · 5 phút trước</small></div></div><div class="activity"><div class="activity-icon">↻</div><div><b>OPPO CPH1931 cập nhật trạng thái</b><small>Minh họa · 18 phút trước</small></div></div><div class="activity"><div class="activity-icon">✓</div><div><b>Chính sách mật khẩu được tạo</b><small>Minh họa · Hôm nay</small></div></div></section>
+  <section class="card" id="policies"><h3>◇ Chính sách quản lý</h3><p class="empty">Khi kết nối MDM thật, tại đây sẽ cấu hình các chính sách được nền tảng hỗ trợ như mật mã, Wi-Fi, ứng dụng và chế độ quản lý thiết bị.</p><button class="secondary" id="policy">Xem chính sách mẫu</button></section>
+ </div>
+</main>
+</div>
+<div class="modal-bg" id="modal"><div class="modal"><h3 id="modalTitle">Chi tiết thiết bị</h3><p id="modalText">Đây là thao tác xem thử.</p><div class="modal-actions"><button class="secondary" id="close">Đóng</button><button class="primary" id="ok">Đã hiểu</button></div></div></div>
+<script>
+const modal=document.getElementById('modal'),title=document.getElementById('modalTitle'),msg=document.getElementById('modalText');
+function show(t,m){title.textContent=t;msg.textContent=m;modal.classList.add('show')}
+function hide(){modal.classList.remove('show')}
+document.getElementById('close').onclick=hide;document.getElementById('ok').onclick=hide;modal.addEventListener('click',e=>{if(e.target===modal)hide()});
+document.querySelectorAll('[data-device]').forEach(b=>b.onclick=()=>show('Thiết bị: '+b.dataset.device,'Đây là hồ sơ minh họa. Khi triển khai MDM thật, trang chi tiết sẽ hiển thị thông tin đăng ký, trạng thái đồng bộ, chính sách và các lệnh được nền tảng cho phép.'));
+document.getElementById('add').onclick=()=>show('Thêm thiết bị','Bản thử nghiệm chưa nhận đăng ký thiết bị. Ở phiên bản thật, người quản trị sẽ tạo lời mời đăng ký hoặc mã QR theo quy trình chính thức của Apple/Android.');
+document.getElementById('policy').onclick=()=>show('Chính sách mẫu','Ví dụ: yêu cầu mật mã, cấu hình Wi-Fi, giới hạn ứng dụng và quy tắc bảo mật. Quyền thực tế phụ thuộc nền tảng, loại đăng ký và sự đồng ý của chủ thiết bị.');
+document.getElementById('all').onclick=()=>show('Bộ lọc thiết bị','Bản xem thử đang hiển thị danh sách thiết bị mẫu. Bộ lọc nền tảng/trạng thái sẽ được kết nối khi có dữ liệu thật.');
+document.getElementById('search').addEventListener('input',e=>{const q=e.target.value.toLowerCase();document.querySelectorAll('#rows tr').forEach(r=>r.style.display=r.dataset.search.includes(q)?'':'none')});
+</script>
+</body></html>
