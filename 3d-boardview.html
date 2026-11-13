@@ -3,11 +3,76 @@
 <style>
 :root{color-scheme:dark;--bg:#07101b;--panel:#0d1a29;--line:#203449;--muted:#8da2b8;--green:#56e0ad;--blue:#55a9ff}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 48% 38%,#12283a 0,#07101b 66%);color:#e8f1f8;font:14px Inter,system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}.top{height:64px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 22px;background:#081321dd;position:relative;z-index:3}.brand{display:flex;align-items:center;gap:11px;font-weight:850;letter-spacing:.3px}.logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#65e7b7,#198e78);display:grid;place-items:center;color:#05221d;font-weight:1000}.tag{color:var(--muted);font-size:11px;margin-left:8px;font-weight:600}.topright{display:flex;align-items:center;gap:10px}.pill{border:1px solid #284158;border-radius:20px;padding:7px 11px;color:#a9bfd2;font-size:11px}.live{color:#65e7b7}.layout{height:calc(100vh - 64px);min-height:650px;display:grid;grid-template-columns:minmax(0,1fr) 310px}.stage{position:relative;min-width:0;overflow:hidden}.stage canvas{display:block;width:100%;height:100%;touch-action:none}.hud{position:absolute;left:20px;top:18px;pointer-events:none}.eyebrow{font-size:10px;letter-spacing:2px;color:#68dcb5;font-weight:800}.hud h1{font-size:22px;margin:7px 0 5px}.hud p{color:#91a8bc;font-size:12px;margin:0}.toolbar{position:absolute;top:18px;right:18px;display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end;max-width:55%}button,select{font:inherit;color:#dce9f4;background:#102235;border:1px solid #29445c;border-radius:9px;padding:9px 11px;cursor:pointer}button:hover,select:hover{border-color:#56e0ad}button.active{background:#124238;border-color:#56e0ad;color:#7bf0c4}.hint{position:absolute;bottom:16px;left:18px;color:#8098ad;font-size:11px;background:#081522bb;padding:8px 11px;border:1px solid #20384d;border-radius:8px}.side{border-left:1px solid var(--line);background:linear-gradient(180deg,#0d1a29,#091421);padding:18px;overflow:auto}.side h2{font-size:13px;letter-spacing:1.4px;text-transform:uppercase;margin:2px 0 14px;color:#a7bed1}.search{width:100%;background:#071321;border:1px solid #294158;border-radius:9px;padding:11px;color:#e9f4ff;outline:none;margin-bottom:12px}.selected{border:1px solid #2b4c60;background:#102235;border-radius:12px;padding:14px;margin-bottom:16px}.selected small{color:#6fe6bb;font-size:10px;letter-spacing:1.2px}.selected h3{font-size:19px;margin:7px 0}.selected p{color:#a0b4c7;font-size:12px;line-height:1.55;margin:5px 0}.kv{display:flex;justify-content:space-between;padding:9px 0;border-top:1px solid #24394c;font-size:12px}.kv span{color:#8da5b9}.kv b{font-weight:700;color:#e5f2fa}.list{display:grid;gap:6px}.item{display:flex;align-items:center;justify-content:space-between;text-align:left;width:100%;padding:9px 10px;background:#0b1927;border:1px solid #1d3448;border-radius:8px}.item span{color:#8fa7bc;font-size:11px}.item strong{font-size:12px}.item.chosen{border-color:#56e0ad;background:#10332d}.notice{font-size:10px;line-height:1.5;color:#8198ac;margin-top:16px;border-top:1px solid #203449;padding-top:13px}.toast{position:absolute;bottom:58px;left:50%;transform:translateX(-50%);padding:9px 13px;border-radius:9px;background:#12362f;border:1px solid #3a8c73;color:#a3f6d8;font-size:12px;opacity:0;transition:.2s;pointer-events:none}.toast.show{opacity:1}@media(max-width:800px){.layout{height:auto;min-height:calc(100vh - 64px);grid-template-columns:1fr}.stage{height:62vh;min-height:430px}.side{border-left:0;border-top:1px solid var(--line)}.tag{display:none}.toolbar{max-width:70%}.top{padding:0 13px}.pill{display:none}}
+
+.kb-box{border:1px solid #24435a;background:#0a1927;border-radius:12px;padding:12px;margin:0 0 16px}
+.kb-title{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.kb-title strong{font-size:12px;letter-spacing:.8px;color:#73e5bd}
+.kb-title small{font-size:10px;color:#7893a9}
+.kb-status{font-size:11px;line-height:1.5;color:#a8bfd1;background:#102235;border:1px solid #263e52;border-radius:8px;padding:8px;margin:8px 0}
+.kb-status.ok{color:#9df2cf;border-color:#286a55}.kb-status.err{color:#ffb3aa;border-color:#80463e}
+.kb-form{display:grid;gap:8px}.kb-form label{font-size:10px;color:#9bb2c6;display:grid;gap:4px}
+.kb-form input,.kb-form select,.kb-form textarea{width:100%;min-width:0;background:#071321;border:1px solid #294158;border-radius:8px;padding:9px;color:#e8f1f8;font:inherit;font-size:11px}
+.kb-form textarea{min-height:54px;resize:vertical}
+.kb-form button{width:100%;background:#124238;border-color:#347b65;color:#9af0ce;font-weight:800}
+.kb-docs{display:grid;gap:7px;margin-top:8px}
+.kb-doc{padding:9px;background:#0d1d2c;border:1px solid #20394d;border-radius:8px}
+.kb-doc b{display:block;font-size:11px;overflow-wrap:anywhere}.kb-doc small{display:block;color:#8da6ba;font-size:10px;margin-top:4px;line-height:1.45}
+.kb-search{margin:8px 0 4px!important}
+.kb-result{padding:8px 0;border-bottom:1px solid #203449}.kb-result b{font-size:11px;color:#a8f0d5}.kb-result p{font-size:10px;line-height:1.45;color:#a3b6c7;margin:4px 0}
+.kb-actions{display:flex;gap:6px}.kb-actions button{flex:1;font-size:10px;padding:7px}
+.kb-collapse{display:none}.kb-collapse.open{display:block}
+@media(max-width:800px){.kb-box{margin-bottom:14px}}
+
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script></head>
-<body><header class="top"><div class="brand"><div class="logo">AS</div><div>APPLE SEED <span class="tag">ENGINEERING / 3D BOARDVIEW</span></div></div><div class="topright"><span class="pill">MODEL: DEMO PCB</span><span class="pill live">● 3D ENGINE READY</span></div></header>
-<main class="layout"><section class="stage" id="stage"><div class="hud"><div class="eyebrow">INTERACTIVE BOARD EXPLORER</div><h1>Logic Board · 3D Workspace</h1><p>Chọn linh kiện trên bo mạch để xem thông tin</p></div><div class="toolbar"><button id="rotate" class="active">⟳ Xoay tự động</button><button id="traces">Đường mạch</button><button id="topview">Mặt trên</button><button id="reset">Đặt lại góc</button></div><div class="hint">Kéo để xoay · Cuộn để zoom · Chạm linh kiện để chọn</div><div class="toast" id="toast"></div></section>
-<aside class="side"><h2>Component inspector</h2><input class="search" id="search" placeholder="Tìm mã linh kiện…"><div class="selected" id="details"><small>ĐANG CHỌN</small><h3>U_PMIC</h3><p>IC nguồn chính · mô hình minh họa</p><div class="kv"><span>Loại</span><b>Power IC</b></div><div class="kv"><span>Vị trí</span><b>U1 · Zone A</b></div><div class="kv"><span>Trạng thái dữ liệu</span><b>Demo</b></div></div><h2>Danh sách linh kiện</h2><div class="list" id="parts"></div><div class="notice">LƯU Ý KỸ THUẬT<br>Đây là bản dựng thử nghiệm tương tác 3D với linh kiện mẫu, chưa phải boardview iPhone có tọa độ và netlist xác thực. Không dùng các vị trí/giá trị minh họa để sửa chữa thực tế. Bước tiếp theo là nhập dữ liệu boardview hợp pháp để ánh xạ đúng linh kiện và đường mạch.</div></aside></main>
+<body><header class="top"><div class="brand"><div class="logo">AS</div><div>APPLE SEED <span class="tag">ENGINEERING / 3D BOARDVIEW</span></div></div><div class="topright"><span class="pill">MODEL: DEMO GEOMETRY</span><span class="pill live">● 3D ENGINE READY</span></div></header>
+<main class="layout"><section class="stage" id="stage"><div class="hud"><div class="eyebrow">INTERACTIVE BOARD EXPLORER</div><h1>Logic Board · 3D Workspace</h1><p>Mô hình demo — nạp Boardview thật trong Knowledge Center</p></div><div class="toolbar"><button id="rotate" class="active">⟳ Xoay tự động</button><button id="traces">Đường mạch (DEMO)</button><button id="topview">Mặt trên</button><button id="reset">Đặt lại góc</button></div><div class="hint">Kéo để xoay · Cuộn để zoom · Chạm linh kiện để chọn</div><div class="toast" id="toast"></div></section>
+<aside class="side">
+<div class="kb-box">
+  <div class="kb-title"><strong>APPLE SEED KNOWLEDGE CENTER</strong><small id="kb-auth-state">Đang kết nối...</small></div>
+  <div id="kb-status" class="kb-status">Kho tài liệu sửa chữa lưu trên Supabase. Đăng nhập tài khoản Admin/Staff để nạp tài liệu.</div>
+  <div class="kb-actions">
+    <button type="button" id="kb-toggle-upload">＋ Nạp tài liệu</button>
+    <button type="button" id="kb-refresh">↻ Làm mới kho</button>
+  </div>
+  <div id="kb-upload-panel" class="kb-collapse">
+    <form id="kb-upload-form" class="kb-form">
+      <label>Dòng máy
+        <input id="kb-device" required placeholder="Ví dụ: iPhone 7 Plus">
+      </label>
+      <label>Mã máy / mã main
+        <input id="kb-board" placeholder="Ví dụ: Intel / A1784 / board code">
+      </label>
+      <label>Loại tài liệu
+        <select id="kb-type">
+          <option value="boardview">Boardview / PCB (.pcb, .brd)</option>
+          <option value="netlist">Netlist / danh sách kết nối (.txt, .csv)</option>
+          <option value="schematic">Schematic (.pdf)</option>
+          <option value="bom">BOM / danh sách linh kiện (.csv, .xlsx)</option>
+          <option value="repair_guide">Tài liệu sửa chữa (.pdf, .txt)</option>
+          <option value="measurement">Bảng đo diode / trở kháng / điện áp</option>
+          <option value="image">Ảnh main / ảnh sơ đồ</option>
+          <option value="other">Tài liệu khác</option>
+        </select>
+      </label>
+      <label>Chọn file
+        <input id="kb-file" type="file" required accept=".pcb,.brd,.pdf,.txt,.csv,.xlsx,.xls,.png,.jpg,.jpeg,.webp,.zip,.rar">
+      </label>
+      <label>Ghi chú nguồn / phiên bản main
+        <textarea id="kb-notes" placeholder="Ví dụ: XZZ V5.0.6, main Intel, mặt A..."></textarea>
+      </label>
+      <button id="kb-submit" type="submit">TẢI LÊN VÀ LƯU VÀO THƯ VIỆN</button>
+    </form>
+  </div>
+  <div class="kb-title" style="margin-top:14px"><strong>THƯ VIỆN TÀI LIỆU</strong><small id="kb-doc-count">0 tài liệu</small></div>
+  <div id="kb-docs" class="kb-docs"><small>Đang tải thư viện...</small></div>
+  <div class="kb-title" style="margin-top:16px"><strong>TRA CỨU KIẾN THỨC ĐÃ HỌC</strong></div>
+  <input id="kb-search" class="search kb-search" placeholder="Tìm IC, NET, chân, nguồn, lỗi...">
+  <div id="kb-results"><small style="color:#8198ac">Nhập từ khóa để tìm trong dữ liệu đã học.</small></div>
+  <div class="notice">QUY TẮC DỮ LIỆU: File gốc được lưu riêng. PDF/ảnh/TXT có thể gửi qua AI học tài liệu. File PCB/BRD độc quyền được lưu nguyên bản; chỉ bật dò line sau khi có bộ đọc và trích xuất Netlist xác thực. Không dùng mô hình minh họa để sửa máy.</div>
+</div>
+
+<h2>Component inspector</h2><input class="search" id="search" placeholder="Tìm mã linh kiện…"><div class="selected" id="details"><small>ĐANG CHỌN</small><h3>U_PMIC</h3><p>IC nguồn chính · mô hình minh họa — chưa phải dữ liệu main thật</p><div class="kv"><span>Loại</span><b>Power IC</b></div><div class="kv"><span>Vị trí</span><b>U1 · Zone A</b></div><div class="kv"><span>Trạng thái dữ liệu</span><b>Demo</b></div></div><h2>Danh sách linh kiện</h2><div class="list" id="parts"></div><div class="notice">LƯU Ý KỸ THUẬT<br>Đây là bản dựng thử nghiệm tương tác 3D với linh kiện mẫu, chưa phải boardview iPhone có tọa độ và netlist xác thực. Không dùng các vị trí/giá trị minh họa để sửa chữa thực tế. Bước tiếp theo là nhập dữ liệu boardview hợp pháp để ánh xạ đúng linh kiện và đường mạch.</div></aside></main>
 <script type="module">
 import * as THREE from 'three';
 const stage=document.getElementById('stage'), scene=new THREE.Scene();scene.background=new THREE.Color(0x081522);
