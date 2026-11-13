@@ -24,22 +24,22 @@ jobs:
       - name: Checkout Apple Seed website
         uses: actions/checkout@v4
 
-      - name: Build Apple Seed BoardRipper Lite
+      - name: Checkout Apple Seed BoardRipper fork
         uses: actions/checkout@v4
         with:
           repository: Totrungtv/AppleSeed-BoardRipper
           ref: main
-          path: /tmp/boardripper
+          path: boardripper-src
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: /tmp/boardripper/src/frontend/package-lock.json
+          cache-dependency-path: boardripper-src/src/frontend/package-lock.json
 
       - name: Compile browser-only Boardview engine
-        working-directory: /tmp/boardripper/src/frontend
+        working-directory: boardripper-src/src/frontend
         run: |
           npm ci
           npm run build:lite
@@ -47,10 +47,10 @@ jobs:
       - name: Install engine into Apple Seed website
         run: |
           set -e
-          test -f /tmp/boardripper/src/frontend/dist-lite/index.html
+          test -f boardripper-src/src/frontend/dist-lite/index.html
           rm -rf boardripper-lite
           mkdir -p boardripper-lite
-          cp -a /tmp/boardripper/src/frontend/dist-lite/. boardripper-lite/
+          cp -a boardripper-src/src/frontend/dist-lite/. boardripper-lite/
           touch boardripper-lite/.nojekyll
           test -s boardripper-lite/index.html
 
