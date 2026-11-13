@@ -24,7 +24,7 @@
 <body>
 <header class="top">
  <div class="brand"><div class="logo">AS</div><div><strong>APPLE SEED</strong><small>ENGINEERING · BOARDVIEW STUDIO</small></div></div>
- <nav class="nav"><button class="active" data-view="board">Workbench</button><button data-view="library">Knowledge Center</button><button data-view="3d">3D Board Lab</button></nav>
+ <nav class="nav"><button class="active" data-view="board">Workbench</button><button data-view="library">Knowledge Center</button></nav>
  <div class="right">
   <select class="lang" id="language" aria-label="Language"><option value="vi">🇻🇳 Tiếng Việt</option><option value="en">🇺🇸 English</option><option value="zh">🇨🇳 中文</option></select>
   <button class="btn" id="fullscreen">Toàn màn hình ↗</button>
@@ -38,13 +38,13 @@
    <div class="tooltitle"><b id="view-title">BOARDVIEW WORKBENCH</b><span id="view-subtitle">Mở file PCB / Boardview và schematic ngay trong Apple Seed</span></div>
    <button class="btn small" id="open-new">Mở engine tab mới ↗</button>
    <button class="btn small" id="show-board">2D Boardview</button>
-   <button class="btn small" id="show-3d">3D Board Lab</button>
+   
   </div>
   <section class="viewer" id="board-panel">
    <iframe id="board-engine" title="Apple Seed Boardview Engine" src="/boardripper-lite/" allow="fullscreen; clipboard-read; clipboard-write; downloads" referrerpolicy="same-origin"></iframe>
    <div class="cover" id="engine-cover"><div class="covercard"><div class="logo" style="margin:0 auto 14px">AS</div><h2 id="cover-title">Đang triển khai bộ máy Boardview riêng</h2><p id="cover-desc">Apple Seed đang biên dịch BoardRipper Lite từ repository của bạn và đóng gói trực tiếp vào website. Không chuyển sang website bên ngoài, không còn iframe RipperDoc.</p><div class="actions"><button class="btn primary" id="retry">Thử kết nối lại</button><a class="btn" href="https://github.com/Totrungtv/appleseed-website/actions" target="_blank" rel="noopener">Trạng thái triển khai</a></div></div></div>
   </section>
-  <section class="viewer3d" id="3d-panel"><div class="info"><span class="tag">3D RECONSTRUCTION · IN DEVELOPMENT</span><h2>Apple Seed 3D Board Lab</h2><p>Chế độ 3D sẽ dựng từ dữ liệu board thực: biên dạng PCB, tọa độ linh kiện, chiều cao, footprint và lớp đồng. Engine BoardRipper hiện đọc Boardview 2D và NET; nó chưa cung cấp đầy đủ dữ liệu cơ khí để dựng 3D chính xác. Vì vậy màn hình này không tạo linh kiện hình hộp giả hoặc tự bịa đường mạch.</p><p><b>Hiện có thể dùng ngay:</b> mở boardview thật, tìm linh kiện / NET, xoay mặt board, đối chiếu schematic PDF và tra cứu dữ liệu sửa chữa.</p><button class="btn primary" id="back-to-board">Quay lại Boardview</button></div></section>
+  
  </main>
  <aside class="side" id="library-panel">
   <div class="sidehead"><h3>APPLE SEED KNOWLEDGE CENTER</h3><span class="muted" id="kb-auth-state">…</span></div>
@@ -94,15 +94,12 @@ $("reload").onclick=reload;$("retry").onclick=reload;
 $("fullscreen").onclick=function(){if(frame.requestFullscreen)frame.requestFullscreen();else window.open("/boardripper-lite/","_blank","noopener")};
 $("open-new").onclick=function(){window.open("/boardripper-lite/","_blank","noopener")};
 function setView(v){
- currentView=v;
- $("board-panel").style.display=v==="board"?"block":"none";
- $("3d-panel").classList.toggle("show",v==="3d");
- $("view-title").textContent=v==="3d"?"APPLE SEED 3D BOARD LAB":"BOARDVIEW WORKBENCH";
- $("view-subtitle").textContent=v==="3d"?"Dựng 3D dựa trên dữ liệu PCB thật, không dùng geometry giả":"Mở file PCB / Boardview và schematic ngay trong Apple Seed";
- document.querySelectorAll("[data-view]").forEach(function(b){b.classList.toggle("active",b.dataset.view===v)});
+ currentView="board";
+ $("board-panel").style.display="block";
+ document.querySelectorAll("[data-view]").forEach(function(b){b.classList.toggle("active",b.dataset.view==="board")});
 }
-$("show-board").onclick=function(){setView("board")};$("show-3d").onclick=function(){setView("3d")};$("back-to-board").onclick=function(){setView("board")};
-document.querySelectorAll("[data-view]").forEach(function(b){b.onclick=function(){if(b.dataset.view==="library"){$("library-panel").scrollIntoView({behavior:"smooth"});setView("board")}else setView(b.dataset.view)}});
+$("show-board").onclick=function(){setView("board")};
+document.querySelectorAll("[data-view]").forEach(function(b){b.onclick=function(){if(b.dataset.view==="library")$("library-panel").scrollIntoView({behavior:"smooth"});else setView("board")}});
 $("jump-library").onclick=function(){$("library-panel").scrollIntoView({behavior:"smooth",block:"start"})};
 var translations={
 vi:{open:"Mở engine tab mới ↗",fullscreen:"Toàn màn hình ↗",library:"Thư viện tài liệu"},
