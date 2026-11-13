@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#071522">
+<title>Apple Seed | Visual Circuit Intelligence</title>
+<meta name="description" content="Apple Seed Visual Circuit Intelligence — phòng thí nghiệm phân tích ảnh mainboard, đánh dấu linh kiện và lập bản đồ sửa chữa.">
+<style>
+:root{--bg:#07121e;--panel:#0d2031;--panel2:#10283d;--line:#1d3a50;--text:#e7f2fb;--muted:#8ea8ba;--mint:#55e2c0;--cyan:#55c9ef;--gold:#e9c77b;--red:#ff727c;--shadow:0 18px 55px #0005}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#143653 0,transparent 45%),var(--bg);color:var(--text);font:14px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}.top{height:72px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 25px;background:#071522eF;position:sticky;top:0;z-index:10;backdrop-filter:blur(18px)}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}.logo{width:40px;height:40px;border-radius:13px;background:linear-gradient(135deg,#62f0d0,#148b91);display:grid;place-items:center;color:#04202a;font-weight:1000;font-size:18px;box-shadow:0 0 30px #3de3c333}.brand b{letter-spacing:3px;font-size:13px}.brand small{display:block;color:var(--muted);font-size:9px;letter-spacing:2px;margin-top:2px}.topright{display:flex;gap:9px;align-items:center}.pill{border:1px solid var(--line);border-radius:99px;padding:7px 12px;color:var(--muted);font-size:11px}.live{color:var(--mint)}.btn{border:1px solid var(--line);background:#132b40;border-radius:10px;padding:10px 13px;font-weight:650;transition:.2s}.btn:hover{border-color:var(--mint);transform:translateY(-1px)}.btn.primary{background:linear-gradient(135deg,#53e4bf,#16a69a);border:0;color:#04221f}.btn.ghost{background:transparent}.btn.danger{color:#ff9ca2}.layout{max-width:1700px;margin:auto;padding:23px;display:grid;grid-template-columns:260px minmax(420px,1fr) 330px;gap:16px}.panel{background:linear-gradient(160deg,#10263a,#0b1b2b);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}.panelhead{padding:15px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.eyebrow{font-size:10px;color:var(--mint);letter-spacing:2px;font-weight:800}.panelhead h3{font-size:13px;margin:3px 0 0}.muted{color:var(--muted)}.left,.right{display:flex;flex-direction:column;gap:14px}.pad{padding:15px}.drop{border:1px dashed #3a617a;border-radius:13px;padding:22px 13px;text-align:center;background:#0b1c2b;cursor:pointer}.drop:hover{border-color:var(--mint);background:#102b3c}.drop .big{font-size:27px}.drop b{display:block;margin:7px 0 3px}.drop small{color:var(--muted);font-size:11px}.filelist{display:flex;flex-direction:column;gap:6px;margin-top:12px}.fileitem{display:flex;align-items:center;gap:8px;padding:9px;border:1px solid transparent;border-radius:9px;color:#b9cbd8;cursor:pointer;font-size:11px}.fileitem.active{background:#15364a;border-color:#2d6573;color:#fff}.thumb{width:34px;height:34px;border-radius:6px;object-fit:cover;background:#06111b}.sectionlabel{font-size:10px;color:var(--muted);letter-spacing:1.5px;font-weight:800;margin:15px 0 8px}.toolgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.tool{border:1px solid var(--line);background:#0b1b2a;border-radius:9px;padding:10px 8px;text-align:left;font-size:11px;color:#c6d7e2}.tool span{display:block;font-size:17px;margin-bottom:4px}.tool.active{border-color:var(--mint);background:#123a3d;color:#dffef6}.workspace{min-width:0}.boardhead{padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--line)}.boardtitle{font-weight:800;letter-spacing:.4px}.boardtitle small{display:block;color:var(--muted);font-size:10px;font-weight:500}.canvaswrap{height:min(69vh,790px);min-height:420px;background-color:#07121c;background-image:linear-gradient(#17314755 1px,transparent 1px),linear-gradient(90deg,#17314755 1px,transparent 1px);background-size:24px 24px;display:grid;place-items:center;position:relative;overflow:hidden}.canvaswrap.empty:after{content:'ẢNH MAINBOARD SẼ HIỂN THỊ TẠI ĐÂY';color:#456074;letter-spacing:3px;font-size:11px}.canvaswrap canvas{max-width:100%;max-height:100%;object-fit:contain;cursor:crosshair}.canvaswrap.empty canvas{display:none}.canvasbar{padding:10px 13px;display:flex;justify-content:space-between;gap:8px;align-items:center;border-top:1px solid var(--line);flex-wrap:wrap}.mini-actions{display:flex;gap:6px;flex-wrap:wrap}.mini{border:1px solid var(--line);background:#10263a;border-radius:8px;padding:7px 9px;font-size:11px}.mini:hover{border-color:var(--mint)}.statusline{font-size:10px;color:var(--muted)}.right .pad{padding:14px}.metric{display:grid;grid-template-columns:1fr 1fr;gap:8px}.metric div{padding:11px;border:1px solid var(--line);border-radius:10px;background:#0a1b29}.metric b{font-size:18px;display:block}.metric small{font-size:10px;color:var(--muted)}.ai-card{border:1px solid #28645f;background:linear-gradient(140deg,#103a3a,#10283a);border-radius:13px;padding:14px}.ai-card h3{margin:5px 0 7px;font-size:14px}.ai-card p{margin:0;color:#b6cbd4;font-size:11px}.ai-state{display:inline-flex;align-items:center;gap:6px;color:var(--gold);font-size:10px;font-weight:800}.dot{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px currentColor}.result{font-size:11px;color:#c1d4df;line-height:1.7;white-space:pre-wrap}.result strong{color:#fff}.field{display:flex;flex-direction:column;gap:5px;margin:9px 0}.field label{font-size:10px;color:var(--muted)}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);background:#071725;color:#e7f2fb;border-radius:8px;padding:9px;outline:none}.field input:focus,.field textarea:focus{border-color:var(--mint)}.component-list{display:flex;flex-direction:column;gap:6px}.component{display:flex;align-items:center;gap:8px;padding:9px;border:1px solid var(--line);border-radius:9px;background:#0b1b2a;font-size:11px}.component .tag{width:25px;height:25px;border-radius:7px;background:#153c4a;color:var(--mint);display:grid;place-items:center;font-weight:900}.component .del{margin-left:auto;background:none;border:0;color:#8199a9}.footer{max-width:1700px;margin:0 auto;padding:0 23px 25px;color:#587287;font-size:10px;display:flex;justify-content:space-between;gap:12px}.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);background:#d9fff4;color:#06251f;padding:11px 16px;border-radius:10px;font-weight:800;opacity:0;pointer-events:none;transition:.25s;z-index:30}.toast.show{opacity:1;transform:translate(-50%,0)}.mobiletabs{display:none}
+@media(max-width:1150px){.layout{grid-template-columns:230px minmax(0,1fr)}.right{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr)}.right .panel{min-width:0}}
+@media(max-width:760px){.top{height:62px;padding:0 13px}.brand b{font-size:11px}.topright .pill{display:none}.layout{display:flex;flex-direction:column;padding:11px;gap:10px}.left{order:2}.workspace{order:1}.right{order:3;display:flex}.canvaswrap{height:54vh;min-height:300px}.panelhead{padding:12px}.footer{padding:0 13px 18px;display:block}.mobiletabs{display:flex;gap:6px;overflow:auto}.mobiletabs .mini{white-space:nowrap}.toolgrid{grid-template-columns:repeat(4,1fr)}.tool{font-size:9px;padding:7px 3px;text-align:center}.tool span{font-size:15px}.left .panel:nth-child(2){display:none}}
+</style>
+</head>
+<body>
+<header class="top">
+<a class="brand" href="index.html"><div class="logo">AS</div><div><b>APPLE SEED</b><small>VISUAL CIRCUIT INTELLIGENCE</small></div></a>
+<div class="topright"><span class="pill live">● LOCAL WORKSPACE</span><a class="btn ghost" href="index.html">← Apple Seed</a><button class="btn primary" id="exportProject">Xuất hồ sơ ↗</button></div>
+</header>
+<main class="layout">
+<aside class="left">
+<section class="panel">
+<div class="panelhead"><div><div class="eyebrow">01 / INPUT</div><h3>Nạp ảnh mainboard</h3></div><span>⌁</span></div>
+<div class="pad">
+<label class="drop" id="dropzone" for="imageInput"><div class="big">⌁</div><b>Thả ảnh vào đây</b><small>Hoặc nhấn để chọn ảnh · JPG, PNG, WEBP</small></label>
+<input id="imageInput" type="file" accept="image/*" multiple hidden>
+<div class="filelist" id="fileList"></div>
+<div class="sectionlabel">GÓC CHỤP ĐANG XỬ LÝ</div>
+<div class="toolgrid" id="sideSelect"><button class="tool active" data-side="top"><span>▧</span>Mặt trên</button><button class="tool" data-side="bottom"><span>▤</span>Mặt dưới</button></div>
+<p class="muted" style="font-size:10px;margin:10px 0 0">Ảnh được xử lý ngay trong trình duyệt. Chưa tải lên máy chủ.</p>
+</div>
+</section>
+<section class="panel">
+<div class="panelhead"><div><div class="eyebrow">02 / INSTRUMENTS</div><h3>Công cụ đánh dấu</h3></div></div>
+<div class="pad">
+<div class="toolgrid" id="tools">
+<button class="tool active" data-tool="select"><span>⌖</span>Chọn / xem</button>
+<button class="tool" data-tool="ic"><span>▣</span>Đánh dấu IC</button>
+<button class="tool" data-tool="passive"><span>▤</span>R / C / L</button>
+<button class="tool" data-tool="trace"><span>⌁</span>Đường mạch</button>
+</div>
+<div class="field"><label for="pinLabel">Nhãn điểm đánh dấu</label><input id="pinLabel" placeholder="Ví dụ: U_WLAN, PP_VDD_MAIN"></div>
+<div class="field"><label for="pinNote">Ghi chú kỹ thuật</label><textarea id="pinNote" rows="2" placeholder="Chức năng / trị số đo / hiện tượng..."></textarea></div>
+<button class="btn primary" id="addPin" style="width:100%">＋ Thêm điểm đánh dấu</button>
+</div>
+</section>
+</aside>
+<section class="workspace panel">
+<div class="boardhead"><div class="boardtitle">BOARD INSPECTION <small id="imageMeta">Chưa có ảnh · Nạp ảnh mainboard để bắt đầu</small></div><div class="mini-actions"><button class="mini" id="zoomOut">−</button><span class="mini" id="zoomValue">100%</span><button class="mini" id="zoomIn">＋</button><button class="mini" id="fitImage">Fit</button></div></div>
+<div class="mobiletabs"><button class="mini" id="mobileUpload">＋ Nạp ảnh</button><button class="mini" id="mobileAnalyze">◎ Phân tích ảnh</button><button class="mini" id="mobileSave">Lưu hồ sơ</button></div>
+<div class="canvaswrap empty" id="canvasWrap"><canvas id="boardCanvas"></canvas></div>
+<div class="canvasbar"><div class="statusline" id="canvasStatus">Chờ ảnh đầu vào · Chưa có dữ liệu kết nối mạch</div><div class="mini-actions"><button class="mini" id="undoPin">↶ Hoàn tác</button><button class="mini" id="clearPins">Xóa đánh dấu</button><button class="mini" id="downloadImage">Tải ảnh chú thích</button></div></div>
+</section>
+<aside class="right">
+<section class="panel">
+<div class="panelhead"><div><div class="eyebrow">03 / VISION SCAN</div><h3>Tiền phân tích hình ảnh</h3></div><span class="ai-state"><i class="dot"></i> LOCAL CV</span></div>
+<div class="pad">
+<div class="metric"><div><b id="mResolution">—</b><small>Độ phân giải</small></div><div><b id="mBrightness">—</b><small>Độ sáng trung bình</small></div><div><b id="mContrast">—</b><small>Độ tương phản</small></div><div><b id="mEdges">—</b><small>Mật độ biên ảnh</small></div></div>
+<button class="btn primary" id="analyzeBtn" style="width:100%;margin-top:12px">◎ Quét chất lượng ảnh</button>
+<div class="result" id="visionResult" style="margin-top:12px">Nạp ảnh để kiểm tra độ phân giải, độ sáng, tương phản và độ nét tương đối. Đây là tiền xử lý ảnh, chưa phải nhận dạng linh kiện bằng mô hình AI.</div>
+</div>
+</section>
+<section class="panel">
+<div class="panelhead"><div><div class="eyebrow">04 / CIRCUIT BRAIN</div><h3>Trợ lý suy luận mạch</h3></div><span>✧</span></div>
+<div class="pad">
+<div class="ai-card"><div class="ai-state"><i class="dot"></i> AI CONNECTOR REQUIRED</div><h3>Visual Circuit Reasoning</h3><p>Không giả vờ nhận diện IC hay bịa đường mạch. Bộ phân tích AI đa phương thức cần được nối qua API server an toàn để đọc ảnh thật.</p></div>
+<div class="field"><label for="symptom">Triệu chứng máy</label><select id="symptom"><option value="">Chọn pan bệnh</option><option>Mất nguồn / không lên nguồn</option><option>Mất sạc / không nhận USB</option><option>Mất Wi-Fi / Bluetooth</option><option>Mất sóng / không gọi được</option><option>Nóng máy / chạm nguồn</option><option>Mất hiển thị / mất cảm ứng</option><option>Pan khác</option></select></div>
+<div class="field"><label for="measurements">Số đo thực tế</label><textarea id="measurements" rows="3" placeholder="Ví dụ: PP_VDD_MAIN diode 0.420; VBUS 5.1V; dòng nguồn 0.08A..."></textarea></div>
+<button class="btn" id="buildBrief" style="width:100%">Tạo phiếu phân tích kỹ thuật</button>
+<div class="result" id="briefResult" style="margin-top:10px">Phiếu sẽ tổng hợp ảnh, điểm đánh dấu, triệu chứng và số đo để chuyển vào AI phân tích.</div>
+<button class="btn ghost" id="copyBrief" style="width:100%;margin-top:8px">Sao chép dữ liệu cho AI ↗</button>
+</div>
+</section>
+<section class="panel">
+<div class="panelhead"><div><div class="eyebrow">05 / COMPONENT MAP</div><h3>Bản đồ điểm đã đánh dấu</h3></div><b id="pinCount">0</b></div>
+<div class="pad"><div class="component-list" id="componentList"><div class="muted" style="font-size:11px">Chưa có điểm đánh dấu. Chọn công cụ rồi nhấn lên ảnh.</div></div></div>
+</section>
+</aside>
+</main>
+<footer class="footer"><span>APPLE SEED · VISUAL CIRCUIT INTELLIGENCE · ENGINEERING PREVIEW</span><span>Ảnh và chú thích nằm trong phiên trình duyệt hiện tại · Không tự suy diễn net ẩn</span></footer>
+<div class="toast" id="toast"></div>
+<script>
+(()=>{
+const $=id=>document.getElementById(id), canvas=$('boardCanvas'),ctx=canvas.getContext('2d');
+let images=[],active=0,tool='select',pins=[],zoom=1,baseScale=1,sourceImage=null,analysisText='',brief='';
+const colors={ic:'#53e5c1',passive:'#f2c879',trace:'#65c8f2'};
+function toast(s){const t=$('toast');t.textContent=s;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+function current(){return images[active]}
+function loadFiles(files){[...files].filter(f=>f.type.startsWith('image/')).forEach(file=>{const url=URL.createObjectURL(file),img=new Image();img.onload=()=>{images.push({file,url,img,name:file.name,side:'top'});active=images.length-1;renderFiles();showImage();toast('Đã nạp ảnh: '+file.name)};img.src=url})}
+function renderFiles(){$('fileList').innerHTML=images.map((x,i)=>'<div class="fileitem '+(i===active?'active':'')+'" data-index="'+i+'"><img class="thumb" src="'+x.url+'"><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+escapeHtml(x.name)+'</span></div>').join('');$('fileList').querySelectorAll('.fileitem').forEach(el=>el.onclick=()=>{active=+el.dataset.index;renderFiles();showImage()})}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function showImage(){const x=current();if(!x)return;sourceImage=x.img;const maxW=$('canvasWrap').clientWidth-30,maxH=$('canvasWrap').clientHeight-30;baseScale=Math.min(maxW/x.img.width,maxH/x.img.height,1);zoom=1;draw();$('canvasWrap').classList.remove('empty');$('imageMeta').textContent=x.name+' · '+x.img.width+' × '+x.img.height+' px · '+(x.file.size/1024/1024).toFixed(2)+' MB';$('canvasStatus').textContent='Ảnh đã nạp · Nhấn lên ảnh để đặt marker';$('zoomValue').textContent='100%';}
+function draw(){if(!sourceImage)return;const x=current(),w=Math.round(x.img.width*baseScale*zoom),h=Math.round(x.img.height*baseScale*zoom);canvas.width=w;canvas.height=h;canvas.style.width=w+'px';canvas.style.height=h+'px';ctx.drawImage(x.img,0,0,w,h);pins.filter(p=>p.imageIndex===active).forEach((p,i)=>{const px=p.x*w,py=p.y*h,c=colors[p.type]||colors.ic;ctx.strokeStyle=c;ctx.fillStyle=c;ctx.lineWidth=Math.max(1.5,w/700);ctx.beginPath();ctx.arc(px,py,Math.max(8,w/65),0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.moveTo(px-12,py);ctx.lineTo(px+12,py);ctx.moveTo(px,py-12);ctx.lineTo(px,py+12);ctx.stroke();ctx.font='bold '+Math.max(10,w/65)+'px system-ui';const label=p.label||('P'+(i+1));const tw=ctx.measureText(label).width;ctx.fillStyle='#06131de8';ctx.fillRect(px+12,py-18,tw+12,22);ctx.fillStyle=c;ctx.fillText(label,px+18,py-3)})}
+function addPinAt(x,y){const label=$('pinLabel').value.trim()||({ic:'IC',passive:'R/C/L',trace:'TRACE'}[tool]||'POINT');pins.push({id:Date.now()+Math.random(),imageIndex:active,x,y,type:tool==='select'?'ic':tool,label,note:$('pinNote').value.trim(),createdAt:new Date().toISOString()});draw();renderPins();toast('Đã đánh dấu '+label)}
+canvas.addEventListener('click',e=>{if(!sourceImage)return;const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;if(tool==='select'){const list=pins.filter(p=>p.imageIndex===active);let nearest=null,d=0.04;for(const p of list){const dd=Math.hypot(p.x-x,p.y-y);if(dd<d){nearest=p;d=dd}}if(nearest){$('pinLabel').value=nearest.label;$('pinNote').value=nearest.note||'';toast(nearest.label+' · '+(nearest.note||'Chưa có ghi chú'))}else addPinAt(x,y)}else addPinAt(x,y)});
+function renderPins(){$('pinCount').textContent=pins.length;$('componentList').innerHTML=pins.length?pins.map((p,i)=>'<div class="component"><span class="tag">'+(p.type==='ic'?'IC':p.type==='passive'?'R':'↗')+'</span><span><b>'+escapeHtml(p.label)+'</b><br><span class="muted">'+(p.imageIndex===active?'Ảnh hiện tại':'Ảnh '+(p.imageIndex+1))+' · '+Math.round(p.x*100)+'%, '+Math.round(p.y*100)+'%</span></span><button class="del" data-del="'+p.id+'">×</button></div>').join(''):'<div class="muted" style="font-size:11px">Chưa có điểm đánh dấu. Chọn công cụ rồi nhấn lên ảnh.</div>';$('componentList').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{pins=pins.filter(p=>String(p.id)!==b.dataset.del);draw();renderPins()})}
+function setTool(t){tool=t;document.querySelectorAll('[data-tool]').forEach(b=>b.classList.toggle('active',b.dataset.tool===t));canvas.style.cursor=t==='select'?'crosshair':'cell'}
+$('imageInput').addEventListener('change',e=>loadFiles(e.target.files));
+$('dropzone').addEventListener('dragover',e=>{e.preventDefault();$('dropzone').style.borderColor='var(--mint)'});
+$('dropzone').addEventListener('dragleave',()=>$('dropzone').style.borderColor='');
+$('dropzone').addEventListener('drop',e=>{e.preventDefault();$('dropzone').style.borderColor='';loadFiles(e.dataTransfer.files)});
+document.querySelectorAll('[data-tool]').forEach(b=>b.onclick=()=>setTool(b.dataset.tool));
+$('addPin').onclick=()=>{if(!sourceImage)return toast('Nạp ảnh trước');if(tool==='select')setTool('ic');toast('Chọn vị trí trên ảnh để đặt điểm')};
+document.querySelectorAll('[data-side]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-side]').forEach(x=>x.classList.toggle('active',x===b));if(current())current().side=b.dataset.side;toast('Đã chọn '+(b.dataset.side==='top'?'mặt trên':'mặt dưới'))});
+$('zoomIn').onclick=()=>{zoom=Math.min(zoom*1.2,5);draw();$('zoomValue').textContent=Math.round(zoom*100)+'%'};
+$('zoomOut').onclick=()=>{zoom=Math.max(zoom/1.2,.3);draw();$('zoomValue').textContent=Math.round(zoom*100)+'%'};
+$('fitImage').onclick=()=>{zoom=1;draw();$('zoomValue').textContent='100%'};
+$('undoPin').onclick=()=>{const i=pins.map(p=>p.imageIndex).lastIndexOf(active);if(i>=0)pins.splice(i,1);draw();renderPins()};
+$('clearPins').onclick=()=>{pins=pins.filter(p=>p.imageIndex!==active);draw();renderPins()};
+$('downloadImage').onclick=()=>{if(!sourceImage)return toast('Chưa có ảnh');const a=document.createElement('a');a.download='apple-seed-board-annotated.png';a.href=canvas.toDataURL('image/png');a.click()};
+function scanImage(){if(!sourceImage)return toast('Nạp ảnh mainboard trước');const w=160,h=Math.max(1,Math.round(sourceImage.height/sourceImage.width*w)),c=document.createElement('canvas');c.width=w;c.height=h;const q=c.getContext('2d');q.drawImage(sourceImage,0,0,w,h);const d=q.getImageData(0,0,w,h).data;let sum=0,sum2=0,edges=0,n=0,prev=null;for(let i=0;i<d.length;i+=4){const lum=.2126*d[i]+.7152*d[i+1]+.0722*d[i+2];sum+=lum;sum2+=lum*lum;if(prev!==null&&Math.abs(lum-prev)>32)edges++;prev=lum;n++}const avg=sum/n,sd=Math.sqrt(Math.max(0,sum2/n-avg*avg)),edgeRate=edges/n;$('mResolution').textContent=sourceImage.width+'×'+sourceImage.height;$('mBrightness').textContent=Math.round(avg)+'/255';$('mContrast').textContent=Math.round(sd)+'/255';$('mEdges').textContent=(edgeRate*100).toFixed(1)+'%';const res=sourceImage.width<1200?'Độ phân giải thấp: nên chụp lại ở độ phóng đại cao hơn.':sourceImage.width<2400?'Độ phân giải trung bình: phù hợp quan sát tổng thể, có thể thiếu chi tiết mã IC.':'Độ phân giải tốt cho bước kiểm tra tổng thể; khả năng đọc chữ nhỏ còn phụ thuộc tiêu cự và độ nét.';const bright=avg<65?'Ảnh tối, cần tăng sáng hoặc giảm bóng kính hiển vi.':avg>220?'Ảnh quá sáng, cần giảm phơi sáng.':'Độ sáng tổng thể ở mức có thể quan sát.';const contrast=sd<35?'Tương phản thấp, nên điều chỉnh ánh sáng xiên.':'Có độ tương phản để bắt đầu phân vùng ảnh.';analysisText='TIỀN PHÂN TÍCH ẢNH\n'+sourceImage.width+' × '+sourceImage.height+' px\n'+res+'\n'+bright+'\n'+contrast+'\nMật độ biên ảnh: '+(edgeRate*100).toFixed(1)+'%. Chỉ số này không chứng minh đó là đường đồng hoặc linh kiện.\nSố marker thủ công: '+pins.filter(p=>p.imageIndex===active).length+'.';$('visionResult').textContent=analysisText;toast('Đã quét chỉ số ảnh cục bộ')}
+$('analyzeBtn').onclick=scanImage;$('mobileAnalyze').onclick=scanImage;
+function build(){if(!sourceImage)return toast('Nạp ảnh trước');const x=current();brief='APPLE SEED — PHIẾU PHÂN TÍCH MAINBOARD\nẢnh: '+x.name+' ('+x.img.width+'×'+x.img.height+')\nMặt: '+x.side+'\nTriệu chứng: '+($('symptom').value||'Chưa cung cấp')+'\nSố đo: '+($('measurements').value||'Chưa cung cấp')+'\n\nTIỀN PHÂN TÍCH ẢNH:\n'+(analysisText||'Chưa quét')+'\n\nCÁC ĐIỂM ĐÁNH DẤU:\n'+(pins.filter(p=>p.imageIndex===active).map(p=>'- '+p.label+' ('+p.type+') tại '+(p.x*100).toFixed(1)+'%, '+(p.y*100).toFixed(1)+'% — '+(p.note||'không ghi chú')).join('\n')||'Chưa có')+'\n\nYÊU CẦU AI:\nPhân tích những gì thực sự quan sát được; tách dữ kiện, giả thuyết và điều chưa biết. Không tự bịa mã linh kiện, chân IC, net hoặc đường mạch bị che khuất. Đề xuất ảnh bổ sung và phép đo xác minh.';$('briefResult').textContent=brief;toast('Đã tạo phiếu phân tích')}
+$('buildBrief').onclick=build;$('copyBrief').onclick=()=>{if(!brief)build();navigator.clipboard?.writeText(brief).then(()=>toast('Đã sao chép phiếu')).catch(()=>toast('Trình duyệt chặn clipboard'))};
+$('exportProject').onclick=exportProject;$('mobileSave').onclick=exportProject;
+function exportProject(){const data={app:'Apple Seed Visual Circuit Intelligence',version:'0.1-preview',exportedAt:new Date().toISOString(),images:images.map(x=>({name:x.name,width:x.img.width,height:x.img.height,side:x.side})),pins,vision:analysisText,diagnosticBrief:brief};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='apple-seed-circuit-case.json';a.click();URL.revokeObjectURL(a.href);toast('Đã xuất hồ sơ JSON')}
+$('mobileUpload').onclick=()=>$('imageInput').click();
+window.addEventListener('resize',()=>{if(sourceImage)showImage()});
+})();
+</script>
+</body></html>
