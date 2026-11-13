@@ -110,4 +110,88 @@ function select(p){selected=p;parts.forEach(q=>{const mat=q.mesh.children[0].mat
 function renderList(filter=''){const box=document.getElementById('parts');box.innerHTML='';parts.filter(p=>(p.id+' '+p.name+' '+p.type).toLowerCase().includes(filter.toLowerCase())).forEach(p=>{const b=document.createElement('button');b.className='item';b.dataset.id=p.id;b.innerHTML='<strong>'+p.id+' · '+p.name+'</strong><span>'+p.type+'</span>';b.onclick=()=>{select(p);theta=Math.atan2(p.x,p.z);cameraUpdate()};box.append(b)})}renderList();select(parts[0]);
 renderer.domElement.addEventListener('pointerdown',e=>{drag=true;lastX=e.clientX;lastY=e.clientY;downX=e.clientX;downY=e.clientY;renderer.domElement.setPointerCapture(e.pointerId)});renderer.domElement.addEventListener('pointerup',e=>{if(!drag)return;const moved=Math.abs(e.clientX-downX)+Math.abs(e.clientY-downY);drag=false;if(moved<5){const r=renderer.domElement.getBoundingClientRect();mouse.x=((e.clientX-r.left)/r.width)*2-1;mouse.y=-((e.clientY-r.top)/r.height)*2+1;ray.setFromCamera(mouse,camera);const hit=ray.intersectObjects(pickables,true)[0];if(hit){let o=hit.object;while(o&&!o.userData.part)o=o.parent;if(o)select(o.userData.part)}}});renderer.domElement.addEventListener('pointermove',e=>{if(drag){theta-=(e.clientX-lastX)*.008;phi+=(e.clientY-lastY)*.008;lastX=e.clientX;lastY=e.clientY;cameraUpdate()}});renderer.domElement.addEventListener('wheel',e=>{radius=Math.max(7,Math.min(21,radius+e.deltaY*.009));cameraUpdate()},{passive:true});
 document.getElementById('search').addEventListener('input',e=>renderList(e.target.value));document.getElementById('rotate').onclick=e=>{auto=!auto;e.target.classList.toggle('active',auto);e.target.textContent=auto?'⟳ Xoay tự động':'⏸ Đã dừng'};document.getElementById('traces').onclick=e=>{traceGroup.visible=!traceGroup.visible;e.target.classList.toggle('active',traceGroup.visible)};document.getElementById('topview').onclick=()=>{phi=.18;theta=0;cameraUpdate()};document.getElementById('reset').onclick=()=>{theta=.62;phi=.82;radius=12;cameraUpdate()};function animate(){requestAnimationFrame(animate);if(auto&&!drag){theta+=.0018;cameraUpdate()}renderer.render(scene,camera)}animate();
-</script></body></html>
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js?v=3"></script>
+<script>
+(function(){
+  "use strict";
+  const $=id=>document.getElementById(id), sb=window.supabaseClient;
+  let user=null, session=null;
+  const status=$("kb-status"), authState=$("kb-auth-state"), docsBox=$("kb-docs"), results=$("kb-results");
+  const say=(message,type)=>{status.textContent=message;status.className="kb-status"+(type?" "+type:"");};
+  const esc=v=>String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const size=v=>{v=Number(v||0);return v<1024?v+" B":v<1048576?(v/1024).toFixed(1)+" KB":(v/1048576).toFixed(1)+" MB";};
+  const fileName=s=>String(s||"document").normalize("NFKD").replace(/[^a-zA-Z0-9._-]+/g,"_").replace(/^_+|_+$/g,"").slice(-120)||"document";
+  const mimeOf=f=>f.type||(({pdf:"application/pdf",txt:"text/plain",csv:"text/csv",png:"image/png",jpg:"image/jpeg",jpeg:"image/jpeg",webp:"image/webp",pcb:"application/octet-stream",brd:"application/octet-stream",zip:"application/zip",rar:"application/vnd.rar"})[f.name.split(".").pop().toLowerCase()]||"application/octet-stream");
+  const statusOf=d=>{const m=d.metadata||{};if(d.status==="completed")return "AI đã học · "+Number(d.atoms_learned||0)+" mẩu kiến thức";if(d.status==="learning")return "AI đang đọc tài liệu";if(d.status==="failed")return "AI học lỗi: "+(d.error_message||"xem chi tiết");if(m.parser_status==="waiting_boardview_parser")return "Đã lưu file gốc · chờ bộ đọc PCB/Netlist";return "Đã lưu · chờ xử lý";};
+  async function init(){
+    if(!sb){authState.textContent="Chưa kết nối";say("Không tải được cấu hình Supabase.","err");return;}
+    const sr=await sb.auth.getSession();session=sr.data&&sr.data.session;
+    if(!session){authState.textContent="Chưa đăng nhập";say("Đăng nhập Admin/Staff để nạp và tra cứu tài liệu.","err");const a=document.createElement("a");a.href="login.html?redirect=3d-boardview.html";a.textContent="Đăng nhập Apple Seed";a.style.cssText="display:inline-block;margin-top:6px;color:#75e7bd;font-weight:800";status.append(document.createElement("br"),a);return;}
+    const ur=await sb.auth.getUser();user=ur.data&&ur.data.user;
+    if(!user){say("Phiên đăng nhập hết hạn. Hãy đăng nhập lại.","err");return;}
+    const pr=await sb.from("profiles").select("role,full_name").eq("id",user.id).maybeSingle();
+    if(pr.error||!pr.data||!["admin","staff"].includes(pr.data.role)){authState.textContent="Không đủ quyền";say("Tài khoản cần quyền Admin hoặc Staff để quản lý kho tài liệu.","err");return;}
+    authState.textContent=pr.data.role.toUpperCase();
+    say("Đã kết nối kho dữ liệu Apple Seed · "+(pr.data.full_name||user.email),"ok");
+    await loadDocs();
+  }
+  async function loadDocs(){
+    if(!user)return;
+    docsBox.textContent="Đang tải thư viện...";
+    const r=await sb.from("brain_documents").select("id,file_name,mime_type,file_size,status,summary,atoms_learned,relationships_learned,error_message,metadata,created_at").order("created_at",{ascending:false}).limit(40);
+    if(r.error){docsBox.textContent="Lỗi tải thư viện: "+r.error.message;return;}
+    $("kb-doc-count").textContent=r.data.length+" tài liệu";
+    docsBox.innerHTML=r.data.length?r.data.map(d=>{const m=d.metadata||{};return '<div class="kb-doc"><b>'+esc(d.file_name)+'</b><small>'+esc(m.device_model||"Chưa gán dòng máy")+' · '+esc(m.document_type||"Tài liệu")+' · '+size(d.file_size)+'<br>'+esc(statusOf(d))+(d.summary?'<br>'+esc(d.summary.slice(0,180)):"")+'</small></div>';}).join(""):'<small style="color:#91a8bc">Chưa có tài liệu. Nạp bộ tài liệu đầu tiên.</small>';
+  }
+  $("kb-toggle-upload").addEventListener("click",()=>$("kb-upload-panel").classList.toggle("open"));
+  $("kb-refresh").addEventListener("click",loadDocs);
+  $("kb-upload-form").addEventListener("submit",async e=>{
+    e.preventDefault();
+    if(!user||!session){say("Đăng nhập Admin/Staff trước khi nạp tài liệu.","err");return;}
+    const file=$("kb-file").files[0],device=$("kb-device").value.trim(),board=$("kb-board").value.trim(),type=$("kb-type").value,notes=$("kb-notes").value.trim();
+    if(!file||!device){say("Nhập dòng máy và chọn file trước.","err");return;}
+    if(file.size>100*1024*1024){say("File vượt quá 100 MB. Hãy chia nhỏ tài liệu.","err");return;}
+    const btn=$("kb-submit");btn.disabled=true;btn.textContent="ĐANG TẢI FILE...";
+    let path="";
+    try{
+      path=user.id+"/"+Date.now()+"_"+fileName(file.name);
+      const mime=mimeOf(file),ext=file.name.split(".").pop().toLowerCase();
+      const upload=await sb.storage.from("electronic-brain").upload(path,file,{contentType:mime,upsert:false});
+      if(upload.error)throw new Error("Storage: "+upload.error.message);
+      const canLearn=mime==="application/pdf"||mime.startsWith("image/")||["txt","csv"].includes(ext);
+      const metadata={source_page:"3d-boardview",device_model:device,board_code:board,document_type:type,notes:notes,original_extension:ext,parser_status:(!canLearn&&(type==="boardview"||type==="netlist"))?"waiting_boardview_parser":(canLearn?"ready_for_ai_learning":"stored_original_only")};
+      const saved=await sb.from("brain_documents").insert({uploaded_by:user.id,file_name:file.name,storage_path:path,mime_type:mime,file_size:file.size,status:"queued",metadata}).select("id").single();
+      if(saved.error){await sb.storage.from("electronic-brain").remove([path]);throw new Error("Database: "+saved.error.message);}
+      await loadDocs();
+      if(canLearn){
+        btn.textContent="AI ĐANG HỌC...";
+        const learn=await sb.functions.invoke("brain-learn-document",{body:{document_id:saved.data.id}});
+        if(learn.error)throw new Error("File đã lưu; AI học chưa xong: "+learn.error.message);
+        if(!learn.data||learn.data.ok!==true)throw new Error("File đã lưu; AI báo lỗi: "+String(learn.data&&learn.data.error||"không rõ"));
+        say("Hoàn tất: lưu file và học được "+Number(learn.data.atoms_learned||0)+" mẩu kiến thức, "+Number(learn.data.relationships_learned||0)+" quan hệ.","ok");
+      }else if(type==="boardview"||type==="netlist"){
+        say("Đã lưu nguyên file "+file.name+". Chưa phân tích PCB/Netlist; cần bộ đọc đúng định dạng trước khi bật dò line.","ok");
+      }else say("Đã lưu file gốc vào thư viện. Định dạng này hiện chưa có bộ trích xuất tự động.","ok");
+      $("kb-upload-form").reset();await loadDocs();
+    }catch(err){say(err.message||String(err),"err");await loadDocs();}
+    finally{btn.disabled=false;btn.textContent="TẢI LÊN VÀ LƯU VÀO THƯ VIỆN";}
+  });
+  $("kb-search").addEventListener("keydown",async function(e){
+    if(e.key!=="Enter")return;e.preventDefault();
+    if(!user){results.textContent="Đăng nhập Admin/Staff để tra cứu.";return;}
+    const q=this.value.trim().replace(/[,%()]/g," ").replace(/\s+/g," ").slice(0,80);
+    if(q.length<2){results.textContent="Nhập ít nhất 2 ký tự.";return;}
+    results.textContent="Đang tìm...";
+    const like="%"+q+"%";
+    const r=await sb.from("brain_knowledge").select("id,title,content,knowledge_type,device_model,component_ref,net_name,source_page,confidence,verification_status").or("title.ilike."+like+",content.ilike."+like+",component_ref.ilike."+like+",net_name.ilike."+like).limit(20);
+    if(r.error){results.textContent="Lỗi tra cứu: "+r.error.message;return;}
+    if(!r.data.length){results.textContent="Chưa tìm thấy kiến thức phù hợp.";return;}
+    results.innerHTML=r.data.map(x=>'<div class="kb-result"><b>'+esc(x.title)+'</b><p>'+esc([x.device_model,x.component_ref,x.net_name,x.knowledge_type].filter(Boolean).join(" · "))+'<br>'+esc(x.content.slice(0,320))+'</p><small style="color:#8198ac">Tin cậy '+Number(x.confidence||0)+'% · '+esc(x.verification_status||"documented")+(x.source_page?" · Trang "+Number(x.source_page):"")+'</small></div>').join("");
+  });
+  init().catch(e=>say("Lỗi khởi tạo: "+e.message,"err"));
+})();
+</script>
+
+</body></html>
