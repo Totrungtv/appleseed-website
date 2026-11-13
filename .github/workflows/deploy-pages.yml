@@ -21,10 +21,42 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Apple Seed website
         uses: actions/checkout@v4
+
+      - name: Build Apple Seed BoardRipper Lite
+        uses: actions/checkout@v4
+        with:
+          repository: Totrungtv/AppleSeed-BoardRipper
+          ref: main
+          path: /tmp/boardripper
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: /tmp/boardripper/src/frontend/package-lock.json
+
+      - name: Compile browser-only Boardview engine
+        working-directory: /tmp/boardripper/src/frontend
+        run: |
+          npm ci
+          npm run build:lite
+
+      - name: Install engine into Apple Seed website
+        run: |
+          set -e
+          test -f /tmp/boardripper/src/frontend/dist-lite/index.html
+          rm -rf boardripper-lite
+          mkdir -p boardripper-lite
+          cp -a /tmp/boardripper/src/frontend/dist-lite/. boardripper-lite/
+          touch boardripper-lite/.nojekyll
+          test -s boardripper-lite/index.html
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
+
       - name: Prepare Fix-ADB package with full Android SDK Platform-Tools
         run: |
           set -e
@@ -37,10 +69,12 @@ jobs:
           cp tools/Fix-ADB/Fix-ADB.bat /tmp/fix-adb/Fix-ADB.bat
           (cd /tmp/fix-adb && zip -qr "$GITHUB_WORKSPACE/assets/Fix-ADB.zip" Fix-ADB.bat platform-tools)
           test -s assets/Fix-ADB.zip
+
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
+
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
