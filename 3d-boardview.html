@@ -1,197 +1,164 @@
 <!doctype html>
-<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#08111d"><title>Apple Seed 3D Boardview</title>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#07111e">
+<title>Apple Seed · Boardview Workbench</title>
+<meta name="description" content="Apple Seed Boardview Workbench — mở Boardview, dò NET, xem schematic và lưu tài liệu sửa chữa.">
 <style>
-:root{color-scheme:dark;--bg:#07101b;--panel:#0d1a29;--line:#203449;--muted:#8da2b8;--green:#56e0ad;--blue:#55a9ff}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 48% 38%,#12283a 0,#07101b 66%);color:#e8f1f8;font:14px Inter,system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}.top{height:64px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 22px;background:#081321dd;position:relative;z-index:3}.brand{display:flex;align-items:center;gap:11px;font-weight:850;letter-spacing:.3px}.logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#65e7b7,#198e78);display:grid;place-items:center;color:#05221d;font-weight:1000}.tag{color:var(--muted);font-size:11px;margin-left:8px;font-weight:600}.topright{display:flex;align-items:center;gap:10px}.pill{border:1px solid #284158;border-radius:20px;padding:7px 11px;color:#a9bfd2;font-size:11px}.live{color:#65e7b7}.layout{height:calc(100vh - 64px);min-height:650px;display:grid;grid-template-columns:minmax(0,1fr) 310px}.stage{position:relative;min-width:0;overflow:hidden}.stage canvas{display:block;width:100%;height:100%;touch-action:none}.hud{position:absolute;left:20px;top:18px;pointer-events:none}.eyebrow{font-size:10px;letter-spacing:2px;color:#68dcb5;font-weight:800}.hud h1{font-size:22px;margin:7px 0 5px}.hud p{color:#91a8bc;font-size:12px;margin:0}.toolbar{position:absolute;top:18px;right:18px;display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end;max-width:55%}button,select{font:inherit;color:#dce9f4;background:#102235;border:1px solid #29445c;border-radius:9px;padding:9px 11px;cursor:pointer}button:hover,select:hover{border-color:#56e0ad}button.active{background:#124238;border-color:#56e0ad;color:#7bf0c4}.hint{position:absolute;bottom:16px;left:18px;color:#8098ad;font-size:11px;background:#081522bb;padding:8px 11px;border:1px solid #20384d;border-radius:8px}.side{border-left:1px solid var(--line);background:linear-gradient(180deg,#0d1a29,#091421);padding:18px;overflow:auto}.side h2{font-size:13px;letter-spacing:1.4px;text-transform:uppercase;margin:2px 0 14px;color:#a7bed1}.search{width:100%;background:#071321;border:1px solid #294158;border-radius:9px;padding:11px;color:#e9f4ff;outline:none;margin-bottom:12px}.selected{border:1px solid #2b4c60;background:#102235;border-radius:12px;padding:14px;margin-bottom:16px}.selected small{color:#6fe6bb;font-size:10px;letter-spacing:1.2px}.selected h3{font-size:19px;margin:7px 0}.selected p{color:#a0b4c7;font-size:12px;line-height:1.55;margin:5px 0}.kv{display:flex;justify-content:space-between;padding:9px 0;border-top:1px solid #24394c;font-size:12px}.kv span{color:#8da5b9}.kv b{font-weight:700;color:#e5f2fa}.list{display:grid;gap:6px}.item{display:flex;align-items:center;justify-content:space-between;text-align:left;width:100%;padding:9px 10px;background:#0b1927;border:1px solid #1d3448;border-radius:8px}.item span{color:#8fa7bc;font-size:11px}.item strong{font-size:12px}.item.chosen{border-color:#56e0ad;background:#10332d}.notice{font-size:10px;line-height:1.5;color:#8198ac;margin-top:16px;border-top:1px solid #203449;padding-top:13px}.toast{position:absolute;bottom:58px;left:50%;transform:translateX(-50%);padding:9px 13px;border-radius:9px;background:#12362f;border:1px solid #3a8c73;color:#a3f6d8;font-size:12px;opacity:0;transition:.2s;pointer-events:none}.toast.show{opacity:1}@media(max-width:800px){.layout{height:auto;min-height:calc(100vh - 64px);grid-template-columns:1fr}.stage{height:62vh;min-height:430px}.side{border-left:0;border-top:1px solid var(--line)}.tag{display:none}.toolbar{max-width:70%}.top{padding:0 13px}.pill{display:none}}
-
-.kb-box{border:1px solid #24435a;background:#0a1927;border-radius:12px;padding:12px;margin:0 0 16px}
-.kb-title{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
-.kb-title strong{font-size:12px;letter-spacing:.8px;color:#73e5bd}
-.kb-title small{font-size:10px;color:#7893a9}
-.kb-status{font-size:11px;line-height:1.5;color:#a8bfd1;background:#102235;border:1px solid #263e52;border-radius:8px;padding:8px;margin:8px 0}
-.kb-status.ok{color:#9df2cf;border-color:#286a55}.kb-status.err{color:#ffb3aa;border-color:#80463e}
-.kb-form{display:grid;gap:8px}.kb-form label{font-size:10px;color:#9bb2c6;display:grid;gap:4px}
-.kb-form input,.kb-form select,.kb-form textarea{width:100%;min-width:0;background:#071321;border:1px solid #294158;border-radius:8px;padding:9px;color:#e8f1f8;font:inherit;font-size:11px}
-.kb-form textarea{min-height:54px;resize:vertical}
-.kb-form button{width:100%;background:#124238;border-color:#347b65;color:#9af0ce;font-weight:800}
-.kb-docs{display:grid;gap:7px;margin-top:8px}
-.kb-doc{padding:9px;background:#0d1d2c;border:1px solid #20394d;border-radius:8px}
-.kb-doc b{display:block;font-size:11px;overflow-wrap:anywhere}.kb-doc small{display:block;color:#8da6ba;font-size:10px;margin-top:4px;line-height:1.45}
-.kb-search{margin:8px 0 4px!important}
-.kb-result{padding:8px 0;border-bottom:1px solid #203449}.kb-result b{font-size:11px;color:#a8f0d5}.kb-result p{font-size:10px;line-height:1.45;color:#a3b6c7;margin:4px 0}
-.kb-actions{display:flex;gap:6px}.kb-actions button{flex:1;font-size:10px;padding:7px}
-.kb-collapse{display:none}.kb-collapse.open{display:block}
-@media(max-width:800px){.kb-box{margin-bottom:14px}}
-
-.br-engine-link{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font:inherit;color:#9af0ce;background:#124238;border:1px solid #347b65;border-radius:9px;padding:9px 11px;font-weight:900;white-space:nowrap}.br-engine-link:hover{border-color:#73e5bd;background:#165344}@media(max-width:800px){.br-engine-link{font-size:11px;padding:8px}}</style>
-<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script></head>
-<body><header class="top"><div class="brand"><div class="logo">AS</div><div>APPLE SEED <span class="tag">ENGINEERING / 3D BOARDVIEW</span></div></div><div class="topright"><span class="pill">MODEL: DEMO GEOMETRY</span><span class="pill live">● 3D ENGINE READY</span></div></header>
-<main class="layout"><section class="stage" id="stage"><div class="hud"><div class="eyebrow">INTERACTIVE BOARD EXPLORER</div><h1>Logic Board · 3D Workspace</h1><p>Mô hình demo — nạp Boardview thật trong Knowledge Center</p></div><div class="toolbar"><a class="br-engine-link" href="/boardripper.html">⚡ BOARDVIEW THỰC</a><button id="rotate" class="active">⟳ Xoay tự động</button><button id="traces">Đường mạch (DEMO)</button><button id="topview">Mặt trên</button><button id="reset">Đặt lại góc</button></div><div class="hint">Kéo để xoay · Cuộn để zoom · Chạm linh kiện để chọn</div><div class="toast" id="toast"></div></section>
-<aside class="side">
-<div class="kb-box">
-  <div class="kb-title"><strong>APPLE SEED KNOWLEDGE CENTER</strong><small id="kb-auth-state">Đang kết nối...</small></div>
-  <div id="kb-status" class="kb-status">Kho tài liệu sửa chữa lưu trên Supabase. Đăng nhập tài khoản Admin/Staff để nạp tài liệu.</div>
-  <div class="kb-actions">
-    <button type="button" id="kb-toggle-upload">＋ Nạp tài liệu</button>
-    <button type="button" id="kb-refresh">↻ Làm mới kho</button>
+:root{color-scheme:dark;--bg:#07111e;--panel:#0d1a2a;--panel2:#102238;--line:#20364d;--text:#e8f1fb;--muted:#8ea5bd;--mint:#56e0b2;--blue:#4ea7ff;--danger:#ff7185;--shadow:0 18px 55px #0006}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+.top{height:64px;display:flex;align-items:center;gap:16px;padding:0 22px;border-bottom:1px solid var(--line);background:#091625;position:sticky;top:0;z-index:10}
+.brand{display:flex;align-items:center;gap:11px;min-width:255px}.logo{width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,#63f0c0,#188c86);display:grid;place-items:center;color:#03231f;font-weight:950;font-size:17px;box-shadow:0 0 25px #39d7ac35}
+.brand strong{font-size:14px;letter-spacing:.12em}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:.14em;margin-top:2px}
+.topnav{display:flex;gap:7px;align-items:center;flex:1}.pill{border:1px solid transparent;color:#9bb0c6;background:transparent;padding:9px 12px;border-radius:9px}.pill.active,.pill:hover{background:#13283d;border-color:#28465f;color:#e9f5ff}
+.topright{display:flex;align-items:center;gap:9px}.lang{background:#0c1b2c;border:1px solid #294158;color:#dce9f7;border-radius:9px;padding:9px 11px}.btn{border:1px solid #2a4761;background:#142a40;color:#eaf4ff;padding:9px 13px;border-radius:9px;font-weight:650}.btn:hover{border-color:#55dcb5}.btn.primary{background:linear-gradient(135deg,#1b9e7a,#137d70);border-color:#2fc69c;color:#f3fffb}.btn.ghost{background:transparent}.btn.small{padding:7px 10px;font-size:12px}
+.layout{height:calc(100vh - 64px);min-height:650px;display:grid;grid-template-rows:52px minmax(0,1fr) auto}
+.toolbar{display:flex;align-items:center;gap:10px;padding:0 18px;border-bottom:1px solid var(--line);background:#0a1726}.crumb{color:var(--muted);font-size:12px;margin-right:auto}.crumb b{color:#e9f5ff}.engine-status{display:flex;align-items:center;gap:7px;color:#9eb4c9;font-size:11px}.dot{width:7px;height:7px;border-radius:50%;background:#e8ad56;box-shadow:0 0 10px #e8ad5680}.dot.ok{background:var(--mint);box-shadow:0 0 10px #56e0b280}
+.workspace{display:grid;grid-template-columns:minmax(0,1fr) 330px;min-height:0}
+.viewer{position:relative;min-width:0;min-height:0;background:#080e18}.viewer iframe{width:100%;height:100%;border:0;background:#10131b}.frame-cover{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:#07111ef2;padding:30px;text-align:center;z-index:2}.frame-cover.show{display:flex}.cover-card{max-width:560px;padding:30px;border:1px solid #29465e;background:#0d1d2e;border-radius:18px;box-shadow:var(--shadow)}.cover-card h2{margin:0 0 10px}.cover-card p{color:var(--muted);line-height:1.7}.cover-actions{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin-top:18px}
+.side{min-height:0;overflow:auto;background:#0b1928;border-left:1px solid var(--line);padding:15px}.side-head{display:flex;align-items:center;justify-content:space-between;margin:2px 0 12px}.side-head h3{font-size:12px;letter-spacing:.13em;margin:0}.muted{color:var(--muted)}.card{background:linear-gradient(160deg,#102238,#0c1928);border:1px solid #213b53;border-radius:13px;padding:13px;margin-bottom:12px}.card h4{margin:0 0 9px;font-size:13px}.field{display:grid;gap:6px;margin:9px 0}.field label{font-size:11px;color:#9bb2c9}.field input,.field select,.field textarea,.search{width:100%;background:#081523;border:1px solid #29435c;border-radius:8px;padding:10px;color:#eaf4ff;outline:none}.field input:focus,.field select:focus,.field textarea:focus,.search:focus{border-color:var(--mint);box-shadow:0 0 0 3px #56e0b21a}.field textarea{min-height:65px;resize:vertical}.filehint{font-size:10px;color:#829bb4;line-height:1.5}.status{padding:9px 10px;border-radius:8px;background:#10283a;color:#a8c5db;font-size:11px;margin-top:9px;overflow-wrap:anywhere}.status.ok{background:#103329;color:#a4f0d4}.status.err{background:#3b1d2a;color:#ffc0cb}
+.doclist{display:grid;gap:8px;margin-top:9px}.doc{padding:10px;background:#0a1725;border:1px solid #1e354b;border-radius:9px}.doc b{font-size:11px;display:block;overflow-wrap:anywhere}.doc small{display:block;color:#8da5bd;font-size:10px;margin-top:5px;line-height:1.5}.knowledge{margin-top:9px;display:grid;gap:8px}.result{padding:10px;border:1px solid #25435b;border-radius:9px;background:#0b1b2b}.result b{font-size:11px}.result p{font-size:11px;color:#a6bbcf;line-height:1.55;margin:5px 0}
+.bottom{border-top:1px solid var(--line);background:#091625;padding:9px 17px;display:flex;align-items:center;justify-content:space-between;gap:12px;color:#718ba4;font-size:10px}.bottom a{color:#9ec7e8;text-decoration:none}
+.drawer{display:none}.drawer.open{display:block}
+@media(max-width:1050px){.workspace{grid-template-columns:minmax(0,1fr) 290px}.brand{min-width:190px}.topnav{display:none}}
+@media(max-width:760px){.top{padding:0 12px;height:58px}.brand{min-width:0;flex:1}.brand small{display:none}.topright .btn{display:none}.layout{height:calc(100vh - 58px);grid-template-rows:48px minmax(0,1fr) auto}.workspace{grid-template-columns:1fr;grid-template-rows:minmax(360px,1fr) auto}.side{border-left:0;border-top:1px solid var(--line);max-height:44vh}.toolbar{padding:0 10px}.crumb{font-size:10px}.toolbar .btn{padding:7px 9px;font-size:11px}.bottom{font-size:9px}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><div class="logo">AS</div><div><strong>APPLE SEED</strong><small>ENGINEERING · BOARDVIEW WORKBENCH</small></div></div>
+  <nav class="topnav"><button class="pill active" data-tab="workbench">Workbench</button><button class="pill" data-tab="library">Knowledge Center</button><button class="pill" data-tab="about">Engine & License</button></nav>
+  <div class="topright">
+    <select id="language" class="lang" aria-label="Language"><option value="vi">🇻🇳 Tiếng Việt</option><option value="en">🇺🇸 English</option><option value="zh">🇨🇳 中文</option></select>
+    <button class="btn ghost" id="open-engine">Mở toàn màn hình ↗</button>
+    <button class="btn primary" id="toggle-library">Thư viện tài liệu</button>
   </div>
-  <div id="kb-upload-panel" class="kb-collapse">
-    <form id="kb-upload-form" class="kb-form">
-      <label>Dòng máy
-        <input id="kb-device" required placeholder="Ví dụ: iPhone 7 Plus">
-      </label>
-      <label>Mã máy / mã main
-        <input id="kb-board" placeholder="Ví dụ: Intel / A1784 / board code">
-      </label>
-      <label>Loại tài liệu
-        <select id="kb-type">
-          <option value="boardview">Boardview / PCB (.pcb, .brd)</option>
-          <option value="netlist">Netlist / danh sách kết nối (.txt, .csv)</option>
-          <option value="schematic">Schematic (.pdf)</option>
-          <option value="bom">BOM / danh sách linh kiện (.csv, .xlsx)</option>
-          <option value="repair_guide">Tài liệu sửa chữa (.pdf, .txt)</option>
-          <option value="measurement">Bảng đo diode / trở kháng / điện áp</option>
-          <option value="image">Ảnh main / ảnh sơ đồ</option>
-          <option value="other">Tài liệu khác</option>
-        </select>
-      </label>
-      <label>Chọn file
-        <input id="kb-file" type="file" required accept=".pcb,.brd,.pdf,.txt,.csv,.xlsx,.xls,.png,.jpg,.jpeg,.webp,.zip,.rar">
-      </label>
-      <label>Ghi chú nguồn / phiên bản main
-        <textarea id="kb-notes" placeholder="Ví dụ: XZZ V5.0.6, main Intel, mặt A..."></textarea>
-      </label>
-      <button id="kb-submit" type="submit">TẢI LÊN VÀ LƯU VÀO THƯ VIỆN</button>
-    </form>
+</header>
+<div class="layout">
+  <div class="toolbar">
+    <div class="crumb"><span data-i18n="crumb">APPLE SEED /</span> <b>3D BOARDVIEW</b> <span class="muted">· BoardRipper Lite</span></div>
+    <div class="engine-status"><span class="dot" id="engine-dot"></span><span id="engine-label" data-i18n="loading">Đang kết nối bộ máy Boardview…</span></div>
+    <button class="btn small" id="reload-engine" data-i18n="reload">Tải lại</button>
   </div>
-  <div class="kb-title" style="margin-top:14px"><strong>THƯ VIỆN TÀI LIỆU</strong><small id="kb-doc-count">0 tài liệu</small></div>
-  <div id="kb-docs" class="kb-docs"><small>Đang tải thư viện...</small></div>
-  <div class="kb-title" style="margin-top:16px"><strong>TRA CỨU KIẾN THỨC ĐÃ HỌC</strong></div>
-  <input id="kb-search" class="search kb-search" placeholder="Tìm IC, NET, chân, nguồn, lỗi...">
-  <div id="kb-results"><small style="color:#8198ac">Nhập từ khóa để tìm trong dữ liệu đã học.</small></div>
-  <div class="notice">QUY TẮC DỮ LIỆU: File gốc được lưu riêng. PDF/ảnh/TXT có thể gửi qua AI học tài liệu. File PCB/BRD độc quyền được lưu nguyên bản; chỉ bật dò line sau khi có bộ đọc và trích xuất Netlist xác thực. Không dùng mô hình minh họa để sửa máy.</div>
+  <main class="workspace">
+    <section class="viewer" aria-label="BoardRipper Boardview">
+      <iframe id="board-engine" title="Apple Seed BoardRipper engine" src="https://totrungtv.github.io/AppleSeed-BoardRipper/" allow="fullscreen; clipboard-read; clipboard-write; downloads" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      <div class="frame-cover" id="engine-cover">
+        <div class="cover-card">
+          <div class="logo" style="margin:0 auto 14px">AS</div>
+          <h2 data-i18n="engineTitle">Bộ máy Boardview đang được triển khai</h2>
+          <p data-i18n="engineDesc">Apple Seed đang dựng bản BoardRipper Lite riêng từ mã nguồn fork của bạn. Sau khi GitHub Pages hoàn tất, bộ xem board thật sẽ xuất hiện trực tiếp trong khung này.</p>
+          <div class="cover-actions"><button class="btn primary" id="try-again" data-i18n="tryAgain">Kiểm tra lại</button><a class="btn" href="https://github.com/Totrungtv/AppleSeed-BoardRipper/actions" target="_blank" rel="noopener" data-i18n="buildStatus">Xem trạng thái build</a></div>
+        </div>
+      </div>
+    </section>
+    <aside class="side" id="library-panel">
+      <div class="side-head"><h3 data-i18n="docsTitle">THƯ VIỆN TÀI LIỆU</h3><span class="muted" id="kb-auth-state">…</span></div>
+      <div class="card">
+        <h4 data-i18n="uploadTitle">Nạp tài liệu sửa chữa</h4>
+        <form id="kb-upload-form">
+          <div class="field"><label data-i18n="device">Dòng máy / thiết bị *</label><input id="kb-device" required placeholder="iPhone 17 Pro Max"></div>
+          <div class="field"><label data-i18n="boardCode">Mã main / mã board</label><input id="kb-board" placeholder="820-xxxx / board code"></div>
+          <div class="field"><label data-i18n="docType">Loại tài liệu</label><select id="kb-type"><option value="boardview">Boardview / PCB</option><option value="schematic">Schematic PDF</option><option value="repair_guide">Tài liệu sửa chữa</option><option value="measurement">Bảng đo diode / trở kháng / điện áp</option><option value="image">Ảnh main / ảnh sơ đồ</option><option value="netlist">Netlist / danh sách NET</option><option value="other">Tài liệu khác</option></select></div>
+          <div class="field"><label data-i18n="chooseFile">Chọn file</label><input id="kb-file" type="file" required accept=".pcb,.brd,.bdv,.bvr,.bv,.fz,.tvw,.cad,.PcbDoc,.kicad_pcb,.pdf,.txt,.csv,.xlsx,.xls,.png,.jpg,.jpeg,.webp,.zip,.rar"></div>
+          <div class="field"><label data-i18n="notes">Ghi chú / phiên bản main</label><textarea id="kb-notes" placeholder="Ví dụ: XZZ V5.0.6, main Intel, mặt A..."></textarea></div>
+          <button class="btn primary" id="kb-submit" type="submit" style="width:100%" data-i18n="saveDoc">TẢI LÊN VÀ LƯU VÀO THƯ VIỆN</button>
+          <div class="filehint" data-i18n="privacy">File boardview được lưu nguyên bản trong kho Apple Seed. BoardRipper Lite mở file tại trình duyệt người dùng; bản Lite không tự đồng bộ file vào viewer.</div>
+        </form>
+        <div class="status" id="kb-status" data-i18n="authWait">Đang kiểm tra đăng nhập Apple Seed…</div>
+      </div>
+      <div class="side-head"><h3 data-i18n="storedDocs">TÀI LIỆU ĐÃ LƯU</h3><button class="btn small" id="kb-refresh">↻</button></div>
+      <div class="muted" id="kb-doc-count" style="font-size:10px">0 tài liệu</div>
+      <div id="kb-docs" class="doclist"><small class="muted">Đang tải thư viện…</small></div>
+      <div class="side-head" style="margin-top:18px"><h3 data-i18n="searchTitle">TRA CỨU KIẾN THỨC ĐÃ HỌC</h3></div>
+      <input id="kb-search" class="search" placeholder="Tìm IC, NET, chân, nguồn, lỗi…">
+      <div id="kb-results" class="knowledge"><small class="muted">Nhập từ khóa rồi nhấn Enter.</small></div>
+      <div class="filehint" style="margin-top:14px" data-i18n="truthNote">Dữ liệu dò line phải đến từ NET/pin thật trong boardview. Không dùng đường mạch minh họa để sửa chữa.</div>
+    </aside>
+  </main>
+  <footer class="bottom"><span>APPLE SEED · REPAIR ENGINEERING</span><span>BoardRipper © upstream contributors · AGPL-3.0 · <a href="https://github.com/Totrungtv/AppleSeed-BoardRipper" target="_blank" rel="noopener">Source</a></span></footer>
 </div>
-
-<h2>Component inspector</h2><input class="search" id="search" placeholder="Tìm mã linh kiện…"><div class="selected" id="details"><small>ĐANG CHỌN</small><h3>U_PMIC</h3><p>IC nguồn chính · mô hình minh họa — chưa phải dữ liệu main thật</p><div class="kv"><span>Loại</span><b>Power IC</b></div><div class="kv"><span>Vị trí</span><b>U1 · Zone A</b></div><div class="kv"><span>Trạng thái dữ liệu</span><b>Demo</b></div></div><h2>Danh sách linh kiện</h2><div class="list" id="parts"></div><div class="notice">LƯU Ý KỸ THUẬT<br>Đây là bản dựng thử nghiệm tương tác 3D với linh kiện mẫu, chưa phải boardview iPhone có tọa độ và netlist xác thực. Không dùng các vị trí/giá trị minh họa để sửa chữa thực tế. Bước tiếp theo là nhập dữ liệu boardview hợp pháp để ánh xạ đúng linh kiện và đường mạch.</div></aside></main>
-<script type="module">
-import * as THREE from 'three';
-const stage=document.getElementById('stage'), scene=new THREE.Scene();scene.background=new THREE.Color(0x081522);
-const camera=new THREE.PerspectiveCamera(38,1,.1,100);camera.position.set(7,8,10);
-const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;stage.prepend(renderer.domElement);
-scene.add(new THREE.HemisphereLight(0xb9dcff,0x152333,2));const key=new THREE.DirectionalLight(0xffffff,3.1);key.position.set(5,9,6);key.castShadow=true;scene.add(key);const fill=new THREE.PointLight(0x36b9a0,35,22);fill.position.set(-5,4,-4);scene.add(fill);
-const root=new THREE.Group();scene.add(root);const boardMat=new THREE.MeshStandardMaterial({color:0x123d36,metalness:.38,roughness:.55});const board=new THREE.Mesh(new THREE.BoxGeometry(7.3,.22,5.2),boardMat);board.castShadow=true;board.receiveShadow=true;root.add(board);
-const edge=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(7.3,.22,5.2)),new THREE.LineBasicMaterial({color:0x65b99d}));edge.position.y=.002;root.add(edge);
-const copper=new THREE.MeshStandardMaterial({color:0xb58a42,metalness:.82,roughness:.28});const dark=new THREE.MeshStandardMaterial({color:0x101a25,metalness:.22,roughness:.4});const chip=new THREE.MeshStandardMaterial({color:0x202b38,metalness:.55,roughness:.3});const white=new THREE.MeshStandardMaterial({color:0xc7d8d5,metalness:.35,roughness:.4});
-const parts=[
-{id:'U_PMIC',name:'IC nguồn chính',type:'Power IC',zone:'A1',x:-1.45,z:-.65,w:1.25,d:1.0,h:.22,pins:36,desc:'Khối IC nguồn mẫu. Chưa gắn sơ đồ chân thực tế.'},
-{id:'U_CPU',name:'SoC / CPU',type:'Processor',zone:'B2',x:1.1,z:.1,w:1.65,d:1.55,h:.25,pins:64,desc:'Mô hình chip xử lý trung tâm, có lưới chân BGA minh họa.'},
-{id:'U_RF',name:'IC RF',type:'RF IC',zone:'C1',x:2.45,z:-1.55,w:.85,d:.72,h:.2,pins:24,desc:'Khối RF minh họa.'},
-{id:'L1',name:'Cuộn cảm nguồn',type:'Inductor',zone:'A2',x:-2.35,z:.65,w:.48,d:.42,h:.28,pins:2,desc:'Cuộn cảm nguồn mẫu.'},
-{id:'C101',name:'Tụ lọc nguồn',type:'Capacitor',zone:'A3',x:-2.75,z:-.25,w:.22,d:.18,h:.12,pins:2,desc:'Tụ gốm MLCC minh họa.'},
-{id:'R205',name:'Điện trở',type:'Resistor',zone:'B1',x:-.15,z:-1.65,w:.34,d:.15,h:.12,pins:2,desc:'Điện trở chip minh họa.'},
-{id:'J1',name:'Đầu nối màn hình',type:'Connector',zone:'D1',x:-2.65,z:1.65,w:1.25,d:.34,h:.35,pins:30,desc:'Đầu nối FPC minh họa.'},
-{id:'U_WIFI',name:'IC Wi-Fi',type:'Connectivity',zone:'C2',x:2.55,z:.85,w:.82,d:.72,h:.2,pins:28,desc:'IC Wi-Fi minh họa.'},
-{id:'Q1',name:'MOSFET',type:'Transistor',zone:'B3',x:.05,z:1.55,w:.42,d:.34,h:.16,pins:8,desc:'MOSFET công suất minh họa.'}
-];
-const pickables=[];function addPart(p,i){const g=new THREE.Group();g.position.set(p.x,.16,p.z);const m=new THREE.Mesh(new THREE.BoxGeometry(p.w,p.h,p.d),i===0||i===1||i===2||i===7?chip:dark);m.position.y=p.h/2;m.castShadow=true;m.receiveShadow=true;g.add(m);
-const outline=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(p.w+.025,p.h+.025,p.d+.025)),new THREE.LineBasicMaterial({color:0x83c7b4}));outline.position.y=p.h/2;g.add(outline);
-if(p.type==='Power IC'||p.type==='Processor'||p.type==='RF IC'||p.type==='Connectivity'){const n=p.type==='Processor'?8:6;for(let a=0;a<n;a++){for(let b=0;b<n;b++){const pad=new THREE.Mesh(new THREE.BoxGeometry(.055,.018,.055),copper);pad.position.set((a-(n-1)/2)*p.w/(n+.5),p.h+.012,(b-(n-1)/2)*p.d/(n+.5));g.add(pad)}}}
-else {for(let s of [-1,1]){const pad=new THREE.Mesh(new THREE.BoxGeometry(.07,.025,.1),copper);pad.position.set(s*(p.w/2+.035),p.h/2,p.d*.0);g.add(pad)}}
-g.userData.part=p;root.add(g);pickables.push(g);p.mesh=g}
-parts.forEach(addPart);
-for(let i=0;i<54;i++){const x=-3.25+(i%18)*.38,z=-2.2+Math.floor(i/18)*2.15;const pad=new THREE.Mesh(new THREE.BoxGeometry(.09,.025,.09),copper);pad.position.set(x,.14,z);root.add(pad)}
-const traceGroup=new THREE.Group();root.add(traceGroup);const traceMat=new THREE.MeshStandardMaterial({color:0x4fcba4,emissive:0x126b52,emissiveIntensity:.8,metalness:.7,roughness:.3});function trace(points){const curve=new THREE.CatmullRomCurve3(points.map(v=>new THREE.Vector3(v[0],.285,v[1])));const mesh=new THREE.Mesh(new THREE.TubeGeometry(curve,32,.018,6,false),traceMat);traceGroup.add(mesh)}trace([[-1.45,-.65],[-1.45,-1.25],[.1,-1.25],[.1,-.8],[1.1,.1]]);trace([[-1.45,-.65],[-2.3,-.65],[-2.3,.65],[-2.35,.65]]);trace([[1.1,.1],[2.1,.1],[2.1,.85],[2.55,.85]]);trace([[1.1,.1],[1.9,.1],[1.9,-1.55],[2.45,-1.55]]);
-traceGroup.visible=false;
-const grid=new THREE.GridHelper(18,36,0x244157,0x172b3b);grid.position.y=-.18;scene.add(grid);
-let selected=null,auto=true,drag=false,lastX=0,lastY=0,downX=0,downY=0,theta=.62,phi=.82,radius=12;const ray=new THREE.Raycaster(),mouse=new THREE.Vector2();
-function cameraUpdate(){phi=Math.max(.18,Math.min(1.48,phi));camera.position.set(radius*Math.sin(phi)*Math.sin(theta),radius*Math.cos(phi),radius*Math.sin(phi)*Math.cos(theta));camera.lookAt(0,0,0)}
-function resize(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}new ResizeObserver(resize).observe(stage);resize();cameraUpdate();
-function select(p){selected=p;parts.forEach(q=>{const mat=q.mesh.children[0].material;q.mesh.children[0].material=q===p?new THREE.MeshStandardMaterial({color:0x16765e,emissive:0x0d4938,emissiveIntensity:.8,metalness:.4,roughness:.3}): (q.type==='Power IC'||q.type==='Processor'||q.type==='RF IC'||q.type==='Connectivity'?chip:dark)});document.getElementById('details').innerHTML='<small>ĐANG CHỌN</small><h3>'+p.id+'</h3><p>'+p.desc+'</p><div class="kv"><span>Loại</span><b>'+p.type+'</b></div><div class="kv"><span>Vị trí</span><b>'+p.zone+'</b></div><div class="kv"><span>Kích thước</span><b>'+p.w+' × '+p.d+' mm*</b></div><div class="kv"><span>Số chân / pad</span><b>'+p.pins+'</b></div><div class="kv"><span>Dữ liệu</span><b>Minh họa 3D</b></div>';document.querySelectorAll('.item').forEach(el=>el.classList.toggle('chosen',el.dataset.id===p.id))}
-function renderList(filter=''){const box=document.getElementById('parts');box.innerHTML='';parts.filter(p=>(p.id+' '+p.name+' '+p.type).toLowerCase().includes(filter.toLowerCase())).forEach(p=>{const b=document.createElement('button');b.className='item';b.dataset.id=p.id;b.innerHTML='<strong>'+p.id+' · '+p.name+'</strong><span>'+p.type+'</span>';b.onclick=()=>{select(p);theta=Math.atan2(p.x,p.z);cameraUpdate()};box.append(b)})}renderList();select(parts[0]);
-renderer.domElement.addEventListener('pointerdown',e=>{drag=true;lastX=e.clientX;lastY=e.clientY;downX=e.clientX;downY=e.clientY;renderer.domElement.setPointerCapture(e.pointerId)});renderer.domElement.addEventListener('pointerup',e=>{if(!drag)return;const moved=Math.abs(e.clientX-downX)+Math.abs(e.clientY-downY);drag=false;if(moved<5){const r=renderer.domElement.getBoundingClientRect();mouse.x=((e.clientX-r.left)/r.width)*2-1;mouse.y=-((e.clientY-r.top)/r.height)*2+1;ray.setFromCamera(mouse,camera);const hit=ray.intersectObjects(pickables,true)[0];if(hit){let o=hit.object;while(o&&!o.userData.part)o=o.parent;if(o)select(o.userData.part)}}});renderer.domElement.addEventListener('pointermove',e=>{if(drag){theta-=(e.clientX-lastX)*.008;phi+=(e.clientY-lastY)*.008;lastX=e.clientX;lastY=e.clientY;cameraUpdate()}});renderer.domElement.addEventListener('wheel',e=>{radius=Math.max(7,Math.min(21,radius+e.deltaY*.009));cameraUpdate()},{passive:true});
-document.getElementById('search').addEventListener('input',e=>renderList(e.target.value));document.getElementById('rotate').onclick=e=>{auto=!auto;e.target.classList.toggle('active',auto);e.target.textContent=auto?'⟳ Xoay tự động':'⏸ Đã dừng'};document.getElementById('traces').onclick=e=>{traceGroup.visible=!traceGroup.visible;e.target.classList.toggle('active',traceGroup.visible)};document.getElementById('topview').onclick=()=>{phi=.18;theta=0;cameraUpdate()};document.getElementById('reset').onclick=()=>{theta=.62;phi=.82;radius=12;cameraUpdate()};function animate(){requestAnimationFrame(animate);if(auto&&!drag){theta+=.0018;cameraUpdate()}renderer.render(scene,camera)}animate();
+<script>
+const translations={
+vi:{crumb:"APPLE SEED /",loading:"Đang kết nối bộ máy Boardview…",reload:"Tải lại",engineTitle:"Bộ máy Boardview đang được triển khai",engineDesc:"Apple Seed đang dựng bản BoardRipper Lite riêng từ mã nguồn fork của bạn. Sau khi GitHub Pages hoàn tất, bộ xem board thật sẽ xuất hiện trực tiếp trong khung này.",tryAgain:"Kiểm tra lại",buildStatus:"Xem trạng thái build",docsTitle:"THƯ VIỆN TÀI LIỆU",uploadTitle:"Nạp tài liệu sửa chữa",device:"Dòng máy / thiết bị *",boardCode:"Mã main / mã board",docType:"Loại tài liệu",chooseFile:"Chọn file",notes:"Ghi chú / phiên bản main",saveDoc:"TẢI LÊN VÀ LƯU VÀO THƯ VIỆN",privacy:"File boardview được lưu nguyên bản trong kho Apple Seed. BoardRipper Lite mở file tại trình duyệt người dùng; bản Lite không tự đồng bộ file vào viewer.",authWait:"Đang kiểm tra đăng nhập Apple Seed…",storedDocs:"TÀI LIỆU ĐÃ LƯU",searchTitle:"TRA CỨU KIẾN THỨC ĐÃ HỌC",truthNote:"Dữ liệu dò line phải đến từ NET/pin thật trong boardview. Không dùng đường mạch minh họa để sửa chữa.",open:"Mở toàn màn hình ↗",library:"Thư viện tài liệu"},
+en:{crumb:"APPLE SEED /",loading:"Connecting Boardview engine…",reload:"Reload",engineTitle:"Boardview engine is being deployed",engineDesc:"Apple Seed is building its own BoardRipper Lite from your fork. When GitHub Pages finishes, the real board viewer will appear here.",tryAgain:"Retry",buildStatus:"View build status",docsTitle:"DOCUMENT LIBRARY",uploadTitle:"Add repair document",device:"Device model *",boardCode:"Board / PCB code",docType:"Document type",chooseFile:"Choose file",notes:"Notes / board revision",saveDoc:"UPLOAD AND SAVE TO LIBRARY",privacy:"Original boardview files are stored in Apple Seed. BoardRipper Lite opens files locally in the browser; the Lite build does not automatically sync uploads into the viewer.",authWait:"Checking Apple Seed sign-in…",storedDocs:"SAVED DOCUMENTS",searchTitle:"SEARCH LEARNED KNOWLEDGE",truthNote:"Net tracing must use real NET/pin data from the boardview. Never use illustrative traces for repair.",open:"Open full screen ↗",library:"Document library"},
+zh:{crumb:"APPLE SEED /",loading:"正在连接 Boardview 引擎…",reload:"重新加载",engineTitle:"Boardview 引擎正在部署",engineDesc:"Apple Seed 正在从你的 fork 构建独立的 BoardRipper Lite。GitHub Pages 部署完成后，真实主板查看器将在此显示。",tryAgain:"重试",buildStatus:"查看构建状态",docsTitle:"维修资料库",uploadTitle:"上传维修资料",device:"设备型号 *",boardCode:"主板 / PCB 代码",docType:"资料类型",chooseFile:"选择文件",notes:"备注 / 主板版本",saveDoc:"上传并保存到资料库",privacy:"Boardview 原文件保存在 Apple Seed。Lite 版本在浏览器本地打开文件，不会自动同步到查看器。",authWait:"正在检查 Apple Seed 登录…",storedDocs:"已保存资料",searchTitle:"搜索已学习知识",truthNote:"走线必须使用 boardview 中真实的 NET/引脚数据。禁止使用示意走线进行维修。",open:"全屏打开 ↗",library:"资料库"}
+};
+function setLanguage(code){const d=translations[code]||translations.vi;document.documentElement.lang=code;document.querySelectorAll("[data-i18n]").forEach(el=>{const k=el.dataset.i18n;if(d[k])el.textContent=d[k]});document.getElementById("open-engine").textContent=d.open;document.getElementById("toggle-library").textContent=d.library;localStorage.setItem("as-boardview-lang",code)}
+const lang=document.getElementById("language");lang.value=localStorage.getItem("as-boardview-lang")||"vi";setLanguage(lang.value);lang.addEventListener("change",()=>setLanguage(lang.value));
+const frame=document.getElementById("board-engine"),cover=document.getElementById("engine-cover"),dot=document.getElementById("engine-dot"),engineLabel=document.getElementById("engine-label");
+let engineTimer=setTimeout(()=>{cover.classList.add("show");engineLabel.textContent="Chưa xác nhận được máy chủ BoardRipper";},12000);
+frame.addEventListener("load",()=>{clearTimeout(engineTimer);dot.classList.add("ok");engineLabel.textContent="BoardRipper Lite · đã tải khung ứng dụng";cover.classList.remove("show")});
+function reloadEngine(){cover.classList.remove("show");dot.classList.remove("ok");engineLabel.textContent=translations[lang.value].loading;clearTimeout(engineTimer);engineTimer=setTimeout(()=>cover.classList.add("show"),12000);frame.src="https://totrungtv.github.io/AppleSeed-BoardRipper/?v="+Date.now()}
+document.getElementById("reload-engine").onclick=reloadEngine;document.getElementById("try-again").onclick=reloadEngine;
+document.getElementById("open-engine").onclick=()=>window.open("https://totrungtv.github.io/AppleSeed-BoardRipper/","_blank","noopener");
+document.getElementById("toggle-library").onclick=()=>document.getElementById("library-panel").scrollIntoView({behavior:"smooth",block:"start"});
+document.querySelectorAll("[data-tab]").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll("[data-tab]").forEach(x=>x.classList.toggle("active",x===b));if(b.dataset.tab==="library")document.getElementById("library-panel").scrollIntoView({behavior:"smooth"});if(b.dataset.tab==="workbench")window.scrollTo({top:0,behavior:"smooth"});if(b.dataset.tab==="about")window.open("https://github.com/Totrungtv/AppleSeed-BoardRipper","_blank","noopener")}));
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js?v=3"></script>
 <script>
 (function(){
-  "use strict";
-  const $=id=>document.getElementById(id), sb=window.supabaseClient;
-  let user=null, session=null;
-  const status=$("kb-status"), authState=$("kb-auth-state"), docsBox=$("kb-docs"), results=$("kb-results");
-  const say=(message,type)=>{status.textContent=message;status.className="kb-status"+(type?" "+type:"");};
-  const esc=v=>String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-  const size=v=>{v=Number(v||0);return v<1024?v+" B":v<1048576?(v/1024).toFixed(1)+" KB":(v/1048576).toFixed(1)+" MB";};
-  const fileName=s=>String(s||"document").normalize("NFKD").replace(/[^a-zA-Z0-9._-]+/g,"_").replace(/^_+|_+$/g,"").slice(-120)||"document";
-  const mimeOf=f=>f.type||(({pdf:"application/pdf",txt:"text/plain",csv:"text/csv",png:"image/png",jpg:"image/jpeg",jpeg:"image/jpeg",webp:"image/webp",pcb:"application/octet-stream",brd:"application/octet-stream",zip:"application/zip",rar:"application/vnd.rar"})[f.name.split(".").pop().toLowerCase()]||"application/octet-stream");
-  const statusOf=d=>{const m=d.metadata||{};if(d.status==="completed")return "AI đã học · "+Number(d.atoms_learned||0)+" mẩu kiến thức";if(d.status==="learning")return "AI đang đọc tài liệu";if(d.status==="failed")return "AI học lỗi: "+(d.error_message||"xem chi tiết");if(m.parser_status==="waiting_boardview_parser")return "Đã lưu file gốc · chờ bộ đọc PCB/Netlist";return "Đã lưu · chờ xử lý";};
-  async function init(){
-    if(!sb){authState.textContent="Chưa kết nối";say("Không tải được cấu hình Supabase.","err");return;}
-    const sr=await sb.auth.getSession();session=sr.data&&sr.data.session;
-    if(!session){authState.textContent="Chưa đăng nhập";say("Đăng nhập Admin/Staff để nạp và tra cứu tài liệu.","err");const a=document.createElement("a");a.href="login.html?redirect=3d-boardview.html";a.textContent="Đăng nhập Apple Seed";a.style.cssText="display:inline-block;margin-top:6px;color:#75e7bd;font-weight:800";status.append(document.createElement("br"),a);return;}
-    const ur=await sb.auth.getUser();user=ur.data&&ur.data.user;
-    if(!user){say("Phiên đăng nhập hết hạn. Hãy đăng nhập lại.","err");return;}
-    const pr=await sb.from("profiles").select("role,full_name").eq("id",user.id).maybeSingle();
-    if(pr.error||!pr.data||!["admin","staff"].includes(pr.data.role)){authState.textContent="Không đủ quyền";say("Tài khoản cần quyền Admin hoặc Staff để quản lý kho tài liệu.","err");return;}
-    authState.textContent=pr.data.role.toUpperCase();
-    say("Đã kết nối kho dữ liệu Apple Seed · "+(pr.data.full_name||user.email),"ok");
-    await loadDocs();
-  }
-  async function loadDocs(){
-    if(!user)return;
-    docsBox.textContent="Đang tải thư viện...";
-    const r=await sb.from("brain_documents").select("id,file_name,mime_type,file_size,status,summary,atoms_learned,relationships_learned,error_message,metadata,created_at").order("created_at",{ascending:false}).limit(40);
-    if(r.error){docsBox.textContent="Lỗi tải thư viện: "+r.error.message;return;}
-    $("kb-doc-count").textContent=r.data.length+" tài liệu";
-    docsBox.innerHTML=r.data.length?r.data.map(d=>{const m=d.metadata||{};return '<div class="kb-doc"><b>'+esc(d.file_name)+'</b><small>'+esc(m.device_model||"Chưa gán dòng máy")+' · '+esc(m.document_type||"Tài liệu")+' · '+size(d.file_size)+'<br>'+esc(statusOf(d))+(d.summary?'<br>'+esc(d.summary.slice(0,180)):"")+'</small></div>';}).join(""):'<small style="color:#91a8bc">Chưa có tài liệu. Nạp bộ tài liệu đầu tiên.</small>';
-  }
-  $("kb-toggle-upload").addEventListener("click",()=>$("kb-upload-panel").classList.toggle("open"));
-  $("kb-refresh").addEventListener("click",loadDocs);
-  $("kb-upload-form").addEventListener("submit",async e=>{
-    e.preventDefault();
-    if(!user||!session){say("Đăng nhập Admin/Staff trước khi nạp tài liệu.","err");return;}
-    const file=$("kb-file").files[0],device=$("kb-device").value.trim(),board=$("kb-board").value.trim(),type=$("kb-type").value,notes=$("kb-notes").value.trim();
-    if(!file||!device){say("Nhập dòng máy và chọn file trước.","err");return;}
-    if(file.size>100*1024*1024){say("File vượt quá 100 MB. Hãy chia nhỏ tài liệu.","err");return;}
-    const btn=$("kb-submit");btn.disabled=true;btn.textContent="ĐANG TẢI FILE...";
-    let path="";
-    try{
-      path=user.id+"/"+Date.now()+"_"+fileName(file.name);
-      const mime=mimeOf(file),ext=file.name.split(".").pop().toLowerCase();
-      const upload=await sb.storage.from("electronic-brain").upload(path,file,{contentType:mime,upsert:false});
-      if(upload.error)throw new Error("Storage: "+upload.error.message);
-      const canLearn=mime==="application/pdf"||mime.startsWith("image/")||["txt","csv"].includes(ext);
-      const metadata={source_page:"3d-boardview",device_model:device,board_code:board,document_type:type,notes:notes,original_extension:ext,parser_status:(!canLearn&&(type==="boardview"||type==="netlist"))?"waiting_boardview_parser":(canLearn?"ready_for_ai_learning":"stored_original_only")};
-      const saved=await sb.from("brain_documents").insert({uploaded_by:user.id,file_name:file.name,storage_path:path,mime_type:mime,file_size:file.size,status:"queued",metadata}).select("id").single();
-      if(saved.error){await sb.storage.from("electronic-brain").remove([path]);throw new Error("Database: "+saved.error.message);}
-      await loadDocs();
-      if(canLearn){
-        btn.textContent="AI ĐANG HỌC...";
-        const learn=await sb.functions.invoke("brain-learn-document",{body:{document_id:saved.data.id}});
-        if(learn.error)throw new Error("File đã lưu; AI học chưa xong: "+learn.error.message);
-        if(!learn.data||learn.data.ok!==true)throw new Error("File đã lưu; AI báo lỗi: "+String(learn.data&&learn.data.error||"không rõ"));
-        say("Hoàn tất: lưu file và học được "+Number(learn.data.atoms_learned||0)+" mẩu kiến thức, "+Number(learn.data.relationships_learned||0)+" quan hệ.","ok");
-      }else if(type==="boardview"||type==="netlist"){
-        say("Đã lưu nguyên file "+file.name+". Chưa phân tích PCB/Netlist; cần bộ đọc đúng định dạng trước khi bật dò line.","ok");
-      }else say("Đã lưu file gốc vào thư viện. Định dạng này hiện chưa có bộ trích xuất tự động.","ok");
-      $("kb-upload-form").reset();await loadDocs();
-    }catch(err){say(err.message||String(err),"err");await loadDocs();}
-    finally{btn.disabled=false;btn.textContent="TẢI LÊN VÀ LƯU VÀO THƯ VIỆN";}
-  });
-  $("kb-search").addEventListener("keydown",async function(e){
-    if(e.key!=="Enter")return;e.preventDefault();
-    if(!user){results.textContent="Đăng nhập Admin/Staff để tra cứu.";return;}
-    const q=this.value.trim().replace(/[,%()]/g," ").replace(/\s+/g," ").slice(0,80);
-    if(q.length<2){results.textContent="Nhập ít nhất 2 ký tự.";return;}
-    results.textContent="Đang tìm...";
-    const like="%"+q+"%";
-    const r=await sb.from("brain_knowledge").select("id,title,content,knowledge_type,device_model,component_ref,net_name,source_page,confidence,verification_status").or("title.ilike."+like+",content.ilike."+like+",component_ref.ilike."+like+",net_name.ilike."+like).limit(20);
-    if(r.error){results.textContent="Lỗi tra cứu: "+r.error.message;return;}
-    if(!r.data.length){results.textContent="Chưa tìm thấy kiến thức phù hợp.";return;}
-    results.innerHTML=r.data.map(x=>'<div class="kb-result"><b>'+esc(x.title)+'</b><p>'+esc([x.device_model,x.component_ref,x.net_name,x.knowledge_type].filter(Boolean).join(" · "))+'<br>'+esc(x.content.slice(0,320))+'</p><small style="color:#8198ac">Tin cậy '+Number(x.confidence||0)+'% · '+esc(x.verification_status||"documented")+(x.source_page?" · Trang "+Number(x.source_page):"")+'</small></div>').join("");
-  });
-  init().catch(e=>say("Lỗi khởi tạo: "+e.message,"err"));
+"use strict";
+const $=id=>document.getElementById(id),sb=window.supabaseClient;
+let user=null,session=null;
+const status=$("kb-status"),authState=$("kb-auth-state"),docsBox=$("kb-docs"),results=$("kb-results");
+const say=(m,t)=>{status.textContent=m;status.className="status"+(t?" "+t:"")};
+const esc=v=>String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const size=v=>{v=Number(v||0);return v<1024?v+" B":v<1048576?(v/1024).toFixed(1)+" KB":(v/1048576).toFixed(1)+" MB"};
+const safeName=s=>String(s||"document").normalize("NFKD").replace(/[^a-zA-Z0-9._-]+/g,"_").replace(/^_+|_+$/g,"").slice(-120)||"document";
+const mimeOf=f=>f.type||(({pdf:"application/pdf",txt:"text/plain",csv:"text/csv",png:"image/png",jpg:"image/jpeg",jpeg:"image/jpeg",webp:"image/webp",pcb:"application/octet-stream",brd:"application/octet-stream",bdv:"application/octet-stream",bvr:"application/octet-stream",bv:"application/octet-stream",zip:"application/zip",rar:"application/vnd.rar"})[f.name.split(".").pop().toLowerCase()]||"application/octet-stream");
+function docStatus(d){const m=d.metadata||{};if(d.status==="completed")return "AI đã học · "+Number(d.atoms_learned||0)+" mẩu kiến thức";if(d.status==="learning")return "AI đang đọc tài liệu";if(d.status==="failed")return "AI học lỗi: "+(d.error_message||"xem chi tiết");if(m.parser_status==="waiting_boardview_parser")return "Đã lưu file gốc · chờ bộ đọc PCB/Netlist";return "Đã lưu · chờ xử lý"}
+async function init(){
+ if(!sb){authState.textContent="Chưa kết nối";say("Không tải được cấu hình Supabase.","err");return}
+ const sr=await sb.auth.getSession();session=sr.data&&sr.data.session;
+ if(!session){authState.textContent="Chưa đăng nhập";say("Đăng nhập Admin/Staff để nạp và tra cứu tài liệu.","err");return}
+ const ur=await sb.auth.getUser();user=ur.data&&ur.data.user;if(!user){say("Phiên đăng nhập hết hạn. Hãy đăng nhập lại.","err");return}
+ const pr=await sb.from("profiles").select("role,full_name").eq("id",user.id).maybeSingle();
+ if(pr.error||!pr.data||!["admin","staff"].includes(pr.data.role)){authState.textContent="Không đủ quyền";say("Tài khoản cần quyền Admin hoặc Staff để quản lý kho tài liệu.","err");return}
+ authState.textContent=pr.data.role.toUpperCase();say("Đã kết nối kho dữ liệu Apple Seed · "+(pr.data.full_name||user.email),"ok");await loadDocs()
+}
+async function loadDocs(){
+ if(!user)return;docsBox.textContent="Đang tải thư viện…";
+ const r=await sb.from("brain_documents").select("id,file_name,mime_type,file_size,status,summary,atoms_learned,relationships_learned,error_message,metadata,created_at").order("created_at",{ascending:false}).limit(40);
+ if(r.error){docsBox.textContent="Lỗi tải thư viện: "+r.error.message;return}
+ $("kb-doc-count").textContent=r.data.length+" tài liệu";
+ docsBox.innerHTML=r.data.length?r.data.map(d=>{const m=d.metadata||{};return '<div class="doc"><b>'+esc(d.file_name)+'</b><small>'+esc(m.device_model||"Chưa gán dòng máy")+" · "+esc(m.document_type||"Tài liệu")+" · "+size(d.file_size)+"<br>"+esc(docStatus(d))+(d.summary?"<br>"+esc(d.summary.slice(0,180)):"")+"</small></div>"}).join(""):'<small class="muted">Chưa có tài liệu. Hãy nạp tài liệu đầu tiên.</small>'
+}
+$("kb-refresh").onclick=loadDocs;
+$("kb-upload-form").addEventListener("submit",async e=>{
+ e.preventDefault();if(!user||!session){say("Đăng nhập Admin/Staff trước khi nạp tài liệu.","err");return}
+ const file=$("kb-file").files[0],device=$("kb-device").value.trim(),board=$("kb-board").value.trim(),type=$("kb-type").value,notes=$("kb-notes").value.trim();
+ if(!file||!device){say("Nhập dòng máy và chọn file trước.","err");return}if(file.size>100*1024*1024){say("File vượt quá 100 MB.","err");return}
+ const btn=$("kb-submit");btn.disabled=true;btn.textContent="ĐANG TẢI FILE…";let path="";
+ try{
+  path=user.id+"/"+Date.now()+"_"+safeName(file.name);const mime=mimeOf(file),ext=file.name.split(".").pop().toLowerCase();
+  const up=await sb.storage.from("electronic-brain").upload(path,file,{contentType:mime,upsert:false});if(up.error)throw new Error("Storage: "+up.error.message);
+  const canLearn=mime==="application/pdf"||mime.startsWith("image/")||["txt","csv"].includes(ext);
+  const metadata={source_page:"3d-boardview",device_model:device,board_code:board,document_type:type,notes,original_extension:ext,parser_status:(!canLearn&&(type==="boardview"||type==="netlist"))?"waiting_boardview_parser":(canLearn?"ready_for_ai_learning":"stored_original_only")};
+  const saved=await sb.from("brain_documents").insert({uploaded_by:user.id,file_name:file.name,storage_path:path,mime_type:mime,file_size:file.size,status:"queued",metadata}).select("id").single();
+  if(saved.error){await sb.storage.from("electronic-brain").remove([path]);throw new Error("Database: "+saved.error.message)}
+  await loadDocs();
+  if(canLearn){btn.textContent="AI ĐANG HỌC…";const learn=await sb.functions.invoke("brain-learn-document",{body:{document_id:saved.data.id}});if(learn.error)throw new Error("File đã lưu; AI học chưa xong: "+learn.error.message);if(!learn.data||learn.data.ok!==true)throw new Error("File đã lưu; AI báo lỗi: "+String(learn.data&&learn.data.error||"không rõ"));say("Đã lưu và học "+Number(learn.data.atoms_learned||0)+" mẩu kiến thức, "+Number(learn.data.relationships_learned||0)+" quan hệ.","ok")}
+  else if(type==="boardview"||type==="netlist")say("Đã lưu file gốc "+file.name+". Bộ đọc PCB/Netlist sẽ phân tích riêng; chưa bật dò line khi chưa xác thực dữ liệu.","ok");
+  else say("Đã lưu file gốc vào thư viện Apple Seed.","ok");
+  $("kb-upload-form").reset();await loadDocs()
+ }catch(err){say(err.message||String(err),"err");await loadDocs()}
+ finally{btn.disabled=false;btn.textContent=translations[document.getElementById("language").value].saveDoc}
+});
+$("kb-search").addEventListener("keydown",async function(e){
+ if(e.key!=="Enter")return;e.preventDefault();if(!user){results.textContent="Đăng nhập Admin/Staff để tra cứu.";return}
+ const q=this.value.trim().replace(/[,%()]/g," ").replace(/\s+/g," ").slice(0,80);if(q.length<2){results.textContent="Nhập ít nhất 2 ký tự.";return}
+ results.textContent="Đang tìm…";const like="%"+q+"%";
+ const r=await sb.from("brain_knowledge").select("id,title,content,knowledge_type,device_model,component_ref,net_name,source_page,confidence,verification_status").or("title.ilike."+like+",content.ilike."+like+",component_ref.ilike."+like+",net_name.ilike."+like).limit(20);
+ if(r.error){results.textContent="Lỗi tra cứu: "+r.error.message;return}if(!r.data.length){results.textContent="Chưa tìm thấy kiến thức phù hợp.";return}
+ results.innerHTML=r.data.map(x=>'<div class="result"><b>'+esc(x.title)+'</b><p>'+esc([x.device_model,x.component_ref,x.net_name,x.knowledge_type].filter(Boolean).join(" · "))+"<br>"+esc((x.content||"").slice(0,320))+'</p><small class="muted">Tin cậy '+Number(x.confidence||0)+'% · '+esc(x.verification_status||"documented")+(x.source_page?" · Trang "+Number(x.source_page):"")+"</small></div>").join("")
+});
+init().catch(e=>say("Lỗi khởi tạo: "+e.message,"err"));
 })();
 </script>
-
-</body></html>
+</body>
+</html>
