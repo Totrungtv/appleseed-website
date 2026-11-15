@@ -46,7 +46,7 @@ wiring:["Sơ đồ kết nối tổng","Sơ đồ kiến trúc theo các chân �
 <rect x="28" y="25" width="235" height="92" rx="12" class="box"/><text x="48" y="54" class="title">PIN 2S + BMS</text><text x="48" y="78" class="txt">7.4V danh định · 8.4V đầy</text><text x="48" y="99" class="small">Đo điện áp / dòng trước khi cấp</text>
 <rect x="335" y="25" width="220" height="92" rx="12" class="box"/><text x="355" y="54" class="title">PHÂN PHỐI NGUỒN</text><text x="355" y="78" class="txt">Nhánh motor / nhánh logic</text><text x="355" y="99" class="small">Topology đề xuất — cần đo thực tế</text>
 <rect x="630" y="25" width="205" height="92" rx="12" class="box"/><text x="650" y="54" class="title">LM2596 BUCK</text><text x="650" y="78" class="txt">Hạ áp cho rail logic</text><text x="650" y="99" class="small">Chỉnh và đo output trước khi nối</text>
-<path d="M263 70 H335" class="wireY"/><path d="M555 70 H630" class="wireY"/><text x="275" y="57" class="label">B+ / B-</text><text x="565" y="57" class="label">Nguồn DC</text>
+<path d="M263 70 H335" class="wireY"/><path d="M555 70 H630" class="wireY"/><text x="275" y="57" class="label">B+ / B-</text><text x="565" y="57" class="label">Nguồn DC</text><path d="M445 117 V158 H555 V190" class="wireY"/><text x="465" y="149" class="label">Nguồn motor → Vs L298N</text><path d="M730 117 V160 H175 V210" class="wireY"/><text x="270" y="153" class="label">Rail logic sau buck — đo output trước</text>
 <!-- UNO -->
 <rect x="35" y="210" width="285" height="230" rx="12" class="box"/><text x="58" y="241" class="title">ARDUINO UNO R3</text><text x="58" y="269" class="pin">D5 → L298N IN1</text><text x="58" y="292" class="pin">D6 → L298N IN2</text><text x="58" y="315" class="pin">D7 → L298N IN3</text><text x="58" y="338" class="pin">D8 → L298N IN4</text><text x="58" y="361" class="pin">D9 / D10 → HC-SR04 TRIG / ECHO</text><text x="58" y="384" class="pin">D3 → Servo · A0 → Rain</text><text x="58" y="407" class="pin">A1 ← chia áp pin · A4/A5 I2C</text>
 <path d="M430 220 H320 V270" class="wireG"/><text x="345" y="208" class="label">D5–D8</text>
@@ -81,7 +81,7 @@ async function initRobot3D(){
  const host=document.getElementById("robot3d"); if(!host||host.dataset.ready==="1")return; host.dataset.ready="1";
  try{
   const THREE=await import("https://cdn.jsdelivr.net/npm/three@0.160.0/+esm");
-  const {OrbitControls}=await import("https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js");
+  const {OrbitControls}=await import("https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js/+esm");
   host.innerHTML="";
   const scene=new THREE.Scene(); scene.background=new THREE.Color(0x071421);
   const camera=new THREE.PerspectiveCamera(42,host.clientWidth/host.clientHeight,.1,100);camera.position.set(8,7,10);
