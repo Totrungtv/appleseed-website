@@ -10,6 +10,7 @@
  '<div class="field"><label for="asRomFile">Nạp panic / ROM / restore log (TXT, IPS, LOG, JSON)</label><input id="asRomFile" type="file" accept=".txt,.log,.ips,.panic,.json,.csv,.xml,.plist"></div>',
  '<div class="field"><label for="asRomText">Log / mã lỗi / firmware / số đo</label><textarea id="asRomText" rows="5" placeholder="Dán panic-full, lỗi 3uTools/iTunes, boot log, mã lỗi restore, thông tin ROM/firmware, số đo main..."></textarea></div>',
  '<div class="field"><label for="asBoardModel">Model / mã board</label><input id="asBoardModel" placeholder="Ví dụ: iPhone 12 Pro Max / mã board"></div>',
+ '<div class="field"><label for="asDomain">Khối kỹ thuật cần ưu tiên</label><select id="asDomain"><option>Tự động phân tích toàn bộ</option><option>Nguồn / PMIC / VDD</option><option>Sạc / Hydra / USB</option><option>CPU / NAND / ROM</option><option>Wi-Fi / Bluetooth / RF</option><option>Baseband / sóng / SIM</option><option>Face ID / cảm biến</option><option>Audio / mic / loa</option><option>Màn hình / cảm ứng</option><option>I2C / SPI / UART / bus dữ liệu</option><option>PANIC / boot / restore</option><option>Đọc schematic / boardview</option></select></div>',
  '<div class="field"><label for="asBoardIssue">Triệu chứng và lịch sử sửa chữa</label><textarea id="asBoardIssue" rows="3" placeholder="Mất nguồn, dòng nguồn, đã thay/đóng IC gì, kết quả đo..."></textarea></div>',
  '<button class="btn primary" id="asDeepAnalyze" style="width:100%">✦ Phân tích ảnh + mạch + ROM bằng AI</button>',
  '<div id="asDeepStatus" class="statusline" style="margin-top:10px">Cần đăng nhập Apple Seed. Ảnh và log sẽ gửi tới AI server.</div>',
@@ -33,6 +34,7 @@
   const prompt=[
    'APPLE SEED BOARD-LEVEL + ROM DIAGNOSTICS',
    'MODEL/BOARD: '+($('asBoardModel').value.trim()||'Chưa rõ'),
+   'KHỐI ƯU TIÊN: '+$('asDomain').value,
    'TRIỆU CHỨNG/LỊCH SỬ: '+(issue||'Chưa cung cấp'),
    'PANIC / ROM / RESTORE LOG:\n'+(logs||'Không có'),
    'SỐ ĐO THỰC TẾ:\n'+($('measurements')?.value||'Không có'),
