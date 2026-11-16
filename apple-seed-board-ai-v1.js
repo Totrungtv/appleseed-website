@@ -53,6 +53,15 @@
   finally{btn.disabled=false;btn.textContent='✦ Phân tích ảnh + mạch + ROM bằng AI'}
  }
  btn.addEventListener('click',analyze);
+ // One-click workflow: the existing scan controls also launch the real AI analysis.
+ // This prevents the AI feature from being hidden behind a separate panel.
+ ['analyzeBtn','mobileAnalyze'].forEach(id=>{
+  const control=$(id);
+  if(control) control.addEventListener('click',()=>setTimeout(()=>{
+   if(!btn.disabled) analyze();
+  },180));
+ });
+
  $('asRomFile').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;if(f.size>12*1024*1024){status.textContent='File văn bản tối đa 12MB.';return}try{$('asRomText').value=await f.text();status.textContent='Đã nạp log: '+f.name}catch(_){status.textContent='Không đọc được file văn bản.'}});
  $('asCopyDeep').addEventListener('click',()=>{const t=out.textContent;if(t)navigator.clipboard?.writeText(t).then(()=>status.textContent='Đã sao chép kết quả.')});
 })();
